@@ -58,7 +58,7 @@ public final class Profil implements DtObject {
 	}
 
 
-	// Association : User non navigable
+	// Association : Application user non navigable
 	/**
 	 * Association : Security role.
 	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.users.SecurityRole>

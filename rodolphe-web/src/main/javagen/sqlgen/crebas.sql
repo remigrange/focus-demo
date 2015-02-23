@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  20 févr. 2015  17:04:04                     
+--   Date de création :  23 févr. 2015  16:43:51                     
 -- ============================================================
 
 
@@ -9,6 +9,9 @@
 --   Sequences                                      
 -- ============================================================
 create sequence SEQ_ALIAS
+	start with 1000 cache 20; 
+
+create sequence SEQ_APPLICATION_USER
 	start with 1000 cache 20; 
 
 create sequence SEQ_COUNTRY
@@ -44,9 +47,6 @@ create sequence SEQ_SECURITY_ROLE
 create sequence SEQ_TITLE
 	start with 1000 cache 20; 
 
-create sequence SEQ_USER
-	start with 1000 cache 20; 
-
 create sequence SEQ_USER_AUTHENTIFICATION
 	start with 1000 cache 20; 
 
@@ -72,6 +72,35 @@ comment on column ALIAS.COU_CD is
 'Country';
 
 create index ALIAS_COU_CD_FK on ALIAS (COU_CD asc);
+-- ============================================================
+--   Table : APPLICATION_USER                                        
+-- ============================================================
+create table APPLICATION_USER
+(
+    USR_ID      	 NUMERIC     	not null,
+    LAST_NAME   	 VARCHAR(50) 	,
+    FIRST_NAME  	 VARCHAR(50) 	,
+    EMAIL       	 VARCHAR(150)	,
+    PRO_ID      	 NUMERIC     	,
+    constraint PK_APPLICATION_USER primary key (USR_ID)
+);
+
+comment on column APPLICATION_USER.USR_ID is
+'USR_ID';
+
+comment on column APPLICATION_USER.LAST_NAME is
+'Last Name';
+
+comment on column APPLICATION_USER.FIRST_NAME is
+'First Name';
+
+comment on column APPLICATION_USER.EMAIL is
+'email';
+
+comment on column APPLICATION_USER.PRO_ID is
+'Profil';
+
+create index APPLICATION_USER_PRO_ID_FK on APPLICATION_USER (PRO_ID asc);
 -- ============================================================
 --   Table : COUNTRY                                        
 -- ============================================================
@@ -313,35 +342,6 @@ comment on column TITLE.LABEL is
 'Label';
 
 -- ============================================================
---   Table : USER                                        
--- ============================================================
-create table USER
-(
-    USR_ID      	 NUMERIC     	not null,
-    LAST_NAME   	 VARCHAR(50) 	,
-    FIRST_NAME  	 VARCHAR(50) 	,
-    EMAIL       	 VARCHAR(150)	,
-    PRO_ID      	 NUMERIC     	,
-    constraint PK_USER primary key (USR_ID)
-);
-
-comment on column USER.USR_ID is
-'USR_ID';
-
-comment on column USER.LAST_NAME is
-'Last Name';
-
-comment on column USER.FIRST_NAME is
-'First Name';
-
-comment on column USER.EMAIL is
-'email';
-
-comment on column USER.PRO_ID is
-'Profil';
-
-create index USER_PRO_ID_FK on USER (PRO_ID asc);
--- ============================================================
 --   Table : USER_AUTHENTIFICATION                                        
 -- ============================================================
 create table USER_AUTHENTIFICATION
@@ -363,7 +363,7 @@ comment on column USER_AUTHENTIFICATION.PASSWORD is
 'Password';
 
 comment on column USER_AUTHENTIFICATION.USR_ID is
-'User';
+'Application user';
 
 create index USER_AUTHENTIFICATION_USR_ID_FK on USER_AUTHENTIFICATION (USR_ID asc);
 
@@ -373,7 +373,7 @@ alter table ALIAS
 
 alter table USER_AUTHENTIFICATION
 	add constraint FK_AUTH_USR foreign key (USR_ID)
-	references USER (USR_ID);
+	references APPLICATION_USER (USR_ID);
 
 create table MOV_ALS
 (
@@ -510,7 +510,7 @@ alter table ROLE_PEOPLE
 	add constraint FK_RLP_RLM foreign key (RLM_CD)
 	references ROLE_MOVIE (RLM_CD);
 
-alter table USER
+alter table APPLICATION_USER
 	add constraint FK_USR_PRO foreign key (PRO_ID)
 	references PROFIL (PRO_ID);
 

@@ -19,7 +19,7 @@ public final class UserAuthentification implements DtObject {
 	private String login;
 	private String password;
 	private Long usrId;
-	private rodolphe.demo.domain.users.User user;
+	private rodolphe.demo.domain.users.ApplicationUser applicationUser;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -80,17 +80,17 @@ public final class UserAuthentification implements DtObject {
 
 	/**
 	 * Champ : FOREIGN_KEY.
-	 * Récupère la valeur de la propriété 'User'. 
+	 * Récupère la valeur de la propriété 'Application user'. 
 	 * @return Long usrId <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_ID", type = "FOREIGN_KEY", notNull = true, label = "User")
+	@Field(domain = "DO_ID", type = "FOREIGN_KEY", notNull = true, label = "Application user")
 	public Long getUsrId() {
 		return usrId;
 	}
 
 	/**
 	 * Champ : FOREIGN_KEY.
-	 * Définit la valeur de la propriété 'User'.
+	 * Définit la valeur de la propriété 'Application user'.
 	 * @param usrId Long <b>Obligatoire</b>
 	 */
 	public void setUsrId(final Long usrId) {
@@ -98,16 +98,16 @@ public final class UserAuthentification implements DtObject {
 	}
 
 	/**
-	 * Association : User.
-	 * @return rodolphe.demo.domain.users.User
+	 * Association : Application user.
+	 * @return rodolphe.demo.domain.users.ApplicationUser
 	 */
     @io.vertigo.dynamo.domain.stereotype.Association (
     	name = "A_AUTH_USR",
     	fkFieldName = "USR_ID",
-    	primaryDtDefinitionName = "DT_USER",
+    	primaryDtDefinitionName = "DT_APPLICATION_USER",
     	primaryIsNavigable = true,
-    	primaryRole = "User",
-    	primaryLabel = "User",
+    	primaryRole = "ApplicationUser",
+    	primaryLabel = "Application user",
     	primaryMultiplicity = "1..1",
     	foreignDtDefinitionName = "DT_USER_AUTHENTIFICATION",
     	foreignIsNavigable = false,
@@ -115,37 +115,37 @@ public final class UserAuthentification implements DtObject {
     	foreignLabel = "User authentification",
     	foreignMultiplicity = "0..*"
     )
-	public rodolphe.demo.domain.users.User getUser() {
-		final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.users.User> fkURI = getUserURI();
+	public rodolphe.demo.domain.users.ApplicationUser getApplicationUser() {
+		final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.users.ApplicationUser> fkURI = getApplicationUserURI();
 		if (fkURI == null) {
 			return null;
 		}
 		//On est toujours dans un mode lazy. On s'assure cependant que l'objet associé n'a pas changé
-		if (user != null) {
+		if (applicationUser != null) {
 			// On s'assure que l'objet correspond à la bonne clé
-			final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.users.User> uri;
-			uri = new io.vertigo.dynamo.domain.model.URI<>(io.vertigo.dynamo.domain.util.DtObjectUtil.findDtDefinition(user), io.vertigo.dynamo.domain.util.DtObjectUtil.getId(user));
+			final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.users.ApplicationUser> uri;
+			uri = new io.vertigo.dynamo.domain.model.URI<>(io.vertigo.dynamo.domain.util.DtObjectUtil.findDtDefinition(applicationUser), io.vertigo.dynamo.domain.util.DtObjectUtil.getId(applicationUser));
 			if (!fkURI.toURN().equals(uri.toURN())) {
-				user = null;
+				applicationUser = null;
 			}
 		}		
-		if (user == null) {
-			user = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().get(fkURI);
+		if (applicationUser == null) {
+			applicationUser = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().get(fkURI);
 		}
-		return user;
+		return applicationUser;
 	}
 
 	/**
-	 * Retourne l'URI: User.
+	 * Retourne l'URI: Application user.
 	 * @return URI de l'association
 	 */
     @io.vertigo.dynamo.domain.stereotype.Association (
     	name = "A_AUTH_USR",
     	fkFieldName = "USR_ID",
-    	primaryDtDefinitionName = "DT_USER",
+    	primaryDtDefinitionName = "DT_APPLICATION_USER",
     	primaryIsNavigable = true,
-    	primaryRole = "User",
-    	primaryLabel = "User",
+    	primaryRole = "ApplicationUser",
+    	primaryLabel = "Application user",
     	primaryMultiplicity = "1..1",
     	foreignDtDefinitionName = "DT_USER_AUTHENTIFICATION",
     	foreignIsNavigable = false,
@@ -153,8 +153,8 @@ public final class UserAuthentification implements DtObject {
     	foreignLabel = "User authentification",
     	foreignMultiplicity = "0..*"
     )
-	public io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.users.User> getUserURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createURI(this, "A_AUTH_USR", rodolphe.demo.domain.users.User.class);
+	public io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.users.ApplicationUser> getApplicationUserURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createURI(this, "A_AUTH_USR", rodolphe.demo.domain.users.ApplicationUser.class);
 	}
 
 	/** {@inheritDoc} */

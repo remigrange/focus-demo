@@ -7,10 +7,10 @@ import io.vertigo.dynamo.domain.util.DtObjectUtil;
 
 /**
  * Attention cette classe est générée automatiquement !
- * Objet de données User
+ * Objet de données ApplicationUser
  */
 @DtDefinition
-public final class User implements DtObject {
+public final class ApplicationUser implements DtObject {
 
 	/** SerialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -131,10 +131,10 @@ public final class User implements DtObject {
     	primaryRole = "Profil",
     	primaryLabel = "Profil",
     	primaryMultiplicity = "0..1",
-    	foreignDtDefinitionName = "DT_USER",
+    	foreignDtDefinitionName = "DT_APPLICATION_USER",
     	foreignIsNavigable = false,
-    	foreignRole = "User",
-    	foreignLabel = "User",
+    	foreignRole = "ApplicationUser",
+    	foreignLabel = "Application user",
     	foreignMultiplicity = "0..*"
     )
 	public rodolphe.demo.domain.users.Profil getProfil() {
@@ -169,10 +169,10 @@ public final class User implements DtObject {
     	primaryRole = "Profil",
     	primaryLabel = "Profil",
     	primaryMultiplicity = "0..1",
-    	foreignDtDefinitionName = "DT_USER",
+    	foreignDtDefinitionName = "DT_APPLICATION_USER",
     	foreignIsNavigable = false,
-    	foreignRole = "User",
-    	foreignLabel = "User",
+    	foreignRole = "ApplicationUser",
+    	foreignLabel = "Application user",
     	foreignMultiplicity = "0..*"
     )
 	public io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.users.Profil> getProfilURI() {

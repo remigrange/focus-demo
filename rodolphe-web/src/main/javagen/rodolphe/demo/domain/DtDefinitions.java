@@ -33,12 +33,12 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			RoleMovie(rodolphe.demo.domain.references.RoleMovie.class),
 			/** Objet de données Title. */
 			Title(rodolphe.demo.domain.references.Title.class),
+			/** Objet de données ApplicationUser. */
+			ApplicationUser(rodolphe.demo.domain.users.ApplicationUser.class),
 			/** Objet de données Profil. */
 			Profil(rodolphe.demo.domain.users.Profil.class),
 			/** Objet de données SecurityRole. */
 			SecurityRole(rodolphe.demo.domain.users.SecurityRole.class),
-			/** Objet de données User. */
-			User(rodolphe.demo.domain.users.User.class),
 			/** Objet de données UserAuthentification. */
 			UserAuthentification(rodolphe.demo.domain.users.UserAuthentification.class),
 		;
@@ -190,6 +190,22 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	}
 
 	/**
+	 * Enumération des champs de ApplicationUser.
+	 */
+	public enum ApplicationUserFields implements DtFieldName {
+		/** Propriété 'USR_ID'. */
+		USR_ID,
+		/** Propriété 'Last Name'. */
+		LAST_NAME,
+		/** Propriété 'First Name'. */
+		FIRST_NAME,
+		/** Propriété 'email'. */
+		EMAIL,
+		/** Propriété 'Profil'. */
+		PRO_ID,
+	}
+
+	/**
 	 * Enumération des champs de Profil.
 	 */
 	public enum ProfilFields implements DtFieldName {
@@ -210,22 +226,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	}
 
 	/**
-	 * Enumération des champs de User.
-	 */
-	public enum UserFields implements DtFieldName {
-		/** Propriété 'USR_ID'. */
-		USR_ID,
-		/** Propriété 'Last Name'. */
-		LAST_NAME,
-		/** Propriété 'First Name'. */
-		FIRST_NAME,
-		/** Propriété 'email'. */
-		EMAIL,
-		/** Propriété 'Profil'. */
-		PRO_ID,
-	}
-
-	/**
 	 * Enumération des champs de UserAuthentification.
 	 */
 	public enum UserAuthentificationFields implements DtFieldName {
@@ -235,7 +235,7 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		LOGIN,
 		/** Propriété 'Password'. */
 		PASSWORD,
-		/** Propriété 'User'. */
+		/** Propriété 'Application user'. */
 		USR_ID,
 	}
 
