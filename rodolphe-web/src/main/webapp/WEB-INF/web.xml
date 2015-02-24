@@ -7,7 +7,7 @@
     <display-name>rodolphe</display-name>
     
     <context-param>
-        <param-name>applicationConfiguration</param-name>
+        <param-name>boot.applicationConfiguration</param-name>
         <param-value>/boot/components/foundation.xml;/boot/components/db.xml;/boot/components/services.xml;/boot/components/webservices.xml</param-value>
     </context-param>
 	<context-param>

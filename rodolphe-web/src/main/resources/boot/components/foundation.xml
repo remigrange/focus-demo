@@ -1,26 +1,12 @@
 <?xml version =	'1.0' encoding = 'ISO-8859-1'?>
 <config>
-	<!-- <module name="kasper-commons"> <component api="MetaDataManager" class="io.vertigo.knock.impl.metadata.MetaDataManagerImpl"> <plugin class="io.vertigo.knock.plugins.metadata.microsoft.word.MSWordMetaDataExtractorPlugin" /> <plugin class="io.vertigo.knock.plugins.metadata.microsoft.powerpoint.MSPowerPointMetaDataExtractorPlugin" /> <plugin class="io.vertigo.knock.plugins.metadata.microsoft.excel.MSExcelMetaDataExtractorPlugin" /> <plugin class="io.vertigo.knock.plugins.metadata.pdf.PDFMetaDataExtractorPlugin" /> <plugin class="io.vertigo.knock.plugins.metadata.txt.TxtMetaDataExtractorPlugin"> <param name="extensions" value="txt, log" /> </plugin> <plugin class="io.vertigo.knock.plugins.metadata.ooxml.CommonOOXMLMetaDataExtractorPlugin" /> <plugin class="io.vertigo.knock.plugins.metadata.odf.ODFMetaDataExtractorPlugin" /> <plugin class="io.vertigo.knock.plugins.metadata.tika.AutoTikaMetaDataExtractorPlugin" /> </component> <component api="FileManager" class="io.vertigo.dynamo.impl.file.FileManagerImpl" 
-		/> <component api="DocumentManager" class="io.vertigo.knock.impl.document.DocumentManagerImpl" /> <component api="CrawlerManager" class="io.vertigo.knock.impl.crawler.CrawlerManagerImpl"> <plugin class="io.vertigo.knock.plugins.crawler.fs.FSCrawlerPlugin"> <param name="dataSourceId" value="testFS" /> <param name="directory" value="D:/Knock-data-test" /> <param name="maxFiles" value="25" /> <param name="excludePatterns" value="" /> </plugin> </component> <component api="ChannelManager" class="io.vertigo.knock.impl.channel.ChannelManagerImpl"> <plugin class="io.vertigo.knock.channel.MockPostProcessorPlugin"/> <plugin class="io.vertigo.knock.plugins.channel.processor.NamedEntitiesDocumentPostProcessorPlugin"/> </component> <component api="EnrichmentManager" class="io.vertigo.knock.impl.enrichment.EnrichmentManagerImpl"> <plugin class="io.vertigo.knock.plugins.enrichment.namedentity.NamedEntityEnrichmentPlugin"/> </component> <component api="TokenizationManager" class="io.vertigo.knock.impl.tokenization.TokenizationManagerImpl"> 
-		<plugin class="io.vertigo.knock.plugins.tokenization.stanfordNlp.StanfordTokenizerPlugin"> </plugin> </component> <component api="CharacterizationManager" class="io.vertigo.knock.impl.characterization.CharacterizationManagerImpl"> <plugin class="io.vertigo.knock.plugins.characterization.freebase.FreebaseCharacterizerPlugin"> <param name="proxyHost" value="172.20.0.9" /> <param name="proxyPort" value="3128" /> <param name="apiKey" value="AIzaSyCCdSJ7FMwQUnzmVWTLpemdCJVQZYdxQDg" /> </plugin> </component> </module> -->
 
-	<module name="ZZZ">
-		<component api="ResourceManager" class="io.vertigo.commons.impl.resource.ResourceManagerImpl">
-			<plugin class="io.vertigo.commons.plugins.resource.java.ClassPathResourceResolverPlugin" />
-		</component>
-
-		<component api="KVDataStoreManager" class="io.vertigo.dynamo.impl.kvdatastore.KVDataStoreManagerImpl">
-			<plugin class="io.vertigo.dynamo.plugins.kvdatastore.delayedmemory.DelayedMemoryKVDataStorePlugin">
-				<param name="dataStoreName" value="Knock-tokens" />
-				<param name="timeToLiveSeconds" value="120" />
-			</plugin>
-		</component>
-		<component api="TokenManager" class="io.vertigo.vega.impl.token.TokenManagerImpl">
-			<param name="dataStoreName" value="Knock-tokens" />
-		</component>
-		<component api="CollectionsManager" class="io.vertigo.dynamo.impl.collections.CollectionsManagerImpl" />
+	<module name="ressources">
 		<component api="LocaleManager" class="io.vertigoimpl.commons.locale.LocaleManagerImpl">
 			<param name="locales" value="fr_FR" />
+		</component>
+		<component api="ResourceManager" class="io.vertigo.commons.impl.resource.ResourceManagerImpl">
+			<plugin class="io.vertigo.commons.plugins.resource.java.ClassPathResourceResolverPlugin" />
 		</component>
 		<component api="KSecurityManager" class="io.vertigo.persona.impl.security.KSecurityManagerImpl">
 			<param name="userSessionClassName" value="rodolphe.demo.user.RodolpheUserSession" />
@@ -28,16 +14,46 @@
 		</component>
 	</module>
 
-	<module name="KNOCK-REST-API" api="false" inheritance="java.lang.Object">
+
+	<module name="vertigo-dynamo">
+		<component api="AnalyticsManager" class="io.vertigo.commons.impl.analytics.AnalyticsManagerImpl"/> 
+
+		<component api="KVDataStoreManager" class="io.vertigo.dynamo.impl.kvdatastore.KVDataStoreManagerImpl">
+			<plugin class="io.vertigo.dynamo.plugins.kvdatastore.delayedmemory.DelayedMemoryKVDataStorePlugin">
+				<param name="dataStoreName" value="Knock-tokens" />
+				<param name="timeToLiveSeconds" value="120" />
+			</plugin>
+		</component>
+		<component api="CollectionsManager" class="io.vertigo.dynamo.impl.collections.CollectionsManagerImpl" />
+		<component api="KTransactionManager" class="io.vertigo.dynamo.impl.transaction.KTransactionManagerImpl" />
+		<component api="TaskManager" class="io.vertigo.dynamo.impl.task.TaskManagerImpl" />
+		<component api="CodecManager" class="io.vertigo.commons.impl.codec.CodecManagerImpl" />
+		<component api="CacheManager" class="io.vertigo.commons.impl.cache.CacheManagerImpl">
+			<plugin class="io.vertigo.commons.plugins.cache.memory.MemoryCachePlugin" />
+		</component>
+		<component api="PersistenceManager" class="io.vertigo.dynamo.impl.persistence.PersistenceManagerImpl" >
+			<plugin class="io.vertigo.dynamo.plugins.persistence.datastore.postgresql.PostgreSqlDataStorePlugin">
+				<param name="sequencePrefix" value="SEQ_" />
+			</plugin>
+		</component>
+	</module>
+
+	<module name="VEGA" api="false" inheritance="java.lang.Object">
+		<component api="TokenManager" class="io.vertigo.vega.impl.token.TokenManagerImpl">
+			<param name="dataStoreName" value="Knock-tokens" />
+		</component>
 		<component api="RestManager" class="io.vertigo.vega.impl.rest.RestManagerImpl">
 			<plugin class="io.vertigo.vega.plugins.rest.instrospector.annotations.AnnotationsEndPointIntrospectorPlugin" />
 		</component>
-		<component class="io.vertigo.vega.impl.rest.filter.CorsAllowerFilter"/>
+		<component class="io.vertigo.vega.impl.rest.handler.CorsAllowerHandler"/>
 		<component class="io.vertigo.vega.impl.rest.handler.RateLimitingHandler">
 			<param name="windowSeconds" value="20" />
 			<param name="limitValue" value="100" />
 		</component>
 		
+	</module>
+
+	<module name="myApp-environnement">
 		<component api="EnvironmentManager" class="io.vertigo.dynamo.impl.environment.EnvironmentManagerImpl">
 			<plugin class="io.vertigo.dynamo.plugins.environment.loaders.kpr.KprLoaderPlugin" />
 			<plugin class="io.vertigo.dynamo.plugins.environment.loaders.java.AnnotationLoaderPlugin" />
@@ -45,7 +61,7 @@
 		</component>
 	</module>
 
-	<module name="myApp">
+	<module name="myApp-ressources">
 		<resource type="kpr" path="boot/definitions/application.kpr" />
 		<resource type="classes" path="rodolphe.demo.domain.DtDefinitions" />
 	</module>
