@@ -7,9 +7,17 @@
     <display-name>rodolphe</display-name>
     
     <context-param>
-        <param-name>applicationConfiguration</param-name>
-        <param-value>/boot/components/foundation.xml;/boot/components/services.xml;/boot/components/webservices.xml</param-value>
+        <param-name>boot.applicationConfiguration</param-name>
+        <param-value>/boot/components/foundation.xml;/boot/components/db.xml;/boot/components/services.xml;/boot/components/webservices.xml</param-value>
     </context-param>
+	<context-param>
+		<param-name>boot.db.source</param-name>
+		<param-value>java:/comp/env/jdbc/DataSource</param-value>
+	</context-param>
+	<context-param>
+		<param-name>boot.db.classname</param-name>
+		<param-value>io.vertigo.dynamo.impl.database.vendor.postgresql.PostgreSqlDataBase</param-value>
+	</context-param>
     
     <listener>
         <listener-class>io.vertigo.vega.impl.rest.servlet.ApplicationServletContextListener</listener-class>

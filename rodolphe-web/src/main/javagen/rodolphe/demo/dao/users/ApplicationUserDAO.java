@@ -8,9 +8,9 @@ import io.vertigo.dynamo.task.TaskManager;
 
 /**
  * DAO : Accès à un object (DTO, DTC). 
- * UserDAO
+ * ApplicationUserDAO
  */
-public final class UserDAO extends DAOBroker<rodolphe.demo.domain.users.User, java.lang.Long> {
+public final class ApplicationUserDAO extends DAOBroker<rodolphe.demo.domain.users.ApplicationUser, java.lang.Long> {
 	 
 	/**
 	 * Contructeur.
@@ -18,7 +18,7 @@ public final class UserDAO extends DAOBroker<rodolphe.demo.domain.users.User, ja
 	 * @param taskManager Manager de Task
 	 */
 	@Inject
-	public UserDAO(final PersistenceManager persistenceManager, final TaskManager taskManager) {
-		super(rodolphe.demo.domain.users.User.class, persistenceManager, taskManager);
+	public ApplicationUserDAO(final PersistenceManager persistenceManager, final TaskManager taskManager) {
+		super(rodolphe.demo.domain.users.ApplicationUser.class, persistenceManager, taskManager);
 	}
 }

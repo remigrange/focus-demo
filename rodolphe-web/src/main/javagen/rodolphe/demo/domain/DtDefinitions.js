@@ -167,27 +167,7 @@ module.exports = {
 				"required": false
 			}		
 	},
-	"profil": {
-			"proId": {
-				"domain": "DO_ID",
-				"required": true
-			},		
-			"label": {
-				"domain": "DO_LIBELLE_100",
-				"required": false
-			}		
-	},
-	"securityRole": {
-			"sroCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
-				"required": true
-			},		
-			"label": {
-				"domain": "DO_LIBELLE_250",
-				"required": false
-			}		
-	},
-	"user": {
+	"applicationUser": {
 			"usrId": {
 				"domain": "DO_ID",
 				"required": true
@@ -206,6 +186,26 @@ module.exports = {
 			},		
 			"proId": {
 				"domain": "DO_ID",
+				"required": false
+			}		
+	},
+	"profil": {
+			"proId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"label": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			}		
+	},
+	"securityRole": {
+			"sroCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": true
+			},		
+			"label": {
+				"domain": "DO_LIBELLE_250",
 				"required": false
 			}		
 	},

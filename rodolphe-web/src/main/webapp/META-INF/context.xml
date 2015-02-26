@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context  path="/stitch" debug="0" reloadable="true" allowCasualMultipartParsing="true">
+	<Resource name="jdbc/DataSource" 
+		auth="SERVLET" 
+		type="javax.sql.DataSource"
+		driverClassName="org.postgresql.Driver"
+		url="jdbc:postgresql://miura.part.klee.lan.net:5432/rodolphedev"
+		username="rodolphedev"
+		password="rodolphedev"
+		maxActive="5"
+		maxIdle="0" 
+		maxWait="10000"
+		removeAbandoned="true" 
+		logAbandoned="true" />
+			 
+</Context>

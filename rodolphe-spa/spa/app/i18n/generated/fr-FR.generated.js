@@ -60,6 +60,13 @@ module.exports = {
         "titCd" : "TIT_CD",
         "label" : "Label"
     },
+    "applicationUser": {
+        "usrId" : "USR_ID",
+        "lastName" : "Last Name",
+        "firstName" : "First Name",
+        "email" : "email",
+        "proId" : "Profil"
+    },
     "profil": {
         "proId" : "PRO_ID",
         "label" : "Label"
@@ -68,17 +75,10 @@ module.exports = {
         "sroCd" : "SRO_CD",
         "label" : "Label"
     },
-    "user": {
-        "usrId" : "USR_ID",
-        "lastName" : "Last Name",
-        "firstName" : "First Name",
-        "email" : "email",
-        "proId" : "Profil"
-    },
     "userAuthentification": {
         "authId" : "AUTH_ID",
         "login" : "Login",
         "password" : "Password",
-        "usrId" : "User"
+        "usrId" : "Application user"
     }
 };
