@@ -29,6 +29,56 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"country": {
+			"couCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": true
+			},		
+			"label": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			}		
+	},
+	"genre": {
+			"genCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": true
+			},		
+			"label": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			}		
+	},
+	"language": {
+			"lanCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": true
+			},		
+			"label": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			}		
+	},
+	"roleMovie": {
+			"rlmCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": true
+			},		
+			"label": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			}		
+	},
+	"title": {
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": true
+			},		
+			"label": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			}		
+	},
 	"alias": {
 			"alsId": {
 				"domain": "DO_ID",
@@ -119,56 +169,6 @@ module.exports = {
 			"rlmCd": {
 				"domain": "DO_IDENTIFIANT_CODE",
 				"required": true
-			}		
-	},
-	"country": {
-			"couCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
-				"required": true
-			},		
-			"label": {
-				"domain": "DO_LIBELLE_100",
-				"required": false
-			}		
-	},
-	"genre": {
-			"genCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
-				"required": true
-			},		
-			"label": {
-				"domain": "DO_LIBELLE_100",
-				"required": false
-			}		
-	},
-	"language": {
-			"lanCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
-				"required": true
-			},		
-			"label": {
-				"domain": "DO_LIBELLE_100",
-				"required": false
-			}		
-	},
-	"roleMovie": {
-			"rlmCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
-				"required": true
-			},		
-			"label": {
-				"domain": "DO_LIBELLE_100",
-				"required": false
-			}		
-	},
-	"title": {
-			"titCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
-				"required": true
-			},		
-			"label": {
-				"domain": "DO_LIBELLE_100",
-				"required": false
 			}		
 	},
 	"applicationUser": {

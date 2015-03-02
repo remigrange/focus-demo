@@ -22,7 +22,7 @@ public final class RolePeople implements DtObject {
 	private String rlmCd;
 	private rodolphe.demo.domain.people.People people;
 	private rodolphe.demo.domain.movies.Movie movie;
-	private rodolphe.demo.domain.references.RoleMovie roleMovie;
+	private rodolphe.demo.domain.masterdatas.RoleMovie roleMovie;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -239,7 +239,7 @@ public final class RolePeople implements DtObject {
 	}
 	/**
 	 * Association : Role movie.
-	 * @return rodolphe.demo.domain.references.RoleMovie
+	 * @return rodolphe.demo.domain.masterdatas.RoleMovie
 	 */
     @io.vertigo.dynamo.domain.stereotype.Association (
     	name = "A_RLP_RLM",
@@ -255,15 +255,15 @@ public final class RolePeople implements DtObject {
     	foreignLabel = "Role people",
     	foreignMultiplicity = "0..*"
     )
-	public rodolphe.demo.domain.references.RoleMovie getRoleMovie() {
-		final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.references.RoleMovie> fkURI = getRoleMovieURI();
+	public rodolphe.demo.domain.masterdatas.RoleMovie getRoleMovie() {
+		final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.masterdatas.RoleMovie> fkURI = getRoleMovieURI();
 		if (fkURI == null) {
 			return null;
 		}
 		//On est toujours dans un mode lazy. On s'assure cependant que l'objet associé n'a pas changé
 		if (roleMovie != null) {
 			// On s'assure que l'objet correspond à la bonne clé
-			final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.references.RoleMovie> uri;
+			final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.masterdatas.RoleMovie> uri;
 			uri = new io.vertigo.dynamo.domain.model.URI<>(io.vertigo.dynamo.domain.util.DtObjectUtil.findDtDefinition(roleMovie), io.vertigo.dynamo.domain.util.DtObjectUtil.getId(roleMovie));
 			if (!fkURI.toURN().equals(uri.toURN())) {
 				roleMovie = null;
@@ -293,8 +293,8 @@ public final class RolePeople implements DtObject {
     	foreignLabel = "Role people",
     	foreignMultiplicity = "0..*"
     )
-	public io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.references.RoleMovie> getRoleMovieURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createURI(this, "A_RLP_RLM", rodolphe.demo.domain.references.RoleMovie.class);
+	public io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.masterdatas.RoleMovie> getRoleMovieURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createURI(this, "A_RLP_RLM", rodolphe.demo.domain.masterdatas.RoleMovie.class);
 	}
 
 	/** {@inheritDoc} */

@@ -22,7 +22,7 @@ public final class People implements DtObject {
 	private String imdbid;
 	private String titCd;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> fileInfo;
-	private rodolphe.demo.domain.references.Title title;
+	private rodolphe.demo.domain.masterdatas.Title title;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -193,7 +193,7 @@ public final class People implements DtObject {
 	// Association : Role people non navigable
 	/**
 	 * Association : Title.
-	 * @return rodolphe.demo.domain.references.Title
+	 * @return rodolphe.demo.domain.masterdatas.Title
 	 */
     @io.vertigo.dynamo.domain.stereotype.Association (
     	name = "A_PEO_TIT",
@@ -209,15 +209,15 @@ public final class People implements DtObject {
     	foreignLabel = "People",
     	foreignMultiplicity = "0..*"
     )
-	public rodolphe.demo.domain.references.Title getTitle() {
-		final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.references.Title> fkURI = getTitleURI();
+	public rodolphe.demo.domain.masterdatas.Title getTitle() {
+		final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.masterdatas.Title> fkURI = getTitleURI();
 		if (fkURI == null) {
 			return null;
 		}
 		//On est toujours dans un mode lazy. On s'assure cependant que l'objet associé n'a pas changé
 		if (title != null) {
 			// On s'assure que l'objet correspond à la bonne clé
-			final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.references.Title> uri;
+			final io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.masterdatas.Title> uri;
 			uri = new io.vertigo.dynamo.domain.model.URI<>(io.vertigo.dynamo.domain.util.DtObjectUtil.findDtDefinition(title), io.vertigo.dynamo.domain.util.DtObjectUtil.getId(title));
 			if (!fkURI.toURN().equals(uri.toURN())) {
 				title = null;
@@ -247,8 +247,8 @@ public final class People implements DtObject {
     	foreignLabel = "People",
     	foreignMultiplicity = "0..*"
     )
-	public io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.references.Title> getTitleURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createURI(this, "A_PEO_TIT", rodolphe.demo.domain.references.Title.class);
+	public io.vertigo.dynamo.domain.model.URI<rodolphe.demo.domain.masterdatas.Title> getTitleURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createURI(this, "A_PEO_TIT", rodolphe.demo.domain.masterdatas.Title.class);
 	}
 
 	/** {@inheritDoc} */

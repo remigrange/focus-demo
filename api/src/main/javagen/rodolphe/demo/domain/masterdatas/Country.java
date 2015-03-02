@@ -1,4 +1,4 @@
-package rodolphe.demo.domain.references;
+package rodolphe.demo.domain.masterdatas;
 
 import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;

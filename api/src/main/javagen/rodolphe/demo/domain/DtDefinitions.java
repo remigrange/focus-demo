@@ -15,6 +15,16 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	public enum Definitions {
 			/** Objet de données FileInfo. */
 			FileInfo(rodolphe.demo.domain.files.FileInfo.class),
+			/** Objet de données Country. */
+			Country(rodolphe.demo.domain.masterdatas.Country.class),
+			/** Objet de données Genre. */
+			Genre(rodolphe.demo.domain.masterdatas.Genre.class),
+			/** Objet de données Language. */
+			Language(rodolphe.demo.domain.masterdatas.Language.class),
+			/** Objet de données RoleMovie. */
+			RoleMovie(rodolphe.demo.domain.masterdatas.RoleMovie.class),
+			/** Objet de données Title. */
+			Title(rodolphe.demo.domain.masterdatas.Title.class),
 			/** Objet de données Alias. */
 			Alias(rodolphe.demo.domain.movies.Alias.class),
 			/** Objet de données Movie. */
@@ -23,16 +33,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			People(rodolphe.demo.domain.people.People.class),
 			/** Objet de données RolePeople. */
 			RolePeople(rodolphe.demo.domain.people.RolePeople.class),
-			/** Objet de données Country. */
-			Country(rodolphe.demo.domain.references.Country.class),
-			/** Objet de données Genre. */
-			Genre(rodolphe.demo.domain.references.Genre.class),
-			/** Objet de données Language. */
-			Language(rodolphe.demo.domain.references.Language.class),
-			/** Objet de données RoleMovie. */
-			RoleMovie(rodolphe.demo.domain.references.RoleMovie.class),
-			/** Objet de données Title. */
-			Title(rodolphe.demo.domain.references.Title.class),
 			/** Objet de données ApplicationUser. */
 			ApplicationUser(rodolphe.demo.domain.users.ApplicationUser.class),
 			/** Objet de données Profil. */
@@ -73,6 +73,56 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		LAST_MODIFIED,
 		/** Propriété 'FILE_PATH'. */
 		FILE_PATH,
+	}
+
+	/**
+	 * Enumération des champs de Country.
+	 */
+	public enum CountryFields implements DtFieldName {
+		/** Propriété 'COU_CD'. */
+		COU_CD,
+		/** Propriété 'Label'. */
+		LABEL,
+	}
+
+	/**
+	 * Enumération des champs de Genre.
+	 */
+	public enum GenreFields implements DtFieldName {
+		/** Propriété 'GEN_CD'. */
+		GEN_CD,
+		/** Propriété 'Label'. */
+		LABEL,
+	}
+
+	/**
+	 * Enumération des champs de Language.
+	 */
+	public enum LanguageFields implements DtFieldName {
+		/** Propriété 'LAN_CD'. */
+		LAN_CD,
+		/** Propriété 'Label'. */
+		LABEL,
+	}
+
+	/**
+	 * Enumération des champs de RoleMovie.
+	 */
+	public enum RoleMovieFields implements DtFieldName {
+		/** Propriété 'RLM_CD'. */
+		RLM_CD,
+		/** Propriété 'Label'. */
+		LABEL,
+	}
+
+	/**
+	 * Enumération des champs de Title.
+	 */
+	public enum TitleFields implements DtFieldName {
+		/** Propriété 'TIT_CD'. */
+		TIT_CD,
+		/** Propriété 'Label'. */
+		LABEL,
 	}
 
 	/**
@@ -139,56 +189,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		MOV_ID,
 		/** Propriété 'Role movie'. */
 		RLM_CD,
-	}
-
-	/**
-	 * Enumération des champs de Country.
-	 */
-	public enum CountryFields implements DtFieldName {
-		/** Propriété 'COU_CD'. */
-		COU_CD,
-		/** Propriété 'Label'. */
-		LABEL,
-	}
-
-	/**
-	 * Enumération des champs de Genre.
-	 */
-	public enum GenreFields implements DtFieldName {
-		/** Propriété 'GEN_CD'. */
-		GEN_CD,
-		/** Propriété 'Label'. */
-		LABEL,
-	}
-
-	/**
-	 * Enumération des champs de Language.
-	 */
-	public enum LanguageFields implements DtFieldName {
-		/** Propriété 'LAN_CD'. */
-		LAN_CD,
-		/** Propriété 'Label'. */
-		LABEL,
-	}
-
-	/**
-	 * Enumération des champs de RoleMovie.
-	 */
-	public enum RoleMovieFields implements DtFieldName {
-		/** Propriété 'RLM_CD'. */
-		RLM_CD,
-		/** Propriété 'Label'. */
-		LABEL,
-	}
-
-	/**
-	 * Enumération des champs de Title.
-	 */
-	public enum TitleFields implements DtFieldName {
-		/** Propriété 'TIT_CD'. */
-		TIT_CD,
-		/** Propriété 'Label'. */
-		LABEL,
 	}
 
 	/**

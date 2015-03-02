@@ -61,8 +61,8 @@
 	    </component> 
     </module> 
 
-	<module name="STITCH">
-		<resource type ="oom" path="file:./src/main/bdd/modele/rodolphe.oom"/>
+	<module name="API">
+		<resource type ="oom" path="file:./src/main/database/model/rodolphe.oom"/>
 		<resource type ="kpr" path="file:./src/main/resources/mda/generation.kpr"/>
 		<!-- 
 	    <resource type="security" path="file:./src/main/resources/META-INF/stitch-auth-config.xml" />            

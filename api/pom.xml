@@ -3,10 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <groupId>io.vertigo</groupId>
-    <artifactId>rodolphe</artifactId>
+    <artifactId>rodolphe-demo</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-	<name>rodolphe</name>
+	<name>rodolphe-demo</name>
 	
 	<properties>
 		<maven.compiler.source>1.7</maven.compiler.source>

@@ -1,4 +1,4 @@
-package rodolphe.demo.domain.references;
+package rodolphe.demo.domain.masterdatas;
 
 import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;
@@ -7,34 +7,34 @@ import io.vertigo.dynamo.domain.util.DtObjectUtil;
 
 /**
  * Attention cette classe est générée automatiquement !
- * Objet de données Title
+ * Objet de données Language
  */
 @DtDefinition
-public final class Title implements DtObject {
+public final class Language implements DtObject {
 
 	/** SerialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	private String titCd;
+	private String lanCd;
 	private String label;
 
 	/**
 	 * Champ : PRIMARY_KEY.
-	 * Récupère la valeur de la propriété 'TIT_CD'. 
-	 * @return String titCd <b>Obligatoire</b>
+	 * Récupère la valeur de la propriété 'LAN_CD'. 
+	 * @return String lanCd <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", type = "PRIMARY_KEY", notNull = true, label = "TIT_CD")
-	public String getTitCd() {
-		return titCd;
+	@Field(domain = "DO_IDENTIFIANT_CODE", type = "PRIMARY_KEY", notNull = true, label = "LAN_CD")
+	public String getLanCd() {
+		return lanCd;
 	}
 
 	/**
 	 * Champ : PRIMARY_KEY.
-	 * Définit la valeur de la propriété 'TIT_CD'.
-	 * @param titCd String <b>Obligatoire</b>
+	 * Définit la valeur de la propriété 'LAN_CD'.
+	 * @param lanCd String <b>Obligatoire</b>
 	 */
-	public void setTitCd(final String titCd) {
-		this.titCd = titCd;
+	public void setLanCd(final String lanCd) {
+		this.lanCd = lanCd;
 	}
 
 	/**
@@ -57,7 +57,7 @@ public final class Title implements DtObject {
 	}
 
 
-	// Association : People non navigable
+	// Association : Movie non navigable
 
 	/** {@inheritDoc} */
 	@Override

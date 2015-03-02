@@ -1,4 +1,4 @@
-package rodolphe.demo.dao.references;
+package rodolphe.demo.dao.masterdatas;
 
 import javax.inject.Inject;
 
@@ -8,9 +8,9 @@ import io.vertigo.dynamo.task.TaskManager;
 
 /**
  * DAO : Accès à un object (DTO, DTC). 
- * GenreDAO
+ * TitleDAO
  */
-public final class GenreDAO extends DAOBroker<rodolphe.demo.domain.references.Genre, java.lang.String> {
+public final class TitleDAO extends DAOBroker<rodolphe.demo.domain.masterdatas.Title, java.lang.String> {
 	 
 	/**
 	 * Contructeur.
@@ -18,7 +18,7 @@ public final class GenreDAO extends DAOBroker<rodolphe.demo.domain.references.Ge
 	 * @param taskManager Manager de Task
 	 */
 	@Inject
-	public GenreDAO(final PersistenceManager persistenceManager, final TaskManager taskManager) {
-		super(rodolphe.demo.domain.references.Genre.class, persistenceManager, taskManager);
+	public TitleDAO(final PersistenceManager persistenceManager, final TaskManager taskManager) {
+		super(rodolphe.demo.domain.masterdatas.Title.class, persistenceManager, taskManager);
 	}
 }

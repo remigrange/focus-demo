@@ -24,9 +24,9 @@ public final class Movie implements DtObject {
 	private String imdbid;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> fileInfo;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Alias> alias;
-	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Language> language;
-	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Genre> genre;
-	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Country> country;
+	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Language> language;
+	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Genre> genre;
+	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Country> country;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -267,7 +267,7 @@ public final class Movie implements DtObject {
 	}
 	/**
 	 * Association : Language.
-	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Language>
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Language>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
     	name = "A_MOV_LAN",
@@ -281,11 +281,11 @@ public final class Movie implements DtObject {
     	labelA = "Movie",
     	labelB = "Language"
     )
-	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Language> getLanguageList() {
-//		return this.<rodolphe.demo.domain.references.Language> getList(getLanguageListURI());
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Language> getLanguageList() {
+//		return this.<rodolphe.demo.domain.masterdatas.Language> getList(getLanguageListURI());
 		// On doit avoir une clé primaire renseignée. Si ce n'est pas le cas, on renvoie une liste vide
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
-			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.references.Language.class);
+			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.masterdatas.Language.class);
 		}
 		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getLanguageDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
@@ -318,7 +318,7 @@ public final class Movie implements DtObject {
 	}
 	/**
 	 * Association : Genre.
-	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Genre>
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Genre>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
     	name = "A_MOV_GEN",
@@ -332,11 +332,11 @@ public final class Movie implements DtObject {
     	labelA = "Movie",
     	labelB = "Genre"
     )
-	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Genre> getGenreList() {
-//		return this.<rodolphe.demo.domain.references.Genre> getList(getGenreListURI());
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Genre> getGenreList() {
+//		return this.<rodolphe.demo.domain.masterdatas.Genre> getList(getGenreListURI());
 		// On doit avoir une clé primaire renseignée. Si ce n'est pas le cas, on renvoie une liste vide
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
-			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.references.Genre.class);
+			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.masterdatas.Genre.class);
 		}
 		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getGenreDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
@@ -369,7 +369,7 @@ public final class Movie implements DtObject {
 	}
 	/**
 	 * Association : Country.
-	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Country>
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Country>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
     	name = "A_MOV_COU",
@@ -383,11 +383,11 @@ public final class Movie implements DtObject {
     	labelA = "Movie",
     	labelB = "Country"
     )
-	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.references.Country> getCountryList() {
-//		return this.<rodolphe.demo.domain.references.Country> getList(getCountryListURI());
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Country> getCountryList() {
+//		return this.<rodolphe.demo.domain.masterdatas.Country> getList(getCountryListURI());
 		// On doit avoir une clé primaire renseignée. Si ce n'est pas le cas, on renvoie une liste vide
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
-			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.references.Country.class);
+			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.masterdatas.Country.class);
 		}
 		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getCountryDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);

@@ -12,6 +12,26 @@ module.exports = {
         "lastModified" : "LAST_MODIFIED",
         "filePath" : "FILE_PATH"
     },
+    "country": {
+        "couCd" : "COU_CD",
+        "label" : "Label"
+    },
+    "genre": {
+        "genCd" : "GEN_CD",
+        "label" : "Label"
+    },
+    "language": {
+        "lanCd" : "LAN_CD",
+        "label" : "Label"
+    },
+    "roleMovie": {
+        "rlmCd" : "RLM_CD",
+        "label" : "Label"
+    },
+    "title": {
+        "titCd" : "TIT_CD",
+        "label" : "Label"
+    },
     "alias": {
         "alsId" : "ALS_ID",
         "title" : "Title",
@@ -40,26 +60,6 @@ module.exports = {
         "peoId" : "People",
         "movId" : "Movie",
         "rlmCd" : "Role movie"
-    },
-    "country": {
-        "couCd" : "COU_CD",
-        "label" : "Label"
-    },
-    "genre": {
-        "genCd" : "GEN_CD",
-        "label" : "Label"
-    },
-    "language": {
-        "lanCd" : "LAN_CD",
-        "label" : "Label"
-    },
-    "roleMovie": {
-        "rlmCd" : "RLM_CD",
-        "label" : "Label"
-    },
-    "title": {
-        "titCd" : "TIT_CD",
-        "label" : "Label"
     },
     "applicationUser": {
         "usrId" : "USR_ID",
