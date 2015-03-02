@@ -1,0 +1,16 @@
+<?xml version =	'1.0' encoding = 'UTF-8'?>
+<config>
+	
+
+	<module name="rodolphe-env">
+		<component api="SqlDataBaseManager" class="io.vertigo.dynamo.impl.database.SqlDataBaseManagerImpl">
+	        <plugin class="io.vertigo.dynamo.plugins.database.connection.datasource.DataSourceConnectionProviderPlugin">
+		    	<param name="source" value="{boot.db.source}" />
+	            <param name="classname" value="{boot.db.classname}" />
+	        </plugin>
+		</component>
+	</module>
+
+
+
+</config>

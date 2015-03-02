@@ -1,0 +1,68 @@
+<?xml version =	'1.0' encoding = 'ISO-8859-1'?>
+<config>
+
+	<module name="ressources">
+		<component api="LocaleManager" class="io.vertigoimpl.commons.locale.LocaleManagerImpl">
+			<param name="locales" value="fr_FR" />
+		</component>
+		<component api="ResourceManager" class="io.vertigo.commons.impl.resource.ResourceManagerImpl">
+			<plugin class="io.vertigo.commons.plugins.resource.java.ClassPathResourceResolverPlugin" />
+		</component>
+		<component api="KSecurityManager" class="io.vertigo.persona.impl.security.KSecurityManagerImpl">
+			<param name="userSessionClassName" value="rodolphe.demo.user.RodolpheUserSession" />
+			<plugin class="io.vertigo.persona.plugins.security.loaders.SecurityResourceLoaderPlugin" />
+		</component>
+	</module>
+
+
+	<module name="vertigo-dynamo">
+		<component api="AnalyticsManager" class="io.vertigo.commons.impl.analytics.AnalyticsManagerImpl"/> 
+
+		<component api="KVDataStoreManager" class="io.vertigo.dynamo.impl.kvdatastore.KVDataStoreManagerImpl">
+			<plugin class="io.vertigo.dynamo.plugins.kvdatastore.delayedmemory.DelayedMemoryKVDataStorePlugin">
+				<param name="dataStoreName" value="Knock-tokens" />
+				<param name="timeToLiveSeconds" value="120" />
+			</plugin>
+		</component>
+		<component api="CollectionsManager" class="io.vertigo.dynamo.impl.collections.CollectionsManagerImpl" />
+		<component api="KTransactionManager" class="io.vertigo.dynamo.impl.transaction.KTransactionManagerImpl" />
+		<component api="TaskManager" class="io.vertigo.dynamo.impl.task.TaskManagerImpl" />
+		<component api="CodecManager" class="io.vertigo.commons.impl.codec.CodecManagerImpl" />
+		<component api="CacheManager" class="io.vertigo.commons.impl.cache.CacheManagerImpl">
+			<plugin class="io.vertigo.commons.plugins.cache.memory.MemoryCachePlugin" />
+		</component>
+		<component api="PersistenceManager" class="io.vertigo.dynamo.impl.persistence.PersistenceManagerImpl" >
+			<plugin class="io.vertigo.dynamo.plugins.persistence.datastore.postgresql.PostgreSqlDataStorePlugin">
+				<param name="sequencePrefix" value="SEQ_" />
+			</plugin>
+		</component>
+	</module>
+
+	<module name="VEGA" api="false" inheritance="java.lang.Object">
+		<component api="TokenManager" class="io.vertigo.vega.impl.token.TokenManagerImpl">
+			<param name="dataStoreName" value="Knock-tokens" />
+		</component>
+		<component api="RestManager" class="io.vertigo.vega.impl.rest.RestManagerImpl">
+			<plugin class="io.vertigo.vega.plugins.rest.instrospector.annotations.AnnotationsEndPointIntrospectorPlugin" />
+		</component>
+		<component class="io.vertigo.vega.impl.rest.handler.CorsAllowerHandler"/>
+		<component class="io.vertigo.vega.impl.rest.handler.RateLimitingHandler">
+			<param name="windowSeconds" value="20" />
+			<param name="limitValue" value="100" />
+		</component>
+		
+	</module>
+
+	<module name="myApp-environnement">
+		<component api="EnvironmentManager" class="io.vertigo.dynamo.impl.environment.EnvironmentManagerImpl">
+			<plugin class="io.vertigo.dynamo.plugins.environment.loaders.kpr.KprLoaderPlugin" />
+			<plugin class="io.vertigo.dynamo.plugins.environment.loaders.java.AnnotationLoaderPlugin" />
+			<plugin class="io.vertigo.dynamo.plugins.environment.registries.domain.DomainDynamicRegistryPlugin" />
+		</component>
+	</module>
+
+	<module name="myApp-ressources">
+		<resource type="kpr" path="boot/definitions/application.kpr" />
+		<resource type="classes" path="rodolphe.demo.domain.DtDefinitions" />
+	</module>
+</config>
