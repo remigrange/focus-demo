@@ -1,7 +1,0 @@
-<?xml version =	'1.0' encoding = 'ISO-8859-1'?>
-<config>
-	<module name="knock-services">
-		<component api="FlowerServices" class="rodolphe.demo.services.FlowerServicesImpl" />
-		<component api="AlertServices" class="rodolphe.demo.services.commons.AlertServicesImpl" />
-	</module>
-</config>
