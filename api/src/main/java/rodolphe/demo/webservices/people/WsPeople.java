@@ -1,4 +1,4 @@
-package rodolphe.demo.rest.spa.movie;
+package rodolphe.demo.webservices.people;
 
 import io.vertigo.vega.rest.RestfulService;
 /**
@@ -7,6 +7,6 @@ import io.vertigo.vega.rest.RestfulService;
  * @author JDALMEIDA
  *
  */
-public class WsMovie implements RestfulService{
+public class WsPeople implements RestfulService{
 
 }
