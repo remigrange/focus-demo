@@ -48,7 +48,7 @@ public final class RolePeople implements DtObject {
 	 * Récupère la valeur de la propriété 'Role Name'. 
 	 * @return String roleName 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "Role Name")
+	@Field(domain = "DO_TEXTE", label = "Role Name")
 	public String getRoleName() {
 		return roleName;
 	}

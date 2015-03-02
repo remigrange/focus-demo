@@ -18,6 +18,7 @@ public final class People implements DtObject {
 	private Long peoId;
 	private String lastName;
 	private String firstName;
+	private String peoName;
 	private String imdbid;
 	private String titCd;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> fileInfo;
@@ -78,6 +79,25 @@ public final class People implements DtObject {
 	 */
 	public void setFirstName(final String firstName) {
 		this.firstName = firstName;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Peo Name'. 
+	 * @return String peoName 
+	 */
+	@Field(domain = "DO_LIBELLE_250", label = "Peo Name")
+	public String getPeoName() {
+		return peoName;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Peo Name'.
+	 * @param peoName String 
+	 */
+	public void setPeoName(final String peoName) {
+		this.peoName = peoName;
 	}
 
 	/**

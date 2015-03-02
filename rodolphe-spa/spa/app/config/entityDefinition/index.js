@@ -35,12 +35,12 @@ module.exports = {
 				"required": true
 			},		
 			"title": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_COMMENTAIRE",
 				"required": false
 			},		
-			"couCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
-				"required": true
+			"addition": {
+				"domain": "DO_TEXTE",
+				"required": false
 			}		
 	},
 	"movie": {
@@ -49,7 +49,7 @@ module.exports = {
 				"required": true
 			},		
 			"title": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_COMMENTAIRE",
 				"required": false
 			},		
 			"released": {
@@ -61,7 +61,7 @@ module.exports = {
 				"required": false
 			},		
 			"description": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_TEXTE",
 				"required": false
 			},		
 			"metadasJson": {
@@ -86,6 +86,10 @@ module.exports = {
 				"domain": "DO_PRENOM",
 				"required": false
 			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
 				"required": false
@@ -101,7 +105,7 @@ module.exports = {
 				"required": true
 			},		
 			"roleName": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_TEXTE",
 				"required": false
 			},		
 			"peoId": {

@@ -15,7 +15,7 @@ module.exports = {
     "alias": {
         "alsId" : "ALS_ID",
         "title" : "Title",
-        "couCd" : "Country"
+        "addition" : "addition"
     },
     "movie": {
         "movId" : "MOV_ID",
@@ -30,6 +30,7 @@ module.exports = {
         "peoId" : "PEO_ID",
         "lastName" : "Last Name",
         "firstName" : "First Name",
+        "peoName" : "Peo Name",
         "imdbid" : "imdbID",
         "titCd" : "Title"
     },

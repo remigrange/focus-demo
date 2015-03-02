@@ -17,7 +17,6 @@ public final class Country implements DtObject {
 
 	private String couCd;
 	private String label;
-	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Alias> alias;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -59,61 +58,6 @@ public final class Country implements DtObject {
 
 
 	// Association : Movie non navigable
-	/**
-	 * Association : Alias.
-	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Alias>
-	 */
-    @io.vertigo.dynamo.domain.stereotype.Association (
-    	name = "A_ALS_COU",
-    	fkFieldName = "COU_CD",
-    	primaryDtDefinitionName = "DT_COUNTRY",
-    	primaryIsNavigable = false,
-    	primaryRole = "Country",
-    	primaryLabel = "Country",
-    	primaryMultiplicity = "1..1",
-    	foreignDtDefinitionName = "DT_ALIAS",
-    	foreignIsNavigable = true,
-    	foreignRole = "Alias",
-    	foreignLabel = "Alias",
-    	foreignMultiplicity = "0..*"
-    )
-	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Alias> getAliasList() {
-//		return this.<rodolphe.demo.domain.movies.Alias> getList(getAliasListURI());
-		// On doit avoir une clé primaire renseignée. Si ce n'est pas le cas, on renvoie une liste vide
-		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
-			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.movies.Alias.class);
-		}
-		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getAliasDtListURI();
-		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
-		//---------------------------------------------------------------------
-		//On est toujours dans un mode lazy.
-		if (alias == null) {
-			alias = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
-		}
-		return alias;
-	}
-
-	/**
-	 * Association URI: Alias.
-	 * @return URI de l'association
-	 */
-    @io.vertigo.dynamo.domain.stereotype.Association (
-    	name = "A_ALS_COU",
-    	fkFieldName = "COU_CD",
-    	primaryDtDefinitionName = "DT_COUNTRY",
-    	primaryIsNavigable = false,
-    	primaryRole = "Country",
-    	primaryLabel = "Country",
-    	primaryMultiplicity = "1..1",
-    	foreignDtDefinitionName = "DT_ALIAS",
-    	foreignIsNavigable = true,
-    	foreignRole = "Alias",
-    	foreignLabel = "Alias",
-    	foreignMultiplicity = "0..*"
-    )
-	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation getAliasDtListURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURI(this, "A_ALS_COU", "Alias");
-	}
 
 	/** {@inheritDoc} */
 	@Override

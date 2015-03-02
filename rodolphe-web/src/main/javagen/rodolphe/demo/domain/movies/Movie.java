@@ -52,7 +52,7 @@ public final class Movie implements DtObject {
 	 * Récupère la valeur de la propriété 'TITLE'. 
 	 * @return String title 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "TITLE")
+	@Field(domain = "DO_COMMENTAIRE", label = "TITLE")
 	public String getTitle() {
 		return title;
 	}
@@ -109,7 +109,7 @@ public final class Movie implements DtObject {
 	 * Récupère la valeur de la propriété 'Description'. 
 	 * @return String description 
 	 */
-	@Field(domain = "DO_COMMENTAIRE", label = "Description")
+	@Field(domain = "DO_TEXTE", label = "Description")
 	public String getDescription() {
 		return description;
 	}

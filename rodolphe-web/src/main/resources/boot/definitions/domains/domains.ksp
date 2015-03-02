@@ -130,8 +130,8 @@ create Domain DO_EMAIL {
 create Domain DO_IDENTIFIANT_CODE {
 	dataType : String
 	formatter : FMT_DEFAULT
-	constraint : [CK_MAX_LENGTH_20]
-	storeType : "VARCHAR(20)"
+	constraint : [CK_MAX_LENGTH_100]
+	storeType : "VARCHAR(100)"
 }
 
 create Domain DO_NOM {
@@ -174,4 +174,10 @@ create Domain DO_CHEMIN_ACCES {
 	formatter : FMT_DEFAULT
 	constraint : [CK_MAX_LENGTH_250]
 	storeType : "VARCHAR(250)"
+}
+
+create Domain DO_TEXTE {
+	dataType : String
+	formatter : FMT_DEFAULT
+	storeType : "TEXT"
 }

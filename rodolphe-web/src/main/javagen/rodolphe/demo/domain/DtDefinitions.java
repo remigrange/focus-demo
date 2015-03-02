@@ -83,8 +83,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		ALS_ID,
 		/** Propriété 'Title'. */
 		TITLE,
-		/** Propriété 'Country'. */
-		COU_CD,
+		/** Propriété 'addition'. */
+		ADDITION,
 	}
 
 	/**
@@ -117,6 +117,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		LAST_NAME,
 		/** Propriété 'First Name'. */
 		FIRST_NAME,
+		/** Propriété 'Peo Name'. */
+		PEO_NAME,
 		/** Propriété 'imdbID'. */
 		IMDBID,
 		/** Propriété 'Title'. */

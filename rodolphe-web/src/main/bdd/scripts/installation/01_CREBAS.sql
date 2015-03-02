@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  23 févr. 2015  16:43:51                     
+--   Date de création :  2 mars 2015  09:38:41                     
 -- ============================================================
 
 
@@ -57,8 +57,8 @@ create sequence SEQ_USER_AUTHENTIFICATION
 create table ALIAS
 (
     ALS_ID      	 NUMERIC     	not null,
-    TITLE       	 VARCHAR(100)	,
-    COU_CD      	 VARCHAR(20) 	not null,
+    TITLE       	 VARCHAR(3000)	,
+    ADDITION    	 TEXT        	,
     constraint PK_ALIAS primary key (ALS_ID)
 );
 
@@ -68,10 +68,9 @@ comment on column ALIAS.ALS_ID is
 comment on column ALIAS.TITLE is
 'Title';
 
-comment on column ALIAS.COU_CD is
-'Country';
+comment on column ALIAS.ADDITION is
+'addition';
 
-create index ALIAS_COU_CD_FK on ALIAS (COU_CD asc);
 -- ============================================================
 --   Table : APPLICATION_USER                                        
 -- ============================================================
@@ -106,7 +105,7 @@ create index APPLICATION_USER_PRO_ID_FK on APPLICATION_USER (PRO_ID asc);
 -- ============================================================
 create table COUNTRY
 (
-    COU_CD      	 VARCHAR(20) 	not null,
+    COU_CD      	 VARCHAR(100)	not null,
     LABEL       	 VARCHAR(100)	,
     constraint PK_COUNTRY primary key (COU_CD)
 );
@@ -154,7 +153,7 @@ comment on column FILE_INFO.FILE_PATH is
 -- ============================================================
 create table GENRE
 (
-    GEN_CD      	 VARCHAR(20) 	not null,
+    GEN_CD      	 VARCHAR(100)	not null,
     LABEL       	 VARCHAR(100)	,
     constraint PK_GENRE primary key (GEN_CD)
 );
@@ -170,7 +169,7 @@ comment on column GENRE.LABEL is
 -- ============================================================
 create table LANGUAGE
 (
-    LAN_CD      	 VARCHAR(20) 	not null,
+    LAN_CD      	 VARCHAR(100)	not null,
     LABEL       	 VARCHAR(100)	,
     constraint PK_LANGUAGE primary key (LAN_CD)
 );
@@ -187,10 +186,10 @@ comment on column LANGUAGE.LABEL is
 create table MOVIE
 (
     MOV_ID      	 NUMERIC     	not null,
-    TITLE       	 VARCHAR(100)	,
+    TITLE       	 VARCHAR(3000)	,
     RELEASED    	 DATE        	,
     RUNTIME     	 NUMERIC     	,
-    DESCRIPTION 	 VARCHAR(3000)	,
+    DESCRIPTION 	 TEXT        	,
     METADAS_JSON	 VARCHAR(3000)	,
     IMDBID      	 VARCHAR(100)	,
     constraint PK_MOVIE primary key (MOV_ID)
@@ -225,8 +224,9 @@ create table PEOPLE
     PEO_ID      	 NUMERIC     	not null,
     LAST_NAME   	 VARCHAR(50) 	,
     FIRST_NAME  	 VARCHAR(50) 	,
+    PEO_NAME    	 VARCHAR(250)	,
     IMDBID      	 VARCHAR(100)	,
-    TIT_CD      	 VARCHAR(20) 	,
+    TIT_CD      	 VARCHAR(100)	,
     constraint PK_PEOPLE primary key (PEO_ID)
 );
 
@@ -238,6 +238,9 @@ comment on column PEOPLE.LAST_NAME is
 
 comment on column PEOPLE.FIRST_NAME is
 'First Name';
+
+comment on column PEOPLE.PEO_NAME is
+'Peo Name';
 
 comment on column PEOPLE.IMDBID is
 'imdbID';
@@ -267,7 +270,7 @@ comment on column PROFIL.LABEL is
 -- ============================================================
 create table ROLE_MOVIE
 (
-    RLM_CD      	 VARCHAR(20) 	not null,
+    RLM_CD      	 VARCHAR(100)	not null,
     LABEL       	 VARCHAR(100)	,
     constraint PK_ROLE_MOVIE primary key (RLM_CD)
 );
@@ -284,10 +287,10 @@ comment on column ROLE_MOVIE.LABEL is
 create table ROLE_PEOPLE
 (
     RLP_ID      	 NUMERIC     	not null,
-    ROLE_NAME   	 VARCHAR(100)	,
+    ROLE_NAME   	 TEXT        	,
     PEO_ID      	 NUMERIC     	not null,
     MOV_ID      	 NUMERIC     	,
-    RLM_CD      	 VARCHAR(20) 	not null,
+    RLM_CD      	 VARCHAR(100)	not null,
     constraint PK_ROLE_PEOPLE primary key (RLP_ID)
 );
 
@@ -314,7 +317,7 @@ create index ROLE_PEOPLE_RLM_CD_FK on ROLE_PEOPLE (RLM_CD asc);
 -- ============================================================
 create table SECURITY_ROLE
 (
-    SRO_CD      	 VARCHAR(20) 	not null,
+    SRO_CD      	 VARCHAR(100)	not null,
     LABEL       	 VARCHAR(250)	,
     constraint PK_SECURITY_ROLE primary key (SRO_CD)
 );
@@ -330,7 +333,7 @@ comment on column SECURITY_ROLE.LABEL is
 -- ============================================================
 create table TITLE
 (
-    TIT_CD      	 VARCHAR(20) 	not null,
+    TIT_CD      	 VARCHAR(100)	not null,
     LABEL       	 VARCHAR(100)	,
     constraint PK_TITLE primary key (TIT_CD)
 );
@@ -367,10 +370,6 @@ comment on column USER_AUTHENTIFICATION.USR_ID is
 
 create index USER_AUTHENTIFICATION_USR_ID_FK on USER_AUTHENTIFICATION (USR_ID asc);
 
-alter table ALIAS
-	add constraint FK_ALS_COU foreign key (COU_CD)
-	references COUNTRY (COU_CD);
-
 alter table USER_AUTHENTIFICATION
 	add constraint FK_AUTH_USR foreign key (USR_ID)
 	references APPLICATION_USER (USR_ID);
@@ -395,7 +394,7 @@ create index MOV_ALS_ALIAS_FK on MOV_ALS (ALS_ID asc);
 create table MOV_COU
 (
 	MOV_ID      	 NUMERIC     	 not null,
-	COU_CD      	 VARCHAR(20) 	 not null,
+	COU_CD      	 VARCHAR(100)	 not null,
 	constraint PK_MOV_COU primary key (MOV_ID, COU_CD),
 	constraint FK_MOV_COU_MOVIE 
 		foreign key(MOV_ID)
@@ -429,7 +428,7 @@ create index MOV_FIL_FILE_INFO_FK on MOV_FIL (FIL_ID asc);
 create table MOV_GEN
 (
 	MOV_ID      	 NUMERIC     	 not null,
-	GEN_CD      	 VARCHAR(20) 	 not null,
+	GEN_CD      	 VARCHAR(100)	 not null,
 	constraint PK_MOV_GEN primary key (MOV_ID, GEN_CD),
 	constraint FK_MOV_GEN_MOVIE 
 		foreign key(MOV_ID)
@@ -446,7 +445,7 @@ create index MOV_GEN_GENRE_FK on MOV_GEN (GEN_CD asc);
 create table MOV_LAN
 (
 	MOV_ID      	 NUMERIC     	 not null,
-	LAN_CD      	 VARCHAR(20) 	 not null,
+	LAN_CD      	 VARCHAR(100)	 not null,
 	constraint PK_MOV_LAN primary key (MOV_ID, LAN_CD),
 	constraint FK_MOV_LAN_MOVIE 
 		foreign key(MOV_ID)
@@ -484,7 +483,7 @@ alter table PEOPLE
 create table PRO_SRO
 (
 	PRO_ID      	 NUMERIC     	 not null,
-	SRO_CD      	 VARCHAR(20) 	 not null,
+	SRO_CD      	 VARCHAR(100)	 not null,
 	constraint PK_PRO_SRO primary key (PRO_ID, SRO_CD),
 	constraint FK_PRO_SRO_PROFIL 
 		foreign key(PRO_ID)

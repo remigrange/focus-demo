@@ -17,7 +17,7 @@ public final class Alias implements DtObject {
 
 	private Long alsId;
 	private String title;
-	private String couCd;
+	private String addition;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -43,7 +43,7 @@ public final class Alias implements DtObject {
 	 * Récupère la valeur de la propriété 'Title'. 
 	 * @return String title 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "Title")
+	@Field(domain = "DO_COMMENTAIRE", label = "Title")
 	public String getTitle() {
 		return title;
 	}
@@ -58,28 +58,26 @@ public final class Alias implements DtObject {
 	}
 
 	/**
-	 * Champ : FOREIGN_KEY.
-	 * Récupère la valeur de la propriété 'Country'. 
-	 * @return String couCd <b>Obligatoire</b>
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'addition'. 
+	 * @return String addition 
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", type = "FOREIGN_KEY", notNull = true, label = "Country")
-	public String getCouCd() {
-		return couCd;
+	@Field(domain = "DO_TEXTE", label = "addition")
+	public String getAddition() {
+		return addition;
 	}
 
 	/**
-	 * Champ : FOREIGN_KEY.
-	 * Définit la valeur de la propriété 'Country'.
-	 * @param couCd String <b>Obligatoire</b>
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'addition'.
+	 * @param addition String 
 	 */
-	public void setCouCd(final String couCd) {
-		this.couCd = couCd;
+	public void setAddition(final String addition) {
+		this.addition = addition;
 	}
 
 
 	// Association : Movie non navigable
-
-	// Association : Country non navigable
 
 	/** {@inheritDoc} */
 	@Override
