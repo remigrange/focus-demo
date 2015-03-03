@@ -27,5 +27,7 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 api/target
+ui/node_modules
+ui/bower_components
 *.bak
 *.oob
