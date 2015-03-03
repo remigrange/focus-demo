@@ -123,6 +123,28 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"searchRet": {
+			"type": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"field1": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field2": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field3": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field4": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			}		
+	},
 	"people": {
 			"peoId": {
 				"domain": "DO_ID",

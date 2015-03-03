@@ -46,6 +46,13 @@ module.exports = {
         "metadasJson" : "metadas Json",
         "imdbid" : "imdbID"
     },
+    "searchRet": {
+        "type" : "Type of the object",
+        "field1" : "Field 1",
+        "field2" : "Field 2",
+        "field3" : "Field 3",
+        "field4" : "Field 4"
+    },
     "people": {
         "peoId" : "PEO_ID",
         "lastName" : "Last Name",

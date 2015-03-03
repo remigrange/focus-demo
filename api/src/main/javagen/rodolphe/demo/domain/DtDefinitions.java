@@ -29,6 +29,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			Alias(rodolphe.demo.domain.movies.Alias.class),
 			/** Objet de données Movie. */
 			Movie(rodolphe.demo.domain.movies.Movie.class),
+			/** Objet de données SearchRet. */
+			SearchRet(rodolphe.demo.domain.movies.SearchRet.class),
 			/** Objet de données People. */
 			People(rodolphe.demo.domain.people.People.class),
 			/** Objet de données RolePeople. */
@@ -155,6 +157,22 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'imdbID'. */
 		IMDBID,
+	}
+
+	/**
+	 * Enumération des champs de SearchRet.
+	 */
+	public enum SearchRetFields implements DtFieldName {
+		/** Propriété 'Type of the object'. */
+		TYPE,
+		/** Propriété 'Field 1'. */
+		FIELD_1,
+		/** Propriété 'Field 2'. */
+		FIELD_2,
+		/** Propriété 'Field 3'. */
+		FIELD_3,
+		/** Propriété 'Field 4'. */
+		FIELD_4,
 	}
 
 	/**

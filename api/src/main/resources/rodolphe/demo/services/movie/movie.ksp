@@ -1,1 +1,15 @@
 package rodolphe.demo.domain.movies
+
+create Task TK_GET_MOVIES_BY_CRITERIA {
+    className : "io.vertigo.dynamox.task.TaskEngineSelect"
+    request : "
+				select mov_id, title, released, runtime, description, metadas_json, imdbid
+				from movie
+				where 
+					lower(title) like '%%'||lower(#SEARCH_TEXT#)||'%%'		
+				order by title
+				limit 20
+			"
+	attribute SEARCH_TEXT				{domain : DO_COMMENTAIRE				notNull:"true" 	inOut :"in"}
+    attribute DTC_MOVIE	 				{domain : DO_DT_MOVIE_DTC 				notNull:"true" 	inOut :"out"}
+}
