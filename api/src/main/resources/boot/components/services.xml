@@ -1,7 +1,17 @@
 <?xml version =	'1.0' encoding = 'ISO-8859-1'?>
 <config>
+
+	<module name="RODOLPHE-DAO" api="false" inheritance="io.vertigo.dynamo.impl.persistence.util.DAOBroker">
+		<component class="rodolphe.demo.dao.people.PeopleDAO"/>
+		<component class="rodolphe.demo.dao.movies.MovieDAO"/>
+	</module>
+	
 	<module name="knock-services">
 		<component api="FlowerServices" class="rodolphe.demo.services.FlowerServicesImpl" />
 		<component api="AlertServices" class="rodolphe.demo.services.commons.AlertServicesImpl" />
+		<component api="PeopleServices" class="rodolphe.demo.services.people.PeopleServicesImpl" />
+		<component api="MovieServices" class="rodolphe.demo.services.movie.MovieServicesImpl" />
 	</module>
+	
+	
 </config>

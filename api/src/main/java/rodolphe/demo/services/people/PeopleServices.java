@@ -1,14 +1,15 @@
 package rodolphe.demo.services.people;
 
-import rodolphe.demo.domain.movies.SearchRet;
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.lang.Component;
+import rodolphe.demo.domain.movies.SearchRet;
 
 /**
  * Services about People.
  * @author JDALMEIDA
  *
  */
-public interface PeopleServices {
+public interface PeopleServices  extends Component {
 
 	/**
 	 * Search people

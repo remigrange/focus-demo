@@ -1,15 +1,16 @@
 package rodolphe.demo.services.movie;
 
-import rodolphe.demo.domain.movies.SearchRet;
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.lang.Component;
+import rodolphe.demo.domain.movies.SearchRet;
 
 /**
  * Services about Movie.
  * @author JDALMEIDA
  *
  */
-public interface MovieServices {
-	
+public interface MovieServices  extends Component {
+
 	/**
 	 * Search movies
 	 * @param searchText search criteria

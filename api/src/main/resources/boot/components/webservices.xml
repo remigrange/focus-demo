@@ -5,5 +5,7 @@
 		<component class="rodolphe.demo.webservices.commons.AlertWebServices" />
 		<component class="io.vertigo.vega.impl.rest.catalog.CatalogRestServices" />
 		<component class="io.vertigo.vega.impl.rest.catalog.SwaggerRestServices" />
+		<component class="rodolphe.demo.webservices.movie.WsMovie" />
+		<component class="rodolphe.demo.webservices.people.WsPeople" />
 	</module>
 </config>
