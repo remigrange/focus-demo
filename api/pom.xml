@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.vertigo</groupId>
-    <artifactId>rodolphe-demo</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+	<groupId>io.vertigo</groupId>
+	<artifactId>rodolphe-demo</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>rodolphe-demo</name>
-	
+
 	<properties>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
@@ -17,54 +18,54 @@
 		<vertigo.version>0.7.3</vertigo.version>
 	</properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-core</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-commons-api</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-dynamo-api</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-persona-api</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-vega-api</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-commons-impl</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-dynamo-impl</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-persona-impl</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertigo</groupId>
-            <artifactId>vertigo-vega-impl</artifactId>
-            <version>${vertigo.version}</version>
-        </dependency>
+	<dependencies>
 		<dependency>
-            <groupId>io.vertigo</groupId>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-core</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-commons-api</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-dynamo-api</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-persona-api</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-vega-api</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-commons-impl</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-dynamo-impl</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-persona-impl</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-vega-impl</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
 			<artifactId>vertigo-studio</artifactId>
 			<version>${vertigo.version}</version>
 			<scope>test</scope>
@@ -75,11 +76,30 @@
 			<version>9.3-1102-jdbc41</version>
 			<scope>test</scope>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-core</artifactId>
+			<version>${vertigo.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.orbit</groupId>
+			<artifactId>javax.servlet</artifactId>
+			<version>3.0.0.v201112011016</version>
+			<scope>provided</scope>
+		</dependency> 
+	</dependencies>
 
 	<build>
 		<plugins>
-		
+
 			<plugin><!-- Copie des dÃ©pendances avant la gÃ©nÃ©ration. -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -118,7 +138,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 </project>
