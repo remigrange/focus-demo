@@ -1,4 +1,4 @@
-package rodolphe.demo.webservices.maseterdata;
+package rodolphe.demo.webservices.masterdata;
 
 import java.util.List;
 
