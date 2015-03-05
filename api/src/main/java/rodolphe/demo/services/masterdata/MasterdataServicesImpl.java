@@ -8,7 +8,7 @@ import rodolphe.demo.util.ReferenceObject;
 
 /**
  * Implementations of masterdata services.
- * 
+ *
  * @author JDALMEIDA
  *
  */
@@ -16,9 +16,9 @@ public class MasterdataServicesImpl implements MasterdataServices {
 
 	@Override
 	public List<ReferenceObject> getScopeList() {
-		List<ReferenceObject> ret = new ArrayList<ReferenceObject>();
-		CodeScope [] list = CodeScope.values();
-		for(CodeScope code : list){
+		final List<ReferenceObject> ret = new ArrayList<>();
+		final CodeScope [] list = CodeScope.values();
+		for(final CodeScope code : list){
 			ret.add(new ReferenceObject(code.name(), code.name(), true));
 		}
 		return ret;

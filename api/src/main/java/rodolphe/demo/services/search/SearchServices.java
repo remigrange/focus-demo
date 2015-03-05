@@ -6,5 +6,5 @@ package rodolphe.demo.services.search;
  *
  */
 public interface SearchServices {
-
+	//
 }

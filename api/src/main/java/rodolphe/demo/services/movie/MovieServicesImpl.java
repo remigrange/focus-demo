@@ -23,9 +23,9 @@ public class MovieServicesImpl implements MovieServices {
 	@Override
 	@Transactional
 	public DtList<SearchRet> getMovies(final String searchText) {
-		final DtList<Movie> movieList = movieDAO.getMoviesByCriteria(searchText);
+		final DtList<Movie> movies = movieDAO.getMoviesByCriteria(searchText);
 		final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
-		for(final Movie movie : movieList){
+		for(final Movie movie : movies){
 			final SearchRet searchRet = new SearchRet();
 			searchRet.setType(CodeScope.MOVIE.name());
 			searchRet.setField1(String.valueOf(movie.getMovId()));

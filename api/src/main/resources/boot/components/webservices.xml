@@ -1,7 +1,6 @@
 <?xml version =	'1.0' encoding = 'ISO-8859-1'?>
 <config>
 	<module name="knock-ws" inheritance="io.vertigo.vega.rest.RestfulService" api="false">
-		<component class="rodolphe.demo.webservices.FlowerWebServices" />
 		<component class="rodolphe.demo.webservices.commons.AlertWebServices" />
 		<component class="io.vertigo.vega.impl.rest.catalog.CatalogRestServices" />
 		<component class="io.vertigo.vega.impl.rest.catalog.SwaggerRestServices" />
