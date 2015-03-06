@@ -11,6 +11,7 @@ import rodolphe.demo.user.RodolpheUserSession;
  *
  */
 public class TnrUserSession extends RodolpheUserSession {
+	private static final long serialVersionUID = -8343118964582535572L;
 
 	/**
 	 * Constructeur.

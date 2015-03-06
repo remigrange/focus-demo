@@ -43,18 +43,18 @@ public abstract class AbstractRodolpheBatch implements InjectableComponent {
 	protected abstract void doProcess();
 
 	private RodolpheUserSession getBatchUserSession() {
-		final UserSession session;
+		final UserSession userSession;
 		final Option<UserSession> optSession = kSecurityManager.getCurrentUserSession();
 		if (optSession.isEmpty()) {
 			// On a besoin de definir une nouvelle session, qu'il faudra nettoyer
-			session = kSecurityManager.createUserSession();
-			kSecurityManager.startCurrentUserSession(session);
+			userSession = kSecurityManager.createUserSession();
+			kSecurityManager.startCurrentUserSession(userSession);
 		} else {
-			session = optSession.get();
+			userSession = optSession.get();
 		}
 		// On connecte l'utilisateur batch
 		// On sort
-		return (RodolpheUserSession) session;
+		return (RodolpheUserSession) userSession;
 	}
 
 	/**

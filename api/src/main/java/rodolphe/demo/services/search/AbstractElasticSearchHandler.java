@@ -448,36 +448,39 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		final Object value = def.getField(criteriaFieldName).getDataAccessor().getValue(criterium);
 		if (value != null) {
 			switch (dataType) {
-			case Integer:
-				final Integer intValue = (Integer) value;
-				attribute = indexFieldName.name() + ":(" + intValue + ")";
-				break;
-			case Long:
-				final Long longValue = (Long) value;
-				attribute = indexFieldName.name() + ":(" + longValue + ")";
-				break;
-			case BigDecimal:
-				final BigDecimal decValue = (BigDecimal) value;
-				attribute = indexFieldName.name() + ":(" + decValue + ")";
-				break;
-			case Double:
-				final Double doubleValue = (Double) value;
-				attribute = indexFieldName.name() + ":(" + doubleValue + ")";
-				break;
-			case Date:
-				final Date dateValue = (Date) value;
-				attribute = indexFieldName.name() + ":(\"" + getDateXmlFormat(dateValue) + "\")";
-				break;
-			case String:
-				final String strValue = (String) value;
-				attribute = indexFieldName.name() + ":(" + escapeRegexpSpecialChar(strValue) + ")";
-				break;
-			case Boolean:
-				final Boolean booleanValue = (Boolean) value;
-				attribute = indexFieldName.name() + ":(" + booleanValue + ")";
-				break;
-			default:
-				throw new RuntimeException("Type de données non comparable : " + dataType.name());
+				case Integer:
+					final Integer intValue = (Integer) value;
+					attribute = indexFieldName.name() + ":(" + intValue + ")";
+					break;
+				case Long:
+					final Long longValue = (Long) value;
+					attribute = indexFieldName.name() + ":(" + longValue + ")";
+					break;
+				case BigDecimal:
+					final BigDecimal decValue = (BigDecimal) value;
+					attribute = indexFieldName.name() + ":(" + decValue + ")";
+					break;
+				case Double:
+					final Double doubleValue = (Double) value;
+					attribute = indexFieldName.name() + ":(" + doubleValue + ")";
+					break;
+				case Date:
+					final Date dateValue = (Date) value;
+					attribute = indexFieldName.name() + ":(\"" + getDateXmlFormat(dateValue) + "\")";
+					break;
+				case String:
+					final String strValue = (String) value;
+					attribute = indexFieldName.name() + ":(" + escapeRegexpSpecialChar(strValue) + ")";
+					break;
+				case Boolean:
+					final Boolean booleanValue = (Boolean) value;
+					attribute = indexFieldName.name() + ":(" + booleanValue + ")";
+					break;
+				case DataStream:
+				case DtList:
+				case DtObject:
+				default:
+					throw new RuntimeException("Type de données non comparable : " + dataType.name());
 			}
 			criteriaList.add(attribute);
 		}

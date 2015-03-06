@@ -11,4 +11,5 @@ import rodolphe.demo.domain.CodeEnum;
  * @author jmforhan
  */
 public enum FacetConst implements CodeEnum {
+	//
 }

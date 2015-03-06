@@ -42,5 +42,6 @@ public class SearchManagerInitializer implements ComponentInitializer<SearchMana
 	}
 
 	private void initQueryWithFacet(final FacetedSearchConst search) {
+		//
 	}
 }
