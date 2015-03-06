@@ -9,7 +9,7 @@
 			<plugin class="io.vertigo.commons.plugins.resource.java.ClassPathResourceResolverPlugin" />
 		</component>
 		<component api="KSecurityManager" class="io.vertigo.persona.impl.security.KSecurityManagerImpl">
-			<param name="userSessionClassName" value="rodolphe.demo.tools.TnrUserSession" />
+			<param name="userSessionClassName" value="roldophe.demo.tools.TnrUserSession" />
 			<plugin class="io.vertigo.persona.plugins.security.loaders.SecurityResourceLoaderPlugin" />
 		</component>
 	</module>

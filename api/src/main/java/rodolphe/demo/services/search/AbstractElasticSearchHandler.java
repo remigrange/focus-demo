@@ -313,11 +313,13 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 	/** {@inheritDoc} */
 	@Override
 	public final void indexerItem(final Object key) {
+		logger.debug("Indexation unitaire ");
 		final IndexDefinition indexDef = getIndexDefinition();
 		final V vueItem = getVueItem(key);
 		if (vueItem == null) {
 			// Pas d'objet => Rien à indexer
 			// Ce cas peut arriver si on a précisé des données qui ne peuvent pas être retrouvée par la vue sous jacente
+			logger.debug("Rien à indexer ");
 			return;
 		}
 		final Index<I, R> idx = createIndex(indexDef, vueItem);
@@ -325,6 +327,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 			tnrMap.put(key, idx);
 		}
 		searchManager.put(indexDef, idx);
+		logger.debug("Indexation planifiée");
 	}
 
 	/** {@inheritDoc} */
@@ -353,6 +356,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 				// Construction de la query.
 				final SearchQuery searchQuery = SearchQuery.createSearchQuery(indexDef, getListFilter(criteriaClone),
 						sortField, sortAsc);
+				logger.info("ES request " + searchQuery.getListFilter().getFilterValue());
 				// Cas d'un appel avec facettes.
 				final List<ListFilter> facetFilter = new ArrayList<>();
 				if (criterium.getFacets() != null) {

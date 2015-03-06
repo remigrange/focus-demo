@@ -62,6 +62,8 @@ public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex,
 	protected String getTranslatedCriteria(final MovieCriteria criterium) {
 		final List<String> lst = new ArrayList<>();
 		addSimpleCriteriaAttribute(lst, MovieIndexFields.MOV_ID, criterium, MovieCriteriaFields.MOV_ID);
+		addSimpleCriteriaAttribute(lst, MovieIndexFields.RELEASED, criterium, MovieCriteriaFields.RELEASED);
+		addStartWithCriteria(lst, MovieIndexFields.TITLE, criterium, MovieCriteriaFields.TITLE);
 		return getRequestFromCriteriaList(lst);
 	}
 

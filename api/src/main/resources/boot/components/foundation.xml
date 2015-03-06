@@ -27,6 +27,9 @@
 				<param name="sequencePrefix" value="SEQ_" />
 			</plugin>
 		</component>
+   	   <component api="JobManager" class="io.vertigo.tempo.impl.job.JobManagerImpl" initClass="rodolphe.demo.boot.initializer.JobManagerInitializer">
+	        <plugin class="io.vertigo.tempo.plugins.job.basic.BasicSchedulerPlugin" />
+	    </component>
 	</module>
 
 	<module name="VEGA" api="false" inheritance="java.lang.Object">

@@ -9,6 +9,8 @@ import io.vertigo.util.DateUtil;
 
 import javax.inject.Inject;
 
+import org.junit.Test;
+
 import rodolphe.demo.domain.DtDefinitions.MovieCriteriaFields;
 import rodolphe.demo.domain.DtDefinitions.MovieFields;
 import rodolphe.demo.domain.movies.Movie;
@@ -92,7 +94,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 	/**
 	 * Search the title of a movie.
 	 */
-	@Inject
+	@Test
 	public void searchByTitle() {
 		final MovieCriteria crit = getCritereForSearchWithUniqueResultAsSU();
 		final Movie mov = movieServices.getMovie(getIdForCritere(crit));
@@ -103,7 +105,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 	/**
 	 * Search by the released date.
 	 */
-	@Inject
+	@Test
 	public void searchByReleasedDate() {
 		final MovieCriteria crit = getCritereForSearchWithUniqueResultAsSU();
 		final Movie mov = movieServices.getMovie(getIdForCritere(crit));
