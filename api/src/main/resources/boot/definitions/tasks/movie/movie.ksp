@@ -30,7 +30,7 @@ create Task TK_GET_MOVIE_VIEW {
     			Where
     				v.rank >= #MIN_RANK#
     			Order by
-    				v.Rang
+    				v.rank
     			limit <%= maxRows %>
      "
     attribute MIN_RANK {domain : DO_ENTIER notNull:"true" inOut :"in"}

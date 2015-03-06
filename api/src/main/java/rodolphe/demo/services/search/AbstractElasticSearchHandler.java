@@ -59,6 +59,7 @@ import rodolphe.demo.util.TransactionScope;
 public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends DtObject, V extends DtObject, S extends DtObject>
 implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 
+	private static final String RANK_FIELD_NAME = "RANK";
 	@Inject
 	private SearchManager searchManager;
 	@Inject
@@ -239,8 +240,8 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 	 * @return Rang (ID).
 	 */
 	private int getRang(final V vueItem) {
-		final DtField fieldRang = DtObjectUtil.findDtDefinition(vueItem).getField("RANG");
-		return (int) fieldRang.getDataAccessor().getValue(vueItem);
+		final DtField fieldRang = DtObjectUtil.findDtDefinition(vueItem).getField(RANK_FIELD_NAME);
+		return ((Long) fieldRang.getDataAccessor().getValue(vueItem)).intValue();
 	}
 
 	private void clearIndex(final IndexDefinition indexDef, final int rangMin, final Integer rangMax) {
@@ -252,7 +253,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 	}
 
 	private ListFilter createClearFilter(final int rangMin, final Integer rangMax) {
-		final StringBuilder sb = new StringBuilder("RANK:[");
+		final StringBuilder sb = new StringBuilder(RANK_FIELD_NAME+":[");
 		sb.append(rangMin);
 		sb.append(" TO ");
 		if (rangMax == null) {
@@ -287,9 +288,9 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 			}
 			final V lastItem = dbList.get(dbList.size() - 1);
 			if (dbList.size() < clusterCard) {
-				rangMax = getRang(lastItem);
-			} else {
 				rangMax = null;
+			} else {
+				rangMax = getRang(lastItem);
 			}
 			// On vide les rangs que l'on va mettre à jour
 			clearIndex(indexDef, rangMin, rangMax);
@@ -448,39 +449,39 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		final Object value = def.getField(criteriaFieldName).getDataAccessor().getValue(criterium);
 		if (value != null) {
 			switch (dataType) {
-				case Integer:
-					final Integer intValue = (Integer) value;
-					attribute = indexFieldName.name() + ":(" + intValue + ")";
-					break;
-				case Long:
-					final Long longValue = (Long) value;
-					attribute = indexFieldName.name() + ":(" + longValue + ")";
-					break;
-				case BigDecimal:
-					final BigDecimal decValue = (BigDecimal) value;
-					attribute = indexFieldName.name() + ":(" + decValue + ")";
-					break;
-				case Double:
-					final Double doubleValue = (Double) value;
-					attribute = indexFieldName.name() + ":(" + doubleValue + ")";
-					break;
-				case Date:
-					final Date dateValue = (Date) value;
-					attribute = indexFieldName.name() + ":(\"" + getDateXmlFormat(dateValue) + "\")";
-					break;
-				case String:
-					final String strValue = (String) value;
-					attribute = indexFieldName.name() + ":(" + escapeRegexpSpecialChar(strValue) + ")";
-					break;
-				case Boolean:
-					final Boolean booleanValue = (Boolean) value;
-					attribute = indexFieldName.name() + ":(" + booleanValue + ")";
-					break;
-				case DataStream:
-				case DtList:
-				case DtObject:
-				default:
-					throw new RuntimeException("Type de données non comparable : " + dataType.name());
+			case Integer:
+				final Integer intValue = (Integer) value;
+				attribute = indexFieldName.name() + ":(" + intValue + ")";
+				break;
+			case Long:
+				final Long longValue = (Long) value;
+				attribute = indexFieldName.name() + ":(" + longValue + ")";
+				break;
+			case BigDecimal:
+				final BigDecimal decValue = (BigDecimal) value;
+				attribute = indexFieldName.name() + ":(" + decValue + ")";
+				break;
+			case Double:
+				final Double doubleValue = (Double) value;
+				attribute = indexFieldName.name() + ":(" + doubleValue + ")";
+				break;
+			case Date:
+				final Date dateValue = (Date) value;
+				attribute = indexFieldName.name() + ":(\"" + getDateXmlFormat(dateValue) + "\")";
+				break;
+			case String:
+				final String strValue = (String) value;
+				attribute = indexFieldName.name() + ":(" + escapeRegexpSpecialChar(strValue) + ")";
+				break;
+			case Boolean:
+				final Boolean booleanValue = (Boolean) value;
+				attribute = indexFieldName.name() + ":(" + booleanValue + ")";
+				break;
+			case DataStream:
+			case DtList:
+			case DtObject:
+			default:
+				throw new RuntimeException("Type de données non comparable : " + dataType.name());
 			}
 			criteriaList.add(attribute);
 		}

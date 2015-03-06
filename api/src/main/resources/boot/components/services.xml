@@ -17,7 +17,11 @@
 	<module name="RODOLPHE-SEARCH-HANDLER" api="false" inheritance="rodolphe.demo.services.search.AbstractElasticSearchHandler">
 		<component class="rodolphe.demo.services.search.MovieSearchHandler"/>
 	</module>
-	
+
+	<module name="RODOLPHE-ASPECT" inheritance="java.lang.Object" >
+		<aspect class="io.vertigo.dynamo.impl.transaction.KTransactionAspect"/>
+	</module>
+		
 	<module name="RODOLPHE-SERVICES">
 		<component api="PeopleServices" class="rodolphe.demo.services.people.PeopleServicesImpl" />
 		<component api="MovieServices" class="rodolphe.demo.services.movie.MovieServicesImpl" />
