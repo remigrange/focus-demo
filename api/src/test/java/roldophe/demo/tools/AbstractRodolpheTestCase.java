@@ -52,6 +52,7 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	public AbstractRodolpheTestCase() {
 		super();
 		memComponent.add(MovieSearchHandler.class);
+
 	}
 
 	/**
@@ -166,6 +167,9 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 		// Stop user session
 		if (securityManager.getCurrentUserSession().isDefined()) {
 			securityManager.stopCurrentUserSession();
+			if (session != null) {
+				session = null;
+			}
 		}
 	}
 
