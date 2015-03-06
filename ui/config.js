@@ -11,9 +11,7 @@ exports.config = {
       }
     },
     stylesheets: {
-      joinTo: {
-        'stylesheets/app.css': /^(?!test)/
-      }
+      joinTo: 'stylesheets/app.css'
     },
     templates: {
       joinTo: 'javascripts/app.js'

@@ -20,10 +20,12 @@
   },
   "dependencies": {
     "appcache": "0.0.4",
-    "browser-sync-brunch": "0.0.9",
     "clean-css-brunch": "^1.7.1",
     "react": "^0.12.2",
-    "uglify": "^0.1.1"
+    "uglify": "^0.1.1",
+	"focus": "https://github.com/KleeGroup/focus/tarball/master",
+	"focus-components": "https://github.com/KleeGroup/focus-components/tarball/master"
+
   },
   "main": "index.js",
   "directories": {

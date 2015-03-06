@@ -29,5 +29,7 @@ node_modules
 api/target
 ui/node_modules
 ui/bower_components
+ui/.npmrc
+.idea
 *.bak
 *.oob
