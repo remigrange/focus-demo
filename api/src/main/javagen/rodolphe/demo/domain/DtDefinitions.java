@@ -29,6 +29,14 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			Alias(rodolphe.demo.domain.movies.Alias.class),
 			/** Objet de données Movie. */
 			Movie(rodolphe.demo.domain.movies.Movie.class),
+			/** Objet de données MovieCriteria. */
+			MovieCriteria(rodolphe.demo.domain.movies.MovieCriteria.class),
+			/** Objet de données MovieIndex. */
+			MovieIndex(rodolphe.demo.domain.movies.MovieIndex.class),
+			/** Objet de données MovieResult. */
+			MovieResult(rodolphe.demo.domain.movies.MovieResult.class),
+			/** Objet de données MovieView. */
+			MovieView(rodolphe.demo.domain.movies.MovieView.class),
 			/** Objet de données SearchRet. */
 			SearchRet(rodolphe.demo.domain.movies.SearchRet.class),
 			/** Objet de données People. */
@@ -157,6 +165,84 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'imdbID'. */
 		IMDBID,
+	}
+
+	/**
+	 * Enumération des champs de MovieCriteria.
+	 */
+	public enum MovieCriteriaFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		MOV_ID,
+		/** Propriété 'Title'. */
+		TITLE,
+		/** Propriété 'Released'. */
+		RELEASED,
+		/** Propriété 'Runtime'. */
+		RUNTIME,
+		/** Propriété 'Description'. */
+		DESCRIPTION,
+	}
+
+	/**
+	 * Enumération des champs de MovieIndex.
+	 */
+	public enum MovieIndexFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		MOV_ID,
+		/** Propriété 'Title'. */
+		TITLE,
+		/** Propriété 'Released'. */
+		RELEASED,
+		/** Propriété 'Runtime'. */
+		RUNTIME,
+		/** Propriété 'Description'. */
+		DESCRIPTION,
+		/** Propriété 'Id imdb'. */
+		IMDBID,
+		/** Propriété 'rank'. */
+		RANK,
+	}
+
+	/**
+	 * Enumération des champs de MovieResult.
+	 */
+	public enum MovieResultFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		MOV_ID,
+		/** Propriété 'Title'. */
+		TITLE,
+		/** Propriété 'Released'. */
+		RELEASED,
+		/** Propriété 'Runtime'. */
+		RUNTIME,
+		/** Propriété 'Description'. */
+		DESCRIPTION,
+		/** Propriété 'Meta Data JSON'. */
+		METADAS_JSON,
+		/** Propriété 'Id imdb'. */
+		IMDBID,
+	}
+
+	/**
+	 * Enumération des champs de MovieView.
+	 */
+	public enum MovieViewFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		MOV_ID,
+		/** Propriété 'Title'. */
+		TITLE,
+		/** Propriété 'Released'. */
+		RELEASED,
+		/** Propriété 'Runtime'. */
+		RUNTIME,
+		/** Propriété 'Description'. */
+		DESCRIPTION,
+		/** Propriété 'Meta Data JSON'. */
+		METADAS_JSON,
+		/** Propriété 'Id imdb'. */
+		IMDBID,
+		/** Propriété 'rank'. */
+		RANK,
 	}
 
 	/**

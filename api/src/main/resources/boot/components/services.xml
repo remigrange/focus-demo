@@ -5,11 +5,24 @@
 		<component class="rodolphe.demo.dao.people.PeopleDAO"/>
 		<component class="rodolphe.demo.dao.movies.MovieDAO"/>
 	</module>
+
+	<module name="RODOLPHE-PAO" api="false" inheritance="java.lang.Object">
+		<component class="rodolphe.demo.dao.movies.MoviesPAO"/>
+	</module>
 	
-	<module name="knock-services">
+	<module name="RODOLPHE-HELPER" api="false" inheritance="java.lang.Object">
+		<component class="rodolphe.demo.user.SecurityHelper"/>
+	</module>
+
+	<module name="RODOLPHE-SEARCH-HANDLER" api="false" inheritance="rodolphe.demo.services.search.AbstractElasticSearchHandler">
+		<component class="rodolphe.demo.services.search.MovieSearchHandler"/>
+	</module>
+	
+	<module name="RODOLPHE-SERVICES">
 		<component api="AlertServices" class="rodolphe.demo.services.commons.AlertServicesImpl" />
 		<component api="PeopleServices" class="rodolphe.demo.services.people.PeopleServicesImpl" />
 		<component api="MovieServices" class="rodolphe.demo.services.movie.MovieServicesImpl" />
+		<component api="SearchServices" class="rodolphe.demo.services.search.SearchServicesImpl" />
 	</module>
 	
 	

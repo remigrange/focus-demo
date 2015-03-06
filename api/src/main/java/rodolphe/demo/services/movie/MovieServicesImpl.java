@@ -1,5 +1,6 @@
 package rodolphe.demo.services.movie;
 
+import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.transaction.Transactional;
 
@@ -9,7 +10,12 @@ import rodolphe.demo.dao.movies.MovieDAO;
 import rodolphe.demo.domain.masterdata.CodeScope;
 import rodolphe.demo.domain.masterdatas.Genre;
 import rodolphe.demo.domain.movies.Movie;
+import rodolphe.demo.domain.movies.MovieCriteria;
+import rodolphe.demo.domain.movies.MovieResult;
 import rodolphe.demo.domain.movies.SearchRet;
+import rodolphe.demo.domain.search.FacetedSearchConst;
+import rodolphe.demo.services.search.SearchCriterium;
+import rodolphe.demo.services.search.SearchServices;
 
 /**
  * Implementation of Movie Services.
@@ -18,7 +24,11 @@ import rodolphe.demo.domain.movies.SearchRet;
  */
 public class MovieServicesImpl implements MovieServices {
 
-	@Inject MovieDAO movieDAO;
+	@Inject
+	private MovieDAO movieDAO;
+	@Inject
+	private SearchServices searchServices;
+
 
 	@Override
 	@Transactional
@@ -44,6 +54,47 @@ public class MovieServicesImpl implements MovieServices {
 			ret.add(searchRet);
 		}
 		return ret;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see rodolphe.demo.services.movie.MovieServices#getMoviesByCriteria(rodolphe.demo.domain.movies.MovieCriteria)
+	 */
+	/** {@inheritDoc} */
+	@Override
+	public DtList<MovieResult> getMoviesByCriteria(final MovieCriteria crit) {
+		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
+				FacetedSearchConst.QRY_MOVIE_WO_FCT.getQuery());
+		criteria.setCriteria(crit);
+		final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> res = searchServices.searchMovie(criteria);
+		return res.getDtList();
+	}
+
+
+	/* (non-Javadoc)
+	 * @see rodolphe.demo.services.movie.MovieServices#getMovie(java.lang.Long)
+	 */
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public Movie getMovie(final Long movId) {
+		return movieDAO.get(movId);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see rodolphe.demo.services.movie.MovieServices#saveMovie(rodolphe.demo.domain.movies.Movie)
+	 */
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public void saveMovie(final Movie mov) {
+		if (mov.getMovId() == null) {
+			movieDAO.create(mov);
+		} else {
+			movieDAO.update(mov);
+		}
+		searchServices.indexMovie(mov.getMovId());
 	}
 
 }
