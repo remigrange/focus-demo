@@ -1,0 +1,7 @@
+package roldolphe.demo.domain.search
+
+create IndexDefinition IDX_MOVIE {
+	dtResult : DT_MOVIE_RESULT
+    dtIndex : DT_MOVIE_INDEX
+}
+

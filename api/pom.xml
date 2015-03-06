@@ -46,6 +46,11 @@
 		</dependency>
 		<dependency>
 			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-tempo-api</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
 			<artifactId>vertigo-commons-impl</artifactId>
 			<version>${vertigo.version}</version>
 		</dependency>
@@ -62,6 +67,11 @@
 		<dependency>
 			<groupId>io.vertigo</groupId>
 			<artifactId>vertigo-vega-impl</artifactId>
+			<version>${vertigo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.vertigo</groupId>
+			<artifactId>vertigo-tempo-impl</artifactId>
 			<version>${vertigo.version}</version>
 		</dependency>
 		<dependency>

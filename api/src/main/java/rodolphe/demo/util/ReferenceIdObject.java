@@ -2,7 +2,7 @@ package rodolphe.demo.util;
 
 /**
  * Class for master datas.
- * 
+ *
  * @author JDALMEIDA
  *
  */
@@ -37,7 +37,7 @@ public class ReferenceIdObject {
 	/**
 	 * Set id.
 	 *
-	 * @param id's new value.
+	 * @param idP new value.
 	 */
 	public void setId(final Long idP) {
 		id = idP;

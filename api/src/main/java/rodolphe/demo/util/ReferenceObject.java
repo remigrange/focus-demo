@@ -39,7 +39,7 @@ public class ReferenceObject {
 	/**
 	 * Set id.
 	 *
-	 * @param id's new value.
+	 * @param code  new value.
 	 */
 	public void setId(final String code) {
 		id = code;
@@ -75,7 +75,7 @@ public class ReferenceObject {
 	/**
 	 * Set active.
 	 *
-	 * @param active.
+	 * @param active If active
 	 */
 	public void setActive(final Boolean active) {
 		this.active = active;

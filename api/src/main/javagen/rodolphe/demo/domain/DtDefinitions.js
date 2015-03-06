@@ -123,6 +123,122 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"movieCriteria": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			}		
+	},
+	"movieIndex": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"movieResult": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"metadasJson": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			}		
+	},
+	"movieView": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"metadasJson": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
 	"searchRet": {
 			"type": {
 				"domain": "DO_LIBELLE_50",

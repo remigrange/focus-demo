@@ -94,6 +94,7 @@ create Domain DO_COMMENTAIRE {
 	formatter : FMT_DEFAULT
 	constraint : [CK_MAX_LENGTH_3000]
 	storeType : "VARCHAR(3000)"
+    indexType : "text_fr"
 }
 
 create Domain DO_LIBELLE_50 {
@@ -101,6 +102,7 @@ create Domain DO_LIBELLE_50 {
 	formatter : FMT_DEFAULT
 	constraint : [CK_MAX_LENGTH_50]
 	storeType : "VARCHAR(50)"
+    indexType : "text_fr"
 }
 
 create Domain DO_LIBELLE_100 {
@@ -108,6 +110,7 @@ create Domain DO_LIBELLE_100 {
 	formatter : FMT_DEFAULT
 	constraint : [CK_MAX_LENGTH_100]
 	storeType : "VARCHAR(100)"
+    indexType : "text_fr"
 }
 
 
@@ -116,6 +119,7 @@ create Domain DO_LIBELLE_250 {
 	formatter : FMT_DEFAULT
 	constraint : [CK_MAX_LENGTH_250]
 	storeType : "VARCHAR(250)"
+    indexType : "text_fr"
 }
 
 
@@ -139,6 +143,7 @@ create Domain DO_NOM {
 	formatter : FMT_DEFAULT
 	constraint : [CK_MAX_LENGTH_50]
 	storeType : "VARCHAR(50)"
+    indexType : "text_fr"
 }
 
 
@@ -147,6 +152,7 @@ create Domain DO_PRENOM {
 	formatter : FMT_DEFAULT
 	constraint : [CK_MAX_LENGTH_50]
 	storeType : "VARCHAR(50)"
+    indexType : "text_fr"
 }
 
 create Domain DO_TAILLE_FICHIER {
@@ -180,4 +186,5 @@ create Domain DO_TEXTE {
 	dataType : String
 	formatter : FMT_DEFAULT
 	storeType : "TEXT"
+    indexType : "text_fr"
 }

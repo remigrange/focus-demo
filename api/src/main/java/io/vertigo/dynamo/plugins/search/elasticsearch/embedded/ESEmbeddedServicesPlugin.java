@@ -22,6 +22,7 @@ import io.vertigo.commons.codec.CodecManager;
 import io.vertigo.commons.resource.ResourceManager;
 import io.vertigo.dynamo.plugins.search.elasticsearch.AbstractESServicesPlugin;
 import io.vertigo.lang.Assertion;
+import io.vertigo.lang.Option;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -43,22 +44,28 @@ import org.elasticsearch.node.NodeBuilder;
  * @author pchretien, npiedeloup
  */
 public final class ESEmbeddedServicesPlugin extends AbstractESServicesPlugin {
-	/** url du serveur elasticSearch.  */
+
+	/** url du serveur elasticSearch. */
 	private final URL elasticSearchHomeURL;
 
 	/**
-	 * Constructeur
+	 * Constructeur.
+	 *
 	 * @param elasticSearchHome URL du serveur SOLR
 	 * @param cores Liste des indexes
 	 * @param rowsPerQuery Nombre d'élément retourné par query
 	 * @param codecManager Manager des codecs
 	 * @param resourceManager Manager d'accès aux ressources
+	 * @param configFile Fichier de configuration des indexs
 	 */
 	@Inject
-	public ESEmbeddedServicesPlugin(@Named("home") final String elasticSearchHome, @Named("cores") final String cores, @Named("rowsPerQuery") final int rowsPerQuery, final CodecManager codecManager, final ResourceManager resourceManager) {
-		super(cores, rowsPerQuery, codecManager);
+	public ESEmbeddedServicesPlugin(@Named("home") final String elasticSearchHome, @Named("cores") final String cores,
+			@Named("rowsPerQuery") final int rowsPerQuery, @Named("config.file") final Option<String> configFile,
+			final CodecManager codecManager, final ResourceManager resourceManager) {
+		// Em node embbedded, on force reconstruit les index avec des settings incorrects
+		super(cores, rowsPerQuery, configFile, codecManager, resourceManager, true);
 		Assertion.checkArgNotEmpty(elasticSearchHome);
-		//-----
+		// -----
 		elasticSearchHomeURL = resourceManager.resolve(elasticSearchHome);
 	}
 
@@ -70,26 +77,25 @@ public final class ESEmbeddedServicesPlugin extends AbstractESServicesPlugin {
 
 	private static Node createNode(final URL esHomeURL) {
 		Assertion.checkNotNull(esHomeURL);
-		//-----
+		// -----
 		final File home;
 		try {
 			home = new File(URLDecoder.decode(esHomeURL.getFile(), "UTF-8"));
 		} catch (final UnsupportedEncodingException e) {
 			throw new RuntimeException("Error de parametrage du ElasticSearchHome " + esHomeURL, e);
 		}
-		Assertion.checkArgument(home.exists() && home.isDirectory(), "Le ElasticSearchHome : {0} n''existe pas, ou n''est pas un répertoire.", home.getAbsolutePath());
-		Assertion.checkArgument(home.canWrite(), "L''application n''a pas les droits d''écriture sur le ElasticSearchHome : {0}", home.getAbsolutePath());
-		return new NodeBuilder()
-		.settings(buildNodeSettings(home.getAbsolutePath()))
-		.local(true)
-		.build();
+		Assertion.checkArgument(home.exists() && home.isDirectory(),
+				"Le ElasticSearchHome : {0} n''existe pas, ou n''est pas un répertoire.", home.getAbsolutePath());
+		Assertion
+		.checkArgument(home.canWrite(),
+				"L''application n''a pas les droits d''écriture sur le ElasticSearchHome : {0}",
+				home.getAbsolutePath());
+		return new NodeBuilder().settings(buildNodeSettings(home.getAbsolutePath())).local(true).build();
 	}
 
 	private static Settings buildNodeSettings(final String homePath) {
-		//Build settings
-		return ImmutableSettings.settingsBuilder()
-				.put("node.name", "es-embedded-node-" + System.currentTimeMillis())
-				.put("path.home", homePath)
-				.build();
+		// Build settings
+		return ImmutableSettings.settingsBuilder().put("node.name", "es-embedded-node-" + System.currentTimeMillis())
+				.put("path.home", homePath).build();
 	}
 }

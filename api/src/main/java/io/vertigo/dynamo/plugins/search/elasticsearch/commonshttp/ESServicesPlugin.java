@@ -19,8 +19,10 @@
 package io.vertigo.dynamo.plugins.search.elasticsearch.commonshttp;
 
 import io.vertigo.commons.codec.CodecManager;
+import io.vertigo.commons.resource.ResourceManager;
 import io.vertigo.dynamo.plugins.search.elasticsearch.AbstractESServicesPlugin;
 import io.vertigo.lang.Assertion;
+import io.vertigo.lang.Option;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -50,18 +52,26 @@ public final class ESServicesPlugin extends AbstractESServicesPlugin {
 	 * @param rowsPerQuery Liste des indexes
 	 * @param codecManager Manager des codecs
 	 * @param clusterName : nom du cluster à rejoindre
+	 * @param cleanIndex : nettoyage des index si problème settings
+	 * @param configFile Fichier de configuration des indexs
+	 * @param resourceManager Manager des resources
 	 */
 	@Inject
 	public ESServicesPlugin(@Named("servers.names") final String serversNamesStr, @Named("cores") final String cores,
-			@Named("rowsPerQuery") final int rowsPerQuery, final CodecManager codecManager,
-			@Named("cluster.name") final String clusterName) {
-		super(cores, rowsPerQuery, codecManager);
+			@Named("rowsPerQuery") final int rowsPerQuery, @Named("cluster.name") final String clusterName,
+			@Named("clean.index") final Option<Boolean> cleanIndex,
+			@Named("config.file") final Option<String> configFile, final CodecManager codecManager,
+			final ResourceManager resourceManager) {
+		super(cores, rowsPerQuery, configFile, codecManager, resourceManager, cleanIndex.isDefined()
+				? cleanIndex.get()
+						: false);
 		Assertion.checkArgNotEmpty(serversNamesStr,
 				"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
 		Assertion.checkArgument(!serversNamesStr.contains(";"),
 				"Il faut définir les urls des serveurs ElasticSearch (ex : host1:3889,host2:3889). Séparateur : ','");
 		Assertion.checkArgNotEmpty(clusterName, "Cluster's name must be defined");
-		Assertion.checkArgument(!"elasticsearch".equals(clusterName), "You have to define a cluster name different from the default one");
+		Assertion.checkArgument(!"elasticsearch".equals(clusterName),
+				"You have to define a cluster name different from the default one");
 		// ---------------------------------------------------------------------
 		serversNames = serversNamesStr.split(",");
 		this.clusterName = clusterName;
@@ -70,10 +80,7 @@ public final class ESServicesPlugin extends AbstractESServicesPlugin {
 	/** {@inheritDoc} */
 	@Override
 	protected Node createNode() {
-		return new NodeBuilder()
-		.settings(buildNodeSettings())
-		.client(true)
-		.build();
+		return new NodeBuilder().settings(buildNodeSettings()).client(true).build();
 	}
 
 	private Settings buildNodeSettings() {
@@ -84,8 +91,7 @@ public final class ESServicesPlugin extends AbstractESServicesPlugin {
 				// .put("discovery.zen.fd.ping_timeout", "30s")
 				// .put("discovery.zen.minimum_master_nodes", 2)
 				.put("discovery.zen.ping.multicast.enabled", false)
-				.putArray("discovery.zen.ping.unicast.hosts", serversNames)
-				.put("cluster.name", clusterName)
+				.putArray("discovery.zen.ping.unicast.hosts", serversNames).put("cluster.name", clusterName)
 				// .put("index.store.type", "memory")
 				// .put("index.store.fs.memory.enabled", "true")
 				// .put("gateway.type", "none")
