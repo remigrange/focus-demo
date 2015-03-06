@@ -3,6 +3,6 @@
 <application-config>
 	<config name="search">
 		<property name="maxRows" value="500" />
-		<property name="clusterCard" value="1000" />
+		<property name="clusterCard" value="4000" />
 	</config>
 </application-config>

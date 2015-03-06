@@ -4,7 +4,7 @@
 		<component api="SearchManager" class="io.vertigo.dynamo.impl.search.SearchManagerImpl" initClass="rodolphe.demo.boot.initializer.SearchManagerInitializer">
 			<plugin
 				class="io.vertigo.dynamo.plugins.search.elasticsearch.embedded.ESEmbeddedServicesPlugin">
-				<param name="home" value="boot" />
+				<param name="home" value="../classes/boot" />
 				<param name="cores" value="IDX_MOVIE" />
 				<param name="rowsPerQuery" value="50" />
 				<param name="config.file" value="boot/elasticsearch.yml" />
