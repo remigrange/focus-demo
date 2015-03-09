@@ -7,8 +7,13 @@ import io.vertigo.core.Home;
 import io.vertigo.core.spaces.component.ComponentInitializer;
 import io.vertigo.dynamo.collections.metamodel.FacetDefinition;
 import io.vertigo.dynamo.collections.metamodel.FacetedQueryDefinition;
+import io.vertigo.dynamo.domain.metamodel.DtDefinition;
+import io.vertigo.dynamo.domain.metamodel.DtField;
+import io.vertigo.dynamo.domain.util.DtObjectUtil;
 import io.vertigo.dynamo.search.SearchManager;
+import io.vertigo.lang.MessageText;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,5 +48,16 @@ public class SearchManagerInitializer implements ComponentInitializer<SearchMana
 
 	private void initQueryWithFacet(final FacetedSearchConst search) {
 		//
+		//On ajoute facette pour runtime
+		final List<FacetDefinition> facetDefinitionList = new ArrayList<FacetDefinition>();
+		final DtDefinition indexDef = DtObjectUtil.findDtDefinition(search.getIndexClassname());
+		for (final FacetConst facet : search.getFacetConstTab()) {
+			final DtField dispField = indexDef.getField(facet.getField());
+			final FacetDefinition facetDefinition = FacetDefinition.createFacetDefinitionByTerm(facet.name(), dispField, new MessageText(facet.getFacetName(), null));
+			Home.getDefinitionSpace().put(facetDefinition, FacetDefinition.class);
+			facetDefinitionList.add(facetDefinition);
+		}
+		final FacetedQueryDefinition queryDefinition = new FacetedQueryDefinition(search.name(), facetDefinitionList);
+		Home.getDefinitionSpace().put(queryDefinition, FacetedQueryDefinition.class);
 	}
 }
