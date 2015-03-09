@@ -1,11 +1,11 @@
 package rodolphe.demo.services.movie;
 
-import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.lang.Component;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
-import rodolphe.demo.domain.movies.SearchRet;
+import rodolphe.demo.services.search.SearchCriterium;
 
 /**
  * Services about Movie.
@@ -15,18 +15,11 @@ import rodolphe.demo.domain.movies.SearchRet;
 public interface MovieServices  extends Component {
 
 	/**
-	 * Search movies
-	 * @param searchText search criteria
-	 * @return search result.
-	 */
-	DtList<SearchRet> getMovies(String searchText);
-
-	/**
 	 * search movies by criteria.
 	 * @param crit criteria
 	 * @return result
 	 */
-	DtList<MovieResult> getMoviesByCriteria(MovieCriteria crit);
+	FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(MovieCriteria crit);
 	/**
 	 * Get a movie by its primary key.
 	 * @param movId primary key
