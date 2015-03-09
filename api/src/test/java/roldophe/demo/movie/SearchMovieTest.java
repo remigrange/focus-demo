@@ -70,7 +70,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 	/** {@inheritDoc} */
 	@Override
 	protected DtList<MovieResult> getListByCritere(final MovieCriteria critere) {
-		return movieServices.getMoviesByCriteria(critere);
+		return movieServices.getMoviesByCriteria(critere).getDtList();
 	}
 
 	/* (non-Javadoc)
