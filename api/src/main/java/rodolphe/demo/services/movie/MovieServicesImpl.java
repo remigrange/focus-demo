@@ -1,7 +1,11 @@
 package rodolphe.demo.services.movie;
 
+import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.transaction.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,12 +35,19 @@ public class MovieServicesImpl implements MovieServices {
 	 */
 	/** {@inheritDoc} */
 	@Override
-	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(final MovieCriteria crit) {
+	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(final MovieCriteria crit, final Facet ...facets) {
 		/*final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
 				FacetedSearchConst.QRY_MOVIE_WO_FCT.getQuery());*/
 		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
 				FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
 		criteria.setCriteria(crit);
+		if(facets!=null && facets.length>0){
+			final List<Facet> facetList = new ArrayList<Facet>();
+			for(final Facet facet : facets){
+				facetList.add(facet);
+			}
+			criteria.setFacets(facetList);
+		}
 		final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> res = searchServices.searchMovie(criteria);
 		return res;//.getDtList();
 	}

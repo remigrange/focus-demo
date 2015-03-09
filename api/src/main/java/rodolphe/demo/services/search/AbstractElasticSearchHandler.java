@@ -7,6 +7,8 @@ import io.vertigo.commons.config.ConfigManager;
 import io.vertigo.core.Home;
 import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.metamodel.FacetedQueryDefinition;
+import io.vertigo.dynamo.collections.model.Facet;
+import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQuery;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.metamodel.DataType;
@@ -36,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import javax.inject.Inject;
@@ -364,6 +367,12 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 					// Restauration des facettes de la première recherche.
 					// TODO
 					// facetFilter.add(....)
+					for(final Facet facet : criterium.getFacets()){
+						for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+							facetFilter.add(new ListFilter(entry.getKey().getLabel().getDisplay() ));
+						}
+
+					}
 				}
 				final FacetedQuery facetedQuery = new FacetedQuery(facetedQueryDefinition, facetFilter);
 				final FacetedQueryResult<R, SearchQuery> result = searchManager.loadList(searchQuery, facetedQuery);

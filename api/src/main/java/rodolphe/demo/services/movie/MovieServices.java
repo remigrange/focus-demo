@@ -1,5 +1,6 @@
 package rodolphe.demo.services.movie;
 
+import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.lang.Component;
 import rodolphe.demo.domain.movies.Movie;
@@ -19,7 +20,7 @@ public interface MovieServices  extends Component {
 	 * @param crit criteria
 	 * @return result
 	 */
-	FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(MovieCriteria crit);
+	FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(MovieCriteria crit, Facet ... facets);
 	/**
 	 * Get a movie by its primary key.
 	 * @param movId primary key

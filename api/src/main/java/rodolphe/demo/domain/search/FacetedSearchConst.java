@@ -17,7 +17,7 @@ public enum FacetedSearchConst implements CodeEnum {
 	/** Recherche de movie sans facette. */
 	QRY_MOVIE_WO_FCT(),
 	/** Recherche de movie avec facettes.*/
-	QRY_MOVIE_WITH_FCT(MovieIndex.class,FacetConst.FCT_MOVIE_RUNTIME, FacetConst.FCT_MOVIE_RELEASED_DATE);
+	QRY_MOVIE_WITH_FCT(MovieIndex.class,FacetConst.FCT_MOVIE_RUNTIME);
 	private final FacetConst[] facetConstTab;
 	private final Class indexClassname;
 

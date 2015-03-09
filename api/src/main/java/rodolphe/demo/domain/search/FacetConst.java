@@ -15,8 +15,7 @@ import rodolphe.demo.domain.DtDefinitions.MovieIndexFields;
 public enum FacetConst implements CodeEnum {
 	//
 	/** Recherche de movie avec facette sur le runtime */
-	FCT_MOVIE_RUNTIME (MovieIndexFields.RUNTIME, "Runtime"),
-	FCT_MOVIE_RELEASED_DATE (MovieIndexFields.RELEASED, "Released");
+	FCT_MOVIE_RUNTIME (MovieIndexFields.RUNTIME, "Runtime");
 
 	private DtFieldName field;
 	private String facetName;
