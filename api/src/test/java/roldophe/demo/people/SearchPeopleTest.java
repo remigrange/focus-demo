@@ -34,19 +34,24 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
 	/** {@inheritDoc} */
 	@Override
 	protected PeopleCriteria getCritereForEsSearchWithUniqueResultAsSU() {
-		final People peo = getNewPeople();
+		final People peo = createNewPeople();
 		final PeopleCriteria crit = new  PeopleCriteria();
 		crit.setPeoId(peo.getPeoId());
 		return crit;
 	}
 
-	private People getNewPeople() {
+	public static People getNewPeople() {
 		final People peo = new People();
 		peo.setPeoName("TNR_NOM TNR_PRENOM");
 		peo.setImdbid("id");
 		peo.setFirstName("TNR_PRENOM");
 		peo.setLastName("TNR_NOM");
 		peo.setTitCd("M");
+
+		return peo;
+	}
+	private People createNewPeople() {
+		final People peo = getNewPeople();
 		peopleServices.savePeople(peo);
 		return peo;
 	}

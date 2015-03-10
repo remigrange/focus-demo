@@ -1,15 +1,21 @@
 package rodolphe.demo.services.people;
 
-import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
+import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 
 import javax.inject.Inject;
 
 import rodolphe.demo.dao.people.PeopleDAO;
+import rodolphe.demo.dao.people.RolePeopleDAO;
+import rodolphe.demo.domain.DtDefinitions.RolePeopleFields;
+import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.people.RolePeople;
 import rodolphe.demo.domain.search.FacetedSearchConst;
+import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
 import rodolphe.demo.services.search.SearchServices;
 
@@ -24,6 +30,8 @@ public class PeopleServicesImpl implements PeopleServices {
 	private PeopleDAO peopleDAO;
 	@Inject
 	private SearchServices searchServices;
+	@Inject
+	private RolePeopleDAO rolePeopleDAO ;
 
 
 	/* (non-Javadoc)
@@ -32,20 +40,13 @@ public class PeopleServicesImpl implements PeopleServices {
 	/** {@inheritDoc} */
 	@Override
 	public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
-			final PeopleCriteria crit, final Facet... facets) {
+			final PeopleCriteria crit, final FacetSelection ...selection) {
 		final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
 				FacetedSearchConst.QRY_PEOPLE_WO_FCT.getQuery());
-		/*final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
-				FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
 		criteria.setCriteria(crit);
-		if(facets!=null && facets.length>0){
-			final List<Facet> facetList = new ArrayList<Facet>();
-			for(final Facet facet : facets){
-				facetList.add(facet);
-			}
-			criteria.setFacets(facetList);
-		}*/
-		criteria.setCriteria(crit);
+		for (final FacetSelection sel : selection) {
+			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
+		}
 		final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> res = searchServices.searchPeople(criteria);
 		return res;
 	}
@@ -72,6 +73,22 @@ public class PeopleServicesImpl implements PeopleServices {
 		}
 		searchServices.indexPeople(people.getPeoId());
 		return people;
+	}
+
+	/* (non-Javadoc)
+	 * @see rodolphe.demo.services.people.PeopleServices#getMoviesByPeo(java.lang.Long)
+	 */
+	/** {@inheritDoc} */
+	@Override
+	public DtList<Movie> getMoviesByPeo(final Long peoId) {
+		final DtList<Movie> ret = new DtList<>(Movie.class);
+		final FilterCriteriaBuilder<RolePeople> builder= new FilterCriteriaBuilder<>();
+		builder.withFilter(RolePeopleFields.PEO_ID.name(), peoId);
+		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(builder.build(), Integer.MAX_VALUE);
+		for(final RolePeople  rolePeople : rolePeopleList){
+			ret.add(rolePeople.getMovie());
+		}
+		return ret;
 	}
 
 }

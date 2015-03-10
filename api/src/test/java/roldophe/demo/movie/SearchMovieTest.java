@@ -44,13 +44,13 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 	/** {@inheritDoc} */
 	@Override
 	protected MovieCriteria getCritereForEsSearchWithUniqueResultAsSU() {
-		final Movie mov= getNewMovie();
+		final Movie mov= createNewMovie();
 		final MovieCriteria crit = new MovieCriteria();
 		crit.setMovId(mov.getMovId());
 		return crit;
 	}
 
-	private Movie getNewMovie() {
+	public static  Movie getNewMovie() {
 		final Movie mov = new Movie();
 		mov.setDescription("Movie for non regression testing");
 		mov.setImdbid("id");
@@ -58,6 +58,11 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		mov.setReleased(DateUtil.newDate());
 		mov.setRuntime(3);
 		mov.setTitle("NRT title");
+		return mov;
+	}
+
+	private Movie createNewMovie(){
+		final Movie mov= getNewMovie();
 		movieServices.saveMovie(mov);
 		return mov;
 	}

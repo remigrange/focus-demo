@@ -1,6 +1,7 @@
 package rodolphe.demo.webservices.people;
 
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
+import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.vega.rest.RestfulService;
 import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.GET;
@@ -9,6 +10,7 @@ import io.vertigo.vega.rest.stereotype.PathParam;
 
 import javax.inject.Inject;
 
+import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
@@ -44,7 +46,7 @@ public class WsPeople implements RestfulService{
 	 * @param peoId identifier
 	 * @return people
 	 */
-	@GET("people/{id}")
+	@GET("/people/{id}")
 	@AnonymousAccessAllowed
 	public People getPeople(@PathParam("id") final long peoId){
 		return peopleServices.getPeople(peoId);
@@ -55,10 +57,21 @@ public class WsPeople implements RestfulService{
 	 * @param people people
 	 * @return people
 	 */
-	@POST("people/new")
+	@POST("/people/new")
 	@AnonymousAccessAllowed
 	public People savePeople(final People people){
 		return peopleServices.savePeople(people);
+	}
+
+	/**
+	 * Get movies in which the person acts.
+	 * @param peoId people identifier
+	 * @return movies list
+	 */
+	@GET("/moviesByPeo/{id}")
+	@AnonymousAccessAllowed
+	public DtList<Movie> getMoviesByPeo(@PathParam("id") final Long peoId){
+		return peopleServices.getMoviesByPeo(peoId);
 	}
 
 }

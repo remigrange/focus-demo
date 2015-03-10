@@ -1,7 +1,6 @@
 package roldophe.demo.movie;
 
 import io.vertigo.dynamo.domain.model.DtList;
-import io.vertigo.util.DateUtil;
 
 import javax.inject.Inject;
 
@@ -15,6 +14,7 @@ import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.RolePeople;
 import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.people.PeopleServices;
+import roldophe.demo.people.SearchPeopleTest;
 import roldophe.demo.tools.AbstractRodolpheTestCase;
 
 public class MovieTest extends AbstractRodolpheTestCase{
@@ -73,31 +73,20 @@ public class MovieTest extends AbstractRodolpheTestCase{
 		rolePeople.setPeoId(peo.getPeoId());
 		rolePeople.setRlmCd(CodeRoleMovie.producer.name());
 		rolePeopleDAO.create(rolePeople);
-		final DtList<People> producers =movieServices.getProducers(mov.getMovId());
+		final DtList<People> producers = movieServices.getProducers(mov.getMovId());
 		Assert.assertEquals(1, producers.size());
 	}
 
 
 
 	private Movie getNewMovie() {
-		final Movie mov = new Movie();
-		mov.setDescription("Movie for non regression testing");
-		mov.setImdbid("id");
-		mov.setMetadasJson("{meta:data}");
-		mov.setReleased(DateUtil.newDate());
-		mov.setRuntime(3);
-		mov.setTitle("NRT title");
+		final Movie mov = SearchMovieTest.getNewMovie();
 		movieServices.saveMovie(mov);
 		return mov;
 	}
 
 	private People getNewPeople() {
-		final People peo = new People();
-		peo.setPeoName("TNR_NOM TNR_PRENOM");
-		peo.setImdbid("id");
-		peo.setFirstName("TNR_PRENOM");
-		peo.setLastName("TNR_NOM");
-		peo.setTitCd("M");
+		final People peo = SearchPeopleTest.getNewPeople();
 		peopleServices.savePeople(peo);
 		return peo;
 	}

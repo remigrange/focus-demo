@@ -1,11 +1,13 @@
 package rodolphe.demo.services.people;
 
-import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
+import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.lang.Component;
+import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
 
 /**
@@ -20,7 +22,7 @@ public interface PeopleServices  extends Component {
 	 * @param crit criteria
 	 * @return result
 	 */
-	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit, Facet ... facets);
+	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit, FacetSelection ...selection);
 
 
 	/**
@@ -36,4 +38,11 @@ public interface PeopleServices  extends Component {
 	 * @return peopel
 	 */
 	People savePeople(People people);
+
+	/**
+	 * Get movies in which the person acts.
+	 * @param peoId people identifier
+	 * @return movies list
+	 */
+	DtList<Movie> getMoviesByPeo(Long peoId);
 }
