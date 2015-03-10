@@ -96,6 +96,40 @@ module.exports = {
         "imdbid" : "imdbID",
         "titCd" : "Title"
     },
+    "peopleCriteria": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name"
+    },
+    "peopleIndex": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
+    "peopleResult": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
+    "peopleView": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
     "rolePeople": {
         "rlpId" : "RLP_ID",
         "roleName" : "Role Name",

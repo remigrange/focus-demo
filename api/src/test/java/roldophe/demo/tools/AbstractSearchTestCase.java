@@ -307,7 +307,7 @@ public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObj
 
 	/**
 	 * Teste la recherche sur un critère donné pour s'assurer que la recherche est bien en commence par, insensible à la
-	 * casse et aux accents.
+	 * casse mais pas aux accents.
 	 *
 	 * @param critere critère donnant un résulat unique
 	 * @param critFldName nom du champ du critère
@@ -322,6 +322,21 @@ public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObj
 			final DtObject saveData) {
 		verifierRechercheTexteBegin(critere, critFldName, data, dataFldName, facade, saveMethode, saveData, false,
 				false);
+	}
+	/**
+	 * Teste la recherche sur un critère donné pour s'assurer que la recherche est bien en commence par, insensible à la
+	 * casse mais pas aux accents.
+	 *
+	 * @param critere critère donnant un résulat unique
+	 * @param critFldName nom du champ du critère
+	 * @param data objet à sauvagarder associé au résultat unique.
+	 * @param dataFldName nom du champ de la donnée
+	 * @param facade Objet permettant de faire la sauvegarde
+	 * @param saveMethode méthode de sauvegarde
+	 */
+	protected final void verifierRechercheTokenBegin(final C critere, final DtFieldName critFldName,
+			final DtObject data, final DtFieldName dataFldName, final Object facade, final String saveMethode) {
+		verifierRechercheTexteBegin(critere, critFldName, data, dataFldName, facade, saveMethode, data, false, true);
 	}
 
 	/**

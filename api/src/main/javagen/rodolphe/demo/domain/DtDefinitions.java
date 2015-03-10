@@ -41,6 +41,14 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			SearchRet(rodolphe.demo.domain.movies.SearchRet.class),
 			/** Objet de données People. */
 			People(rodolphe.demo.domain.people.People.class),
+			/** Objet de données PeopleCriteria. */
+			PeopleCriteria(rodolphe.demo.domain.people.PeopleCriteria.class),
+			/** Objet de données PeopleIndex. */
+			PeopleIndex(rodolphe.demo.domain.people.PeopleIndex.class),
+			/** Objet de données PeopleResult. */
+			PeopleResult(rodolphe.demo.domain.people.PeopleResult.class),
+			/** Objet de données PeopleView. */
+			PeopleView(rodolphe.demo.domain.people.PeopleView.class),
 			/** Objet de données RolePeople. */
 			RolePeople(rodolphe.demo.domain.people.RolePeople.class),
 			/** Objet de données ApplicationUser. */
@@ -277,6 +285,82 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Title'. */
 		TIT_CD,
+	}
+
+	/**
+	 * Enumération des champs de PeopleCriteria.
+	 */
+	public enum PeopleCriteriaFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		PEO_ID,
+		/** Propriété 'Last name'. */
+		LAST_NAME,
+		/** Propriété 'First Name'. */
+		FIRST_NAME,
+		/** Propriété 'Title'. */
+		TIT_CD,
+		/** Propriété 'Name'. */
+		PEO_NAME,
+	}
+
+	/**
+	 * Enumération des champs de PeopleIndex.
+	 */
+	public enum PeopleIndexFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		PEO_ID,
+		/** Propriété 'Last name'. */
+		LAST_NAME,
+		/** Propriété 'First Name'. */
+		FIRST_NAME,
+		/** Propriété 'Title'. */
+		TIT_CD,
+		/** Propriété 'Name'. */
+		PEO_NAME,
+		/** Propriété 'Id imdb'. */
+		IMDBID,
+		/** Propriété 'rank'. */
+		RANK,
+	}
+
+	/**
+	 * Enumération des champs de PeopleResult.
+	 */
+	public enum PeopleResultFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		PEO_ID,
+		/** Propriété 'Last name'. */
+		LAST_NAME,
+		/** Propriété 'First Name'. */
+		FIRST_NAME,
+		/** Propriété 'Title'. */
+		TIT_CD,
+		/** Propriété 'Name'. */
+		PEO_NAME,
+		/** Propriété 'Id imdb'. */
+		IMDBID,
+		/** Propriété 'rank'. */
+		RANK,
+	}
+
+	/**
+	 * Enumération des champs de PeopleView.
+	 */
+	public enum PeopleViewFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		PEO_ID,
+		/** Propriété 'Last name'. */
+		LAST_NAME,
+		/** Propriété 'First Name'. */
+		FIRST_NAME,
+		/** Propriété 'Title'. */
+		TIT_CD,
+		/** Propriété 'Name'. */
+		PEO_NAME,
+		/** Propriété 'Id imdb'. */
+		IMDBID,
+		/** Propriété 'rank'. */
+		RANK,
 	}
 
 	/**

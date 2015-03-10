@@ -24,7 +24,6 @@
 </head>
 <body>
 	<div id="container">
-		<h1>Hello Word</h1>
 	</div>
 	<script>require('initialize');</script>
 	

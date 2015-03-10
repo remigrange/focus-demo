@@ -6,7 +6,7 @@ index :
                            filter : [standard]
                     text_fr :
                            tokenizer : standard
-                           filter : [standard, lowercase]
+                           filter : [standard, lowercase, asciifolding]
                     sep_virgule :
                            tokenizer : sep_virgule
                            filter : [standard]

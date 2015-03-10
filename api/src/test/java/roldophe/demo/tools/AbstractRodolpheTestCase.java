@@ -26,6 +26,7 @@ import org.junit.Assert;
 
 import rodolphe.demo.services.search.ElasticSearchHandler;
 import rodolphe.demo.services.search.MovieSearchHandler;
+import rodolphe.demo.services.search.PeopleSearchHandler;
 import rodolphe.demo.util.MemorizeTnrData;
 
 /**
@@ -52,6 +53,7 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	public AbstractRodolpheTestCase() {
 		super();
 		memComponent.add(MovieSearchHandler.class);
+		memComponent.add(PeopleSearchHandler.class);
 
 	}
 

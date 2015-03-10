@@ -136,6 +136,7 @@ create Domain DO_IDENTIFIANT_CODE {
 	formatter : FMT_DEFAULT
 	constraint : [CK_MAX_LENGTH_100]
 	storeType : "VARCHAR(100)"
+	indexType : "text_fr"
 }
 
 create Domain DO_NOM {

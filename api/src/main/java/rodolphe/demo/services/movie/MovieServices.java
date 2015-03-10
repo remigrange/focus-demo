@@ -30,7 +30,8 @@ public interface MovieServices  extends Component {
 	/**
 	 * Create/update a movie in a database.
 	 * @param mov move to save in database
+	 * @return movie
 	 */
-	void saveMovie(Movie mov);
+	Movie saveMovie(Movie mov);
 
 }

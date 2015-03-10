@@ -1,1 +1,43 @@
 package rodolphe.demo.domain.people
+
+create DtDefinition DT_PEOPLE_VIEW {
+	persistent:"false"
+	key PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
+	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
+	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
+	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
+	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
+	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field RANK {domain: DO_ID label: "rank" notNull:"true" }
+}
+
+create DtDefinition DT_PEOPLE_CRITERIA {
+	persistent:"false"
+	field PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
+	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
+	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
+	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
+	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
+}
+
+create DtDefinition DT_PEOPLE_INDEX {
+	persistent:"false"
+	field PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
+	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
+	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
+	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
+	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
+	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field RANK {domain: DO_ID label: "rank" notNull:"true" }
+}
+
+create DtDefinition DT_PEOPLE_RESULT {
+	persistent:"false"
+	field PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
+	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
+	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
+	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
+	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
+	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field RANK {domain: DO_ID label: "rank" notNull:"true" }
+}

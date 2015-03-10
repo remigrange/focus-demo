@@ -123,6 +123,122 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"movieCriteria": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			}		
+	},
+	"movieIndex": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"movieResult": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"metadasJson": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			}		
+	},
+	"movieView": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"metadasJson": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
 	"searchRet": {
 			"type": {
 				"domain": "DO_LIBELLE_50",
@@ -169,6 +285,118 @@ module.exports = {
 			"titCd": {
 				"domain": "DO_IDENTIFIANT_CODE",
 				"required": false
+			}		
+	},
+	"peopleCriteria": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			}		
+	},
+	"peopleIndex": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"peopleResult": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"peopleView": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
 			}		
 	},
 	"rolePeople": {

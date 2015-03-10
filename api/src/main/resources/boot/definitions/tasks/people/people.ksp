@@ -1,4 +1,4 @@
-package rodolphe.demo.domain.people
+package rodolphe.demo.dao.people
 
 create Task TK_GET_PEOPLE_BY_CRITERIA {
     className : "io.vertigo.dynamox.task.TaskEngineSelect"
@@ -12,4 +12,39 @@ create Task TK_GET_PEOPLE_BY_CRITERIA {
 			"
 	attribute SEARCH_TEXT				{domain : DO_COMMENTAIRE				notNull:"true" 	inOut :"in"}
     attribute DTC_PEOPLE	 			{domain : DO_DT_PEOPLE_DTC 			notNull:"true" 	inOut :"out"}
+}
+
+create Task TK_GET_PEOPLE_VIEW {
+	className : "io.vertigo.dynamox.task.TaskEngineSelect"
+    request : " Select 
+    				v.*
+    			From
+    				(
+    				Select 
+    					peo_id, last_name, first_name, imdbid, tit_cd, peo_name, peo_id as rank
+    				From
+    					people
+    				) v
+    			Where
+    				v.rank >= #MIN_RANK#
+    			Order by
+    				v.rank
+    			limit <%= maxRows %>
+     "
+    attribute MIN_RANK {domain : DO_ENTIER notNull:"true" inOut :"in"}
+    attribute MAX_ROWS {domain : DO_ENTIER notNull:"true" inOut :"in"}
+    attribute DTC_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTC notNull:"true" inOut :"out"}
+}
+
+create Task TK_GET_PEOPLE_VIEW_BY_PEO_ID {
+	className : "io.vertigo.dynamox.task.TaskEngineSelect"
+    request : " Select 
+    				peo_id, last_name, first_name, imdbid, tit_cd, peo_name, peo_id as rank
+    			From
+    				people
+    			Where
+    				peo_id = #PEOP_ID#
+     "
+    attribute PEOP_ID {domain : DO_ID notNull:"true" inOut :"in"}
+    attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}
 }

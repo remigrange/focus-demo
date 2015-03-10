@@ -5,3 +5,9 @@ create IndexDefinition IDX_MOVIE {
     dtIndex : DT_MOVIE_INDEX
 }
 
+create IndexDefinition IDX_PEOPLE {
+	dtResult : DT_PEOPLE_RESULT
+    dtIndex : DT_PEOPLE_INDEX
+}
+
+

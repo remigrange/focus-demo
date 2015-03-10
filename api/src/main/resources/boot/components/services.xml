@@ -8,6 +8,7 @@
 
 	<module name="RODOLPHE-PAO" api="false" inheritance="java.lang.Object">
 		<component class="rodolphe.demo.dao.movies.MoviesPAO"/>
+		<component class="rodolphe.demo.dao.people.PeoplePAO"/>
 	</module>
 	
 	<module name="RODOLPHE-HELPER" api="false" inheritance="java.lang.Object">
@@ -16,6 +17,7 @@
 
 	<module name="RODOLPHE-SEARCH-HANDLER" api="false" inheritance="rodolphe.demo.services.search.AbstractElasticSearchHandler">
 		<component class="rodolphe.demo.services.search.MovieSearchHandler"/>
+		<component class="rodolphe.demo.services.search.PeopleSearchHandler"/>
 	</module>
 
 	<module name="RODOLPHE-ASPECT" inheritance="java.lang.Object" >

@@ -46,6 +46,41 @@ module.exports = {
         "metadasJson" : "metadas Json",
         "imdbid" : "imdbID"
     },
+    "movieCriteria": {
+        "movId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "runtime" : "Runtime",
+        "description" : "Description"
+    },
+    "movieIndex": {
+        "movId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "runtime" : "Runtime",
+        "description" : "Description",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
+    "movieResult": {
+        "movId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "runtime" : "Runtime",
+        "description" : "Description",
+        "metadasJson" : "Meta Data JSON",
+        "imdbid" : "Id imdb"
+    },
+    "movieView": {
+        "movId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "runtime" : "Runtime",
+        "description" : "Description",
+        "metadasJson" : "Meta Data JSON",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
     "searchRet": {
         "type" : "Type of the object",
         "field1" : "Field 1",
@@ -60,6 +95,40 @@ module.exports = {
         "peoName" : "Peo Name",
         "imdbid" : "imdbID",
         "titCd" : "Title"
+    },
+    "peopleCriteria": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name"
+    },
+    "peopleIndex": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
+    "peopleResult": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
+    "peopleView": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
     },
     "rolePeople": {
         "rlpId" : "RLP_ID",

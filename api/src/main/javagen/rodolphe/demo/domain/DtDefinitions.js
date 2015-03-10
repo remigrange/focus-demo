@@ -287,6 +287,118 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"peopleCriteria": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			}		
+	},
+	"peopleIndex": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"peopleResult": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"peopleView": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
 	"rolePeople": {
 			"rlpId": {
 				"domain": "DO_ID",

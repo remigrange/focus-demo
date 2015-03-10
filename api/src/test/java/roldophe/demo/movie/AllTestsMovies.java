@@ -16,6 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses(value = { //
 		MovieTest.class, //
 		SearchMovieTest.class, //
+		WsMovieTest.class, //
 })
 public class AllTestsMovies {
 	// Les annotations sont suffisantes.

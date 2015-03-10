@@ -49,7 +49,7 @@ public class MovieServicesImpl implements MovieServices {
 			criteria.setFacets(facetList);
 		}
 		final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> res = searchServices.searchMovie(criteria);
-		return res;//.getDtList();
+		return res;
 	}
 
 
@@ -70,13 +70,14 @@ public class MovieServicesImpl implements MovieServices {
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
-	public void saveMovie(final Movie mov) {
+	public Movie saveMovie(final Movie mov) {
 		if (mov.getMovId() == null) {
 			movieDAO.create(mov);
 		} else {
 			movieDAO.update(mov);
 		}
 		searchServices.indexMovie(mov.getMovId());
+		return mov;
 	}
 
 }
