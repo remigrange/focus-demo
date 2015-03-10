@@ -69,4 +69,6 @@ public class WsMovie implements RestfulService {
 	public DtList<People> getActors(@PathParam("id")  final Long movId) {
 		return movieServices.getActors(movId);
 	}
+
+
 }

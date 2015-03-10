@@ -4,6 +4,7 @@
 	<module name="RODOLPHE-DAO" api="false" inheritance="io.vertigo.dynamo.impl.persistence.util.DAOBroker">
 		<component class="rodolphe.demo.dao.people.PeopleDAO"/>
 		<component class="rodolphe.demo.dao.movies.MovieDAO"/>
+		<component class="rodolphe.demo.dao.people.RolePeopleDAO"/>
 	</module>
 
 	<module name="RODOLPHE-PAO" api="false" inheritance="java.lang.Object">

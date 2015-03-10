@@ -46,4 +46,20 @@ public interface MovieServices  extends Component {
 	 */
 	DtList<People> getActors(Long movId);
 
+	/**
+	 * Get movie's Producers.
+	 * @param movId moivie identifier
+	 * @return people list
+	 */
+	DtList<People> getProducers(Long movId);
+
+	/**
+	 * Get movie's Directors.
+	 * @param movId moivie identifier
+	 * @return people list
+	 */
+	DtList<People> getDirectors(Long movId);
+
+
+
 }

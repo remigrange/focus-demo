@@ -1,0 +1,11 @@
+package rodolphe.demo.domain
+
+alter DtDefinition DT_TITLE {
+	sortField : "LABEL"
+	displayField : "LABEL"
+}
+
+alter DtDefinition DT_ROLE_MOVIE {
+	sortField : "LABEL"
+	displayField : "LABEL"
+}
