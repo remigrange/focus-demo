@@ -1,13 +1,12 @@
 package rodolphe.demo.services.search;
 
+import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.metamodel.FacetedQueryDefinition;
-import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.domain.model.DtObject;
 import io.vertigo.lang.Assertion;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +19,6 @@ import java.util.Map;
 public class SearchCriterium<S extends DtObject> {
 
 	private S criteria;
-	private List<Facet> facets;
 	private final Map<String, FacetSelection> selectedFacetsMap;
 	private Integer maxRows;
 	private String sortFieldName; // Soit un champ indexé
@@ -49,12 +47,12 @@ public class SearchCriterium<S extends DtObject> {
 		Assertion.checkNotNull(source);
 		final SearchCriterium<S> target = new SearchCriterium<>(source.getFacetsDefinition());
 		target.setCriteria(source.getCriteria());
-		target.setFacets(source.getFacets());
+		//		target.setFacets(source.getFacets());
 		target.setMaxRows(source.getMaxRows());
 		target.setSortAsc(source.isSortAsc());
 		target.setSortFieldName(source.getSortFieldName());
 		for (final FacetSelection item : source.getSelectedFacets()) {
-			target.addFacet(item.getFacetName(), item.getFacetValueKey());
+			target.addFacet(item.getFacetName(), item.getFacetValueKey(), item.getFacetQuery());
 		}
 		return target;
 	}
@@ -140,23 +138,6 @@ public class SearchCriterium<S extends DtObject> {
 		this.maxRows = maxRows;
 	}
 
-	/**
-	 * Donne la valeur de facets.
-	 *
-	 * @return la valeur de facets.
-	 */
-	public List<Facet> getFacets() {
-		return facets;
-	}
-
-	/**
-	 * Affecte facets à facets.
-	 *
-	 * @param facets La nouvelle valeur de facets
-	 */
-	public void setFacets(final List<Facet> facets) {
-		this.facets = facets;
-	}
 
 	/**
 	 * Sélectionne une valeur de facette.
@@ -164,21 +145,12 @@ public class SearchCriterium<S extends DtObject> {
 	 * @param facetName Nom de la facette.
 	 * @param facetValueKey Valeur de la facette.
 	 */
-	public void addFacet(final String facetName, final String facetValueKey) {
+	public void addFacet(final String facetName, final String facetValueKey, final ListFilter facetQuery) {
 		Assertion.checkState(getFacetsDefinition().getFacetDefinition(facetName) != null, facetName + " inconnu");
-		selectedFacetsMap.put(facetName, new FacetSelection(facetName, facetValueKey));
+		selectedFacetsMap.put(facetName, new FacetSelection(facetName, facetValueKey, facetQuery));
 	}
 
-	/**
-	 * Sélectionne une valeur de facette.
-	 *
-	 * @param facetName Nom de la facette.
-	 * @param key Clé métier de la facette.
-	 */
-	public void addFacetByBusinessKey(final String facetName, final String key) {
-		final String facetValueKey = Integer.toHexString(key.hashCode());
-		addFacet(facetName, facetValueKey);
-	}
+
 
 	/**
 	 * Désélectionne une facette.

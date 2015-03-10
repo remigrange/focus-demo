@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.count.CountResponse;
@@ -199,6 +200,9 @@ final class ESStatement<I extends DtObject, R extends DtObject> {
 		final SearchRequestBuilder searchRequestBuilder = createSearchRequestBuilder(searchQuery, filtersQuery,
 				rowsPerQuery);
 		appendFacetDefinition(filtersQuery.getDefinition(), searchRequestBuilder);
+		if (Logger.getLogger(getClass()).isDebugEnabled()) {
+			Logger.getLogger(getClass()).debug(searchRequestBuilder.toString());
+		}
 		// System.out.println("Query:" + solrQuery.toString());
 		final SearchResponse queryResponse = searchRequestBuilder.execute().actionGet();
 		return translateQuery(queryResponse, searchQuery, filtersQuery);

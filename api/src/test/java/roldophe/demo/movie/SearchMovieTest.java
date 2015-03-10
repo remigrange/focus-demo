@@ -3,12 +3,18 @@
  */
 package roldophe.demo.movie;
 
+import io.vertigo.dynamo.collections.model.Facet;
+import io.vertigo.dynamo.collections.model.FacetValue;
+import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.util.DateBuilder;
 import io.vertigo.util.DateUtil;
 
+import java.util.Map.Entry;
+
 import javax.inject.Inject;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import rodolphe.demo.domain.DtDefinitions.MovieCriteriaFields;
@@ -17,7 +23,9 @@ import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
 import rodolphe.demo.services.movie.MovieServices;
+import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.MovieSearchHandler;
+import rodolphe.demo.services.search.SearchCriterium;
 import rodolphe.demo.util.MemorizeTnrData;
 import roldophe.demo.tools.AbstractEsSearchTestCase;
 
@@ -117,5 +125,48 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		checkResultSize(crit, 0);
 	}
 
+
+	/**
+	 * Test getMovies service.
+	 */
+	@Test
+	public void searchByTitleWithFacet(){
+		final MovieCriteria crit = new MovieCriteria();
+		crit.setTitle("Fantastic");
+		//1ere Recherche
+		Facet selectedFacet = null;
+		FacetValue selectedFacetValue = null;
+		long facetCount = 0L;
+		FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(crit);
+		for (final Facet facet : movies.getFacets()) {
+			if (selectedFacet == null) {
+				selectedFacet = facet;
+			}
+			getLogger().info(facet.toString());
+			getLogger().info(facet.getDefinition().getLabel().getDisplay());
+			for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+				if (selectedFacetValue == null) {
+					selectedFacetValue = entry.getKey();
+					facetCount = entry.getValue();
+				}
+				getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
+				getLogger().info("filter " + entry.getKey().getListFilter().getFilterValue());
+			}
+		}
+		getLogger().info("results : " + movies.getCount());
+		//Recherche avec une facette renseignée.
+		getLogger().info("facet filter : " +selectedFacetValue.getListFilter().getFilterValue());
+		final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(),selectedFacetValue.getLabel().getDisplay(), selectedFacetValue.getListFilter());
+		movies = movieServices.getMoviesByCriteria(crit, sel);
+		getLogger().info("results : " + movies.getCount());
+		Assert.assertEquals(facetCount, movies.getCount());
+		for (   final Facet  facetResult : movies.getFacets()) {
+			getLogger().info(facetResult.toString());
+			getLogger().info(facetResult.getDefinition().getLabel().getDisplay());
+			for(final Entry<FacetValue, Long> entry : facetResult.getFacetValues().entrySet()) {
+				getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
+			}
+		}
+	}
 
 }

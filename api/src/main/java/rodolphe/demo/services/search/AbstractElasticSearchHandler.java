@@ -7,8 +7,6 @@ import io.vertigo.commons.config.ConfigManager;
 import io.vertigo.core.Home;
 import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.metamodel.FacetedQueryDefinition;
-import io.vertigo.dynamo.collections.model.Facet;
-import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQuery;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.metamodel.DataType;
@@ -38,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import javax.inject.Inject;
@@ -363,22 +360,19 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 				logger.info("ES request " + searchQuery.getListFilter().getFilterValue());
 				// Cas d'un appel avec facettes.
 				final List<ListFilter> facetFilter = new ArrayList<>();
-				if (criterium.getFacets() != null) {
+				if (criterium.getSelectedFacets() != null) {
 					// Restauration des facettes de la première recherche.
 					// TODO
 					// facetFilter.add(....)
-					for(final Facet facet : criterium.getFacets()){
-						for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
-							facetFilter.add(new ListFilter(entry.getKey().getLabel().getDisplay() ));
-						}
-
+					for(final FacetSelection facetSel  : criterium.getSelectedFacets()) {
+						facetFilter.add(facetSel.getFacetQuery());
 					}
 				}
 				final FacetedQuery facetedQuery = new FacetedQuery(facetedQueryDefinition, facetFilter);
 				final FacetedQueryResult<R, SearchQuery> result = searchManager.loadList(searchQuery, facetedQuery);
 				final SearchCriterium<S> retCrit = SearchCriterium.clone(criterium);
 				// On met à jour les facettes
-				retCrit.setFacets(result.getFacets());
+				//				retCrit.setFacets(result.getFacets());
 				// On crée le bon objet de retour
 				// FIXME : problème des highlihts
 				final FacetedQueryResult<R, SearchCriterium<S>> res = new FacetedQueryResult<>(result.getFacetedQuery(),

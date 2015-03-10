@@ -2,14 +2,10 @@ package rodolphe.demo.services.people;
 
 import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
-import io.vertigo.dynamo.domain.model.DtList;
-import io.vertigo.dynamo.transaction.Transactional;
 
 import javax.inject.Inject;
 
 import rodolphe.demo.dao.people.PeopleDAO;
-import rodolphe.demo.domain.masterdata.CodeScope;
-import rodolphe.demo.domain.movies.SearchRet;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
@@ -28,22 +24,6 @@ public class PeopleServicesImpl implements PeopleServices {
 	private PeopleDAO peopleDAO;
 	@Inject
 	private SearchServices searchServices;
-
-
-	@Override
-	@Transactional
-	public DtList<SearchRet> getPeople(final String searchText) {
-		final DtList<People> peopleList = peopleDAO.getPeopleByCriteria(searchText);
-		final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
-		for(final People people : peopleList){
-			final SearchRet searchRet = new SearchRet();
-			searchRet.setType(CodeScope.PEOPLE.name());
-			searchRet.setField1(String.valueOf(people.getPeoId()));
-			searchRet.setField2(people.getPeoName());
-			ret.add(searchRet);
-		}
-		return ret;
-	}
 
 
 	/* (non-Javadoc)
