@@ -47,8 +47,8 @@ public class PeopleServicesImpl implements PeopleServices {
 		for (final FacetSelection sel : selection) {
 			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
 		}
-		final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> res = searchServices.searchPeople(criteria);
-		return res;
+		//final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> res = searchServices.searchPeople(criteria);
+		return  searchServices.searchPeople(criteria);
 	}
 
 	/* (non-Javadoc)

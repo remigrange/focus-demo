@@ -137,8 +137,15 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 	@Test
 	public void searchByTitleWithFacet(){
 		final MovieCriteria crit = new MovieCriteria();
-		crit.setTitle("Fantastic");
-		//1ere Recherche
+		final String titleToSearch = "TNR_Fanstactic";
+		final String titleOther= "TITLE_TNR_OTHER";
+		crit.setTitle(titleToSearch);
+		// Create new movies to seach
+		createMoviesForSearchByTitleWithFacet(titleToSearch, 1);
+		createMoviesForSearchByTitleWithFacet(titleToSearch, 1);
+		createMoviesForSearchByTitleWithFacet(titleToSearch, 2);
+		createMoviesForSearchByTitleWithFacet(titleOther, 1);
+		//1st search
 		Facet selectedFacet = null;
 		FacetValue selectedFacetValue = null;
 		long facetCount = 0L;
@@ -159,7 +166,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 			}
 		}
 		getLogger().info("results : " + movies.getCount());
-		//Recherche avec une facette renseignée.
+		//Search with selected facet.
 		getLogger().info("facet filter : " +selectedFacetValue.getListFilter().getFilterValue());
 		final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(),selectedFacetValue.getLabel().getDisplay(), selectedFacetValue.getListFilter());
 		movies = movieServices.getMoviesByCriteria(crit, sel);
@@ -172,6 +179,13 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 				getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
 			}
 		}
+	}
+
+	private void createMoviesForSearchByTitleWithFacet(final String title, final int runtime){
+		final Movie mov = getNewMovie();
+		mov.setTitle(title);
+		mov.setRuntime(runtime);
+		movieServices.saveMovie(mov);
 	}
 
 }
