@@ -139,6 +139,14 @@ create Domain DO_IDENTIFIANT_CODE {
 	indexType : "text_fr"
 }
 
+create Domain DO_MULTI_VALUES_FIELD {
+	dataType : String
+	formatter : FMT_DEFAULT
+	constraint : [CK_MAX_LENGTH_3000]
+	storeType : "VARCHAR(3000)"
+    indexType : "sep_pipe"
+}
+
 create Domain DO_NOM {
 	dataType : String
 	formatter : FMT_DEFAULT

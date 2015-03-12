@@ -60,6 +60,7 @@ module.exports = {
         "runtime" : "Runtime",
         "description" : "Description",
         "imdbid" : "Id imdb",
+        "genreIds" : "Movie's genres identifiers",
         "rank" : "rank"
     },
     "movieResult": {
@@ -79,6 +80,7 @@ module.exports = {
         "description" : "Description",
         "metadasJson" : "Meta Data JSON",
         "imdbid" : "Id imdb",
+        "genreIds" : "Movie's genres identifiers",
         "rank" : "rank"
     },
     "searchRet": {

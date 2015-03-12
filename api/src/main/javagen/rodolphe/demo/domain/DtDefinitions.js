@@ -170,6 +170,10 @@ module.exports = {
 				"domain": "DO_LIBELLE_100",
 				"required": false
 			},		
+			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
@@ -232,6 +236,10 @@ module.exports = {
 			},		
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
 			},		
 			"rank": {

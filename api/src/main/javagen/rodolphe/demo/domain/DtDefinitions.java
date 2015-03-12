@@ -207,6 +207,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		DESCRIPTION,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
+		/** Propriété 'Movie's genres identifiers'. */
+		GENRE_IDS,
 		/** Propriété 'rank'. */
 		RANK,
 	}
@@ -249,6 +251,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
+		/** Propriété 'Movie's genres identifiers'. */
+		GENRE_IDS,
 		/** Propriété 'rank'. */
 		RANK,
 	}

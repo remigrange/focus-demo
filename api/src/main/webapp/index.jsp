@@ -24,6 +24,7 @@
 </head>
 <body>
 	<div id="container">
+	<h1>Rodophe Demo</h1>
 	</div>
 	<script>require('initialize');</script>
 	

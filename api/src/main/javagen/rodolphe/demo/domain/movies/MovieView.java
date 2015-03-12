@@ -22,6 +22,7 @@ public final class MovieView implements DtObject {
 	private String description;
 	private String metadasJson;
 	private String imdbid;
+	private String genreIds;
 	private Long rank;
 
 	/**
@@ -155,6 +156,25 @@ public final class MovieView implements DtObject {
 	 */
 	public void setImdbid(final String imdbid) {
 		this.imdbid = imdbid;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Movie's genres identifiers'. 
+	 * @return String genreIds 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's genres identifiers")
+	public String getGenreIds() {
+		return genreIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Movie's genres identifiers'.
+	 * @param genreIds String 
+	 */
+	public void setGenreIds(final String genreIds) {
+		this.genreIds = genreIds;
 	}
 
 	/**

@@ -15,7 +15,6 @@ create Task TK_GET_MOVIES_BY_CRITERIA {
 }
 
 
-
 create Task TK_GET_MOVIE_VIEW {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
     request : " Select 
@@ -23,9 +22,14 @@ create Task TK_GET_MOVIE_VIEW {
     			From
     				(
     				Select 
-    					mov_id, title, released, runtime, description, metadas_json, imdbid, mov_id as rank
+    					mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, mov.mov_id as rank 
     				From
-    					movie
+    					movie mov
+    				inner join ( select mov_id from movie Where mov_id >= #MIN_RANK# order by mov_id limit <%= maxRows %>) sel on sel.mov_id = mov.mov_id
+    				left join  
+    					mov_gen movGen on mov.mov_id = movGen.mov_id 
+    				group by 
+    					mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, rank
     				) v
     			Where
     				v.rank >= #MIN_RANK#
@@ -41,11 +45,15 @@ create Task TK_GET_MOVIE_VIEW {
 create Task TK_GET_MOVIE_VIEW_BY_MOV_ID {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
     request : " Select 
-    				mov_id, title, released, runtime, description, metadas_json, imdbid, mov_id as rank
+    				mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, mov.mov_id as rank 
     			From
-    				movie
+    				movie mov
+    			left join  
+    					mov_gen movGen on mov.mov_id = movGen.mov_id 
     			Where
-    				mov_id = #MOV_ID#
+    				mov.mov_id = #MOV_ID#
+    			group by 
+    					mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, rank
      "
     attribute MOV_ID {domain : DO_ID notNull:"true" inOut :"in"}
     attribute DTO_MOVIE {domain : DO_DT_MOVIE_VIEW_DTO notNull:"true" inOut :"out"}

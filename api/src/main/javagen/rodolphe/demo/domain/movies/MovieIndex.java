@@ -21,6 +21,7 @@ public final class MovieIndex implements DtObject {
 	private Integer runtime;
 	private String description;
 	private String imdbid;
+	private String genreIds;
 	private Long rank;
 
 	/**
@@ -135,6 +136,25 @@ public final class MovieIndex implements DtObject {
 	 */
 	public void setImdbid(final String imdbid) {
 		this.imdbid = imdbid;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Movie's genres identifiers'. 
+	 * @return String genreIds 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's genres identifiers")
+	public String getGenreIds() {
+		return genreIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Movie's genres identifiers'.
+	 * @param genreIds String 
+	 */
+	public void setGenreIds(final String genreIds) {
+		this.genreIds = genreIds;
 	}
 
 	/**
