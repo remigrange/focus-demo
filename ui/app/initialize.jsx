@@ -8,4 +8,4 @@ var Hello = React.createClass({
     }
 });
 //setTimeout(focus.application.render(Hello, document.querySelector('#container')), 3000);
-focus.application.render(Hello, '#container');
+focus.application.render(Hello, '#page', {props: {name: "rodolphe ....."}});

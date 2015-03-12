@@ -18,15 +18,38 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   	<link rel="stylesheet" href="http://fezvrasta.github.io/bootstrap-material-design/bootstrap-elements.html" /> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script>
+    
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/css/material-wfont.css">
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/css/material.css">
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/css/ripples.css">
+
+  	<link rel="font" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.eot">
+ 	<link rel="font" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.svg">
+  	<link rel="font" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.ttf">
+  	<link rel="font" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/fonts/Material-Design-Icons.woff">
+  
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/js/material.js"/>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/js/ripples.min.js"></script>
+    
+    
     <script src='static/javascripts/vendor.js'></script>
     <script src='static/javascripts/app.js'></script>
     
 </head>
 <body>
 	<div id="pageContent">
-		<div id="header"></div>
-		<div id="leftMenu"></div>
-		<div id="page"></div>
+		<div id="leftMenu">
+			<div id="logo"><img/></div>
+			<div id="search"><img/></div>
+		</div>
+		<div id="container">
+			<div id="header">
+				<div id="user"><img/></div>
+				<div id="notification"><img/></div>
+			</div>
+			<div id="page"></div>
+		</div>
 	</div>
 	<script>require('initialize');</script>
 	
