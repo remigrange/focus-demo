@@ -121,6 +121,18 @@ module.exports = {
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
 				"required": false
+			},		
+			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"countryIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"languageIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
 			}		
 	},
 	"movieCriteria": {
@@ -174,6 +186,14 @@ module.exports = {
 				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
 			},		
+			"countryIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"languageIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
@@ -207,6 +227,18 @@ module.exports = {
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
 				"required": false
+			},		
+			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"countryIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"languageIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
 			}		
 	},
 	"movieView": {
@@ -239,6 +271,14 @@ module.exports = {
 				"required": false
 			},		
 			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"countryIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"languageIds": {
 				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
 			},		

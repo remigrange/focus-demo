@@ -44,7 +44,10 @@ module.exports = {
         "runtime" : "Runtime",
         "description" : "Description",
         "metadasJson" : "metadas Json",
-        "imdbid" : "imdbID"
+        "imdbid" : "imdbID",
+        "genreIds" : "Movie's genres identifiers",
+        "countryIds" : "Movie's contries identifiers",
+        "languageIds" : "Movie's languages identifiers"
     },
     "movieCriteria": {
         "movId" : "primary key",
@@ -61,6 +64,8 @@ module.exports = {
         "description" : "Description",
         "imdbid" : "Id imdb",
         "genreIds" : "Movie's genres identifiers",
+        "countryIds" : "Movie's contries identifiers",
+        "languageIds" : "Movie's languages identifiers",
         "rank" : "rank"
     },
     "movieResult": {
@@ -70,7 +75,10 @@ module.exports = {
         "runtime" : "Runtime",
         "description" : "Description",
         "metadasJson" : "Meta Data JSON",
-        "imdbid" : "Id imdb"
+        "imdbid" : "Id imdb",
+        "genreIds" : "Movie's genres identifiers",
+        "countryIds" : "Movie's contries identifiers",
+        "languageIds" : "Movie's languages identifiers"
     },
     "movieView": {
         "movId" : "primary key",
@@ -81,6 +89,8 @@ module.exports = {
         "metadasJson" : "Meta Data JSON",
         "imdbid" : "Id imdb",
         "genreIds" : "Movie's genres identifiers",
+        "countryIds" : "Movie's contries identifiers",
+        "languageIds" : "Movie's languages identifiers",
         "rank" : "rank"
     },
     "searchRet": {

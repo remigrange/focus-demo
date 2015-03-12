@@ -16,7 +16,9 @@ public enum FacetConst implements CodeEnum {
 	//
 	/** Recherche de movie avec facette sur le runtime */
 	FCT_MOVIE_RUNTIME (MovieIndexFields.RUNTIME, "Runtime"),
-	FCT_MOVIE_GENRE (MovieIndexFields.GENRE_IDS, "Genre");
+	FCT_MOVIE_GENRE (MovieIndexFields.GENRE_IDS, "Genre"),
+	FCT_MOVIE_LANGUAGE (MovieIndexFields.LANGUAGE_IDS, "Language"),
+	FCT_MOVIE_COUNTRY (MovieIndexFields.COUNTRY_IDS, "Country");
 
 	private DtFieldName field;
 	private String facetName;

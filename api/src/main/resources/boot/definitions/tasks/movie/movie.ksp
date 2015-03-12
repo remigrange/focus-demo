@@ -22,12 +22,17 @@ create Task TK_GET_MOVIE_VIEW {
     			From
     				(
     				Select 
-    					mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, mov.mov_id as rank 
+    					mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, 
+    					string_agg( distinct movCou.cou_cd, '|') as country_ids, string_agg( distinct movLan.lan_cd, '|') as language_ids,  mov.mov_id as rank 
     				From
     					movie mov
     				inner join ( select mov_id from movie Where mov_id >= #MIN_RANK# order by mov_id limit <%= maxRows %>) sel on sel.mov_id = mov.mov_id
     				left join  
     					mov_gen movGen on mov.mov_id = movGen.mov_id 
+    				left join  
+    					mov_cou movCou on mov.mov_id = movCou.mov_id 
+    				left join  
+    					mov_lan movLan on mov.mov_id = movLan.mov_id 
     				group by 
     					mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, rank
     				) v
@@ -45,11 +50,16 @@ create Task TK_GET_MOVIE_VIEW {
 create Task TK_GET_MOVIE_VIEW_BY_MOV_ID {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
     request : " Select 
-    				mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, mov.mov_id as rank 
+    					mov.mov_id, mov.title, mov.released, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, 
+    					string_agg( distinct movCou.cou_cd, '|') as country_ids, string_agg( distinct movLan.lan_cd, '|') as language_ids,  mov.mov_id as rank 
     			From
     				movie mov
     			left join  
     					mov_gen movGen on mov.mov_id = movGen.mov_id 
+    			left join  
+    					mov_cou movCou on mov.mov_id = movCou.mov_id 
+    			left join  
+    					mov_lan movLan on mov.mov_id = movLan.mov_id 
     			Where
     				mov.mov_id = #MOV_ID#
     			group by 

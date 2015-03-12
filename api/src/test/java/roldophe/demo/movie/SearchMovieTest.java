@@ -17,8 +17,11 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 
+import rodolphe.demo.dao.masterdatas.GenreDAO;
+import rodolphe.demo.dao.movies.MovieDAO;
 import rodolphe.demo.domain.DtDefinitions.MovieCriteriaFields;
 import rodolphe.demo.domain.DtDefinitions.MovieFields;
+import rodolphe.demo.domain.masterdatas.Genre;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
@@ -37,6 +40,10 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 
 	@Inject
 	private MovieServices movieServices;
+	@Inject
+	private GenreDAO genreDAO;
+	@Inject
+	private MovieDAO movieDAO;
 
 	/* (non-Javadoc)
 	 * @see roldophe.demo.tools.AbstractEsSearchTestCase#getCritereForEsSearchWithUniqueResultAsSU()
@@ -137,14 +144,14 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 	@Test
 	public void searchByTitleWithFacet(){
 		final MovieCriteria crit = new MovieCriteria();
-		final String titleToSearch = "TNR_Fanstactic";
+		final String titleToSearch = "Fantastic";
 		final String titleOther= "TITLE_TNR_OTHER";
 		crit.setTitle(titleToSearch);
 		// Create new movies to seach
-		createMoviesForSearchByTitleWithFacet(titleToSearch, 1);
-		createMoviesForSearchByTitleWithFacet(titleToSearch, 1);
-		createMoviesForSearchByTitleWithFacet(titleToSearch, 2);
-		createMoviesForSearchByTitleWithFacet(titleOther, 1);
+		createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 1);
+		createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 1);
+		createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 2);
+		createMoviesForSearchByTitleWithFacetRuntime(titleOther, 3);
 		//1st search
 		Facet selectedFacet = null;
 		FacetValue selectedFacetValue = null;
@@ -167,25 +174,93 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		}
 		getLogger().info("results : " + movies.getCount());
 		//Search with selected facet.
-		getLogger().info("facet filter : " +selectedFacetValue.getListFilter().getFilterValue());
-		final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(),selectedFacetValue.getLabel().getDisplay(), selectedFacetValue.getListFilter());
-		movies = movieServices.getMoviesByCriteria(crit, sel);
-		getLogger().info("results : " + movies.getCount());
-		Assert.assertEquals(facetCount, movies.getCount());
-		for (   final Facet  facetResult : movies.getFacets()) {
-			getLogger().info(facetResult.toString());
-			getLogger().info(facetResult.getDefinition().getLabel().getDisplay());
-			for(final Entry<FacetValue, Long> entry : facetResult.getFacetValues().entrySet()) {
-				getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
+		if(selectedFacetValue!=null){
+			getLogger().info("facet filter : " +selectedFacetValue.getListFilter().getFilterValue());
+			final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(),selectedFacetValue.getLabel().getDisplay(), selectedFacetValue.getListFilter());
+			movies = movieServices.getMoviesByCriteria(crit, sel);
+			getLogger().info("results : " + movies.getCount());
+			Assert.assertEquals(facetCount, movies.getCount());
+			for (   final Facet  facetResult : movies.getFacets()) {
+				getLogger().info(facetResult.toString());
+				getLogger().info(facetResult.getDefinition().getLabel().getDisplay());
+				for(final Entry<FacetValue, Long> entry : facetResult.getFacetValues().entrySet()) {
+					getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
+				}
 			}
 		}
+
 	}
 
-	private void createMoviesForSearchByTitleWithFacet(final String title, final int runtime){
+	/**
+	 * Test getMovies service and test genre facet.
+	 */
+	@Test
+	public void searchByTitleTestFacetGenre(){
+		final MovieCriteria crit = new MovieCriteria();
+		final String titleToSearch = "Fantastic";
+		crit.setTitle(titleToSearch);
+		// Create new movies to seach
+		createMoviesForSearchByTitleWithFacetGenre(titleToSearch, "Action");
+		createMoviesForSearchByTitleWithFacetGenre(titleToSearch, "Action");
+		createMoviesForSearchByTitleWithFacetGenre(titleToSearch, "Comedy");
+		createMoviesForSearchByTitleWithFacetGenre(titleToSearch, "Comedy");
+		//1st search
+		Facet selectedFacet = null;
+		FacetValue selectedFacetValue = null;
+		long facetCount = 0L;
+		FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(crit);
+		for (final Facet facet : movies.getFacets()) {
+			if (selectedFacet == null) {
+				selectedFacet = facet;
+			}
+			getLogger().info(facet.toString());
+			getLogger().info(facet.getDefinition().getLabel().getDisplay());
+			for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+				if (selectedFacetValue == null) {
+					selectedFacetValue = entry.getKey();
+					facetCount = entry.getValue();
+				}
+				getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
+				getLogger().info("filter " + entry.getKey().getListFilter().getFilterValue());
+			}
+		}
+		getLogger().info("results : " + movies.getCount());
+		//Search with selected facet.
+		if(selectedFacetValue!=null){
+			getLogger().info("facet filter : " +selectedFacetValue.getListFilter().getFilterValue());
+			final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(),selectedFacetValue.getLabel().getDisplay(), selectedFacetValue.getListFilter());
+			movies = movieServices.getMoviesByCriteria(crit, sel);
+			getLogger().info("results : " + movies.getCount());
+			Assert.assertEquals(facetCount, movies.getCount());
+			for (   final Facet  facetResult : movies.getFacets()) {
+				getLogger().info(facetResult.toString());
+				getLogger().info(facetResult.getDefinition().getLabel().getDisplay());
+				for(final Entry<FacetValue, Long> entry : facetResult.getFacetValues().entrySet()) {
+					getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
+				}
+			}
+		}
+
+	}
+
+	private void createMoviesForSearchByTitleWithFacetRuntime(final String title, final int runtime){
 		final Movie mov = getNewMovie();
 		mov.setTitle(title);
 		mov.setRuntime(runtime);
 		movieServices.saveMovie(mov);
 	}
+
+	private void createMoviesForSearchByTitleWithFacetGenre(final String title, final String genreMovie){
+		final Movie mov = getNewMovie();
+		mov.setTitle(title);
+		movieServices.saveMovie(mov);
+		final Genre genre = genreDAO.get(genreMovie);
+		final DtList<Genre> genres = new DtList<>(Genre.class);
+		genres.add(genre);
+		movieDAO.putNN(mov.getGenreList(), genres);
+
+	}
+
+
 
 }

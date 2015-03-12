@@ -500,6 +500,170 @@ module.exports = {
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
 				"required": false
+			},		
+			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"countryIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"languageIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			}		
+	},
+	"movieCriteria": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			}		
+	},
+	"movieIndex": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"countryIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"languageIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"movieResult": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"metadasJson": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"countryIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"languageIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			}		
+	},
+	"movieView": {
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"runtime": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"description": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"metadasJson": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"genreIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"countryIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"languageIds": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
 			}		
 	},
 	"searchRet": {
@@ -548,6 +712,118 @@ module.exports = {
 			"titCd": {
 				"domain": "DO_IDENTIFIANT_CODE",
 				"required": false
+			}		
+	},
+	"peopleCriteria": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			}		
+	},
+	"peopleIndex": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"peopleResult": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
+			}		
+	},
+	"peopleView": {
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"lastName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"firstName": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"titCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": false
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rank": {
+				"domain": "DO_ID",
+				"required": true
 			}		
 	},
 	"rolePeople": {
@@ -636,51 +912,58 @@ module.exports = {
 
 });
 
-require.register("config/siteDescription/index", function(exports, require, module) {
-
-//Function use to build the site description from the 
-var site = function(p) {
-    return {
-        headers: [{
-            name: "home",
-            url: "#home",
-            roles: ['DEFAULT_ROLE'],
-            pages: [{
-                name: "utilisateur",
-                url: "#home/utilisateur",
-                roles: ['DEFAULT_ROLE']
-            }]
-        },
-        ]
-    };
+require.register("config/server/index", function(exports, require, module) {
+module.exports= {
+    movie: require('./movie'),
+    people: require('./people')
 };
 
-
-//Container for the module exports.
-var siteDescription = {};
-
-//Default name and value parameters.
-var defaultParams = {
-};
-
-//Exports ther params for initialization.
-siteDescription.params = defaultParams;
-
-//Function to build the site description depending on parameters.
-siteDescription.value = function(params) {
-
-    //Extend the params.
-    var p = _.extend({}, defaultParams, params);
-
-    //Process the site description construction.
-    return site(p);
-};
-
-//Export site description.
-module.exports = siteDescription;
 });
 
-require.register("i18n/generated/fr-FR.generated", function(exports, require, module) {
+require.register("config/server/movie", function(exports, require, module) {
+var root = require('../../conf.json').url + "movies/";
+var url = require('./url-builder');
+module.exports = {
+  getAll: url(root, 'GET'),
+  update: url(root + "${id}/",'PUT'),
+  create: url(root, 'POST'),
+  get: url(root + "${id}/", 'GET')
+};
+
+});
+
+require.register("config/server/people", function(exports, require, module) {
+var root = require('../../conf.json').url + "people/";
+var url = require('./url-builder');
+module.exports = {
+  getAll: url(root, 'GET'),
+  update: url(root + "${id}/",'PUT'),
+  create: url(root, 'POST'),
+  get: url(root + "${id}/", 'GET')
+};
+
+});
+
+require.register("config/url/index", function(exports, require, module) {
+var root = require('../../conf.json').url + "movies/";
+module.exports = {
+  getAll: function(){
+    return {
+      url : root,
+      method: 'GET'
+    };
+  },
+  save: function(){
+    return {
+      url: root,
+      method: 'POST'
+    };
+  }
+}
+
+});
+
+;require.register("i18n/generated/fr-FR.generated", function(exports, require, module) {
 /**
  * Attention ce fichier est généré automatiquement !
  * DtDefinitionsLabel
@@ -727,7 +1010,54 @@ module.exports = {
         "runtime" : "Runtime",
         "description" : "Description",
         "metadasJson" : "metadas Json",
-        "imdbid" : "imdbID"
+        "imdbid" : "imdbID",
+        "genreIds" : "Movie's genres identifiers",
+        "countryIds" : "Movie's contries identifiers",
+        "languageIds" : "Movie's languages identifiers"
+    },
+    "movieCriteria": {
+        "movId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "runtime" : "Runtime",
+        "description" : "Description"
+    },
+    "movieIndex": {
+        "movId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "runtime" : "Runtime",
+        "description" : "Description",
+        "imdbid" : "Id imdb",
+        "genreIds" : "Movie's genres identifiers",
+        "countryIds" : "Movie's contries identifiers",
+        "languageIds" : "Movie's languages identifiers",
+        "rank" : "rank"
+    },
+    "movieResult": {
+        "movId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "runtime" : "Runtime",
+        "description" : "Description",
+        "metadasJson" : "Meta Data JSON",
+        "imdbid" : "Id imdb",
+        "genreIds" : "Movie's genres identifiers",
+        "countryIds" : "Movie's contries identifiers",
+        "languageIds" : "Movie's languages identifiers"
+    },
+    "movieView": {
+        "movId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "runtime" : "Runtime",
+        "description" : "Description",
+        "metadasJson" : "Meta Data JSON",
+        "imdbid" : "Id imdb",
+        "genreIds" : "Movie's genres identifiers",
+        "countryIds" : "Movie's contries identifiers",
+        "languageIds" : "Movie's languages identifiers",
+        "rank" : "rank"
     },
     "searchRet": {
         "type" : "Type of the object",
@@ -743,6 +1073,40 @@ module.exports = {
         "peoName" : "Peo Name",
         "imdbid" : "imdbID",
         "titCd" : "Title"
+    },
+    "peopleCriteria": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name"
+    },
+    "peopleIndex": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
+    "peopleResult": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
+    },
+    "peopleView": {
+        "peoId" : "primary key",
+        "lastName" : "Last name",
+        "firstName" : "First Name",
+        "titCd" : "Title",
+        "peoName" : "Name",
+        "imdbid" : "Id imdb",
+        "rank" : "rank"
     },
     "rolePeople": {
         "rlpId" : "RLP_ID",
@@ -778,6 +1142,15 @@ module.exports = {
 
 require.register("index", function(exports, require, module) {
 console.log('Application demo rodoplphe');
+var Backbone = require('backbone');
+//Require dependencies.
+require('./initializer');
+//Start the application.
+require('./router');
+Backbone.history.start();
+//Render all application modules for the first time.
+//React.render(<AlertModule />, document.querySelector('#notification-center'));
+
 });
 
 require.register("initialize", function(exports, require, module) {
@@ -791,47 +1164,51 @@ var Hello = React.createClass({displayName: "Hello",
     }
 });
 //setTimeout(focus.application.render(Hello, document.querySelector('#container')), 3000);
-focus.application.render(Hello, '#container');
+focus.application.render(Hello, '#page', {props: {name: "rodolphe ....."}});
 
 });
 
-require.register("lib/dateHelper", function(exports, require, module) {
+require.register("initializer/index", function(exports, require, module) {
+global.$ = require('jquery');//(window);
+global.Backbone = require('backbone');
+Backbone.$ = $;
+//React tap event initializer.
+var injectTapEventPlugin = require("react-tap-event-plugin");
 
-var resetHMS = function(date) {
-    var dateRet = new Date(date.getTime());
-    dateRet.setHours(0);
-    dateRet.setMinutes(0);
-    dateRet.setSeconds(0);
-    dateRet.setMilliseconds(0);
-    return dateRet;
-};
+//Needed for onTouchTap
+//Can go away when react 1.0 release
+//Check this repo:
+//https://github.com/zilverline/react-tap-event-plugin
+injectTapEventPlugin();
 
-module.exports = {
-    resetHMS: resetHMS
-};
 });
 
-require.register("router/homeRouter", function(exports, require, module) {
-var application = require('../application');
-module.exports = Backbone.Router.extend({
+require.register("router/index", function(exports, require, module) {
+//Dependencies.
+var Router = require('backbone').Router;
+var render = require('../core/render');
+
+
+var AlertModule = require('../component/alert');
+render(AlertModule, '#notification-center');
+
+
+var AppRouter = Router.extend({
   routes: {
-    '': 'home',
-    'home': 'home'
+    '': 'home'
   },
-  home: function() {
-
+  home: function handleHomeRoute(){
+    console.log('ROUTE: HOME');
+    //Require the applications modules
+    /*var UserDetailView = require('../view/user');
+    //React.render(<UserDetailView userId="12344"/>, document.querySelector('#page'));
+     render(UserDetailView, '#page', {
+       props:{userId: "6c4a5d96-dc8a-461d-8b23-d9b5ed2f4883"}
+     });*/
   }
 });
-});
+module.exports = new AppRouter();
 
-require.register("router/initialize", function(exports, require, module) {
-//Dependencies.
-var HomeRouter = require('./homeRouter');
-
-/*Router instanciation.*/
-module.exports = {
-  homeRouter: new HomeRouter()
-};
 });
 
 require.register("views/home", function(exports, require, module) {

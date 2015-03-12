@@ -11,6 +11,8 @@ create DtDefinition DT_SEARCH_RET {
 
 alter DtDefinition DT_MOVIE {
 	field GENRE_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Movie's genres identifiers" notNull: "false"}
+	field COUNTRY_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Movie's contries identifiers" notNull: "false"}
+	field LANGUAGE_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Movie's languages identifiers" notNull: "false"}
 }
 
 
@@ -24,6 +26,8 @@ create DtDefinition DT_MOVIE_VIEW {
 	field METADAS_JSON {domain: DO_COMMENTAIRE label: "Meta Data JSON" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
 	field GENRE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's genres identifiers" notNull:"false"}
+	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's contries identifiers" notNull:"false"}
+	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's languages identifiers" notNull:"false"}
 	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
 
@@ -45,6 +49,8 @@ create DtDefinition DT_MOVIE_INDEX {
 	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
 	field GENRE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's genres identifiers" notNull:"false"}
+	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's contries identifiers" notNull:"false"}
+	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's languages identifiers" notNull:"false"}
 	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
 
@@ -57,4 +63,7 @@ create DtDefinition DT_MOVIE_RESULT {
 	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
 	field METADAS_JSON {domain: DO_COMMENTAIRE label: "Meta Data JSON" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field GENRE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's genres identifiers" notNull:"false"}
+	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's contries identifiers" notNull:"false"}
+	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's languages identifiers" notNull:"false"}
 }

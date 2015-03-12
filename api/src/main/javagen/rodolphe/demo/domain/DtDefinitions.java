@@ -173,6 +173,12 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'imdbID'. */
 		IMDBID,
+		/** Propriété 'Movie's genres identifiers'. */
+		GENRE_IDS,
+		/** Propriété 'Movie's contries identifiers'. */
+		COUNTRY_IDS,
+		/** Propriété 'Movie's languages identifiers'. */
+		LANGUAGE_IDS,
 	}
 
 	/**
@@ -209,6 +215,10 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Movie's genres identifiers'. */
 		GENRE_IDS,
+		/** Propriété 'Movie's contries identifiers'. */
+		COUNTRY_IDS,
+		/** Propriété 'Movie's languages identifiers'. */
+		LANGUAGE_IDS,
 		/** Propriété 'rank'. */
 		RANK,
 	}
@@ -231,6 +241,12 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
+		/** Propriété 'Movie's genres identifiers'. */
+		GENRE_IDS,
+		/** Propriété 'Movie's contries identifiers'. */
+		COUNTRY_IDS,
+		/** Propriété 'Movie's languages identifiers'. */
+		LANGUAGE_IDS,
 	}
 
 	/**
@@ -253,6 +269,10 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Movie's genres identifiers'. */
 		GENRE_IDS,
+		/** Propriété 'Movie's contries identifiers'. */
+		COUNTRY_IDS,
+		/** Propriété 'Movie's languages identifiers'. */
+		LANGUAGE_IDS,
 		/** Propriété 'rank'. */
 		RANK,
 	}

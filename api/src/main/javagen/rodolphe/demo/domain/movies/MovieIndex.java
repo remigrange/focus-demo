@@ -22,6 +22,8 @@ public final class MovieIndex implements DtObject {
 	private String description;
 	private String imdbid;
 	private String genreIds;
+	private String countryIds;
+	private String languageIds;
 	private Long rank;
 
 	/**
@@ -155,6 +157,44 @@ public final class MovieIndex implements DtObject {
 	 */
 	public void setGenreIds(final String genreIds) {
 		this.genreIds = genreIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Movie's contries identifiers'. 
+	 * @return String countryIds 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's contries identifiers")
+	public String getCountryIds() {
+		return countryIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Movie's contries identifiers'.
+	 * @param countryIds String 
+	 */
+	public void setCountryIds(final String countryIds) {
+		this.countryIds = countryIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Movie's languages identifiers'. 
+	 * @return String languageIds 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's languages identifiers")
+	public String getLanguageIds() {
+		return languageIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Movie's languages identifiers'.
+	 * @param languageIds String 
+	 */
+	public void setLanguageIds(final String languageIds) {
+		this.languageIds = languageIds;
 	}
 
 	/**

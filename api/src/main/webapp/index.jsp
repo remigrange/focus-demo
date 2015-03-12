@@ -23,8 +23,10 @@
     
 </head>
 <body>
-	<div id="container">
-	<h1>Rodophe Demo</h1>
+	<div id="pageContent">
+		<div id="header"></div>
+		<div id="leftMenu"></div>
+		<div id="page"></div>
 	</div>
 	<script>require('initialize');</script>
 	

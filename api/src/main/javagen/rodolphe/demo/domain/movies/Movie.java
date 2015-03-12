@@ -22,6 +22,9 @@ public final class Movie implements DtObject {
 	private String description;
 	private String metadasJson;
 	private String imdbid;
+	private String genreIds;
+	private String countryIds;
+	private String languageIds;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> fileInfo;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Alias> alias;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Language> language;
@@ -159,6 +162,63 @@ public final class Movie implements DtObject {
 	 */
 	public void setImdbid(final String imdbid) {
 		this.imdbid = imdbid;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Movie's genres identifiers'. 
+	 * @return String genreIds 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's genres identifiers")
+	public String getGenreIds() {
+		return genreIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Movie's genres identifiers'.
+	 * @param genreIds String 
+	 */
+	public void setGenreIds(final String genreIds) {
+		this.genreIds = genreIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Movie's contries identifiers'. 
+	 * @return String countryIds 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's contries identifiers")
+	public String getCountryIds() {
+		return countryIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Movie's contries identifiers'.
+	 * @param countryIds String 
+	 */
+	public void setCountryIds(final String countryIds) {
+		this.countryIds = countryIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Movie's languages identifiers'. 
+	 * @return String languageIds 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's languages identifiers")
+	public String getLanguageIds() {
+		return languageIds;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Movie's languages identifiers'.
+	 * @param languageIds String 
+	 */
+	public void setLanguageIds(final String languageIds) {
+		this.languageIds = languageIds;
 	}
 
 	/**
