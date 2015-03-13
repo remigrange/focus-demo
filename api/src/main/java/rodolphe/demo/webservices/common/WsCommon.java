@@ -4,6 +4,7 @@
 package rodolphe.demo.webservices.common;
 
 import io.vertigo.vega.rest.RestfulService;
+import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.InnerBodyParam;
 import io.vertigo.vega.rest.stereotype.POST;
 
@@ -28,6 +29,7 @@ public class WsCommon implements RestfulService {
 	 * @return
 	 */
 	@POST("searchbyScope")
+	@AnonymousAccessAllowed
 	public Object search(@InnerBodyParam("scope") final String scope, @InnerBodyParam("searchText") final String searchText) {
 		return commonServices.search(scope, searchText);
 

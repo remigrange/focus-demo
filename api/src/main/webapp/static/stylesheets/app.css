@@ -109,6 +109,9 @@
   width: 32px;
   height: 32px;
 }
+body {
+  background-color: #EEEEEE;
+}
 #leftMenu {
   height: 100%;
   width: 100px;
@@ -124,6 +127,16 @@
   height: 60px;
   margin: 10px;
   border: 1px dashed white;
+  cursor: pointer;
+}
+#logo,
+#search {
+  width: 100px;
+  cursor: pointer;
+}
+#logo:hover,
+#search:hover {
+  background-color: #EEEEEE;
 }
 #container {
   margin-left: 100px;
@@ -132,7 +145,7 @@
 #header {
   height: 80px;
   text-align: right;
-  border-bottom: 2px #909090 solid;
+  border-bottom: 1px #c3c3c3 solid;
 }
 #header img {
   float: right;
