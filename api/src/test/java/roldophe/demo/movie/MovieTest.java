@@ -7,9 +7,11 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 
+import rodolphe.demo.dao.people.CastingDAO;
 import rodolphe.demo.dao.people.RolePeopleDAO;
 import rodolphe.demo.domain.masterdata.CodeRoleMovie;
 import rodolphe.demo.domain.movies.Movie;
+import rodolphe.demo.domain.people.Casting;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.RolePeople;
 import rodolphe.demo.services.movie.MovieServices;
@@ -25,6 +27,8 @@ public class MovieTest extends AbstractRodolpheTestCase{
 	private PeopleServices peopleServices;
 	@Inject
 	private RolePeopleDAO rolePeopleDAO;
+	@Inject
+	private CastingDAO castingDAO;
 
 	@Test
 	public void testGetMovie(){
@@ -42,11 +46,11 @@ public class MovieTest extends AbstractRodolpheTestCase{
 	public void testGetActors(){
 		final Movie mov = getNewMovie();
 		final People peo = getNewPeople();
-		final RolePeople rolePeople = new RolePeople();
-		rolePeople.setMovId(mov.getMovId());
-		rolePeople.setPeoId(peo.getPeoId());
-		rolePeople.setRlmCd(CodeRoleMovie.actor.name());
-		rolePeopleDAO.create(rolePeople);
+		final Casting cast = new Casting();
+		cast.setMovId(mov.getMovId());
+		cast.setPeoId(peo.getPeoId());
+		cast.setRlmCd(CodeRoleMovie.actor.name());
+		castingDAO.create(cast);
 		final DtList<People> actors =movieServices.getActors(mov.getMovId());
 		Assert.assertEquals(1, actors.size());
 	}
