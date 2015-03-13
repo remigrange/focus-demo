@@ -59,6 +59,8 @@ public final class RoleMovie implements DtObject {
 
 	// Association : Role people non navigable
 
+	// Association : Casting non navigable
+
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {

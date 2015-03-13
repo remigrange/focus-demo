@@ -251,6 +251,8 @@ public final class People implements DtObject {
 		return io.vertigo.dynamo.domain.util.DtObjectUtil.createURI(this, "A_PEO_TIT", rodolphe.demo.domain.masterdatas.Title.class);
 	}
 
+	// Association : Casting non navigable
+
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {

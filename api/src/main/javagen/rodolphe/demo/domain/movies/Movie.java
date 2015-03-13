@@ -274,6 +274,8 @@ public final class Movie implements DtObject {
 	}
 
 	// Association : Role people non navigable
+
+	// Association : Casting non navigable
 	/**
 	 * Association : Alias.
 	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Alias>

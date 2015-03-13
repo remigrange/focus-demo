@@ -39,6 +39,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			MovieView(rodolphe.demo.domain.movies.MovieView.class),
 			/** Objet de données SearchRet. */
 			SearchRet(rodolphe.demo.domain.movies.SearchRet.class),
+			/** Objet de données Casting. */
+			Casting(rodolphe.demo.domain.people.Casting.class),
 			/** Objet de données People. */
 			People(rodolphe.demo.domain.people.People.class),
 			/** Objet de données PeopleCriteria. */
@@ -294,6 +296,22 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	}
 
 	/**
+	 * Enumération des champs de Casting.
+	 */
+	public enum CastingFields implements DtFieldName {
+		/** Propriété 'Cast_id'. */
+		CAST_ID,
+		/** Propriété 'Character name'. */
+		CHARACTER_NAME,
+		/** Propriété 'People'. */
+		PEO_ID,
+		/** Propriété 'Movie'. */
+		MOV_ID,
+		/** Propriété 'Role movie'. */
+		RLM_CD,
+	}
+
+	/**
 	 * Enumération des champs de People.
 	 */
 	public enum PeopleFields implements DtFieldName {
@@ -393,8 +411,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	public enum RolePeopleFields implements DtFieldName {
 		/** Propriété 'RLP_ID'. */
 		RLP_ID,
-		/** Propriété 'Role Name'. */
-		ROLE_NAME,
+		/** Propriété 'Comment'. */
+		COMMENT,
 		/** Propriété 'People'. */
 		PEO_ID,
 		/** Propriété 'Movie'. */

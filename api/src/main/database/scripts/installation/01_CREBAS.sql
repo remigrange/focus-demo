@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  12 mars 2015  10:55:37                     
+--   Date de création :  13 mars 2015  09:18:48                     
 -- ============================================================
 
 
@@ -12,6 +12,9 @@ create sequence SEQ_ALIAS
 	start with 1000 cache 20; 
 
 create sequence SEQ_APPLICATION_USER
+	start with 1000 cache 20; 
+
+create sequence SEQ_CASTING
 	start with 1000 cache 20; 
 
 create sequence SEQ_COUNTRY
@@ -100,6 +103,37 @@ comment on column APPLICATION_USER.PRO_ID is
 'Profil';
 
 create index APPLICATION_USER_PRO_ID_FK on APPLICATION_USER (PRO_ID asc);
+-- ============================================================
+--   Table : CASTING                                        
+-- ============================================================
+create table CASTING
+(
+    CAST_ID     	 NUMERIC     	not null,
+    CHARACTER_NAME	 TEXT        	,
+    PEO_ID      	 NUMERIC     	not null,
+    MOV_ID      	 NUMERIC     	not null,
+    RLM_CD      	 VARCHAR(100)	not null,
+    constraint PK_CASTING primary key (CAST_ID)
+);
+
+comment on column CASTING.CAST_ID is
+'Cast_id';
+
+comment on column CASTING.CHARACTER_NAME is
+'Character name';
+
+comment on column CASTING.PEO_ID is
+'People';
+
+create index CASTING_PEO_ID_FK on CASTING (PEO_ID asc);
+comment on column CASTING.MOV_ID is
+'Movie';
+
+create index CASTING_MOV_ID_FK on CASTING (MOV_ID asc);
+comment on column CASTING.RLM_CD is
+'Role movie';
+
+create index CASTING_RLM_CD_FK on CASTING (RLM_CD asc);
 -- ============================================================
 --   Table : COUNTRY                                        
 -- ============================================================
@@ -287,7 +321,7 @@ comment on column ROLE_MOVIE.LABEL is
 create table ROLE_PEOPLE
 (
     RLP_ID      	 NUMERIC     	not null,
-    ROLE_NAME   	 TEXT        	,
+    COMMENT     	 TEXT        	,
     PEO_ID      	 NUMERIC     	not null,
     MOV_ID      	 NUMERIC     	,
     RLM_CD      	 VARCHAR(100)	not null,
@@ -297,8 +331,8 @@ create table ROLE_PEOPLE
 comment on column ROLE_PEOPLE.RLP_ID is
 'RLP_ID';
 
-comment on column ROLE_PEOPLE.ROLE_NAME is
-'Role Name';
+comment on column ROLE_PEOPLE.COMMENT is
+'Comment';
 
 comment on column ROLE_PEOPLE.PEO_ID is
 'People';
@@ -373,6 +407,18 @@ create index USER_AUTHENTIFICATION_USR_ID_FK on USER_AUTHENTIFICATION (USR_ID as
 alter table USER_AUTHENTIFICATION
 	add constraint FK_AUTH_USR foreign key (USR_ID)
 	references APPLICATION_USER (USR_ID);
+
+alter table CASTING
+	add constraint FK_CAST_MOV foreign key (MOV_ID)
+	references MOVIE (MOV_ID);
+
+alter table CASTING
+	add constraint FK_CAST_PEO foreign key (PEO_ID)
+	references PEOPLE (PEO_ID);
+
+alter table CASTING
+	add constraint FK_CAST_RLP foreign key (RLM_CD)
+	references ROLE_MOVIE (RLM_CD);
 
 create table MOV_ALS
 (

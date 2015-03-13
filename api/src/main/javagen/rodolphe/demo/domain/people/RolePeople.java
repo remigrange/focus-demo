@@ -16,7 +16,7 @@ public final class RolePeople implements DtObject {
 	private static final long serialVersionUID = 1L;
 
 	private Long rlpId;
-	private String roleName;
+	private String comment;
 	private Long peoId;
 	private Long movId;
 	private String rlmCd;
@@ -45,21 +45,21 @@ public final class RolePeople implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'Role Name'. 
-	 * @return String roleName 
+	 * Récupère la valeur de la propriété 'Comment'. 
+	 * @return String comment 
 	 */
-	@Field(domain = "DO_TEXTE", label = "Role Name")
-	public String getRoleName() {
-		return roleName;
+	@Field(domain = "DO_TEXTE", label = "Comment")
+	public String getComment() {
+		return comment;
 	}
 
 	/**
 	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'Role Name'.
-	 * @param roleName String 
+	 * Définit la valeur de la propriété 'Comment'.
+	 * @param comment String 
 	 */
-	public void setRoleName(final String roleName) {
-		this.roleName = roleName;
+	public void setComment(final String comment) {
+		this.comment = comment;
 	}
 
 	/**
