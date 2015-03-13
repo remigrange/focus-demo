@@ -63,6 +63,7 @@ public class SearchServicesImpl implements SearchServices {
 	 */
 	/** {@inheritDoc} */
 	@Override
+	@Transactional
 	public void indexPeople() {
 		peopleSearchHandler.indexer();
 
@@ -73,6 +74,7 @@ public class SearchServicesImpl implements SearchServices {
 	 */
 	/** {@inheritDoc} */
 	@Override
+	@Transactional
 	public void indexPeople(final Long peoId) {
 		peopleSearchHandler.indexerItem(peoId);
 
@@ -83,6 +85,7 @@ public class SearchServicesImpl implements SearchServices {
 	 */
 	/** {@inheritDoc} */
 	@Override
+	@Transactional
 	public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> searchPeople(
 			final SearchCriterium<PeopleCriteria> criteria) {
 		return peopleSearchHandler.rechercher(criteria);

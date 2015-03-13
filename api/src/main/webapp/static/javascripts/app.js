@@ -688,6 +688,28 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"casting": {
+			"castId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"characterName": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"peoId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"movId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"rlmCd": {
+				"domain": "DO_IDENTIFIANT_CODE",
+				"required": true
+			}		
+	},
 	"people": {
 			"peoId": {
 				"domain": "DO_ID",
@@ -831,7 +853,7 @@ module.exports = {
 				"domain": "DO_ID",
 				"required": true
 			},		
-			"roleName": {
+			"comment": {
 				"domain": "DO_TEXTE",
 				"required": false
 			},		
@@ -1066,6 +1088,13 @@ module.exports = {
         "field3" : "Field 3",
         "field4" : "Field 4"
     },
+    "casting": {
+        "castId" : "Cast_id",
+        "characterName" : "Character name",
+        "peoId" : "People",
+        "movId" : "Movie",
+        "rlmCd" : "Role movie"
+    },
     "people": {
         "peoId" : "PEO_ID",
         "lastName" : "Last Name",
@@ -1110,7 +1139,7 @@ module.exports = {
     },
     "rolePeople": {
         "rlpId" : "RLP_ID",
-        "roleName" : "Role Name",
+        "comment" : "Comment",
         "peoId" : "People",
         "movId" : "Movie",
         "rlmCd" : "Role movie"
