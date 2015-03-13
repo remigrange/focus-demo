@@ -1192,8 +1192,10 @@ var Hello = React.createClass({displayName: "Hello",
         return React.createElement("div", null, "Hello ", this.props.name);
     }
 });
+require("router");
+Backbone.history.start();
 //setTimeout(focus.application.render(Hello, document.querySelector('#container')), 3000);
-focus.application.render(Hello, '#page', {props: {name: "rodolphe ....."}});
+//focus.application.render(Hello, '#page', {props: {name: "rodolphe ....."}});
 
 });
 
@@ -1214,18 +1216,18 @@ injectTapEventPlugin();
 
 require.register("router/index", function(exports, require, module) {
 //Dependencies.
-var Router = require('backbone').Router;
-var render = require('../core/render');
+var Router = Backbone.Router;
+var render = focus.application.render;
 
 
-var AlertModule = require('../component/alert');
-render(AlertModule, '#notification-center');
+//var AlertModule = require('../component/alert');
+//render(AlertModule, '#notification-center');
 
 
 var AppRouter = Router.extend({
   routes: {
     '': 'home',
-    'test': 'test'
+    'search': 'search'
   },
   home: function handleHomeRoute(){
     console.log('ROUTE: HOME');
@@ -1236,26 +1238,23 @@ var AppRouter = Router.extend({
        props:{userId: "6c4a5d96-dc8a-461d-8b23-d9b5ed2f4883"}
      });*/
   },
-  test: function handle(){
-      console.log('ROUTE: TETS');
+    search: function handleSearch(){
+      console.log('ROUTE: SEARCH');
       //Require the applications modules
-       var TestView  = require('../view/test');
+       var SearchView  = require('../views/search');
       //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
-         render(TestView, '#page', {
-         props:{userId: "6c4a5d96-dc8a-461d-8b23-d9b5ed2f4883"}
-         });
+      render(SearchView, '#page');
     }
 });
 module.exports = new AppRouter();
 
 });
 
-require.register("views/home", function(exports, require, module) {
-module.exports = React.createClass({
-  render: function() {
-    return "<div>Hello {this.props.name}</div>";
-  }
+require.register("views/search/index", function(exports, require, module) {
+module.exports =  React.createClass({displayName: "exports",
+    render:function(){
+        return React.createElement("div", null, " Rodolphe Search ROUTE ");
+    }
 });
-
 });
 
