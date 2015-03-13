@@ -8,12 +8,15 @@ import io.vertigo.dynamo.transaction.Transactional;
 import javax.inject.Inject;
 
 import rodolphe.demo.dao.movies.MovieDAO;
+import rodolphe.demo.dao.people.CastingDAO;
 import rodolphe.demo.dao.people.RolePeopleDAO;
+import rodolphe.demo.domain.DtDefinitions.CastingFields;
 import rodolphe.demo.domain.DtDefinitions.RolePeopleFields;
 import rodolphe.demo.domain.masterdata.CodeRoleMovie;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
+import rodolphe.demo.domain.people.Casting;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.RolePeople;
 import rodolphe.demo.domain.search.FacetedSearchConst;
@@ -33,7 +36,9 @@ public class MovieServicesImpl implements MovieServices {
 	@Inject
 	private SearchServices searchServices;
 	@Inject
-	private RolePeopleDAO rolePeopleDAO ;
+	private CastingDAO castingDAO ;
+	@Inject
+	private RolePeopleDAO rolePeopleDAO;
 
 
 	/* (non-Javadoc)
@@ -92,12 +97,12 @@ public class MovieServicesImpl implements MovieServices {
 	@Transactional
 	public DtList<People> getActors(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteriaBuilder<RolePeople> builder= new FilterCriteriaBuilder<>();
-		builder.withFilter(RolePeopleFields.MOV_ID.name(), movId);
-		builder.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.actor.name());
-		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(builder.build(), Integer.MAX_VALUE);
-		for(final RolePeople  rolePeople : rolePeopleList){
-			ret.add(rolePeople.getPeople());
+		final FilterCriteriaBuilder<Casting> builder= new FilterCriteriaBuilder<>();
+		builder.withFilter(CastingFields.MOV_ID.name(), movId);
+		builder.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.actor.name());
+		final DtList<Casting> castingList = castingDAO.getList(builder.build(), Integer.MAX_VALUE);
+		for(final Casting  cast : castingList){
+			ret.add(cast.getPeople());
 		}
 		return ret;
 	}

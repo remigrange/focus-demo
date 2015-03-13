@@ -6,6 +6,7 @@
 		<component class="rodolphe.demo.dao.movies.MovieDAO"/>
 		<component class="rodolphe.demo.dao.people.RolePeopleDAO"/>
 		<component class="rodolphe.demo.dao.masterdatas.GenreDAO"/>
+		<component class="rodolphe.demo.dao.people.CastingDAO"/>
 	</module>
 
 	<module name="RODOLPHE-PAO" api="false" inheritance="java.lang.Object">

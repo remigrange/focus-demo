@@ -20,6 +20,7 @@ import rodolphe.demo.services.people.PeopleServices;
 import rodolphe.demo.services.search.SearchCriterium;
 
 /**
+ * Implementation of common ws.
  * @author JDALMEIDA
  *
  */
