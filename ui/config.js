@@ -8,6 +8,9 @@ exports.config = {
       joinTo: {
         'javascripts/app.js': /^app/,
         'javascripts/vendor.js': /^(bower_components|vendor)/
+      },
+      order: {
+        before: ['vendor/zepto.js', 'vendor/lodash.js']
       }
     },
     stylesheets: {

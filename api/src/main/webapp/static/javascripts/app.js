@@ -1224,7 +1224,8 @@ render(AlertModule, '#notification-center');
 
 var AppRouter = Router.extend({
   routes: {
-    '': 'home'
+    '': 'home',
+    'test': 'test'
   },
   home: function handleHomeRoute(){
     console.log('ROUTE: HOME');
@@ -1234,7 +1235,16 @@ var AppRouter = Router.extend({
      render(UserDetailView, '#page', {
        props:{userId: "6c4a5d96-dc8a-461d-8b23-d9b5ed2f4883"}
      });*/
-  }
+  },
+  test: function handle(){
+      console.log('ROUTE: TETS');
+      //Require the applications modules
+       var TestView  = require('../view/test');
+      //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
+         render(TestView, '#page', {
+         props:{userId: "6c4a5d96-dc8a-461d-8b23-d9b5ed2f4883"}
+         });
+    }
 });
 module.exports = new AppRouter();
 
