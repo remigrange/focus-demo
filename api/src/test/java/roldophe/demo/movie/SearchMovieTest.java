@@ -148,10 +148,10 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		final String titleOther= "TITLE_TNR_OTHER";
 		crit.setTitle(titleToSearch);
 		// Create new movies to seach
-		createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 1);
+		/*createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 1);
 		createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 1);
 		createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 2);
-		createMoviesForSearchByTitleWithFacetRuntime(titleOther, 3);
+		createMoviesForSearchByTitleWithFacetRuntime(titleOther, 3);*/
 		//1st search
 		Facet selectedFacet = null;
 		FacetValue selectedFacetValue = null;
@@ -175,7 +175,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		getLogger().info("results : " + movies.getCount());
 		//Search with selected facet.
 		if(selectedFacetValue!=null){
-			getLogger().info("facet filter : " +selectedFacetValue.getListFilter().getFilterValue());
+			getLogger().info("facet filter : " + selectedFacet.getDefinition().getName()+" test1 " +selectedFacetValue.getLabel().getDisplay()+" test2 "+selectedFacetValue.getListFilter().getFilterValue());
 			final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(),selectedFacetValue.getLabel().getDisplay(), selectedFacetValue.getListFilter());
 			movies = movieServices.getMoviesByCriteria(crit, sel);
 			getLogger().info("results : " + movies.getCount());
