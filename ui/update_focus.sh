@@ -1,5 +1,12 @@
-#npm update focus
-#npm update focus-components
-cp node_modules/focus/dist/*.{js,css} vendor/
-cp node_modules/focus-components/dist/focus-components.{js,css} vendor/
+npm update focus
+cd node_modules/focus
+npm install
+gulp browserify
+cd ../..
+npm update focus-components
+cd node_modules/focus-components
+npm install
+gulp componentify
+gulp browserify
+cd ../..
 
