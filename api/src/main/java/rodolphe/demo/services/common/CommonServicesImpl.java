@@ -3,20 +3,24 @@
  */
 package rodolphe.demo.services.common;
 
+import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.transaction.Transactional;
 
 import javax.inject.Inject;
 
+import rodolphe.demo.domain.common.SearchCriteria;
+import rodolphe.demo.domain.common.SearchRet;
+import rodolphe.demo.domain.common.SelectedFacet;
 import rodolphe.demo.domain.masterdata.CodeScope;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
-import rodolphe.demo.domain.movies.SearchRet;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
 import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.people.PeopleServices;
+import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
 
 /**
@@ -37,20 +41,30 @@ public class CommonServicesImpl implements CommonServices {
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
-	public Object search(final String scope, final String searchText) {
+	public Object search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection) {
 		final MovieCriteria movieCrit = new MovieCriteria();
+		final String searchText = searchCriteria.getSearchText();
+		final String scope = searchCriteria.getScope();
 		movieCrit.setTitle(searchText);
 		final PeopleCriteria peopleCrit = new PeopleCriteria();
 		peopleCrit.setPeoName(searchText);
 		peopleCrit.setFirstName(searchText);
 		peopleCrit.setLastName(searchText);
+		final FacetSelection [] facetSel = new FacetSelection[selection.size()];
+		for(int i=0; i<selection.size(); i++){
+			final SelectedFacet selected = selection.get(i);
+			final ListFilter filter = new ListFilter(selected.getFacetQuery());
+			facetSel[i]= new FacetSelection(selected.getFacetName(), selected.getFacetValueKey(), filter);
+
+		}
+
 		if(CodeScope.MOVIE.name().equals(scope)){
-			return movieServices.getMoviesByCriteria(movieCrit);
+			return movieServices.getMoviesByCriteria(movieCrit,facetSel);
 		} else if (CodeScope.PEOPLE.name().equals(scope)) {
-			return peopleServices.getPeopleByCriteria(peopleCrit);
+			return peopleServices.getPeopleByCriteria(peopleCrit,facetSel);
 		} else {
-			final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(movieCrit);
-			final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices.getPeopleByCriteria(peopleCrit);
+			final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(movieCrit, facetSel);
+			final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices.getPeopleByCriteria(peopleCrit, facetSel);
 			final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
 
 			final SearchRet searchRet = new SearchRet();

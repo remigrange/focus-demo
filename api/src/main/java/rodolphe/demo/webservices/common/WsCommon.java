@@ -3,6 +3,7 @@
  */
 package rodolphe.demo.webservices.common;
 
+import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.vega.rest.RestfulService;
 import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.InnerBodyParam;
@@ -10,6 +11,8 @@ import io.vertigo.vega.rest.stereotype.POST;
 
 import javax.inject.Inject;
 
+import rodolphe.demo.domain.common.SearchCriteria;
+import rodolphe.demo.domain.common.SelectedFacet;
 import rodolphe.demo.services.common.CommonServices;
 
 /**
@@ -30,8 +33,8 @@ public class WsCommon implements RestfulService {
 	 */
 	@POST("searchbyScope")
 	@AnonymousAccessAllowed
-	public Object search(@InnerBodyParam("scope") final String scope, @InnerBodyParam("searchText") final String searchText) {
-		return commonServices.search(scope, searchText);
+	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria , @InnerBodyParam("facets") final DtList<SelectedFacet> selection) {
+		return commonServices.search(searchCriteria, selection);
 
 	}
 

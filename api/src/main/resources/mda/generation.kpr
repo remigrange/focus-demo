@@ -1,3 +1,4 @@
 model/movie.ksp
 model/people.ksp
+model/common.ksp
 ../boot/definitions/application.kpr

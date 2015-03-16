@@ -6,6 +6,8 @@ public enum CodeScope implements CodeEnum {
 	/** Movie */
 	MOVIE,
 	/** People */
-	PEOPLE;
+	PEOPLE,
+	/** All */
+	ALL;
 
 }

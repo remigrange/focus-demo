@@ -3,7 +3,10 @@
  */
 package rodolphe.demo.services.common;
 
+import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.lang.Component;
+import rodolphe.demo.domain.common.SearchCriteria;
+import rodolphe.demo.domain.common.SelectedFacet;
 
 /**
  * Contains commons services.
@@ -15,10 +18,10 @@ public interface CommonServices  extends Component{
 
 	/**
 	 * Search by scope.
-	 * @param scope scope
-	 * @param searchText search criteria.
+	 * @param searchCriteria criteria
+	 * @param selection facets.
 	 * @return
 	 */
-	public Object search(String scope, String searchText);
+	public Object search(SearchCriteria searchCriteria, final DtList<SelectedFacet> selection );
 
 }

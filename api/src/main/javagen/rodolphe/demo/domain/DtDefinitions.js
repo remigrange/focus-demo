@@ -3,6 +3,52 @@
  * @type {Object}
  */
 module.exports = {
+	"searchCriteria": {
+			"scope": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"searchText": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			}		
+	},
+	"searchRet": {
+			"type": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"field1": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field2": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field3": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field4": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			}		
+	},
+	"selectedFacet": {
+			"facetName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"facetQuery": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"facetValueKey": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			}		
+	},
 	"fileInfo": {
 			"filId": {
 				"domain": "DO_ID",
@@ -285,28 +331,6 @@ module.exports = {
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
-			}		
-	},
-	"searchRet": {
-			"type": {
-				"domain": "DO_LIBELLE_50",
-				"required": false
-			},		
-			"field1": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field2": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field3": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field4": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
 			}		
 	},
 	"casting": {

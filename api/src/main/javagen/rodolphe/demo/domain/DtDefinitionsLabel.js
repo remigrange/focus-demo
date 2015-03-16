@@ -4,6 +4,22 @@
  */
 
 module.exports = {
+    "searchCriteria": {
+        "scope" : "The Scope",
+        "searchText" : "Field 1"
+    },
+    "searchRet": {
+        "type" : "Type of the object",
+        "field1" : "Field 1",
+        "field2" : "Field 2",
+        "field3" : "Field 3",
+        "field4" : "Field 4"
+    },
+    "selectedFacet": {
+        "facetName" : "Facet Name",
+        "facetQuery" : "Facet query",
+        "facetValueKey" : "Facet key value"
+    },
     "fileInfo": {
         "filId" : "FIL_ID",
         "fileName" : "FILE_NAME",
@@ -92,13 +108,6 @@ module.exports = {
         "countryIds" : "Movie's contries identifiers",
         "languageIds" : "Movie's languages identifiers",
         "rank" : "rank"
-    },
-    "searchRet": {
-        "type" : "Type of the object",
-        "field1" : "Field 1",
-        "field2" : "Field 2",
-        "field3" : "Field 3",
-        "field4" : "Field 4"
     },
     "casting": {
         "castId" : "Cast_id",

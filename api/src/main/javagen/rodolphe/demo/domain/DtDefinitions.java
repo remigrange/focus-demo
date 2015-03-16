@@ -13,6 +13,12 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	 * Enumération des DtDefinitions.
 	 */
 	public enum Definitions {
+			/** Objet de données SearchCriteria. */
+			SearchCriteria(rodolphe.demo.domain.common.SearchCriteria.class),
+			/** Objet de données SearchRet. */
+			SearchRet(rodolphe.demo.domain.common.SearchRet.class),
+			/** Objet de données SelectedFacet. */
+			SelectedFacet(rodolphe.demo.domain.common.SelectedFacet.class),
 			/** Objet de données FileInfo. */
 			FileInfo(rodolphe.demo.domain.files.FileInfo.class),
 			/** Objet de données Country. */
@@ -37,8 +43,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			MovieResult(rodolphe.demo.domain.movies.MovieResult.class),
 			/** Objet de données MovieView. */
 			MovieView(rodolphe.demo.domain.movies.MovieView.class),
-			/** Objet de données SearchRet. */
-			SearchRet(rodolphe.demo.domain.movies.SearchRet.class),
 			/** Objet de données Casting. */
 			Casting(rodolphe.demo.domain.people.Casting.class),
 			/** Objet de données People. */
@@ -76,6 +80,44 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			return clazz;
 		}
     }
+
+	/**
+	 * Enumération des champs de SearchCriteria.
+	 */
+	public enum SearchCriteriaFields implements DtFieldName {
+		/** Propriété 'The Scope'. */
+		SCOPE,
+		/** Propriété 'Field 1'. */
+		SEARCH_TEXT,
+	}
+
+	/**
+	 * Enumération des champs de SearchRet.
+	 */
+	public enum SearchRetFields implements DtFieldName {
+		/** Propriété 'Type of the object'. */
+		TYPE,
+		/** Propriété 'Field 1'. */
+		FIELD_1,
+		/** Propriété 'Field 2'. */
+		FIELD_2,
+		/** Propriété 'Field 3'. */
+		FIELD_3,
+		/** Propriété 'Field 4'. */
+		FIELD_4,
+	}
+
+	/**
+	 * Enumération des champs de SelectedFacet.
+	 */
+	public enum SelectedFacetFields implements DtFieldName {
+		/** Propriété 'Facet Name'. */
+		FACET_NAME,
+		/** Propriété 'Facet query'. */
+		FACET_QUERY,
+		/** Propriété 'Facet key value'. */
+		FACET_VALUE_KEY,
+	}
 
 	/**
 	 * Enumération des champs de FileInfo.
@@ -277,22 +319,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		LANGUAGE_IDS,
 		/** Propriété 'rank'. */
 		RANK,
-	}
-
-	/**
-	 * Enumération des champs de SearchRet.
-	 */
-	public enum SearchRetFields implements DtFieldName {
-		/** Propriété 'Type of the object'. */
-		TYPE,
-		/** Propriété 'Field 1'. */
-		FIELD_1,
-		/** Propriété 'Field 2'. */
-		FIELD_2,
-		/** Propriété 'Field 3'. */
-		FIELD_3,
-		/** Propriété 'Field 4'. */
-		FIELD_4,
 	}
 
 	/**

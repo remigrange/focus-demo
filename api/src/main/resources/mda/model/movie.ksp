@@ -1,14 +1,5 @@
 package rodolphe.demo.domain.movies
 
-create DtDefinition DT_SEARCH_RET {
-	persistent:"false"
-	field TYPE {domain: DO_LIBELLE_50 label: "Type of the object" notNull:"false" }
-	field FIELD_1 {domain: DO_COMMENTAIRE label: "Field 1" notNull:"false"}
-	field FIELD_2 {domain: DO_COMMENTAIRE label: "Field 2" notNull:"false"}
-	field FIELD_3 {domain: DO_COMMENTAIRE label: "Field 3" notNull:"false"}
-	field FIELD_4 {domain: DO_COMMENTAIRE label: "Field 4" notNull:"false"}
-}
-
 alter DtDefinition DT_MOVIE {
 	field GENRE_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Movie's genres identifiers" notNull: "false"}
 	field COUNTRY_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Movie's contries identifiers" notNull: "false"}
