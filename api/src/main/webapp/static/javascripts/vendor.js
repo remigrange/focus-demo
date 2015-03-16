@@ -13278,5479 +13278,6 @@ window.$ === undefined && (window.$ = Zepto)
   }
 }.call(this));
 
-//     Backbone.js 1.1.2
-
-//     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-//     Backbone may be freely distributed under the MIT license.
-//     For all details and documentation:
-//     http://backbonejs.org
-
-(function(root, factory) {
-
-  // Set up Backbone appropriately for the environment. Start with AMD.
-  if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'jquery', 'exports'], function(_, $, exports) {
-      // Export global even in AMD case in case this script is loaded with
-      // others that may still expect a global Backbone.
-      root.Backbone = factory(root, exports, _, $);
-    });
-
-  // Next for Node.js or CommonJS. jQuery may not be needed as a module.
-  } else if (typeof exports !== 'undefined') {
-    var _ = require('underscore');
-    factory(root, exports, _);
-
-  // Finally, as a browser global.
-  } else {
-    root.Backbone = factory(root, {}, root._, (root.jQuery || root.Zepto || root.ender || root.$));
-  }
-
-}(this, function(root, Backbone, _, $) {
-
-  // Initial Setup
-  // -------------
-
-  // Save the previous value of the `Backbone` variable, so that it can be
-  // restored later on, if `noConflict` is used.
-  var previousBackbone = root.Backbone;
-
-  // Create local references to array methods we'll want to use later.
-  var array = [];
-  var push = array.push;
-  var slice = array.slice;
-  var splice = array.splice;
-
-  // Current version of the library. Keep in sync with `package.json`.
-  Backbone.VERSION = '1.1.2';
-
-  // For Backbone's purposes, jQuery, Zepto, Ender, or My Library (kidding) owns
-  // the `$` variable.
-  Backbone.$ = $;
-
-  // Runs Backbone.js in *noConflict* mode, returning the `Backbone` variable
-  // to its previous owner. Returns a reference to this Backbone object.
-  Backbone.noConflict = function() {
-    root.Backbone = previousBackbone;
-    return this;
-  };
-
-  // Turn on `emulateHTTP` to support legacy HTTP servers. Setting this option
-  // will fake `"PATCH"`, `"PUT"` and `"DELETE"` requests via the `_method` parameter and
-  // set a `X-Http-Method-Override` header.
-  Backbone.emulateHTTP = false;
-
-  // Turn on `emulateJSON` to support legacy servers that can't deal with direct
-  // `application/json` requests ... will encode the body as
-  // `application/x-www-form-urlencoded` instead and will send the model in a
-  // form param named `model`.
-  Backbone.emulateJSON = false;
-
-  // Backbone.Events
-  // ---------------
-
-  // A module that can be mixed in to *any object* in order to provide it with
-  // custom events. You may bind with `on` or remove with `off` callback
-  // functions to an event; `trigger`-ing an event fires all callbacks in
-  // succession.
-  //
-  //     var object = {};
-  //     _.extend(object, Backbone.Events);
-  //     object.on('expand', function(){ alert('expanded'); });
-  //     object.trigger('expand');
-  //
-  var Events = Backbone.Events = {
-
-    // Bind an event to a `callback` function. Passing `"all"` will bind
-    // the callback to all events fired.
-    on: function(name, callback, context) {
-      if (!eventsApi(this, 'on', name, [callback, context]) || !callback) return this;
-      this._events || (this._events = {});
-      var events = this._events[name] || (this._events[name] = []);
-      events.push({callback: callback, context: context, ctx: context || this});
-      return this;
-    },
-
-    // Bind an event to only be triggered a single time. After the first time
-    // the callback is invoked, it will be removed.
-    once: function(name, callback, context) {
-      if (!eventsApi(this, 'once', name, [callback, context]) || !callback) return this;
-      var self = this;
-      var once = _.once(function() {
-        self.off(name, once);
-        callback.apply(this, arguments);
-      });
-      once._callback = callback;
-      return this.on(name, once, context);
-    },
-
-    // Remove one or many callbacks. If `context` is null, removes all
-    // callbacks with that function. If `callback` is null, removes all
-    // callbacks for the event. If `name` is null, removes all bound
-    // callbacks for all events.
-    off: function(name, callback, context) {
-      var retain, ev, events, names, i, l, j, k;
-      if (!this._events || !eventsApi(this, 'off', name, [callback, context])) return this;
-      if (!name && !callback && !context) {
-        this._events = void 0;
-        return this;
-      }
-      names = name ? [name] : _.keys(this._events);
-      for (i = 0, l = names.length; i < l; i++) {
-        name = names[i];
-        if (events = this._events[name]) {
-          this._events[name] = retain = [];
-          if (callback || context) {
-            for (j = 0, k = events.length; j < k; j++) {
-              ev = events[j];
-              if ((callback && callback !== ev.callback && callback !== ev.callback._callback) ||
-                  (context && context !== ev.context)) {
-                retain.push(ev);
-              }
-            }
-          }
-          if (!retain.length) delete this._events[name];
-        }
-      }
-
-      return this;
-    },
-
-    // Trigger one or many events, firing all bound callbacks. Callbacks are
-    // passed the same arguments as `trigger` is, apart from the event name
-    // (unless you're listening on `"all"`, which will cause your callback to
-    // receive the true name of the event as the first argument).
-    trigger: function(name) {
-      if (!this._events) return this;
-      var args = slice.call(arguments, 1);
-      if (!eventsApi(this, 'trigger', name, args)) return this;
-      var events = this._events[name];
-      var allEvents = this._events.all;
-      if (events) triggerEvents(events, args);
-      if (allEvents) triggerEvents(allEvents, arguments);
-      return this;
-    },
-
-    // Tell this object to stop listening to either specific events ... or
-    // to every object it's currently listening to.
-    stopListening: function(obj, name, callback) {
-      var listeningTo = this._listeningTo;
-      if (!listeningTo) return this;
-      var remove = !name && !callback;
-      if (!callback && typeof name === 'object') callback = this;
-      if (obj) (listeningTo = {})[obj._listenId] = obj;
-      for (var id in listeningTo) {
-        obj = listeningTo[id];
-        obj.off(name, callback, this);
-        if (remove || _.isEmpty(obj._events)) delete this._listeningTo[id];
-      }
-      return this;
-    }
-
-  };
-
-  // Regular expression used to split event strings.
-  var eventSplitter = /\s+/;
-
-  // Implement fancy features of the Events API such as multiple event
-  // names `"change blur"` and jQuery-style event maps `{change: action}`
-  // in terms of the existing API.
-  var eventsApi = function(obj, action, name, rest) {
-    if (!name) return true;
-
-    // Handle event maps.
-    if (typeof name === 'object') {
-      for (var key in name) {
-        obj[action].apply(obj, [key, name[key]].concat(rest));
-      }
-      return false;
-    }
-
-    // Handle space separated event names.
-    if (eventSplitter.test(name)) {
-      var names = name.split(eventSplitter);
-      for (var i = 0, l = names.length; i < l; i++) {
-        obj[action].apply(obj, [names[i]].concat(rest));
-      }
-      return false;
-    }
-
-    return true;
-  };
-
-  // A difficult-to-believe, but optimized internal dispatch function for
-  // triggering events. Tries to keep the usual cases speedy (most internal
-  // Backbone events have 3 arguments).
-  var triggerEvents = function(events, args) {
-    var ev, i = -1, l = events.length, a1 = args[0], a2 = args[1], a3 = args[2];
-    switch (args.length) {
-      case 0: while (++i < l) (ev = events[i]).callback.call(ev.ctx); return;
-      case 1: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1); return;
-      case 2: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2); return;
-      case 3: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2, a3); return;
-      default: while (++i < l) (ev = events[i]).callback.apply(ev.ctx, args); return;
-    }
-  };
-
-  var listenMethods = {listenTo: 'on', listenToOnce: 'once'};
-
-  // Inversion-of-control versions of `on` and `once`. Tell *this* object to
-  // listen to an event in another object ... keeping track of what it's
-  // listening to.
-  _.each(listenMethods, function(implementation, method) {
-    Events[method] = function(obj, name, callback) {
-      var listeningTo = this._listeningTo || (this._listeningTo = {});
-      var id = obj._listenId || (obj._listenId = _.uniqueId('l'));
-      listeningTo[id] = obj;
-      if (!callback && typeof name === 'object') callback = this;
-      obj[implementation](name, callback, this);
-      return this;
-    };
-  });
-
-  // Aliases for backwards compatibility.
-  Events.bind   = Events.on;
-  Events.unbind = Events.off;
-
-  // Allow the `Backbone` object to serve as a global event bus, for folks who
-  // want global "pubsub" in a convenient place.
-  _.extend(Backbone, Events);
-
-  // Backbone.Model
-  // --------------
-
-  // Backbone **Models** are the basic data object in the framework --
-  // frequently representing a row in a table in a database on your server.
-  // A discrete chunk of data and a bunch of useful, related methods for
-  // performing computations and transformations on that data.
-
-  // Create a new model with the specified attributes. A client id (`cid`)
-  // is automatically generated and assigned for you.
-  var Model = Backbone.Model = function(attributes, options) {
-    var attrs = attributes || {};
-    options || (options = {});
-    this.cid = _.uniqueId('c');
-    this.attributes = {};
-    if (options.collection) this.collection = options.collection;
-    if (options.parse) attrs = this.parse(attrs, options) || {};
-    attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
-    this.set(attrs, options);
-    this.changed = {};
-    this.initialize.apply(this, arguments);
-  };
-
-  // Attach all inheritable methods to the Model prototype.
-  _.extend(Model.prototype, Events, {
-
-    // A hash of attributes whose current and previous value differ.
-    changed: null,
-
-    // The value returned during the last failed validation.
-    validationError: null,
-
-    // The default name for the JSON `id` attribute is `"id"`. MongoDB and
-    // CouchDB users may want to set this to `"_id"`.
-    idAttribute: 'id',
-
-    // Initialize is an empty function by default. Override it with your own
-    // initialization logic.
-    initialize: function(){},
-
-    // Return a copy of the model's `attributes` object.
-    toJSON: function(options) {
-      return _.clone(this.attributes);
-    },
-
-    // Proxy `Backbone.sync` by default -- but override this if you need
-    // custom syncing semantics for *this* particular model.
-    sync: function() {
-      return Backbone.sync.apply(this, arguments);
-    },
-
-    // Get the value of an attribute.
-    get: function(attr) {
-      return this.attributes[attr];
-    },
-
-    // Get the HTML-escaped value of an attribute.
-    escape: function(attr) {
-      return _.escape(this.get(attr));
-    },
-
-    // Returns `true` if the attribute contains a value that is not null
-    // or undefined.
-    has: function(attr) {
-      return this.get(attr) != null;
-    },
-
-    // Set a hash of model attributes on the object, firing `"change"`. This is
-    // the core primitive operation of a model, updating the data and notifying
-    // anyone who needs to know about the change in state. The heart of the beast.
-    set: function(key, val, options) {
-      var attr, attrs, unset, changes, silent, changing, prev, current;
-      if (key == null) return this;
-
-      // Handle both `"key", value` and `{key: value}` -style arguments.
-      if (typeof key === 'object') {
-        attrs = key;
-        options = val;
-      } else {
-        (attrs = {})[key] = val;
-      }
-
-      options || (options = {});
-
-      // Run validation.
-      if (!this._validate(attrs, options)) return false;
-
-      // Extract attributes and options.
-      unset           = options.unset;
-      silent          = options.silent;
-      changes         = [];
-      changing        = this._changing;
-      this._changing  = true;
-
-      if (!changing) {
-        this._previousAttributes = _.clone(this.attributes);
-        this.changed = {};
-      }
-      current = this.attributes, prev = this._previousAttributes;
-
-      // Check for changes of `id`.
-      if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
-
-      // For each `set` attribute, update or delete the current value.
-      for (attr in attrs) {
-        val = attrs[attr];
-        if (!_.isEqual(current[attr], val)) changes.push(attr);
-        if (!_.isEqual(prev[attr], val)) {
-          this.changed[attr] = val;
-        } else {
-          delete this.changed[attr];
-        }
-        unset ? delete current[attr] : current[attr] = val;
-      }
-
-      // Trigger all relevant attribute changes.
-      if (!silent) {
-        if (changes.length) this._pending = options;
-        for (var i = 0, l = changes.length; i < l; i++) {
-          this.trigger('change:' + changes[i], this, current[changes[i]], options);
-        }
-      }
-
-      // You might be wondering why there's a `while` loop here. Changes can
-      // be recursively nested within `"change"` events.
-      if (changing) return this;
-      if (!silent) {
-        while (this._pending) {
-          options = this._pending;
-          this._pending = false;
-          this.trigger('change', this, options);
-        }
-      }
-      this._pending = false;
-      this._changing = false;
-      return this;
-    },
-
-    // Remove an attribute from the model, firing `"change"`. `unset` is a noop
-    // if the attribute doesn't exist.
-    unset: function(attr, options) {
-      return this.set(attr, void 0, _.extend({}, options, {unset: true}));
-    },
-
-    // Clear all attributes on the model, firing `"change"`.
-    clear: function(options) {
-      var attrs = {};
-      for (var key in this.attributes) attrs[key] = void 0;
-      return this.set(attrs, _.extend({}, options, {unset: true}));
-    },
-
-    // Determine if the model has changed since the last `"change"` event.
-    // If you specify an attribute name, determine if that attribute has changed.
-    hasChanged: function(attr) {
-      if (attr == null) return !_.isEmpty(this.changed);
-      return _.has(this.changed, attr);
-    },
-
-    // Return an object containing all the attributes that have changed, or
-    // false if there are no changed attributes. Useful for determining what
-    // parts of a view need to be updated and/or what attributes need to be
-    // persisted to the server. Unset attributes will be set to undefined.
-    // You can also pass an attributes object to diff against the model,
-    // determining if there *would be* a change.
-    changedAttributes: function(diff) {
-      if (!diff) return this.hasChanged() ? _.clone(this.changed) : false;
-      var val, changed = false;
-      var old = this._changing ? this._previousAttributes : this.attributes;
-      for (var attr in diff) {
-        if (_.isEqual(old[attr], (val = diff[attr]))) continue;
-        (changed || (changed = {}))[attr] = val;
-      }
-      return changed;
-    },
-
-    // Get the previous value of an attribute, recorded at the time the last
-    // `"change"` event was fired.
-    previous: function(attr) {
-      if (attr == null || !this._previousAttributes) return null;
-      return this._previousAttributes[attr];
-    },
-
-    // Get all of the attributes of the model at the time of the previous
-    // `"change"` event.
-    previousAttributes: function() {
-      return _.clone(this._previousAttributes);
-    },
-
-    // Fetch the model from the server. If the server's representation of the
-    // model differs from its current attributes, they will be overridden,
-    // triggering a `"change"` event.
-    fetch: function(options) {
-      options = options ? _.clone(options) : {};
-      if (options.parse === void 0) options.parse = true;
-      var model = this;
-      var success = options.success;
-      options.success = function(resp) {
-        if (!model.set(model.parse(resp, options), options)) return false;
-        if (success) success(model, resp, options);
-        model.trigger('sync', model, resp, options);
-      };
-      wrapError(this, options);
-      return this.sync('read', this, options);
-    },
-
-    // Set a hash of model attributes, and sync the model to the server.
-    // If the server returns an attributes hash that differs, the model's
-    // state will be `set` again.
-    save: function(key, val, options) {
-      var attrs, method, xhr, attributes = this.attributes;
-
-      // Handle both `"key", value` and `{key: value}` -style arguments.
-      if (key == null || typeof key === 'object') {
-        attrs = key;
-        options = val;
-      } else {
-        (attrs = {})[key] = val;
-      }
-
-      options = _.extend({validate: true}, options);
-
-      // If we're not waiting and attributes exist, save acts as
-      // `set(attr).save(null, opts)` with validation. Otherwise, check if
-      // the model will be valid when the attributes, if any, are set.
-      if (attrs && !options.wait) {
-        if (!this.set(attrs, options)) return false;
-      } else {
-        if (!this._validate(attrs, options)) return false;
-      }
-
-      // Set temporary attributes if `{wait: true}`.
-      if (attrs && options.wait) {
-        this.attributes = _.extend({}, attributes, attrs);
-      }
-
-      // After a successful server-side save, the client is (optionally)
-      // updated with the server-side state.
-      if (options.parse === void 0) options.parse = true;
-      var model = this;
-      var success = options.success;
-      options.success = function(resp) {
-        // Ensure attributes are restored during synchronous saves.
-        model.attributes = attributes;
-        var serverAttrs = model.parse(resp, options);
-        if (options.wait) serverAttrs = _.extend(attrs || {}, serverAttrs);
-        if (_.isObject(serverAttrs) && !model.set(serverAttrs, options)) {
-          return false;
-        }
-        if (success) success(model, resp, options);
-        model.trigger('sync', model, resp, options);
-      };
-      wrapError(this, options);
-
-      method = this.isNew() ? 'create' : (options.patch ? 'patch' : 'update');
-      if (method === 'patch') options.attrs = attrs;
-      xhr = this.sync(method, this, options);
-
-      // Restore attributes.
-      if (attrs && options.wait) this.attributes = attributes;
-
-      return xhr;
-    },
-
-    // Destroy this model on the server if it was already persisted.
-    // Optimistically removes the model from its collection, if it has one.
-    // If `wait: true` is passed, waits for the server to respond before removal.
-    destroy: function(options) {
-      options = options ? _.clone(options) : {};
-      var model = this;
-      var success = options.success;
-
-      var destroy = function() {
-        model.trigger('destroy', model, model.collection, options);
-      };
-
-      options.success = function(resp) {
-        if (options.wait || model.isNew()) destroy();
-        if (success) success(model, resp, options);
-        if (!model.isNew()) model.trigger('sync', model, resp, options);
-      };
-
-      if (this.isNew()) {
-        options.success();
-        return false;
-      }
-      wrapError(this, options);
-
-      var xhr = this.sync('delete', this, options);
-      if (!options.wait) destroy();
-      return xhr;
-    },
-
-    // Default URL for the model's representation on the server -- if you're
-    // using Backbone's restful methods, override this to change the endpoint
-    // that will be called.
-    url: function() {
-      var base =
-        _.result(this, 'urlRoot') ||
-        _.result(this.collection, 'url') ||
-        urlError();
-      if (this.isNew()) return base;
-      return base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id);
-    },
-
-    // **parse** converts a response into the hash of attributes to be `set` on
-    // the model. The default implementation is just to pass the response along.
-    parse: function(resp, options) {
-      return resp;
-    },
-
-    // Create a new model with identical attributes to this one.
-    clone: function() {
-      return new this.constructor(this.attributes);
-    },
-
-    // A model is new if it has never been saved to the server, and lacks an id.
-    isNew: function() {
-      return !this.has(this.idAttribute);
-    },
-
-    // Check if the model is currently in a valid state.
-    isValid: function(options) {
-      return this._validate({}, _.extend(options || {}, { validate: true }));
-    },
-
-    // Run validation against the next complete set of model attributes,
-    // returning `true` if all is well. Otherwise, fire an `"invalid"` event.
-    _validate: function(attrs, options) {
-      if (!options.validate || !this.validate) return true;
-      attrs = _.extend({}, this.attributes, attrs);
-      var error = this.validationError = this.validate(attrs, options) || null;
-      if (!error) return true;
-      this.trigger('invalid', this, error, _.extend(options, {validationError: error}));
-      return false;
-    }
-
-  });
-
-  // Underscore methods that we want to implement on the Model.
-  var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
-
-  // Mix in each Underscore method as a proxy to `Model#attributes`.
-  _.each(modelMethods, function(method) {
-    Model.prototype[method] = function() {
-      var args = slice.call(arguments);
-      args.unshift(this.attributes);
-      return _[method].apply(_, args);
-    };
-  });
-
-  // Backbone.Collection
-  // -------------------
-
-  // If models tend to represent a single row of data, a Backbone Collection is
-  // more analagous to a table full of data ... or a small slice or page of that
-  // table, or a collection of rows that belong together for a particular reason
-  // -- all of the messages in this particular folder, all of the documents
-  // belonging to this particular author, and so on. Collections maintain
-  // indexes of their models, both in order, and for lookup by `id`.
-
-  // Create a new **Collection**, perhaps to contain a specific type of `model`.
-  // If a `comparator` is specified, the Collection will maintain
-  // its models in sort order, as they're added and removed.
-  var Collection = Backbone.Collection = function(models, options) {
-    options || (options = {});
-    if (options.model) this.model = options.model;
-    if (options.comparator !== void 0) this.comparator = options.comparator;
-    this._reset();
-    this.initialize.apply(this, arguments);
-    if (models) this.reset(models, _.extend({silent: true}, options));
-  };
-
-  // Default options for `Collection#set`.
-  var setOptions = {add: true, remove: true, merge: true};
-  var addOptions = {add: true, remove: false};
-
-  // Define the Collection's inheritable methods.
-  _.extend(Collection.prototype, Events, {
-
-    // The default model for a collection is just a **Backbone.Model**.
-    // This should be overridden in most cases.
-    model: Model,
-
-    // Initialize is an empty function by default. Override it with your own
-    // initialization logic.
-    initialize: function(){},
-
-    // The JSON representation of a Collection is an array of the
-    // models' attributes.
-    toJSON: function(options) {
-      return this.map(function(model){ return model.toJSON(options); });
-    },
-
-    // Proxy `Backbone.sync` by default.
-    sync: function() {
-      return Backbone.sync.apply(this, arguments);
-    },
-
-    // Add a model, or list of models to the set.
-    add: function(models, options) {
-      return this.set(models, _.extend({merge: false}, options, addOptions));
-    },
-
-    // Remove a model, or a list of models from the set.
-    remove: function(models, options) {
-      var singular = !_.isArray(models);
-      models = singular ? [models] : _.clone(models);
-      options || (options = {});
-      var i, l, index, model;
-      for (i = 0, l = models.length; i < l; i++) {
-        model = models[i] = this.get(models[i]);
-        if (!model) continue;
-        delete this._byId[model.id];
-        delete this._byId[model.cid];
-        index = this.indexOf(model);
-        this.models.splice(index, 1);
-        this.length--;
-        if (!options.silent) {
-          options.index = index;
-          model.trigger('remove', model, this, options);
-        }
-        this._removeReference(model, options);
-      }
-      return singular ? models[0] : models;
-    },
-
-    // Update a collection by `set`-ing a new list of models, adding new ones,
-    // removing models that are no longer present, and merging models that
-    // already exist in the collection, as necessary. Similar to **Model#set**,
-    // the core operation for updating the data contained by the collection.
-    set: function(models, options) {
-      options = _.defaults({}, options, setOptions);
-      if (options.parse) models = this.parse(models, options);
-      var singular = !_.isArray(models);
-      models = singular ? (models ? [models] : []) : _.clone(models);
-      var i, l, id, model, attrs, existing, sort;
-      var at = options.at;
-      var targetModel = this.model;
-      var sortable = this.comparator && (at == null) && options.sort !== false;
-      var sortAttr = _.isString(this.comparator) ? this.comparator : null;
-      var toAdd = [], toRemove = [], modelMap = {};
-      var add = options.add, merge = options.merge, remove = options.remove;
-      var order = !sortable && add && remove ? [] : false;
-
-      // Turn bare objects into model references, and prevent invalid models
-      // from being added.
-      for (i = 0, l = models.length; i < l; i++) {
-        attrs = models[i] || {};
-        if (attrs instanceof Model) {
-          id = model = attrs;
-        } else {
-          id = attrs[targetModel.prototype.idAttribute || 'id'];
-        }
-
-        // If a duplicate is found, prevent it from being added and
-        // optionally merge it into the existing model.
-        if (existing = this.get(id)) {
-          if (remove) modelMap[existing.cid] = true;
-          if (merge) {
-            attrs = attrs === model ? model.attributes : attrs;
-            if (options.parse) attrs = existing.parse(attrs, options);
-            existing.set(attrs, options);
-            if (sortable && !sort && existing.hasChanged(sortAttr)) sort = true;
-          }
-          models[i] = existing;
-
-        // If this is a new, valid model, push it to the `toAdd` list.
-        } else if (add) {
-          model = models[i] = this._prepareModel(attrs, options);
-          if (!model) continue;
-          toAdd.push(model);
-          this._addReference(model, options);
-        }
-
-        // Do not add multiple models with the same `id`.
-        model = existing || model;
-        if (order && (model.isNew() || !modelMap[model.id])) order.push(model);
-        modelMap[model.id] = true;
-      }
-
-      // Remove nonexistent models if appropriate.
-      if (remove) {
-        for (i = 0, l = this.length; i < l; ++i) {
-          if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
-        }
-        if (toRemove.length) this.remove(toRemove, options);
-      }
-
-      // See if sorting is needed, update `length` and splice in new models.
-      if (toAdd.length || (order && order.length)) {
-        if (sortable) sort = true;
-        this.length += toAdd.length;
-        if (at != null) {
-          for (i = 0, l = toAdd.length; i < l; i++) {
-            this.models.splice(at + i, 0, toAdd[i]);
-          }
-        } else {
-          if (order) this.models.length = 0;
-          var orderedModels = order || toAdd;
-          for (i = 0, l = orderedModels.length; i < l; i++) {
-            this.models.push(orderedModels[i]);
-          }
-        }
-      }
-
-      // Silently sort the collection if appropriate.
-      if (sort) this.sort({silent: true});
-
-      // Unless silenced, it's time to fire all appropriate add/sort events.
-      if (!options.silent) {
-        for (i = 0, l = toAdd.length; i < l; i++) {
-          (model = toAdd[i]).trigger('add', model, this, options);
-        }
-        if (sort || (order && order.length)) this.trigger('sort', this, options);
-      }
-
-      // Return the added (or merged) model (or models).
-      return singular ? models[0] : models;
-    },
-
-    // When you have more items than you want to add or remove individually,
-    // you can reset the entire set with a new list of models, without firing
-    // any granular `add` or `remove` events. Fires `reset` when finished.
-    // Useful for bulk operations and optimizations.
-    reset: function(models, options) {
-      options || (options = {});
-      for (var i = 0, l = this.models.length; i < l; i++) {
-        this._removeReference(this.models[i], options);
-      }
-      options.previousModels = this.models;
-      this._reset();
-      models = this.add(models, _.extend({silent: true}, options));
-      if (!options.silent) this.trigger('reset', this, options);
-      return models;
-    },
-
-    // Add a model to the end of the collection.
-    push: function(model, options) {
-      return this.add(model, _.extend({at: this.length}, options));
-    },
-
-    // Remove a model from the end of the collection.
-    pop: function(options) {
-      var model = this.at(this.length - 1);
-      this.remove(model, options);
-      return model;
-    },
-
-    // Add a model to the beginning of the collection.
-    unshift: function(model, options) {
-      return this.add(model, _.extend({at: 0}, options));
-    },
-
-    // Remove a model from the beginning of the collection.
-    shift: function(options) {
-      var model = this.at(0);
-      this.remove(model, options);
-      return model;
-    },
-
-    // Slice out a sub-array of models from the collection.
-    slice: function() {
-      return slice.apply(this.models, arguments);
-    },
-
-    // Get a model from the set by id.
-    get: function(obj) {
-      if (obj == null) return void 0;
-      return this._byId[obj] || this._byId[obj.id] || this._byId[obj.cid];
-    },
-
-    // Get the model at the given index.
-    at: function(index) {
-      return this.models[index];
-    },
-
-    // Return models with matching attributes. Useful for simple cases of
-    // `filter`.
-    where: function(attrs, first) {
-      if (_.isEmpty(attrs)) return first ? void 0 : [];
-      return this[first ? 'find' : 'filter'](function(model) {
-        for (var key in attrs) {
-          if (attrs[key] !== model.get(key)) return false;
-        }
-        return true;
-      });
-    },
-
-    // Return the first model with matching attributes. Useful for simple cases
-    // of `find`.
-    findWhere: function(attrs) {
-      return this.where(attrs, true);
-    },
-
-    // Force the collection to re-sort itself. You don't need to call this under
-    // normal circumstances, as the set will maintain sort order as each item
-    // is added.
-    sort: function(options) {
-      if (!this.comparator) throw new Error('Cannot sort a set without a comparator');
-      options || (options = {});
-
-      // Run sort based on type of `comparator`.
-      if (_.isString(this.comparator) || this.comparator.length === 1) {
-        this.models = this.sortBy(this.comparator, this);
-      } else {
-        this.models.sort(_.bind(this.comparator, this));
-      }
-
-      if (!options.silent) this.trigger('sort', this, options);
-      return this;
-    },
-
-    // Pluck an attribute from each model in the collection.
-    pluck: function(attr) {
-      return _.invoke(this.models, 'get', attr);
-    },
-
-    // Fetch the default set of models for this collection, resetting the
-    // collection when they arrive. If `reset: true` is passed, the response
-    // data will be passed through the `reset` method instead of `set`.
-    fetch: function(options) {
-      options = options ? _.clone(options) : {};
-      if (options.parse === void 0) options.parse = true;
-      var success = options.success;
-      var collection = this;
-      options.success = function(resp) {
-        var method = options.reset ? 'reset' : 'set';
-        collection[method](resp, options);
-        if (success) success(collection, resp, options);
-        collection.trigger('sync', collection, resp, options);
-      };
-      wrapError(this, options);
-      return this.sync('read', this, options);
-    },
-
-    // Create a new instance of a model in this collection. Add the model to the
-    // collection immediately, unless `wait: true` is passed, in which case we
-    // wait for the server to agree.
-    create: function(model, options) {
-      options = options ? _.clone(options) : {};
-      if (!(model = this._prepareModel(model, options))) return false;
-      if (!options.wait) this.add(model, options);
-      var collection = this;
-      var success = options.success;
-      options.success = function(model, resp) {
-        if (options.wait) collection.add(model, options);
-        if (success) success(model, resp, options);
-      };
-      model.save(null, options);
-      return model;
-    },
-
-    // **parse** converts a response into a list of models to be added to the
-    // collection. The default implementation is just to pass it through.
-    parse: function(resp, options) {
-      return resp;
-    },
-
-    // Create a new collection with an identical list of models as this one.
-    clone: function() {
-      return new this.constructor(this.models);
-    },
-
-    // Private method to reset all internal state. Called when the collection
-    // is first initialized or reset.
-    _reset: function() {
-      this.length = 0;
-      this.models = [];
-      this._byId  = {};
-    },
-
-    // Prepare a hash of attributes (or other model) to be added to this
-    // collection.
-    _prepareModel: function(attrs, options) {
-      if (attrs instanceof Model) return attrs;
-      options = options ? _.clone(options) : {};
-      options.collection = this;
-      var model = new this.model(attrs, options);
-      if (!model.validationError) return model;
-      this.trigger('invalid', this, model.validationError, options);
-      return false;
-    },
-
-    // Internal method to create a model's ties to a collection.
-    _addReference: function(model, options) {
-      this._byId[model.cid] = model;
-      if (model.id != null) this._byId[model.id] = model;
-      if (!model.collection) model.collection = this;
-      model.on('all', this._onModelEvent, this);
-    },
-
-    // Internal method to sever a model's ties to a collection.
-    _removeReference: function(model, options) {
-      if (this === model.collection) delete model.collection;
-      model.off('all', this._onModelEvent, this);
-    },
-
-    // Internal method called every time a model in the set fires an event.
-    // Sets need to update their indexes when models change ids. All other
-    // events simply proxy through. "add" and "remove" events that originate
-    // in other collections are ignored.
-    _onModelEvent: function(event, model, collection, options) {
-      if ((event === 'add' || event === 'remove') && collection !== this) return;
-      if (event === 'destroy') this.remove(model, options);
-      if (model && event === 'change:' + model.idAttribute) {
-        delete this._byId[model.previous(model.idAttribute)];
-        if (model.id != null) this._byId[model.id] = model;
-      }
-      this.trigger.apply(this, arguments);
-    }
-
-  });
-
-  // Underscore methods that we want to implement on the Collection.
-  // 90% of the core usefulness of Backbone Collections is actually implemented
-  // right here:
-  var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
-    'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select',
-    'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke',
-    'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest',
-    'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle',
-    'lastIndexOf', 'isEmpty', 'chain', 'sample'];
-
-  // Mix in each Underscore method as a proxy to `Collection#models`.
-  _.each(methods, function(method) {
-    Collection.prototype[method] = function() {
-      var args = slice.call(arguments);
-      args.unshift(this.models);
-      return _[method].apply(_, args);
-    };
-  });
-
-  // Underscore methods that take a property name as an argument.
-  var attributeMethods = ['groupBy', 'countBy', 'sortBy', 'indexBy'];
-
-  // Use attributes instead of properties.
-  _.each(attributeMethods, function(method) {
-    Collection.prototype[method] = function(value, context) {
-      var iterator = _.isFunction(value) ? value : function(model) {
-        return model.get(value);
-      };
-      return _[method](this.models, iterator, context);
-    };
-  });
-
-  // Backbone.View
-  // -------------
-
-  // Backbone Views are almost more convention than they are actual code. A View
-  // is simply a JavaScript object that represents a logical chunk of UI in the
-  // DOM. This might be a single item, an entire list, a sidebar or panel, or
-  // even the surrounding frame which wraps your whole app. Defining a chunk of
-  // UI as a **View** allows you to define your DOM events declaratively, without
-  // having to worry about render order ... and makes it easy for the view to
-  // react to specific changes in the state of your models.
-
-  // Creating a Backbone.View creates its initial element outside of the DOM,
-  // if an existing element is not provided...
-  var View = Backbone.View = function(options) {
-    this.cid = _.uniqueId('view');
-    options || (options = {});
-    _.extend(this, _.pick(options, viewOptions));
-    this._ensureElement();
-    this.initialize.apply(this, arguments);
-    this.delegateEvents();
-  };
-
-  // Cached regex to split keys for `delegate`.
-  var delegateEventSplitter = /^(\S+)\s*(.*)$/;
-
-  // List of view options to be merged as properties.
-  var viewOptions = ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
-
-  // Set up all inheritable **Backbone.View** properties and methods.
-  _.extend(View.prototype, Events, {
-
-    // The default `tagName` of a View's element is `"div"`.
-    tagName: 'div',
-
-    // jQuery delegate for element lookup, scoped to DOM elements within the
-    // current view. This should be preferred to global lookups where possible.
-    $: function(selector) {
-      return this.$el.find(selector);
-    },
-
-    // Initialize is an empty function by default. Override it with your own
-    // initialization logic.
-    initialize: function(){},
-
-    // **render** is the core function that your view should override, in order
-    // to populate its element (`this.el`), with the appropriate HTML. The
-    // convention is for **render** to always return `this`.
-    render: function() {
-      return this;
-    },
-
-    // Remove this view by taking the element out of the DOM, and removing any
-    // applicable Backbone.Events listeners.
-    remove: function() {
-      this.$el.remove();
-      this.stopListening();
-      return this;
-    },
-
-    // Change the view's element (`this.el` property), including event
-    // re-delegation.
-    setElement: function(element, delegate) {
-      if (this.$el) this.undelegateEvents();
-      this.$el = element instanceof Backbone.$ ? element : Backbone.$(element);
-      this.el = this.$el[0];
-      if (delegate !== false) this.delegateEvents();
-      return this;
-    },
-
-    // Set callbacks, where `this.events` is a hash of
-    //
-    // *{"event selector": "callback"}*
-    //
-    //     {
-    //       'mousedown .title':  'edit',
-    //       'click .button':     'save',
-    //       'click .open':       function(e) { ... }
-    //     }
-    //
-    // pairs. Callbacks will be bound to the view, with `this` set properly.
-    // Uses event delegation for efficiency.
-    // Omitting the selector binds the event to `this.el`.
-    // This only works for delegate-able events: not `focus`, `blur`, and
-    // not `change`, `submit`, and `reset` in Internet Explorer.
-    delegateEvents: function(events) {
-      if (!(events || (events = _.result(this, 'events')))) return this;
-      this.undelegateEvents();
-      for (var key in events) {
-        var method = events[key];
-        if (!_.isFunction(method)) method = this[events[key]];
-        if (!method) continue;
-
-        var match = key.match(delegateEventSplitter);
-        var eventName = match[1], selector = match[2];
-        method = _.bind(method, this);
-        eventName += '.delegateEvents' + this.cid;
-        if (selector === '') {
-          this.$el.on(eventName, method);
-        } else {
-          this.$el.on(eventName, selector, method);
-        }
-      }
-      return this;
-    },
-
-    // Clears all callbacks previously bound to the view with `delegateEvents`.
-    // You usually don't need to use this, but may wish to if you have multiple
-    // Backbone views attached to the same DOM element.
-    undelegateEvents: function() {
-      this.$el.off('.delegateEvents' + this.cid);
-      return this;
-    },
-
-    // Ensure that the View has a DOM element to render into.
-    // If `this.el` is a string, pass it through `$()`, take the first
-    // matching element, and re-assign it to `el`. Otherwise, create
-    // an element from the `id`, `className` and `tagName` properties.
-    _ensureElement: function() {
-      if (!this.el) {
-        var attrs = _.extend({}, _.result(this, 'attributes'));
-        if (this.id) attrs.id = _.result(this, 'id');
-        if (this.className) attrs['class'] = _.result(this, 'className');
-        var $el = Backbone.$('<' + _.result(this, 'tagName') + '>').attr(attrs);
-        this.setElement($el, false);
-      } else {
-        this.setElement(_.result(this, 'el'), false);
-      }
-    }
-
-  });
-
-  // Backbone.sync
-  // -------------
-
-  // Override this function to change the manner in which Backbone persists
-  // models to the server. You will be passed the type of request, and the
-  // model in question. By default, makes a RESTful Ajax request
-  // to the model's `url()`. Some possible customizations could be:
-  //
-  // * Use `setTimeout` to batch rapid-fire updates into a single request.
-  // * Send up the models as XML instead of JSON.
-  // * Persist models via WebSockets instead of Ajax.
-  //
-  // Turn on `Backbone.emulateHTTP` in order to send `PUT` and `DELETE` requests
-  // as `POST`, with a `_method` parameter containing the true HTTP method,
-  // as well as all requests with the body as `application/x-www-form-urlencoded`
-  // instead of `application/json` with the model in a param named `model`.
-  // Useful when interfacing with server-side languages like **PHP** that make
-  // it difficult to read the body of `PUT` requests.
-  Backbone.sync = function(method, model, options) {
-    var type = methodMap[method];
-
-    // Default options, unless specified.
-    _.defaults(options || (options = {}), {
-      emulateHTTP: Backbone.emulateHTTP,
-      emulateJSON: Backbone.emulateJSON
-    });
-
-    // Default JSON-request options.
-    var params = {type: type, dataType: 'json'};
-
-    // Ensure that we have a URL.
-    if (!options.url) {
-      params.url = _.result(model, 'url') || urlError();
-    }
-
-    // Ensure that we have the appropriate request data.
-    if (options.data == null && model && (method === 'create' || method === 'update' || method === 'patch')) {
-      params.contentType = 'application/json';
-      params.data = JSON.stringify(options.attrs || model.toJSON(options));
-    }
-
-    // For older servers, emulate JSON by encoding the request into an HTML-form.
-    if (options.emulateJSON) {
-      params.contentType = 'application/x-www-form-urlencoded';
-      params.data = params.data ? {model: params.data} : {};
-    }
-
-    // For older servers, emulate HTTP by mimicking the HTTP method with `_method`
-    // And an `X-HTTP-Method-Override` header.
-    if (options.emulateHTTP && (type === 'PUT' || type === 'DELETE' || type === 'PATCH')) {
-      params.type = 'POST';
-      if (options.emulateJSON) params.data._method = type;
-      var beforeSend = options.beforeSend;
-      options.beforeSend = function(xhr) {
-        xhr.setRequestHeader('X-HTTP-Method-Override', type);
-        if (beforeSend) return beforeSend.apply(this, arguments);
-      };
-    }
-
-    // Don't process data on a non-GET request.
-    if (params.type !== 'GET' && !options.emulateJSON) {
-      params.processData = false;
-    }
-
-    // If we're sending a `PATCH` request, and we're in an old Internet Explorer
-    // that still has ActiveX enabled by default, override jQuery to use that
-    // for XHR instead. Remove this line when jQuery supports `PATCH` on IE8.
-    if (params.type === 'PATCH' && noXhrPatch) {
-      params.xhr = function() {
-        return new ActiveXObject("Microsoft.XMLHTTP");
-      };
-    }
-
-    // Make the request, allowing the user to override any Ajax options.
-    var xhr = options.xhr = Backbone.ajax(_.extend(params, options));
-    model.trigger('request', model, xhr, options);
-    return xhr;
-  };
-
-  var noXhrPatch =
-    typeof window !== 'undefined' && !!window.ActiveXObject &&
-      !(window.XMLHttpRequest && (new XMLHttpRequest).dispatchEvent);
-
-  // Map from CRUD to HTTP for our default `Backbone.sync` implementation.
-  var methodMap = {
-    'create': 'POST',
-    'update': 'PUT',
-    'patch':  'PATCH',
-    'delete': 'DELETE',
-    'read':   'GET'
-  };
-
-  // Set the default implementation of `Backbone.ajax` to proxy through to `$`.
-  // Override this if you'd like to use a different library.
-  Backbone.ajax = function() {
-    return Backbone.$.ajax.apply(Backbone.$, arguments);
-  };
-
-  // Backbone.Router
-  // ---------------
-
-  // Routers map faux-URLs to actions, and fire events when routes are
-  // matched. Creating a new one sets its `routes` hash, if not set statically.
-  var Router = Backbone.Router = function(options) {
-    options || (options = {});
-    if (options.routes) this.routes = options.routes;
-    this._bindRoutes();
-    this.initialize.apply(this, arguments);
-  };
-
-  // Cached regular expressions for matching named param parts and splatted
-  // parts of route strings.
-  var optionalParam = /\((.*?)\)/g;
-  var namedParam    = /(\(\?)?:\w+/g;
-  var splatParam    = /\*\w+/g;
-  var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
-
-  // Set up all inheritable **Backbone.Router** properties and methods.
-  _.extend(Router.prototype, Events, {
-
-    // Initialize is an empty function by default. Override it with your own
-    // initialization logic.
-    initialize: function(){},
-
-    // Manually bind a single named route to a callback. For example:
-    //
-    //     this.route('search/:query/p:num', 'search', function(query, num) {
-    //       ...
-    //     });
-    //
-    route: function(route, name, callback) {
-      if (!_.isRegExp(route)) route = this._routeToRegExp(route);
-      if (_.isFunction(name)) {
-        callback = name;
-        name = '';
-      }
-      if (!callback) callback = this[name];
-      var router = this;
-      Backbone.history.route(route, function(fragment) {
-        var args = router._extractParameters(route, fragment);
-        router.execute(callback, args);
-        router.trigger.apply(router, ['route:' + name].concat(args));
-        router.trigger('route', name, args);
-        Backbone.history.trigger('route', router, name, args);
-      });
-      return this;
-    },
-
-    // Execute a route handler with the provided parameters.  This is an
-    // excellent place to do pre-route setup or post-route cleanup.
-    execute: function(callback, args) {
-      if (callback) callback.apply(this, args);
-    },
-
-    // Simple proxy to `Backbone.history` to save a fragment into the history.
-    navigate: function(fragment, options) {
-      Backbone.history.navigate(fragment, options);
-      return this;
-    },
-
-    // Bind all defined routes to `Backbone.history`. We have to reverse the
-    // order of the routes here to support behavior where the most general
-    // routes can be defined at the bottom of the route map.
-    _bindRoutes: function() {
-      if (!this.routes) return;
-      this.routes = _.result(this, 'routes');
-      var route, routes = _.keys(this.routes);
-      while ((route = routes.pop()) != null) {
-        this.route(route, this.routes[route]);
-      }
-    },
-
-    // Convert a route string into a regular expression, suitable for matching
-    // against the current location hash.
-    _routeToRegExp: function(route) {
-      route = route.replace(escapeRegExp, '\\$&')
-                   .replace(optionalParam, '(?:$1)?')
-                   .replace(namedParam, function(match, optional) {
-                     return optional ? match : '([^/?]+)';
-                   })
-                   .replace(splatParam, '([^?]*?)');
-      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
-    },
-
-    // Given a route, and a URL fragment that it matches, return the array of
-    // extracted decoded parameters. Empty or unmatched parameters will be
-    // treated as `null` to normalize cross-browser behavior.
-    _extractParameters: function(route, fragment) {
-      var params = route.exec(fragment).slice(1);
-      return _.map(params, function(param, i) {
-        // Don't decode the search params.
-        if (i === params.length - 1) return param || null;
-        return param ? decodeURIComponent(param) : null;
-      });
-    }
-
-  });
-
-  // Backbone.History
-  // ----------------
-
-  // Handles cross-browser history management, based on either
-  // [pushState](http://diveintohtml5.info/history.html) and real URLs, or
-  // [onhashchange](https://developer.mozilla.org/en-US/docs/DOM/window.onhashchange)
-  // and URL fragments. If the browser supports neither (old IE, natch),
-  // falls back to polling.
-  var History = Backbone.History = function() {
-    this.handlers = [];
-    _.bindAll(this, 'checkUrl');
-
-    // Ensure that `History` can be used outside of the browser.
-    if (typeof window !== 'undefined') {
-      this.location = window.location;
-      this.history = window.history;
-    }
-  };
-
-  // Cached regex for stripping a leading hash/slash and trailing space.
-  var routeStripper = /^[#\/]|\s+$/g;
-
-  // Cached regex for stripping leading and trailing slashes.
-  var rootStripper = /^\/+|\/+$/g;
-
-  // Cached regex for detecting MSIE.
-  var isExplorer = /msie [\w.]+/;
-
-  // Cached regex for removing a trailing slash.
-  var trailingSlash = /\/$/;
-
-  // Cached regex for stripping urls of hash.
-  var pathStripper = /#.*$/;
-
-  // Has the history handling already been started?
-  History.started = false;
-
-  // Set up all inheritable **Backbone.History** properties and methods.
-  _.extend(History.prototype, Events, {
-
-    // The default interval to poll for hash changes, if necessary, is
-    // twenty times a second.
-    interval: 50,
-
-    // Are we at the app root?
-    atRoot: function() {
-      return this.location.pathname.replace(/[^\/]$/, '$&/') === this.root;
-    },
-
-    // Gets the true hash value. Cannot use location.hash directly due to bug
-    // in Firefox where location.hash will always be decoded.
-    getHash: function(window) {
-      var match = (window || this).location.href.match(/#(.*)$/);
-      return match ? match[1] : '';
-    },
-
-    // Get the cross-browser normalized URL fragment, either from the URL,
-    // the hash, or the override.
-    getFragment: function(fragment, forcePushState) {
-      if (fragment == null) {
-        if (this._hasPushState || !this._wantsHashChange || forcePushState) {
-          fragment = decodeURI(this.location.pathname + this.location.search);
-          var root = this.root.replace(trailingSlash, '');
-          if (!fragment.indexOf(root)) fragment = fragment.slice(root.length);
-        } else {
-          fragment = this.getHash();
-        }
-      }
-      return fragment.replace(routeStripper, '');
-    },
-
-    // Start the hash change handling, returning `true` if the current URL matches
-    // an existing route, and `false` otherwise.
-    start: function(options) {
-      if (History.started) throw new Error("Backbone.history has already been started");
-      History.started = true;
-
-      // Figure out the initial configuration. Do we need an iframe?
-      // Is pushState desired ... is it available?
-      this.options          = _.extend({root: '/'}, this.options, options);
-      this.root             = this.options.root;
-      this._wantsHashChange = this.options.hashChange !== false;
-      this._wantsPushState  = !!this.options.pushState;
-      this._hasPushState    = !!(this.options.pushState && this.history && this.history.pushState);
-      var fragment          = this.getFragment();
-      var docMode           = document.documentMode;
-      var oldIE             = (isExplorer.exec(navigator.userAgent.toLowerCase()) && (!docMode || docMode <= 7));
-
-      // Normalize root to always include a leading and trailing slash.
-      this.root = ('/' + this.root + '/').replace(rootStripper, '/');
-
-      if (oldIE && this._wantsHashChange) {
-        var frame = Backbone.$('<iframe src="javascript:0" tabindex="-1">');
-        this.iframe = frame.hide().appendTo('body')[0].contentWindow;
-        this.navigate(fragment);
-      }
-
-      // Depending on whether we're using pushState or hashes, and whether
-      // 'onhashchange' is supported, determine how we check the URL state.
-      if (this._hasPushState) {
-        Backbone.$(window).on('popstate', this.checkUrl);
-      } else if (this._wantsHashChange && ('onhashchange' in window) && !oldIE) {
-        Backbone.$(window).on('hashchange', this.checkUrl);
-      } else if (this._wantsHashChange) {
-        this._checkUrlInterval = setInterval(this.checkUrl, this.interval);
-      }
-
-      // Determine if we need to change the base url, for a pushState link
-      // opened by a non-pushState browser.
-      this.fragment = fragment;
-      var loc = this.location;
-
-      // Transition from hashChange to pushState or vice versa if both are
-      // requested.
-      if (this._wantsHashChange && this._wantsPushState) {
-
-        // If we've started off with a route from a `pushState`-enabled
-        // browser, but we're currently in a browser that doesn't support it...
-        if (!this._hasPushState && !this.atRoot()) {
-          this.fragment = this.getFragment(null, true);
-          this.location.replace(this.root + '#' + this.fragment);
-          // Return immediately as browser will do redirect to new url
-          return true;
-
-        // Or if we've started out with a hash-based route, but we're currently
-        // in a browser where it could be `pushState`-based instead...
-        } else if (this._hasPushState && this.atRoot() && loc.hash) {
-          this.fragment = this.getHash().replace(routeStripper, '');
-          this.history.replaceState({}, document.title, this.root + this.fragment);
-        }
-
-      }
-
-      if (!this.options.silent) return this.loadUrl();
-    },
-
-    // Disable Backbone.history, perhaps temporarily. Not useful in a real app,
-    // but possibly useful for unit testing Routers.
-    stop: function() {
-      Backbone.$(window).off('popstate', this.checkUrl).off('hashchange', this.checkUrl);
-      if (this._checkUrlInterval) clearInterval(this._checkUrlInterval);
-      History.started = false;
-    },
-
-    // Add a route to be tested when the fragment changes. Routes added later
-    // may override previous routes.
-    route: function(route, callback) {
-      this.handlers.unshift({route: route, callback: callback});
-    },
-
-    // Checks the current URL to see if it has changed, and if it has,
-    // calls `loadUrl`, normalizing across the hidden iframe.
-    checkUrl: function(e) {
-      var current = this.getFragment();
-      if (current === this.fragment && this.iframe) {
-        current = this.getFragment(this.getHash(this.iframe));
-      }
-      if (current === this.fragment) return false;
-      if (this.iframe) this.navigate(current);
-      this.loadUrl();
-    },
-
-    // Attempt to load the current URL fragment. If a route succeeds with a
-    // match, returns `true`. If no defined routes matches the fragment,
-    // returns `false`.
-    loadUrl: function(fragment) {
-      fragment = this.fragment = this.getFragment(fragment);
-      return _.any(this.handlers, function(handler) {
-        if (handler.route.test(fragment)) {
-          handler.callback(fragment);
-          return true;
-        }
-      });
-    },
-
-    // Save a fragment into the hash history, or replace the URL state if the
-    // 'replace' option is passed. You are responsible for properly URL-encoding
-    // the fragment in advance.
-    //
-    // The options object can contain `trigger: true` if you wish to have the
-    // route callback be fired (not usually desirable), or `replace: true`, if
-    // you wish to modify the current URL without adding an entry to the history.
-    navigate: function(fragment, options) {
-      if (!History.started) return false;
-      if (!options || options === true) options = {trigger: !!options};
-
-      var url = this.root + (fragment = this.getFragment(fragment || ''));
-
-      // Strip the hash for matching.
-      fragment = fragment.replace(pathStripper, '');
-
-      if (this.fragment === fragment) return;
-      this.fragment = fragment;
-
-      // Don't include a trailing slash on the root.
-      if (fragment === '' && url !== '/') url = url.slice(0, -1);
-
-      // If pushState is available, we use it to set the fragment as a real URL.
-      if (this._hasPushState) {
-        this.history[options.replace ? 'replaceState' : 'pushState']({}, document.title, url);
-
-      // If hash changes haven't been explicitly disabled, update the hash
-      // fragment to store history.
-      } else if (this._wantsHashChange) {
-        this._updateHash(this.location, fragment, options.replace);
-        if (this.iframe && (fragment !== this.getFragment(this.getHash(this.iframe)))) {
-          // Opening and closing the iframe tricks IE7 and earlier to push a
-          // history entry on hash-tag change.  When replace is true, we don't
-          // want this.
-          if(!options.replace) this.iframe.document.open().close();
-          this._updateHash(this.iframe.location, fragment, options.replace);
-        }
-
-      // If you've told us that you explicitly don't want fallback hashchange-
-      // based history, then `navigate` becomes a page refresh.
-      } else {
-        return this.location.assign(url);
-      }
-      if (options.trigger) return this.loadUrl(fragment);
-    },
-
-    // Update the hash location, either replacing the current entry, or adding
-    // a new one to the browser history.
-    _updateHash: function(location, fragment, replace) {
-      if (replace) {
-        var href = location.href.replace(/(javascript:|#).*$/, '');
-        location.replace(href + '#' + fragment);
-      } else {
-        // Some browsers require that `hash` contains a leading #.
-        location.hash = '#' + fragment;
-      }
-    }
-
-  });
-
-  // Create the default Backbone.history.
-  Backbone.history = new History;
-
-  // Helpers
-  // -------
-
-  // Helper function to correctly set up the prototype chain, for subclasses.
-  // Similar to `goog.inherits`, but uses a hash of prototype properties and
-  // class properties to be extended.
-  var extend = function(protoProps, staticProps) {
-    var parent = this;
-    var child;
-
-    // The constructor function for the new subclass is either defined by you
-    // (the "constructor" property in your `extend` definition), or defaulted
-    // by us to simply call the parent's constructor.
-    if (protoProps && _.has(protoProps, 'constructor')) {
-      child = protoProps.constructor;
-    } else {
-      child = function(){ return parent.apply(this, arguments); };
-    }
-
-    // Add static properties to the constructor function, if supplied.
-    _.extend(child, parent, staticProps);
-
-    // Set the prototype chain to inherit from `parent`, without calling
-    // `parent`'s constructor function.
-    var Surrogate = function(){ this.constructor = child; };
-    Surrogate.prototype = parent.prototype;
-    child.prototype = new Surrogate;
-
-    // Add prototype properties (instance properties) to the subclass,
-    // if supplied.
-    if (protoProps) _.extend(child.prototype, protoProps);
-
-    // Set a convenience property in case the parent's prototype is needed
-    // later.
-    child.__super__ = parent.prototype;
-
-    return child;
-  };
-
-  // Set up inheritance for the model, collection, router, view and history.
-  Model.extend = Collection.extend = Router.extend = View.extend = History.extend = extend;
-
-  // Throw an error when a URL is needed, and none is supplied.
-  var urlError = function() {
-    throw new Error('A "url" property or function must be specified');
-  };
-
-  // Wrap an optional error callback with a fallback error event.
-  var wrapError = function(model, options) {
-    var error = options.error;
-    options.error = function(resp) {
-      if (error) error(model, resp, options);
-      model.trigger('error', model, resp, options);
-    };
-  };
-
-  return Backbone;
-
-}));
-
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focusComponents = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-	common: require("./common"),
-	list: require("./list"),
-	search: require("./search")
-};
-
-},{"./common":8,"./list":17,"./search":66}],2:[function(require,module,exports){
-"use strict";
-
-var React = window.React;
-var builder = require("focus/component/builder");
-/**
- * Mixin used in order to create a block.
- * @type {Object}
- */
-var blockMixin = {
-  /**
-   * Header of theblock function.
-   * @return {[type]} [description]
-   */
-  heading: function heading() {
-    if (this.props.title) {
-      return React.createElement(
-        "div",
-        { className: "panel-heading" },
-        this.props.title
-      );
-    }
-  },
-  /**
-   * Render the a block container and the cild content of the block.
-   * @return {DOM}
-   */
-  render: function renderBlock() {
-    return React.createElement(
-      "div",
-      { className: "panel panel-default" },
-      this.heading(),
-      React.createElement(
-        "div",
-        { className: "panel-body" },
-        this.props.children
-      )
-    );
-  }
-};
-module.exports = builder(blockMixin);
-
-},{"focus/component/builder":21}],3:[function(require,module,exports){
-"use strict";
-
-var React = window.React;
-var builder = require("focus/component/builder");
-/**/
-var buttonMixin = {
-  getDefaultProps: function getInputDefaultProps() {
-    return {
-      type: "submit",
-      action: undefined,
-      isPressed: false
-    };
-  },
-  handleOnClick: function handleOnClick() {
-    if (this.props.handleOnClick) {
-      return this.props.handleOnClick.apply(this, arguments);
-    }
-    if (!this.props.action || !this.action[this.props.action]) {
-      return console.warn("Your button action is not implemented");
-    }
-    return this.action[this.props.action].apply(this, arguments);
-  },
-  getInitialState: function getInitialState() {
-    return {
-      isPressed: this.props.isPressed
-    };
-  },
-  _className: function _className() {
-    return "btn " + (this.props.style ? "btn-" + this.props.style : "");
-  },
-  renderPressedButton: function renderPressedButton() {
-    return React.createElement(
-      "button",
-      null,
-      "Loading..."
-    );
-  },
-  /**
-   * Render the button.
-   * @return {[type]} [description]
-   */
-  render: function renderInput() {
-    if (this.state.isPressed) {
-      return this.renderPressedButton();
-    }
-    return React.createElement(
-      "button",
-      {
-        onClick: this.handleOnClick,
-        type: this.props.type,
-        className: this._className()
-      },
-      this.props.label
-    );
-  }
-};
-
-module.exports = builder(buttonMixin);
-
-},{"focus/component/builder":21}],4:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-	action: require("./action")
-};
-
-},{"./action":3}],5:[function(require,module,exports){
-"use strict";
-
-var builder = require("focus/component/builder");
-var React = window.React;
-var Input = require("../input/text").component;
-var Label = require("../label").component;
-var FieldMixin = {
-	/**
-  * Get field default properties.
-  */
-	getDefaultProps: function getFieldDefaultProps() {
-		return {
-			hasLabel: true,
-			labelSize: 3,
-			type: "text",
-			value: undefined,
-			name: undefined
-		};
-	},
-	/**
-  * Get the css class of the field component.
-  */
-	_className: function _className() {
-		var stateClass = this.props.error ? "has-feedback has-error" : "";
-		return "form-group " + stateClass;
-	},
-	label: function label() {
-		if (this.props.hasLabel) {
-			var labelClassName = "control-label col-sm-" + this.props.labelSize;
-			return React.createElement(
-				"label",
-				{ className: labelClassName,
-					name: this.props.name,
-					key: this.props.name },
-				" ",
-				this.props.name,
-				" "
-			);
-		}
-	},
-	/**
-  * Validate the field.
-  * @return {object} - undefined if valid, {name: "errors"} if not valid.
-  */
-	validate: function validate() {
-		return this.refs.input.validate();
-	},
-	/**
-  * Get the value from the field.
-  */
-	getValue: function getValue() {
-		return this.refs.input.getValue();
-	},
-	input: function input() {
-		var inputClassName = "form-control col-sm-" + (12 - this.props.labelSize);
-		var addOn = function () {
-			"";
-		};
-		var feedBack = function () {
-			"";
-		};
-		return React.createElement(
-			"div",
-			{ className: "input-group" },
-			React.createElement(Input, { style: {
-					"class": inputClassName
-				},
-				id: this.props.name,
-				name: this.props.name,
-				value: this.props.value,
-				type: this.props.type,
-				ref: "input" })
-		);
-	},
-	error: function error() {
-		if (this.props.error) {
-			return (
-				/*<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>*/
-				React.createElement(
-					"span",
-					{ className: "help-block" },
-					" ",
-					this.props.error,
-					" "
-				)
-			);
-		}
-	},
-	help: function help() {
-		if (this.props.help) {
-			return React.createElement(
-				"span",
-				{ className: "help-block" },
-				" ",
-				this.props.help,
-				" "
-			);
-		}
-	},
-	render: function renderField() {
-		return React.createElement(
-			"div",
-			{ className: this._className() },
-			" ",
-			this.label(),
-			" ",
-			this.input(),
-			" ",
-			this.help(),
-			" ",
-			this.error(),
-			" "
-		);
-	}
-};
-module.exports = builder(FieldMixin);
-
-},{"../input/text":11,"../label":13,"focus/component/builder":21}],6:[function(require,module,exports){
-"use strict";
-
-var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
-
-var builder = require("focus/component/builder");
-var React = window.React;
-var Field = require("../field").component;
-var Button = require("../button/action").component;
-var assign = require("object-assign");
-/**
- * Mixin to create a block for the rendering.
- * @type {Object}
- */
-var formMixin = {
-	/**
-  * Get default property for the form.
-  */
-	getDefaultProps: function getFormDefaultProps() {
-		return {
-			hasEdit: true,
-			isEdit: false
-		};
-	},
-	/**
-  * Create a field for the given property metadata.
-  * @param {string} name - property name.
-  */
-	fieldFor: function fieldFor(name) {
-		return React.createElement(Field, {
-			name: name,
-			ref: name,
-			value: this.state[name],
-			error: this.state.error ? this.state.error[name] : undefined
-		});
-	},
-	/**
-  * Creates select field.
-  * @param {[type]} name [description]
-  */
-	selectFor: function selectFor(name) {
-		//Todo: implement it
-		return React.createElement(Select, {
-			name: name
-		});
-	},
-	/**
-  * Save button/
-  */
-	buttonSave: function buttonSave() {
-		return React.createElement(Button, {
-			label: "save",
-			type: "submit",
-			css: "primary"
-		});
-	},
-	getInitialState: function getInitialState() {
-		return {
-			id: this.props.id
-		};
-	},
-	_getStateFromStores: function _getStateFromStores() {
-		var _this = this;
-
-		if (this.getStateFromStore) {
-			return this.getStateFromStore();
-		}
-		if (this.stores.length === 1) {
-			return this.stores[0].value.get(this.props.id);
-		}
-		var newState = {};
-		this.stores.map(function (store) {
-			newState[store.name] = store.value.get(_this.props.id);
-		});
-		return newState;
-	},
-	/**
-  * Event handler for 'change' events coming from the stores
-  */
-	_onChange: function _onChange() {
-		this.setState(this._getStateFromStores());
-	},
-	callMountedActions: function callMountedActions() {
-		this._loadData();
-	},
-	_registerListeners: function _registerListeners() {
-		var _this = this;
-
-		if (this.stores) {
-			this.stores.map(function (store) {
-				store.value.addChangeListener(_this._onChange);
-			});
-		}
-	},
-	_unRegisterListeners: function _unRegisterListeners() {
-		var _this = this;
-
-		if (this.stores) {
-			this.stores.map(function (store) {
-				store.value.removeChangeListener(_this._onChange);
-			});
-		}
-	},
-	componentDidMount: function componentDidMount() {
-		this._registerListeners();
-		if (this.registerListeners) {
-			this.registerListeners();
-		}
-		if (this.callMountedActions) {
-			this.callMountedActions();
-		}
-	},
-	componentWillUnmount: function componentWillUnmount() {
-		this._unRegisterListeners();
-		if (this.unregisterListeners) {
-			this.unregisterListeners();
-		}
-	},
-	_getId: function _getId() {
-		return this.state.id;
-	},
-	_loadData: function _loadData() {
-		this.actions.load(this._getId());
-	},
-	_className: function _className() {
-		return "form-horizontal";
-	},
-	_getEntity: function _getEntity() {
-		return {
-			login: "pierr",
-			password: "pierre"
-		};
-	},
-	_handleSubmitForm: function handleSumbitForm(e) {
-		e.preventDefault();
-		console.log("submit", this.refs);
-		this.validate();
-		this.actions.save(this._getEntity());
-		return false;
-	},
-	validate: function validateForm() {
-		var validationMap = {};
-		for (var inptKey in this.refs) {
-			assign(validationMap, _defineProperty({}, inptKey, this.refs[inptKey].validate()));
-		}
-		this.setState({
-			error: validationMap
-		});
-		//console.log(validationMap);
-	},
-	render: function render() {
-		return React.createElement(
-			"form",
-			{ onSubmit: this._handleSubmitForm,
-				className: this._className() },
-			React.createElement(
-				"fieldset",
-				null,
-				" ",
-				this.renderContent(),
-				" "
-			),
-			" "
-		);
-	}
-};
-
-module.exports = builder(formMixin);
-
-},{"../button/action":3,"../field":5,"focus/component/builder":21,"object-assign":63}],7:[function(require,module,exports){
-"use strict";
-
-var builder = require("focus/component/builder");
-var React = window.React;
-
-var imgMixin = {
-    /**
-     * Display name.
-     */
-    displayName: "img",
-    /**
-     * Default props.
-     * @returns {{src: name of the picture, onClick: action handler on click.}}
-     */
-    getDefaultProps: function getDefaultProps() {
-        return {
-            src: undefined,
-            onClick: undefined
-        };
-    },
-    /**
-     * Render the img.
-     * @returns Html code.
-     */
-    render: function renderImg() {
-        var className = "icon " + this.props.src;
-        return React.createElement(
-            "span",
-            { className: className, onClick: this.props.onClick },
-            " "
-        );
-    }
-};
-
-module.exports = builder(imgMixin);
-
-},{"focus/component/builder":21}],8:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-	block: require("./block"),
-	button: require("./button"),
-	field: require("./field"),
-	form: require("./form"),
-	img: require("./img"),
-	input: require("./input"),
-	label: require("./label"),
-	selectAction: require("./select-action")
-};
-
-},{"./block":2,"./button":4,"./field":5,"./form":6,"./img":7,"./input":10,"./label":13,"./select-action":14}],9:[function(require,module,exports){
-"use strict";
-
-//Target
-/*
-<div class="checkbox">
-  <label>
-    <input type="checkbox"> Checkbox
-  </label>
-</div>
- */
-var builder = require("focus/component/builder");
-var React = window.React;
-var type = require("focus/component/types");
-
-var checkBoxMixin = {
-	/**
-  * Get the checkbox default attributes.
-  */
-	getDefaultProps: function getInputDefaultProps() {
-		return {
-			value: undefined,
-			label: undefined,
-			style: {}
-		};
-	},
-	/**
-  * Properties validation.
-  * @type {Object}
-  */
-	propTypes: {
-		value: type("bool"),
-		label: type("string"),
-		style: type("object")
-	},
-	getInitialState: function getInitialState() {
-		return {
-			isChecked: this.props.value
-		};
-	},
-	_onChange: function onChange(event) {
-		this.setState({
-			isChecked: !this.state.isChecked
-		});
-		if (this.props.onChange) {
-			this.props.onChange(event);
-		}
-	},
-	/**
-  * Get the value from the input in the DOM.
-  */
-	getValue: function getValue() {
-		return this.getDOMNode().value;
-	},
-	/**
-  * Render the Checkbox HTML.
-  * @return {VirtualDOM} - The virtual DOM of the checkbox.
-  */
-	render: function renderCheckBox() {
-		return React.createElement(
-			"div",
-			{ "class": "checkbox" },
-			React.createElement(
-				"label",
-				null,
-				React.createElement("input", { ref: "checkbox",
-					checked: this.state.isChecked,
-					onChange: this._onChange,
-					type: "checkbox" }),
-				" ",
-				this.props.label,
-				" "
-			),
-			" "
-		);
-	}
-};
-
-module.exports = builder(checkBoxMixin);
-
-},{"focus/component/builder":21,"focus/component/types":22}],10:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-	text: require("./text"),
-	checkbox: require("./checkbox"),
-	textarea: require("./textarea")
-	/*,
-   date: require('./date')*/
-};
-
-},{"./checkbox":9,"./text":11,"./textarea":12}],11:[function(require,module,exports){
-"use strict";
-
-var builder = require("focus/component/builder");
-var React = window.React;
-var type = require("focus/component/types");
-/**
- * Input text mixin.
- * @type {Object}
- */
-var inputText = {
-  getDefaultProps: function getInputDefaultProps() {
-    return {
-      type: "text",
-      value: undefined,
-      name: undefined,
-      style: {}
-    };
-  },
-  /**
-   * Properties validation.
-   * @type {Object}
-   */
-  propTypes: {
-    type: type("string"),
-    value: type(["string", "number"]),
-    name: type("string"),
-    style: type("object")
-  },
-  /**
-   * Validate the input.
-   * @return {object}
-   */
-  validate: function validateInput() {
-    var value = this.getValue();
-    if (value === undefined || value === "") {
-      return "Le champ " + this.props.name + " est requis";
-    }
-    if (this.props.validator) {
-      return this.props.validator(value);
-    }
-  },
-  /**
-   * Get the value from the input in the DOM.
-   */
-  getValue: function getValue() {
-    return this.getDOMNode().value;
-  },
-  /**
-   * Render an input.
-   * @return {[type]} [description]
-   */
-  render: function renderInput() {
-    return React.createElement("input", { id: this.props.name,
-      name: this.props.name,
-      value: this.props.value,
-      type: this.props.type,
-      className: this.props.style["class"],
-      onChange: this.props.onChange
-    });
-  }
-};
-
-module.exports = builder(inputText);
-
-},{"focus/component/builder":21,"focus/component/types":22}],12:[function(require,module,exports){
-"use strict";
-
-//Target
-/*
-<div class="checkbox">
-  <label>
-    <input type="checkbox"> Checkbox
-  </label>
-</div>
- */
-var builder = require("focus/component/builder");
-var React = window.React;
-var type = require("focus/component/types");
-
-var checkBoxMixin = {
-  /**
-   * Get the checkbox default attributes.
-   */
-  getDefaultProps: function getInputDefaultProps() {
-    return {
-      minlength: 0,
-      maxlength: undefined,
-      wrap: "soft",
-      required: false,
-      value: undefined,
-      label: undefined,
-      style: {},
-      rows: undefined,
-      cols: undefined
-    };
-  },
-  /**
-   * Properties validation.
-   * @type {Object}
-   */
-  propTypes: {
-    minlength: type("number"),
-    maxlength: type("number"),
-    wrap: type("string"),
-    required: type("bool"),
-    value: type("string"),
-    label: type("string"),
-    style: type("object"),
-    rows: type("number"),
-    cols: type("number")
-  },
-  getInitialState: function getInitialState() {
-    return {
-      isChecked: this.props.value
-    };
-  },
-  _onChange: function onChange(event) {
-    if (this.props.onChange) {
-      this.props.onChange(event);
-    }
-  },
-  /**
-   * Get the value from the input in the DOM.
-   */
-  getValue: function getValue() {
-    return this.getDOMNode().value;
-  },
-  /**
-   * Render the Checkbox HTML.
-   * @return {VirtualDOM} - The virtual DOM of the checkbox.
-   */
-  render: function renderCheckBox() {
-    return React.createElement(
-      "textarea",
-      { ref: "textarea",
-        onChange: this._onChange,
-        cols: this.props.cols,
-        rows: this.props.rows,
-        minlength: this.props.minlength,
-        maxlength: this.props.maxlength },
-      " ",
-      this.props.value,
-      " "
-    );
-  }
-};
-
-module.exports = builder(checkBoxMixin);
-
-},{"focus/component/builder":21,"focus/component/types":22}],13:[function(require,module,exports){
-"use strict";
-
-var builder = require("focus/component/builder");
-var React = window.React;
-/**
- * Label mixin for form.
- * @type {Object}
- */
-var labelMixin = {
-	getDefaultProps: function getDefaultProps() {
-		return {
-			name: undefined,
-			key: undefined
-		};
-	},
-	i18n: function i18n(prop) {
-		return prop;
-	},
-	render: function render() {
-		return React.createElement(
-			"label",
-			{ className: this.props.css,
-				htmlFor: this.props.name },
-			" ",
-			this.i18n(this.props.value),
-			" "
-		);
-	}
-};
-
-module.exports = builder(labelMixin);
-
-},{"focus/component/builder":21}],14:[function(require,module,exports){
-"use strict";
-
-var builder = require("focus/component/builder");
-var React = window.React;
-var Img = require("../img").component;
-
-var selectActionMixin = {
-
-    /**
-     * Display name.
-     */
-    displayName: "select-action",
-    /**
-     * Default props.
-     * @returns {{isExpanded: true if list of action is expanded.,
-     *              operationList: list of operations,
-     *              style: css class of the selector.}}
-     */
-    getDefaultProps: function getDefaultProps() {
-        return {
-            isExpanded: false,
-            operationList: [],
-            style: "dots-three-vertical"
-        };
-    },
-    /**
-     * Define defautl state.
-     * @returns {{isExpanded: true if list of action is expanded}}
-     */
-    getInitialState: function getInitialState() {
-        return {
-            isExpanded: this.props.isExpanded
-        };
-    },
-    /**
-     * Render the component.
-     * @returns Htm code.
-     */
-    render: function renderSelectAcion() {
-        var liList = this._getList(this.props.operationList);
-        return React.createElement(
-            "div",
-            { className: "select-action" },
-            React.createElement(Img, { onClick: this.expandHandler, src: this.props.style }),
-            React.createElement("br", null),
-            React.createElement(
-                "ul",
-                null,
-                liList
-            )
-        );
-    },
-
-    _getList: function _getList(operationList) {
-        var liList = [];
-        if (this.state.isExpanded) {
-            for (var key in operationList) {
-                var operation = operationList[key];
-                liList.push(React.createElement(
-                    "li",
-                    { onClick: operation.action, className: operation.style },
-                    operation.label
-                ));
-                if (operation.childOperationList) {
-                    liList.push(React.createElement(
-                        "li",
-                        null,
-                        React.createElement(
-                            "ul",
-                            null,
-                            this._getList(operation.childOperationList)
-                        )
-                    ));
-                }
-            }
-        }
-        return liList;
-    },
-
-    /**
-     * Action on the root click.
-     */
-    expandHandler: function expandHandler() {
-        this.setState({ isExpanded: !this.state.isExpanded });
-    }
-};
-
-module.exports = builder(selectActionMixin);
-
-},{"../img":7,"focus/component/builder":21}],15:[function(require,module,exports){
-"use strict";
-
-/**@jsx*/
-var builder = require("focus/component/builder");
-var React = window.React;
-var type = require("focus/component/types");
-var SelectAction = require("../../common/select-action").component;
-var ActionContextual = require("../action-contextual").component;
-
-var actionBarMixin = {
-
-    /**
-     * Display name.
-     */
-    displayName: "list-action-bar",
-
-    /**
-     * INit default props
-     * @returns Defautkl props.
-     */
-    getDefaultProps: function getDefaultProps() {
-        return {
-            selectionStatus: 0, // 0=> None, 1 => All, other value =>  some
-            selectionAction: function selectionAction(selectionStatus) {}, // Action on selection click
-
-            orderableColumnList: {}, // [{key:"columnKey", label:"columnLabel"}]
-            orderAction: function orderAction(key, order) {}, // Action on click on order function
-            orderSelected: {},
-
-            groupableColumnList: {}, // {col1: "Label1", col2: "Label2"}
-            groupAction: function groupAction(key) {}, // Action on group function
-            groupSelectedKey: undefined, // Defautl grouped key.
-
-            operationList: [] // List of contextual operations
-        };
-    },
-
-    /**
-     * Render the html
-     * @returns {XML}
-     */
-    render: function renderActionBar() {
-        return React.createElement(
-            "div",
-            { className: "action-bar" },
-            React.createElement(
-                "div",
-                { className: "general-action" },
-                this._getSelectionObject(),
-                this._getOrderObject(),
-                this._getGroupObject()
-            ),
-            React.createElement(
-                "div",
-                { className: "contextual-action" },
-                React.createElement(ActionContextual, { operationList: this.props.operationList })
-            )
-        );
-    },
-
-    /**
-     * @returns Selection component.
-     * @private
-     */
-    _getSelectionObject: function _getSelectionObject() {
-        // Selection datas
-        var selectionOperationList = [{ action: this._selectionFunction(this.props.selectionAction, 1), label: "all" }, { action: this._selectionFunction(this.props.selectionAction, 0), label: "none" }];
-        return React.createElement(SelectAction, { style: this._getSelectionObjectStyle(), operationList: selectionOperationList });
-    },
-
-    /**
-     * @returns Order component.
-     * @private
-     */
-    _getOrderObject: function _getOrderObject() {
-        // Order
-        var orderDescOperationList = [];
-        var orderAscOperationList = [];
-        var orderSelectedParsedKey = this.props.orderSelected.key + this.props.orderSelected.order;
-        for (var key in this.props.orderableColumnList) {
-            orderDescOperationList.push({ action: this._orderFunction(this.props.orderAction, key, "desc"), label: this.props.orderableColumnList[key], style: this._getSelectedStyle(key + "desc", orderSelectedParsedKey) });
-            orderAscOperationList.push({ action: this._orderFunction(this.props.orderAction, key, "asc"), label: this.props.orderableColumnList[key], style: this._getSelectedStyle(key + "asc", orderSelectedParsedKey) });
-        }
-        var downStyle = this.props.orderSelected.order == "desc" ? "circle-down" : "chevron-down";
-        var upStyle = this.props.orderSelected.order == "asc" ? "circle-up" : "chevron-up";
-        return [React.createElement(SelectAction, { style: downStyle, operationList: orderDescOperationList }), React.createElement(SelectAction, { style: upStyle, operationList: orderAscOperationList })];
-    },
-
-    /**
-     * @returns Grouping component.
-     * @private
-     */
-    _getGroupObject: function _getGroupObject() {
-        var groupList = [];
-        for (var key in this.props.groupableColumnList) {
-            groupList.push({ action: this._groupFunction(this.props.groupAction, key), label: this.props.groupableColumnList[key],
-                style: this._getSelectedStyle(key, this.props.groupSelectedKey) });
-        }
-        var groupOperationList = [{ label: "action.group", childOperationList: groupList }, { label: "action.ungroup", action: this._groupFunction(this.props.groupAction, null) }];
-        var groupStyle = this.props.groupSelectedKey ? "controller-record" : "dots-three-vertical";
-        return React.createElement(SelectAction, { style: groupStyle, operationList: groupOperationList });
-    },
-
-    /**
-     * @param currentKey
-     * @param selectedKey
-     * @returns Class selected if currentKey corresponds to the selectedKey.
-     * @private
-     */
-    _getSelectedStyle: function _getSelectedStyle(currentKey, selectedKey) {
-        if (currentKey == selectedKey) {
-            return " selected ";
-        }
-        return undefined;
-    },
-
-    /**
-     * @returns Style of the selection compoent icon.
-     * @private
-     */
-    _getSelectionObjectStyle: function _getSelectionObjectStyle() {
-        if (this.props.selectionStatus == 0) {
-            return "checkbox-unchecked";
-        } else if (this.props.selectionStatus == 1) {
-            return "checkbox-checked";
-        }
-        return "notification";
-    },
-
-    /**
-     * Created to avoid closure problems.
-     */
-    _selectionFunction: function _selectionFunction(func, selectionStatus) {
-        return function () {
-            func(selectionStatus);
-        };
-    },
-    /**
-     * Created to avoid closure problems.
-     */
-    _orderFunction: function _orderFunction(func, key, order) {
-        return function () {
-            func(key, order);
-        };
-    },
-    /**
-     * Created to avoid closure problems.
-     */
-    _groupFunction: function _groupFunction(func, key) {
-        return function () {
-            func(key);
-        };
-    }
-};
-
-module.exports = builder(actionBarMixin);
-
-},{"../../common/select-action":14,"../action-contextual":16,"focus/component/builder":21,"focus/component/types":22}],16:[function(require,module,exports){
-"use strict";
-
-/**@jsx*/
-var builder = require("focus/component/builder");
-var React = window.React;
-var Button = require("../../common/button/action").component;
-var SelectAction = require("../../common/select-action").component;
-var type = require("focus/component/types");
-
-var actionContextualMixin = {
-
-	/**
-  * Display name.
-  */
-	displayName: "list-action-contextual",
-
-	/**
-  * Init default props.
-  * @returns {{operationList: List of operations.}}
-  */
-	getDefaultProps: function getDefaultProps() {
-		return {
-			operationList: []
-		};
-	},
-	/**
-  * Init default state.
-  * @returns {{isSecondaryActionListExpanded: true if secondary actionList is expanded.}}
-  */
-	getInitialState: function getInitialState() {
-		return {
-			isSecondaryActionListExpanded: false
-		};
-	},
-	/**
-  * render the component.
-  * @returns Html code.
-  */
-	render: function renderContextualAction() {
-		var primaryActionList = [];
-		var secondaryActionList = [];
-		for (var key in this.props.operationList) {
-			var operation = this.props.operationList[key];
-			if (operation.priority === 1) {
-				primaryActionList.push(React.createElement(Button, { style: operation["class"],
-					handleOnClick: operation.action,
-					label: operation.label
-				}));
-			} else {
-				secondaryActionList.push(operation);
-			}
-		}
-		return React.createElement(
-			"div",
-			{ className: "list-action-contextual" },
-			" ",
-			React.createElement(
-				"span",
-				null,
-				" ",
-				primaryActionList,
-				" "
-			),
-			React.createElement(SelectAction, { operationList: secondaryActionList, isExpanded: this.state.isSecondaryActionListExpanded })
-		);
-	}
-};
-
-module.exports = builder(actionContextualMixin);
-
-},{"../../common/button/action":3,"../../common/select-action":14,"focus/component/builder":21,"focus/component/types":22}],17:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-	actionBar: require("./action-bar"),
-	actionContextual: require("./action-contextual"),
-	selection: require("./selection")
-};
-
-},{"./action-bar":15,"./action-contextual":16,"./selection":18}],18:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-    line: require("./line"),
-    list: require("./list")
-};
-
-},{"./line":19,"./list":20}],19:[function(require,module,exports){
-"use strict";
-
-/**@jsx*/
-var React = window.React;
-var builder = require("focus/component/builder");
-var type = require("focus/component/types");
-var lineMixin = {
-    /**
-     * Default properties for the line.
-     * @returns {{isSelection: boolean}}
-     */
-    getDefaultProps: function getLineDefaultProps() {
-        return {
-            isSelection: true
-        };
-    },
-
-    /**
-     * line property validation.
-     * @type {Object}
-     */
-    propTypes: {
-        data: type("object"),
-        isSelection: type("bool"),
-        isSelected: type("bool"),
-        onLineClick: type("func"),
-        onSelection: type("func")
-    },
-
-    /**
-     * State initialization.
-     * @returns {{isSelected: boolean, lineItem: *}}
-     */
-    getInitialState: function getLineInitialState() {
-        return {
-            isSelected: this.props.isSelected || false
-        };
-    },
-
-    /**
-     * Get the line value.
-     * @returns {{item: *, isSelected: (*|isSelected|boolean)}}
-     */
-    getValue: function getLineValue() {
-        return {
-            item: this.props.data,
-            isSelected: this.state.isSelected
-        };
-    },
-
-    /**
-     * Selection Click handler.
-     * @param event
-     */
-    _handleSelectionClick: function handleSelectionClick(event) {
-        if (this.props.onSelection) {
-            this.props.onSelection(this.props.data);
-        }
-        var select = !this.state.isSelected;
-        this.setState({ isSelected: select });
-    },
-
-    /**
-     * Line Click handler.
-     * @param event
-     */
-    _handleLineClick: function handleLineClick(event) {
-        this.props.onLineClick(this.props.data);
-    },
-
-    /**
-     * Render the left box for selection
-     * @returns {XML}
-     */
-    _renderSelectionBox: function renderSelectionBox() {
-        if (this.props.isSelection) {
-            var selectionClass = this.state.isSelected ? "selected" : "no-selection";
-            //var image = this.state.isSelected? undefined : <img src={this.state.lineItem[this.props.iconfield]}/>
-            return React.createElement("div", { className: "sl-selection " + selectionClass, onClick: this._handleSelectionClick });
-        }
-        return null;
-    },
-
-    /**
-     * render content for a line.
-     * @returns {*}
-     */
-    _renderLineContent: function renderLineContent() {
-        if (this.renderLineContent) {
-            return this.renderLineContent(this.props.data);
-        } else {
-            return React.createElement(
-                "div",
-                null,
-                React.createElement(
-                    "div",
-                    null,
-                    this.props.data.title
-                ),
-                React.createElement(
-                    "div",
-                    null,
-                    this.props.data.body
-                )
-            );
-        }
-    },
-
-    /**
-     * Render line in list.
-     * @returns {*}
-     */
-    render: function renderLine() {
-        if (this.renderLine) {
-            return this.renderLine();
-        } else {
-            return React.createElement(
-                "li",
-                { className: "sl-line" },
-                this._renderSelectionBox(),
-                React.createElement(
-                    "div",
-                    { className: "sl-content", onClick: this._handleLineClick },
-                    this._renderLineContent()
-                )
-            );
-        }
-    }
-};
-
-module.exports = { mixin: lineMixin };
-
-},{"focus/component/builder":21,"focus/component/types":22}],20:[function(require,module,exports){
-"use strict";
-
-/**@jsx*/
-var builder = require("focus/component/builder");
-var React = window.React;
-var Line = require("./line").mixin;
-var uuid = require("uuid");
-var type = require("focus/component/types");
-
-var listMixin = {
-    /**
-     * Display name.
-     */
-    displayName: "selection-list",
-
-    /**
-     * Default properties for the list.
-     * @returns {{isSelection: boolean}}
-     */
-    getDefaultProps: function getLineDefaultProps() {
-        return {
-            isSelection: true,
-            isAllSelected: false
-        };
-    },
-
-    /**
-     * list property validation.
-     * @type {Object}
-     */
-    propTypes: {
-        data: type("object"),
-        isSelection: type("bool"),
-        isAllSelected: type("bool"),
-        onSelection: type("func"),
-        onLineClick: type("func")
-    },
-
-    /**
-     * Return selected items in the list.
-     */
-    getSelectedItems: function getListSelectedItems() {
-        var selected = [];
-        for (var i = 1; i < this.props.data.length + 1; i++) {
-            var lineName = "line" + i;
-            var lineValue = this.refs[lineName].getValue();
-            if (lineValue.isSelected) {
-                selected.push(lineValue.item);
-            }
-        }
-        return selected;
-    },
-
-    /**
-     * Render lines of the list.
-     * @returns {*}
-     */
-    renderLines: function renderLines() {
-        var _this = this;
-
-        var lineCount = 1;
-        var LineComponent = this.props.lineComponent || React.createClass(Line);
-        return this.props.data.map(function (line) {
-            return React.createElement(LineComponent, {
-                key: line.id || uuid.v4(),
-                data: line,
-                ref: "line" + lineCount++,
-                isSelection: _this.props.isSelection,
-                isSelected: _this.props.isAllSelected,
-                onSelection: _this.props.onSelection,
-                onLineClick: _this.props.onLineClick
-            });
-            /*<Line key={line.id || uuid.v4()}
-             data={line} ref={"line" + lineCount++}
-             isSelected={this.props.isAllSelected}
-             onSelection={this.props.onSelection}
-             onLineClick={this.props.onLineClick}/>;*/
-        });
-    },
-
-    /**
-     * Render the list.
-     * @returns {XML}
-     */
-    render: function renderList() {
-        return React.createElement(
-            "ul",
-            { className: "selection-list" },
-            this.renderLines()
-        );
-    }
-};
-
-module.exports = builder(listMixin);
-
-},{"./line":19,"focus/component/builder":21,"focus/component/types":22,"uuid":65}],21:[function(require,module,exports){
-"use strict";
-var React = window.React;
-var assign = require('object-assign');
-//var isObject = require('lodash/lang/isObject');
-//var isFunction = require('lodash/lang/isFunction');
-
-/**
- * Create a component with a mixin except id the component is mixin only.
- * @param {object}  mixin - The component mixin.
- * @param {Boolean} isMixinOnly - define if the component is a mixin only.
- * @return {object} - {component} the built react component.
- */
-function createComponent(mixin, isMixinOnly){
-    if (isMixinOnly){
-      return undefined;//Error('Your class publish a mixin only...');
-    }
-    return {component: React.createClass(mixin)};
-}
-
-/**
- * Build a module with a mixin and a React component.
- * @param  {object} componentMixin - Mixin of the component.
- * @param {boolean} isMixinOnly - Bolean to set .
- * @return {object} {mixin: 'the component mixin', component: 'the react instanciated component'}
- */
-module.exports = function(componentMixin, isMixinOnly){
-
-  return assign( {
-    mixin: componentMixin
-    /*extend: function extendMixin(properties){
-      if(isFunction(componentMixin)){
-        throw new Error('You cannot extend a mixin function');
-      }
-      if(!isObject(properties)){
-        throw new Error('properties should be an object');
-      }
-      return assign({}, componentMixin, properties);
-    },*/
-  }, createComponent(componentMixin, isMixinOnly));
-};
-
-},{"object-assign":63}],22:[function(require,module,exports){
-"use strict";
-//Dependencies.
-var React = window.React;
-var isString = require('lodash/lang/isString');
-var isArray = require('lodash/lang/isArray');
-
-/**
- * Expose a React type validation for the component properties validation.
- * @see http://facebook.github.io/react/docs/reusable-components.html
- * @param  {string} type - String or array of the types to use.
- * @return {object} The corresponding react type.
- */
-module.exports = function(type){
-  var isStringType = isString(type);
-  if(!isStringType && !isArray(type)){
-    throw new Error('The type should be a string or an array');
-  }
-  if(isStringType){
-    return React.PropTypes[type];
-  }
-  return React.PropTypes.oneOf(type);
-
-};
-
-},{"lodash/lang/isArray":52,"lodash/lang/isString":55}],23:[function(require,module,exports){
-var baseCallback = require('../internal/baseCallback');
-
-/**
- * This method is like `_.find` except that it returns the index of the first
- * element `predicate` returns truthy for, instead of the element itself.
- *
- * If a property name is provided for `predicate` the created `_.property`
- * style callback returns the property value of the given element.
- *
- * If a value is also provided for `thisArg` the created `_.matchesProperty`
- * style callback returns `true` for elements that have a matching property
- * value, else `false`.
- *
- * If an object is provided for `predicate` the created `_.matches` style
- * callback returns `true` for elements that have the properties of the given
- * object, else `false`.
- *
- * @static
- * @memberOf _
- * @category Array
- * @param {Array} array The array to search.
- * @param {Function|Object|string} [predicate=_.identity] The function invoked
- *  per iteration.
- * @param {*} [thisArg] The `this` binding of `predicate`.
- * @returns {number} Returns the index of the found element, else `-1`.
- * @example
- *
- * var users = [
- *   { 'user': 'barney',  'active': false },
- *   { 'user': 'fred',    'active': false },
- *   { 'user': 'pebbles', 'active': true }
- * ];
- *
- * _.findIndex(users, function(chr) {
- *   return chr.user == 'barney';
- * });
- * // => 0
- *
- * // using the `_.matches` callback shorthand
- * _.findIndex(users, { 'user': 'fred', 'active': false });
- * // => 1
- *
- * // using the `_.matchesProperty` callback shorthand
- * _.findIndex(users, 'active', false);
- * // => 0
- *
- * // using the `_.property` callback shorthand
- * _.findIndex(users, 'active');
- * // => 2
- */
-function findIndex(array, predicate, thisArg) {
-  var index = -1,
-      length = array ? array.length : 0;
-
-  predicate = baseCallback(predicate, thisArg, 3);
-  while (++index < length) {
-    if (predicate(array[index], index, array)) {
-      return index;
-    }
-  }
-  return -1;
-}
-
-module.exports = findIndex;
-
-},{"../internal/baseCallback":25}],24:[function(require,module,exports){
-var baseCallback = require('../internal/baseCallback'),
-    baseEach = require('../internal/baseEach'),
-    baseFind = require('../internal/baseFind'),
-    findIndex = require('../array/findIndex'),
-    isArray = require('../lang/isArray');
-
-/**
- * Iterates over elements of `collection`, returning the first element
- * `predicate` returns truthy for. The predicate is bound to `thisArg` and
- * invoked with three arguments; (value, index|key, collection).
- *
- * If a property name is provided for `predicate` the created `_.property`
- * style callback returns the property value of the given element.
- *
- * If a value is also provided for `thisArg` the created `_.matchesProperty`
- * style callback returns `true` for elements that have a matching property
- * value, else `false`.
- *
- * If an object is provided for `predicate` the created `_.matches` style
- * callback returns `true` for elements that have the properties of the given
- * object, else `false`.
- *
- * @static
- * @memberOf _
- * @alias detect
- * @category Collection
- * @param {Array|Object|string} collection The collection to search.
- * @param {Function|Object|string} [predicate=_.identity] The function invoked
- *  per iteration.
- * @param {*} [thisArg] The `this` binding of `predicate`.
- * @returns {*} Returns the matched element, else `undefined`.
- * @example
- *
- * var users = [
- *   { 'user': 'barney',  'age': 36, 'active': true },
- *   { 'user': 'fred',    'age': 40, 'active': false },
- *   { 'user': 'pebbles', 'age': 1,  'active': true }
- * ];
- *
- * _.result(_.find(users, function(chr) {
- *   return chr.age < 40;
- * }), 'user');
- * // => 'barney'
- *
- * // using the `_.matches` callback shorthand
- * _.result(_.find(users, { 'age': 1, 'active': true }), 'user');
- * // => 'pebbles'
- *
- * // using the `_.matchesProperty` callback shorthand
- * _.result(_.find(users, 'active', false), 'user');
- * // => 'fred'
- *
- * // using the `_.property` callback shorthand
- * _.result(_.find(users, 'active'), 'user');
- * // => 'barney'
- */
-function find(collection, predicate, thisArg) {
-  if (isArray(collection)) {
-    var index = findIndex(collection, predicate, thisArg);
-    return index > -1 ? collection[index] : undefined;
-  }
-  predicate = baseCallback(predicate, thisArg, 3);
-  return baseFind(collection, predicate, baseEach);
-}
-
-module.exports = find;
-
-},{"../array/findIndex":23,"../internal/baseCallback":25,"../internal/baseEach":26,"../internal/baseFind":27,"../lang/isArray":52}],25:[function(require,module,exports){
-var baseMatches = require('./baseMatches'),
-    baseMatchesProperty = require('./baseMatchesProperty'),
-    baseProperty = require('./baseProperty'),
-    bindCallback = require('./bindCallback'),
-    identity = require('../utility/identity'),
-    isBindable = require('./isBindable');
-
-/**
- * The base implementation of `_.callback` which supports specifying the
- * number of arguments to provide to `func`.
- *
- * @private
- * @param {*} [func=_.identity] The value to convert to a callback.
- * @param {*} [thisArg] The `this` binding of `func`.
- * @param {number} [argCount] The number of arguments to provide to `func`.
- * @returns {Function} Returns the callback.
- */
-function baseCallback(func, thisArg, argCount) {
-  var type = typeof func;
-  if (type == 'function') {
-    return (typeof thisArg != 'undefined' && isBindable(func))
-      ? bindCallback(func, thisArg, argCount)
-      : func;
-  }
-  if (func == null) {
-    return identity;
-  }
-  if (type == 'object') {
-    return baseMatches(func);
-  }
-  return typeof thisArg == 'undefined'
-    ? baseProperty(func + '')
-    : baseMatchesProperty(func + '', thisArg);
-}
-
-module.exports = baseCallback;
-
-},{"../utility/identity":62,"./baseMatches":33,"./baseMatchesProperty":34,"./baseProperty":35,"./bindCallback":38,"./isBindable":42}],26:[function(require,module,exports){
-var baseForOwn = require('./baseForOwn'),
-    isLength = require('./isLength'),
-    toObject = require('./toObject');
-
-/**
- * The base implementation of `_.forEach` without support for callback
- * shorthands and `this` binding.
- *
- * @private
- * @param {Array|Object|string} collection The collection to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array|Object|string} Returns `collection`.
- */
-function baseEach(collection, iteratee) {
-  var length = collection ? collection.length : 0;
-  if (!isLength(length)) {
-    return baseForOwn(collection, iteratee);
-  }
-  var index = -1,
-      iterable = toObject(collection);
-
-  while (++index < length) {
-    if (iteratee(iterable[index], index, iterable) === false) {
-      break;
-    }
-  }
-  return collection;
-}
-
-module.exports = baseEach;
-
-},{"./baseForOwn":29,"./isLength":45,"./toObject":50}],27:[function(require,module,exports){
-/**
- * The base implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
- * without support for callback shorthands and `this` binding, which iterates
- * over `collection` using the provided `eachFunc`.
- *
- * @private
- * @param {Array|Object|string} collection The collection to search.
- * @param {Function} predicate The function invoked per iteration.
- * @param {Function} eachFunc The function to iterate over `collection`.
- * @param {boolean} [retKey] Specify returning the key of the found element
- *  instead of the element itself.
- * @returns {*} Returns the found element or its key, else `undefined`.
- */
-function baseFind(collection, predicate, eachFunc, retKey) {
-  var result;
-  eachFunc(collection, function(value, key, collection) {
-    if (predicate(value, key, collection)) {
-      result = retKey ? key : value;
-      return false;
-    }
-  });
-  return result;
-}
-
-module.exports = baseFind;
-
-},{}],28:[function(require,module,exports){
-var toObject = require('./toObject');
-
-/**
- * The base implementation of `baseForIn` and `baseForOwn` which iterates
- * over `object` properties returned by `keysFunc` invoking `iteratee` for
- * each property. Iterator functions may exit iteration early by explicitly
- * returning `false`.
- *
- * @private
- * @param {Object} object The object to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @param {Function} keysFunc The function to get the keys of `object`.
- * @returns {Object} Returns `object`.
- */
-function baseFor(object, iteratee, keysFunc) {
-  var index = -1,
-      iterable = toObject(object),
-      props = keysFunc(object),
-      length = props.length;
-
-  while (++index < length) {
-    var key = props[index];
-    if (iteratee(iterable[key], key, iterable) === false) {
-      break;
-    }
-  }
-  return object;
-}
-
-module.exports = baseFor;
-
-},{"./toObject":50}],29:[function(require,module,exports){
-var baseFor = require('./baseFor'),
-    keys = require('../object/keys');
-
-/**
- * The base implementation of `_.forOwn` without support for callback
- * shorthands and `this` binding.
- *
- * @private
- * @param {Object} object The object to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Object} Returns `object`.
- */
-function baseForOwn(object, iteratee) {
-  return baseFor(object, iteratee, keys);
-}
-
-module.exports = baseForOwn;
-
-},{"../object/keys":57,"./baseFor":28}],30:[function(require,module,exports){
-var baseIsEqualDeep = require('./baseIsEqualDeep');
-
-/**
- * The base implementation of `_.isEqual` without support for `this` binding
- * `customizer` functions.
- *
- * @private
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @param {Function} [customizer] The function to customize comparing values.
- * @param {boolean} [isWhere] Specify performing partial comparisons.
- * @param {Array} [stackA] Tracks traversed `value` objects.
- * @param {Array} [stackB] Tracks traversed `other` objects.
- * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
- */
-function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
-  // Exit early for identical values.
-  if (value === other) {
-    // Treat `+0` vs. `-0` as not equal.
-    return value !== 0 || (1 / value == 1 / other);
-  }
-  var valType = typeof value,
-      othType = typeof other;
-
-  // Exit early for unlike primitive values.
-  if ((valType != 'function' && valType != 'object' && othType != 'function' && othType != 'object') ||
-      value == null || other == null) {
-    // Return `false` unless both values are `NaN`.
-    return value !== value && other !== other;
-  }
-  return baseIsEqualDeep(value, other, baseIsEqual, customizer, isWhere, stackA, stackB);
-}
-
-module.exports = baseIsEqual;
-
-},{"./baseIsEqualDeep":31}],31:[function(require,module,exports){
-var equalArrays = require('./equalArrays'),
-    equalByTag = require('./equalByTag'),
-    equalObjects = require('./equalObjects'),
-    isArray = require('../lang/isArray'),
-    isTypedArray = require('../lang/isTypedArray');
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]',
-    arrayTag = '[object Array]',
-    objectTag = '[object Object]';
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Used to resolve the `toStringTag` of values.
- * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
- * for more details.
- */
-var objToString = objectProto.toString;
-
-/**
- * A specialized version of `baseIsEqual` for arrays and objects which performs
- * deep comparisons and tracks traversed objects enabling objects with circular
- * references to be compared.
- *
- * @private
- * @param {Object} object The object to compare.
- * @param {Object} other The other object to compare.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Function} [customizer] The function to customize comparing objects.
- * @param {boolean} [isWhere] Specify performing partial comparisons.
- * @param {Array} [stackA=[]] Tracks traversed `value` objects.
- * @param {Array} [stackB=[]] Tracks traversed `other` objects.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
-function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, stackB) {
-  var objIsArr = isArray(object),
-      othIsArr = isArray(other),
-      objTag = arrayTag,
-      othTag = arrayTag;
-
-  if (!objIsArr) {
-    objTag = objToString.call(object);
-    if (objTag == argsTag) {
-      objTag = objectTag;
-    } else if (objTag != objectTag) {
-      objIsArr = isTypedArray(object);
-    }
-  }
-  if (!othIsArr) {
-    othTag = objToString.call(other);
-    if (othTag == argsTag) {
-      othTag = objectTag;
-    } else if (othTag != objectTag) {
-      othIsArr = isTypedArray(other);
-    }
-  }
-  var objIsObj = objTag == objectTag,
-      othIsObj = othTag == objectTag,
-      isSameTag = objTag == othTag;
-
-  if (isSameTag && !(objIsArr || objIsObj)) {
-    return equalByTag(object, other, objTag);
-  }
-  var valWrapped = objIsObj && hasOwnProperty.call(object, '__wrapped__'),
-      othWrapped = othIsObj && hasOwnProperty.call(other, '__wrapped__');
-
-  if (valWrapped || othWrapped) {
-    return equalFunc(valWrapped ? object.value() : object, othWrapped ? other.value() : other, customizer, isWhere, stackA, stackB);
-  }
-  if (!isSameTag) {
-    return false;
-  }
-  // Assume cyclic values are equal.
-  // For more information on detecting circular references see https://es5.github.io/#JO.
-  stackA || (stackA = []);
-  stackB || (stackB = []);
-
-  var length = stackA.length;
-  while (length--) {
-    if (stackA[length] == object) {
-      return stackB[length] == other;
-    }
-  }
-  // Add `object` and `other` to the stack of traversed objects.
-  stackA.push(object);
-  stackB.push(other);
-
-  var result = (objIsArr ? equalArrays : equalObjects)(object, other, equalFunc, customizer, isWhere, stackA, stackB);
-
-  stackA.pop();
-  stackB.pop();
-
-  return result;
-}
-
-module.exports = baseIsEqualDeep;
-
-},{"../lang/isArray":52,"../lang/isTypedArray":56,"./equalArrays":39,"./equalByTag":40,"./equalObjects":41}],32:[function(require,module,exports){
-var baseIsEqual = require('./baseIsEqual');
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * The base implementation of `_.isMatch` without support for callback
- * shorthands or `this` binding.
- *
- * @private
- * @param {Object} object The object to inspect.
- * @param {Array} props The source property names to match.
- * @param {Array} values The source values to match.
- * @param {Array} strictCompareFlags Strict comparison flags for source values.
- * @param {Function} [customizer] The function to customize comparing objects.
- * @returns {boolean} Returns `true` if `object` is a match, else `false`.
- */
-function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
-  var length = props.length;
-  if (object == null) {
-    return !length;
-  }
-  var index = -1,
-      noCustomizer = !customizer;
-
-  while (++index < length) {
-    if ((noCustomizer && strictCompareFlags[index])
-          ? values[index] !== object[props[index]]
-          : !hasOwnProperty.call(object, props[index])
-        ) {
-      return false;
-    }
-  }
-  index = -1;
-  while (++index < length) {
-    var key = props[index];
-    if (noCustomizer && strictCompareFlags[index]) {
-      var result = hasOwnProperty.call(object, key);
-    } else {
-      var objValue = object[key],
-          srcValue = values[index];
-
-      result = customizer ? customizer(objValue, srcValue, key) : undefined;
-      if (typeof result == 'undefined') {
-        result = baseIsEqual(srcValue, objValue, customizer, true);
-      }
-    }
-    if (!result) {
-      return false;
-    }
-  }
-  return true;
-}
-
-module.exports = baseIsMatch;
-
-},{"./baseIsEqual":30}],33:[function(require,module,exports){
-var baseIsMatch = require('./baseIsMatch'),
-    isStrictComparable = require('./isStrictComparable'),
-    keys = require('../object/keys');
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * The base implementation of `_.matches` which does not clone `source`.
- *
- * @private
- * @param {Object} source The object of property values to match.
- * @returns {Function} Returns the new function.
- */
-function baseMatches(source) {
-  var props = keys(source),
-      length = props.length;
-
-  if (length == 1) {
-    var key = props[0],
-        value = source[key];
-
-    if (isStrictComparable(value)) {
-      return function(object) {
-        return object != null && object[key] === value && hasOwnProperty.call(object, key);
-      };
-    }
-  }
-  var values = Array(length),
-      strictCompareFlags = Array(length);
-
-  while (length--) {
-    value = source[props[length]];
-    values[length] = value;
-    strictCompareFlags[length] = isStrictComparable(value);
-  }
-  return function(object) {
-    return baseIsMatch(object, props, values, strictCompareFlags);
-  };
-}
-
-module.exports = baseMatches;
-
-},{"../object/keys":57,"./baseIsMatch":32,"./isStrictComparable":47}],34:[function(require,module,exports){
-var baseIsEqual = require('./baseIsEqual'),
-    isStrictComparable = require('./isStrictComparable');
-
-/**
- * The base implementation of `_.matchesProperty` which does not coerce `key`
- * to a string.
- *
- * @private
- * @param {string} key The key of the property to get.
- * @param {*} value The value to compare.
- * @returns {Function} Returns the new function.
- */
-function baseMatchesProperty(key, value) {
-  if (isStrictComparable(value)) {
-    return function(object) {
-      return object != null && object[key] === value;
-    };
-  }
-  return function(object) {
-    return object != null && baseIsEqual(value, object[key], null, true);
-  };
-}
-
-module.exports = baseMatchesProperty;
-
-},{"./baseIsEqual":30,"./isStrictComparable":47}],35:[function(require,module,exports){
-/**
- * The base implementation of `_.property` which does not coerce `key` to a string.
- *
- * @private
- * @param {string} key The key of the property to get.
- * @returns {Function} Returns the new function.
- */
-function baseProperty(key) {
-  return function(object) {
-    return object == null ? undefined : object[key];
-  };
-}
-
-module.exports = baseProperty;
-
-},{}],36:[function(require,module,exports){
-var identity = require('../utility/identity'),
-    metaMap = require('./metaMap');
-
-/**
- * The base implementation of `setData` without support for hot loop detection.
- *
- * @private
- * @param {Function} func The function to associate metadata with.
- * @param {*} data The metadata.
- * @returns {Function} Returns `func`.
- */
-var baseSetData = !metaMap ? identity : function(func, data) {
-  metaMap.set(func, data);
-  return func;
-};
-
-module.exports = baseSetData;
-
-},{"../utility/identity":62,"./metaMap":48}],37:[function(require,module,exports){
-/**
- * Converts `value` to a string if it is not one. An empty string is returned
- * for `null` or `undefined` values.
- *
- * @private
- * @param {*} value The value to process.
- * @returns {string} Returns the string.
- */
-function baseToString(value) {
-  if (typeof value == 'string') {
-    return value;
-  }
-  return value == null ? '' : (value + '');
-}
-
-module.exports = baseToString;
-
-},{}],38:[function(require,module,exports){
-var identity = require('../utility/identity');
-
-/**
- * A specialized version of `baseCallback` which only supports `this` binding
- * and specifying the number of arguments to provide to `func`.
- *
- * @private
- * @param {Function} func The function to bind.
- * @param {*} thisArg The `this` binding of `func`.
- * @param {number} [argCount] The number of arguments to provide to `func`.
- * @returns {Function} Returns the callback.
- */
-function bindCallback(func, thisArg, argCount) {
-  if (typeof func != 'function') {
-    return identity;
-  }
-  if (typeof thisArg == 'undefined') {
-    return func;
-  }
-  switch (argCount) {
-    case 1: return function(value) {
-      return func.call(thisArg, value);
-    };
-    case 3: return function(value, index, collection) {
-      return func.call(thisArg, value, index, collection);
-    };
-    case 4: return function(accumulator, value, index, collection) {
-      return func.call(thisArg, accumulator, value, index, collection);
-    };
-    case 5: return function(value, other, key, object, source) {
-      return func.call(thisArg, value, other, key, object, source);
-    };
-  }
-  return function() {
-    return func.apply(thisArg, arguments);
-  };
-}
-
-module.exports = bindCallback;
-
-},{"../utility/identity":62}],39:[function(require,module,exports){
-/**
- * A specialized version of `baseIsEqualDeep` for arrays with support for
- * partial deep comparisons.
- *
- * @private
- * @param {Array} array The array to compare.
- * @param {Array} other The other array to compare.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Function} [customizer] The function to customize comparing arrays.
- * @param {boolean} [isWhere] Specify performing partial comparisons.
- * @param {Array} [stackA] Tracks traversed `value` objects.
- * @param {Array} [stackB] Tracks traversed `other` objects.
- * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
- */
-function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stackB) {
-  var index = -1,
-      arrLength = array.length,
-      othLength = other.length,
-      result = true;
-
-  if (arrLength != othLength && !(isWhere && othLength > arrLength)) {
-    return false;
-  }
-  // Deep compare the contents, ignoring non-numeric properties.
-  while (result && ++index < arrLength) {
-    var arrValue = array[index],
-        othValue = other[index];
-
-    result = undefined;
-    if (customizer) {
-      result = isWhere
-        ? customizer(othValue, arrValue, index)
-        : customizer(arrValue, othValue, index);
-    }
-    if (typeof result == 'undefined') {
-      // Recursively compare arrays (susceptible to call stack limits).
-      if (isWhere) {
-        var othIndex = othLength;
-        while (othIndex--) {
-          othValue = other[othIndex];
-          result = (arrValue && arrValue === othValue) || equalFunc(arrValue, othValue, customizer, isWhere, stackA, stackB);
-          if (result) {
-            break;
-          }
-        }
-      } else {
-        result = (arrValue && arrValue === othValue) || equalFunc(arrValue, othValue, customizer, isWhere, stackA, stackB);
-      }
-    }
-  }
-  return !!result;
-}
-
-module.exports = equalArrays;
-
-},{}],40:[function(require,module,exports){
-/** `Object#toString` result references. */
-var boolTag = '[object Boolean]',
-    dateTag = '[object Date]',
-    errorTag = '[object Error]',
-    numberTag = '[object Number]',
-    regexpTag = '[object RegExp]',
-    stringTag = '[object String]';
-
-/**
- * A specialized version of `baseIsEqualDeep` for comparing objects of
- * the same `toStringTag`.
- *
- * **Note:** This function only supports comparing values with tags of
- * `Boolean`, `Date`, `Error`, `Number`, `RegExp`, or `String`.
- *
- * @private
- * @param {Object} value The object to compare.
- * @param {Object} other The other object to compare.
- * @param {string} tag The `toStringTag` of the objects to compare.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
-function equalByTag(object, other, tag) {
-  switch (tag) {
-    case boolTag:
-    case dateTag:
-      // Coerce dates and booleans to numbers, dates to milliseconds and booleans
-      // to `1` or `0` treating invalid dates coerced to `NaN` as not equal.
-      return +object == +other;
-
-    case errorTag:
-      return object.name == other.name && object.message == other.message;
-
-    case numberTag:
-      // Treat `NaN` vs. `NaN` as equal.
-      return (object != +object)
-        ? other != +other
-        // But, treat `-0` vs. `+0` as not equal.
-        : (object == 0 ? ((1 / object) == (1 / other)) : object == +other);
-
-    case regexpTag:
-    case stringTag:
-      // Coerce regexes to strings and treat strings primitives and string
-      // objects as equal. See https://es5.github.io/#x15.10.6.4 for more details.
-      return object == (other + '');
-  }
-  return false;
-}
-
-module.exports = equalByTag;
-
-},{}],41:[function(require,module,exports){
-var keys = require('../object/keys');
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * A specialized version of `baseIsEqualDeep` for objects with support for
- * partial deep comparisons.
- *
- * @private
- * @param {Object} object The object to compare.
- * @param {Object} other The other object to compare.
- * @param {Function} equalFunc The function to determine equivalents of values.
- * @param {Function} [customizer] The function to customize comparing values.
- * @param {boolean} [isWhere] Specify performing partial comparisons.
- * @param {Array} [stackA] Tracks traversed `value` objects.
- * @param {Array} [stackB] Tracks traversed `other` objects.
- * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
- */
-function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, stackB) {
-  var objProps = keys(object),
-      objLength = objProps.length,
-      othProps = keys(other),
-      othLength = othProps.length;
-
-  if (objLength != othLength && !isWhere) {
-    return false;
-  }
-  var hasCtor,
-      index = -1;
-
-  while (++index < objLength) {
-    var key = objProps[index],
-        result = hasOwnProperty.call(other, key);
-
-    if (result) {
-      var objValue = object[key],
-          othValue = other[key];
-
-      result = undefined;
-      if (customizer) {
-        result = isWhere
-          ? customizer(othValue, objValue, key)
-          : customizer(objValue, othValue, key);
-      }
-      if (typeof result == 'undefined') {
-        // Recursively compare objects (susceptible to call stack limits).
-        result = (objValue && objValue === othValue) || equalFunc(objValue, othValue, customizer, isWhere, stackA, stackB);
-      }
-    }
-    if (!result) {
-      return false;
-    }
-    hasCtor || (hasCtor = key == 'constructor');
-  }
-  if (!hasCtor) {
-    var objCtor = object.constructor,
-        othCtor = other.constructor;
-
-    // Non `Object` object instances with different constructors are not equal.
-    if (objCtor != othCtor && ('constructor' in object && 'constructor' in other) &&
-        !(typeof objCtor == 'function' && objCtor instanceof objCtor && typeof othCtor == 'function' && othCtor instanceof othCtor)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-module.exports = equalObjects;
-
-},{"../object/keys":57}],42:[function(require,module,exports){
-var baseSetData = require('./baseSetData'),
-    isNative = require('../lang/isNative'),
-    support = require('../support');
-
-/** Used to detect named functions. */
-var reFuncName = /^\s*function[ \n\r\t]+\w/;
-
-/** Used to detect functions containing a `this` reference. */
-var reThis = /\bthis\b/;
-
-/** Used to resolve the decompiled source of functions. */
-var fnToString = Function.prototype.toString;
-
-/**
- * Checks if `func` is eligible for `this` binding.
- *
- * @private
- * @param {Function} func The function to check.
- * @returns {boolean} Returns `true` if `func` is eligible, else `false`.
- */
-function isBindable(func) {
-  var result = !(support.funcNames ? func.name : support.funcDecomp);
-
-  if (!result) {
-    var source = fnToString.call(func);
-    if (!support.funcNames) {
-      result = !reFuncName.test(source);
-    }
-    if (!result) {
-      // Check if `func` references the `this` keyword and store the result.
-      result = reThis.test(source) || isNative(func);
-      baseSetData(func, result);
-    }
-  }
-  return result;
-}
-
-module.exports = isBindable;
-
-},{"../lang/isNative":53,"../support":61,"./baseSetData":36}],43:[function(require,module,exports){
-/**
- * Used as the maximum length of an array-like value.
- * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
- * for more details.
- */
-var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
-
-/**
- * Checks if `value` is a valid array-like index.
- *
- * @private
- * @param {*} value The value to check.
- * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
- * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
- */
-function isIndex(value, length) {
-  value = +value;
-  length = length == null ? MAX_SAFE_INTEGER : length;
-  return value > -1 && value % 1 == 0 && value < length;
-}
-
-module.exports = isIndex;
-
-},{}],44:[function(require,module,exports){
-var isIndex = require('./isIndex'),
-    isLength = require('./isLength'),
-    isObject = require('../lang/isObject');
-
-/**
- * Checks if the provided arguments are from an iteratee call.
- *
- * @private
- * @param {*} value The potential iteratee value argument.
- * @param {*} index The potential iteratee index or key argument.
- * @param {*} object The potential iteratee object argument.
- * @returns {boolean} Returns `true` if the arguments are from an iteratee call, else `false`.
- */
-function isIterateeCall(value, index, object) {
-  if (!isObject(object)) {
-    return false;
-  }
-  var type = typeof index;
-  if (type == 'number') {
-    var length = object.length,
-        prereq = isLength(length) && isIndex(index, length);
-  } else {
-    prereq = type == 'string' && index in object;
-  }
-  if (prereq) {
-    var other = object[index];
-    return value === value ? value === other : other !== other;
-  }
-  return false;
-}
-
-module.exports = isIterateeCall;
-
-},{"../lang/isObject":54,"./isIndex":43,"./isLength":45}],45:[function(require,module,exports){
-/**
- * Used as the maximum length of an array-like value.
- * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
- * for more details.
- */
-var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
-
-/**
- * Checks if `value` is a valid array-like length.
- *
- * **Note:** This function is based on ES `ToLength`. See the
- * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength)
- * for more details.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
- */
-function isLength(value) {
-  return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-}
-
-module.exports = isLength;
-
-},{}],46:[function(require,module,exports){
-/**
- * Checks if `value` is object-like.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- */
-function isObjectLike(value) {
-  return (value && typeof value == 'object') || false;
-}
-
-module.exports = isObjectLike;
-
-},{}],47:[function(require,module,exports){
-var isObject = require('../lang/isObject');
-
-/**
- * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` if suitable for strict
- *  equality comparisons, else `false`.
- */
-function isStrictComparable(value) {
-  return value === value && (value === 0 ? ((1 / value) > 0) : !isObject(value));
-}
-
-module.exports = isStrictComparable;
-
-},{"../lang/isObject":54}],48:[function(require,module,exports){
-(function (global){
-var isNative = require('../lang/isNative');
-
-/** Native method references. */
-var WeakMap = isNative(WeakMap = global.WeakMap) && WeakMap;
-
-/** Used to store function metadata. */
-var metaMap = WeakMap && new WeakMap;
-
-module.exports = metaMap;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":53}],49:[function(require,module,exports){
-var isArguments = require('../lang/isArguments'),
-    isArray = require('../lang/isArray'),
-    isIndex = require('./isIndex'),
-    isLength = require('./isLength'),
-    keysIn = require('../object/keysIn'),
-    support = require('../support');
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * A fallback implementation of `Object.keys` which creates an array of the
- * own enumerable property names of `object`.
- *
- * @private
- * @param {Object} object The object to inspect.
- * @returns {Array} Returns the array of property names.
- */
-function shimKeys(object) {
-  var props = keysIn(object),
-      propsLength = props.length,
-      length = propsLength && object.length;
-
-  var allowIndexes = length && isLength(length) &&
-    (isArray(object) || (support.nonEnumArgs && isArguments(object)));
-
-  var index = -1,
-      result = [];
-
-  while (++index < propsLength) {
-    var key = props[index];
-    if ((allowIndexes && isIndex(key, length)) || hasOwnProperty.call(object, key)) {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-module.exports = shimKeys;
-
-},{"../lang/isArguments":51,"../lang/isArray":52,"../object/keysIn":58,"../support":61,"./isIndex":43,"./isLength":45}],50:[function(require,module,exports){
-var isObject = require('../lang/isObject');
-
-/**
- * Converts `value` to an object if it is not one.
- *
- * @private
- * @param {*} value The value to process.
- * @returns {Object} Returns the object.
- */
-function toObject(value) {
-  return isObject(value) ? value : Object(value);
-}
-
-module.exports = toObject;
-
-},{"../lang/isObject":54}],51:[function(require,module,exports){
-var isLength = require('../internal/isLength'),
-    isObjectLike = require('../internal/isObjectLike');
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]';
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the `toStringTag` of values.
- * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
- * for more details.
- */
-var objToString = objectProto.toString;
-
-/**
- * Checks if `value` is classified as an `arguments` object.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
- * @example
- *
- * _.isArguments(function() { return arguments; }());
- * // => true
- *
- * _.isArguments([1, 2, 3]);
- * // => false
- */
-function isArguments(value) {
-  var length = isObjectLike(value) ? value.length : undefined;
-  return (isLength(length) && objToString.call(value) == argsTag) || false;
-}
-
-module.exports = isArguments;
-
-},{"../internal/isLength":45,"../internal/isObjectLike":46}],52:[function(require,module,exports){
-var isLength = require('../internal/isLength'),
-    isNative = require('./isNative'),
-    isObjectLike = require('../internal/isObjectLike');
-
-/** `Object#toString` result references. */
-var arrayTag = '[object Array]';
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the `toStringTag` of values.
- * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
- * for more details.
- */
-var objToString = objectProto.toString;
-
-/* Native method references for those with the same name as other `lodash` methods. */
-var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
-
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(function() { return arguments; }());
- * // => false
- */
-var isArray = nativeIsArray || function(value) {
-  return (isObjectLike(value) && isLength(value.length) && objToString.call(value) == arrayTag) || false;
-};
-
-module.exports = isArray;
-
-},{"../internal/isLength":45,"../internal/isObjectLike":46,"./isNative":53}],53:[function(require,module,exports){
-var escapeRegExp = require('../string/escapeRegExp'),
-    isObjectLike = require('../internal/isObjectLike');
-
-/** `Object#toString` result references. */
-var funcTag = '[object Function]';
-
-/** Used to detect host constructors (Safari > 5). */
-var reHostCtor = /^\[object .+?Constructor\]$/;
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to resolve the decompiled source of functions. */
-var fnToString = Function.prototype.toString;
-
-/**
- * Used to resolve the `toStringTag` of values.
- * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
- * for more details.
- */
-var objToString = objectProto.toString;
-
-/** Used to detect if a method is native. */
-var reNative = RegExp('^' +
-  escapeRegExp(objToString)
-  .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
-);
-
-/**
- * Checks if `value` is a native function.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
- * @example
- *
- * _.isNative(Array.prototype.push);
- * // => true
- *
- * _.isNative(_);
- * // => false
- */
-function isNative(value) {
-  if (value == null) {
-    return false;
-  }
-  if (objToString.call(value) == funcTag) {
-    return reNative.test(fnToString.call(value));
-  }
-  return (isObjectLike(value) && reHostCtor.test(value)) || false;
-}
-
-module.exports = isNative;
-
-},{"../internal/isObjectLike":46,"../string/escapeRegExp":59}],54:[function(require,module,exports){
-/**
- * Checks if `value` is the language type of `Object`.
- * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * **Note:** See the [ES5 spec](https://es5.github.io/#x8) for more details.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(1);
- * // => false
- */
-function isObject(value) {
-  // Avoid a V8 JIT bug in Chrome 19-20.
-  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
-  var type = typeof value;
-  return type == 'function' || (value && type == 'object') || false;
-}
-
-module.exports = isObject;
-
-},{}],55:[function(require,module,exports){
-var isObjectLike = require('../internal/isObjectLike');
-
-/** `Object#toString` result references. */
-var stringTag = '[object String]';
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the `toStringTag` of values.
- * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
- * for more details.
- */
-var objToString = objectProto.toString;
-
-/**
- * Checks if `value` is classified as a `String` primitive or object.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
- * @example
- *
- * _.isString('abc');
- * // => true
- *
- * _.isString(1);
- * // => false
- */
-function isString(value) {
-  return typeof value == 'string' || (isObjectLike(value) && objToString.call(value) == stringTag) || false;
-}
-
-module.exports = isString;
-
-},{"../internal/isObjectLike":46}],56:[function(require,module,exports){
-var isLength = require('../internal/isLength'),
-    isObjectLike = require('../internal/isObjectLike');
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]',
-    arrayTag = '[object Array]',
-    boolTag = '[object Boolean]',
-    dateTag = '[object Date]',
-    errorTag = '[object Error]',
-    funcTag = '[object Function]',
-    mapTag = '[object Map]',
-    numberTag = '[object Number]',
-    objectTag = '[object Object]',
-    regexpTag = '[object RegExp]',
-    setTag = '[object Set]',
-    stringTag = '[object String]',
-    weakMapTag = '[object WeakMap]';
-
-var arrayBufferTag = '[object ArrayBuffer]',
-    float32Tag = '[object Float32Array]',
-    float64Tag = '[object Float64Array]',
-    int8Tag = '[object Int8Array]',
-    int16Tag = '[object Int16Array]',
-    int32Tag = '[object Int32Array]',
-    uint8Tag = '[object Uint8Array]',
-    uint8ClampedTag = '[object Uint8ClampedArray]',
-    uint16Tag = '[object Uint16Array]',
-    uint32Tag = '[object Uint32Array]';
-
-/** Used to identify `toStringTag` values of typed arrays. */
-var typedArrayTags = {};
-typedArrayTags[float32Tag] = typedArrayTags[float64Tag] =
-typedArrayTags[int8Tag] = typedArrayTags[int16Tag] =
-typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] =
-typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] =
-typedArrayTags[uint32Tag] = true;
-typedArrayTags[argsTag] = typedArrayTags[arrayTag] =
-typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] =
-typedArrayTags[dateTag] = typedArrayTags[errorTag] =
-typedArrayTags[funcTag] = typedArrayTags[mapTag] =
-typedArrayTags[numberTag] = typedArrayTags[objectTag] =
-typedArrayTags[regexpTag] = typedArrayTags[setTag] =
-typedArrayTags[stringTag] = typedArrayTags[weakMapTag] = false;
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the `toStringTag` of values.
- * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
- * for more details.
- */
-var objToString = objectProto.toString;
-
-/**
- * Checks if `value` is classified as a typed array.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
- * @example
- *
- * _.isTypedArray(new Uint8Array);
- * // => true
- *
- * _.isTypedArray([]);
- * // => false
- */
-function isTypedArray(value) {
-  return (isObjectLike(value) && isLength(value.length) && typedArrayTags[objToString.call(value)]) || false;
-}
-
-module.exports = isTypedArray;
-
-},{"../internal/isLength":45,"../internal/isObjectLike":46}],57:[function(require,module,exports){
-var isLength = require('../internal/isLength'),
-    isNative = require('../lang/isNative'),
-    isObject = require('../lang/isObject'),
-    shimKeys = require('../internal/shimKeys');
-
-/* Native method references for those with the same name as other `lodash` methods. */
-var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
-
-/**
- * Creates an array of the own enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects. See the
- * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.keys)
- * for more details.
- *
- * @static
- * @memberOf _
- * @category Object
- * @param {Object} object The object to inspect.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keys(new Foo);
- * // => ['a', 'b'] (iteration order is not guaranteed)
- *
- * _.keys('hi');
- * // => ['0', '1']
- */
-var keys = !nativeKeys ? shimKeys : function(object) {
-  if (object) {
-    var Ctor = object.constructor,
-        length = object.length;
-  }
-  if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-     (typeof object != 'function' && (length && isLength(length)))) {
-    return shimKeys(object);
-  }
-  return isObject(object) ? nativeKeys(object) : [];
-};
-
-module.exports = keys;
-
-},{"../internal/isLength":45,"../internal/shimKeys":49,"../lang/isNative":53,"../lang/isObject":54}],58:[function(require,module,exports){
-var isArguments = require('../lang/isArguments'),
-    isArray = require('../lang/isArray'),
-    isIndex = require('../internal/isIndex'),
-    isLength = require('../internal/isLength'),
-    isObject = require('../lang/isObject'),
-    support = require('../support');
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Creates an array of the own and inherited enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects.
- *
- * @static
- * @memberOf _
- * @category Object
- * @param {Object} object The object to inspect.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keysIn(new Foo);
- * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
- */
-function keysIn(object) {
-  if (object == null) {
-    return [];
-  }
-  if (!isObject(object)) {
-    object = Object(object);
-  }
-  var length = object.length;
-  length = (length && isLength(length) &&
-    (isArray(object) || (support.nonEnumArgs && isArguments(object))) && length) || 0;
-
-  var Ctor = object.constructor,
-      index = -1,
-      isProto = typeof Ctor == 'function' && Ctor.prototype === object,
-      result = Array(length),
-      skipIndexes = length > 0;
-
-  while (++index < length) {
-    result[index] = (index + '');
-  }
-  for (var key in object) {
-    if (!(skipIndexes && isIndex(key, length)) &&
-        !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-module.exports = keysIn;
-
-},{"../internal/isIndex":43,"../internal/isLength":45,"../lang/isArguments":51,"../lang/isArray":52,"../lang/isObject":54,"../support":61}],59:[function(require,module,exports){
-var baseToString = require('../internal/baseToString');
-
-/**
- * Used to match `RegExp` special characters.
- * See this [article on `RegExp` characters](http://www.regular-expressions.info/characters.html#special)
- * for more details.
- */
-var reRegExpChars = /[.*+?^${}()|[\]\/\\]/g,
-    reHasRegExpChars = RegExp(reRegExpChars.source);
-
-/**
- * Escapes the `RegExp` special characters "\", "^", "$", ".", "|", "?", "*",
- * "+", "(", ")", "[", "]", "{" and "}" in `string`.
- *
- * @static
- * @memberOf _
- * @category String
- * @param {string} [string=''] The string to escape.
- * @returns {string} Returns the escaped string.
- * @example
- *
- * _.escapeRegExp('[lodash](https://lodash.com/)');
- * // => '\[lodash\]\(https://lodash\.com/\)'
- */
-function escapeRegExp(string) {
-  string = baseToString(string);
-  return (string && reHasRegExpChars.test(string))
-    ? string.replace(reRegExpChars, '\\$&')
-    : string;
-}
-
-module.exports = escapeRegExp;
-
-},{"../internal/baseToString":37}],60:[function(require,module,exports){
-var baseToString = require('../internal/baseToString'),
-    isIterateeCall = require('../internal/isIterateeCall');
-
-/** Used to match words to create compound words. */
-var reWords = (function() {
-  var upper = '[A-Z\\xc0-\\xd6\\xd8-\\xde]',
-      lower = '[a-z\\xdf-\\xf6\\xf8-\\xff]+';
-
-  return RegExp(upper + '{2,}(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
-}());
-
-/**
- * Splits `string` into an array of its words.
- *
- * @static
- * @memberOf _
- * @category String
- * @param {string} [string=''] The string to inspect.
- * @param {RegExp|string} [pattern] The pattern to match words.
- * @param- {Object} [guard] Enables use as a callback for functions like `_.map`.
- * @returns {Array} Returns the words of `string`.
- * @example
- *
- * _.words('fred, barney, & pebbles');
- * // => ['fred', 'barney', 'pebbles']
- *
- * _.words('fred, barney, & pebbles', /[^, ]+/g);
- * // => ['fred', 'barney', '&', 'pebbles']
- */
-function words(string, pattern, guard) {
-  if (guard && isIterateeCall(string, pattern, guard)) {
-    pattern = null;
-  }
-  string = baseToString(string);
-  return string.match(pattern || reWords) || [];
-}
-
-module.exports = words;
-
-},{"../internal/baseToString":37,"../internal/isIterateeCall":44}],61:[function(require,module,exports){
-(function (global){
-var isNative = require('./lang/isNative');
-
-/** Used to detect functions containing a `this` reference. */
-var reThis = /\bthis\b/;
-
-/** Used for native method references. */
-var objectProto = Object.prototype;
-
-/** Used to detect DOM support. */
-var document = (document = global.window) && document.document;
-
-/** Native method references. */
-var propertyIsEnumerable = objectProto.propertyIsEnumerable;
-
-/**
- * An object environment feature flags.
- *
- * @static
- * @memberOf _
- * @type Object
- */
-var support = {};
-
-(function(x) {
-
-  /**
-   * Detect if functions can be decompiled by `Function#toString`
-   * (all but Firefox OS certified apps, older Opera mobile browsers, and
-   * the PlayStation 3; forced `false` for Windows 8 apps).
-   *
-   * @memberOf _.support
-   * @type boolean
-   */
-  support.funcDecomp = !isNative(global.WinRTError) && reThis.test(function() { return this; });
-
-  /**
-   * Detect if `Function#name` is supported (all but IE).
-   *
-   * @memberOf _.support
-   * @type boolean
-   */
-  support.funcNames = typeof Function.name == 'string';
-
-  /**
-   * Detect if the DOM is supported.
-   *
-   * @memberOf _.support
-   * @type boolean
-   */
-  try {
-    support.dom = document.createDocumentFragment().nodeType === 11;
-  } catch(e) {
-    support.dom = false;
-  }
-
-  /**
-   * Detect if `arguments` object indexes are non-enumerable.
-   *
-   * In Firefox < 4, IE < 9, PhantomJS, and Safari < 5.1 `arguments` object
-   * indexes are non-enumerable. Chrome < 25 and Node.js < 0.11.0 treat
-   * `arguments` object indexes as non-enumerable and fail `hasOwnProperty`
-   * checks for indexes that exceed their function's formal parameters with
-   * associated values of `0`.
-   *
-   * @memberOf _.support
-   * @type boolean
-   */
-  try {
-    support.nonEnumArgs = !propertyIsEnumerable.call(arguments, 1);
-  } catch(e) {
-    support.nonEnumArgs = true;
-  }
-}(0, 0));
-
-module.exports = support;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":53}],62:[function(require,module,exports){
-/**
- * This method returns the first argument provided to it.
- *
- * @static
- * @memberOf _
- * @category Utility
- * @param {*} value Any value.
- * @returns {*} Returns `value`.
- * @example
- *
- * var object = { 'user': 'fred' };
- *
- * _.identity(object) === object;
- * // => true
- */
-function identity(value) {
-  return value;
-}
-
-module.exports = identity;
-
-},{}],63:[function(require,module,exports){
-'use strict';
-
-function ToObject(val) {
-	if (val == null) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-module.exports = Object.assign || function (target, source) {
-	var from;
-	var keys;
-	var to = ToObject(target);
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = arguments[s];
-		keys = Object.keys(Object(from));
-
-		for (var i = 0; i < keys.length; i++) {
-			to[keys[i]] = from[keys[i]];
-		}
-	}
-
-	return to;
-};
-
-},{}],64:[function(require,module,exports){
-(function (global){
-
-var rng;
-
-if (global.crypto && crypto.getRandomValues) {
-  // WHATWG crypto-based RNG - http://wiki.whatwg.org/wiki/Crypto
-  // Moderately fast, high quality
-  var _rnds8 = new Uint8Array(16);
-  rng = function whatwgRNG() {
-    crypto.getRandomValues(_rnds8);
-    return _rnds8;
-  };
-}
-
-if (!rng) {
-  // Math.random()-based (RNG)
-  //
-  // If all else fails, use Math.random().  It's fast, but is of unspecified
-  // quality.
-  var  _rnds = new Array(16);
-  rng = function() {
-    for (var i = 0, r; i < 16; i++) {
-      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
-      _rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
-    }
-
-    return _rnds;
-  };
-}
-
-module.exports = rng;
-
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],65:[function(require,module,exports){
-//     uuid.js
-//
-//     Copyright (c) 2010-2012 Robert Kieffer
-//     MIT License - http://opensource.org/licenses/mit-license.php
-
-// Unique ID creation requires a high quality random # generator.  We feature
-// detect to determine the best RNG source, normalizing to a function that
-// returns 128-bits of randomness, since that's what's usually required
-var _rng = require('./rng');
-
-// Maps for number <-> hex string conversion
-var _byteToHex = [];
-var _hexToByte = {};
-for (var i = 0; i < 256; i++) {
-  _byteToHex[i] = (i + 0x100).toString(16).substr(1);
-  _hexToByte[_byteToHex[i]] = i;
-}
-
-// **`parse()` - Parse a UUID into it's component bytes**
-function parse(s, buf, offset) {
-  var i = (buf && offset) || 0, ii = 0;
-
-  buf = buf || [];
-  s.toLowerCase().replace(/[0-9a-f]{2}/g, function(oct) {
-    if (ii < 16) { // Don't overflow!
-      buf[i + ii++] = _hexToByte[oct];
-    }
-  });
-
-  // Zero out remaining bytes if string was short
-  while (ii < 16) {
-    buf[i + ii++] = 0;
-  }
-
-  return buf;
-}
-
-// **`unparse()` - Convert UUID byte array (ala parse()) into a string**
-function unparse(buf, offset) {
-  var i = offset || 0, bth = _byteToHex;
-  return  bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]];
-}
-
-// **`v1()` - Generate time-based UUID**
-//
-// Inspired by https://github.com/LiosK/UUID.js
-// and http://docs.python.org/library/uuid.html
-
-// random #'s we need to init node and clockseq
-var _seedBytes = _rng();
-
-// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
-var _nodeId = [
-  _seedBytes[0] | 0x01,
-  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
-];
-
-// Per 4.2.2, randomize (14 bit) clockseq
-var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
-
-// Previous uuid creation time
-var _lastMSecs = 0, _lastNSecs = 0;
-
-// See https://github.com/broofa/node-uuid for API details
-function v1(options, buf, offset) {
-  var i = buf && offset || 0;
-  var b = buf || [];
-
-  options = options || {};
-
-  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
-
-  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
-  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
-  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
-  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
-  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
-
-  // Per 4.2.1.2, use count of uuid's generated during the current clock
-  // cycle to simulate higher resolution clock
-  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
-
-  // Time since last uuid creation (in msecs)
-  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
-
-  // Per 4.2.1.2, Bump clockseq on clock regression
-  if (dt < 0 && options.clockseq === undefined) {
-    clockseq = clockseq + 1 & 0x3fff;
-  }
-
-  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
-  // time interval
-  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
-    nsecs = 0;
-  }
-
-  // Per 4.2.1.2 Throw error if too many uuids are requested
-  if (nsecs >= 10000) {
-    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
-  }
-
-  _lastMSecs = msecs;
-  _lastNSecs = nsecs;
-  _clockseq = clockseq;
-
-  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
-  msecs += 12219292800000;
-
-  // `time_low`
-  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
-  b[i++] = tl >>> 24 & 0xff;
-  b[i++] = tl >>> 16 & 0xff;
-  b[i++] = tl >>> 8 & 0xff;
-  b[i++] = tl & 0xff;
-
-  // `time_mid`
-  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
-  b[i++] = tmh >>> 8 & 0xff;
-  b[i++] = tmh & 0xff;
-
-  // `time_high_and_version`
-  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
-  b[i++] = tmh >>> 16 & 0xff;
-
-  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
-  b[i++] = clockseq >>> 8 | 0x80;
-
-  // `clock_seq_low`
-  b[i++] = clockseq & 0xff;
-
-  // `node`
-  var node = options.node || _nodeId;
-  for (var n = 0; n < 6; n++) {
-    b[i + n] = node[n];
-  }
-
-  return buf ? buf : unparse(b);
-}
-
-// **`v4()` - Generate random UUID**
-
-// See https://github.com/broofa/node-uuid for API details
-function v4(options, buf, offset) {
-  // Deprecated - 'format' argument, as supported in v1.2
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options == 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || _rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ii++) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || unparse(rnds);
-}
-
-// Export public API
-var uuid = v4;
-uuid.v1 = v1;
-uuid.v4 = v4;
-uuid.parse = parse;
-uuid.unparse = unparse;
-
-module.exports = uuid;
-
-},{"./rng":64}],66:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-  liveFilter: require("./live-filter"),
-  quickSearch: require("./quick-search")
-};
-
-},{"./live-filter":67,"./quick-search":70}],67:[function(require,module,exports){
-"use strict";
-
-/**@jsx*/
-var builder = require("focus/component/builder");
-var React = window.React;
-var LiveFilterFacet = require("./live-filter-facet").component;
-var type = require("focus/component/types");
-
-var liveFilterMixin = {
-
-    /**
-     * Display name.
-     */
-    displayName: "live-filter",
-
-    /**
-     * Init the default properties
-     * @returns {{facetList: {}, selectedFacetList: {}, openedFacetList: {}, config: {}, dataSelectionHandler: undefined}}
-     */
-    getDefaultProps: function getDefaultProps() {
-        return {
-            facetList: {},
-            selectedFacetList: {},
-            openedFacetList: {},
-            config: {},
-            dataSelectionHandler: undefined };
-    },
-
-    /**
-     * List property validation.
-     */
-    propTypes: {
-        facetList: type("object"),
-        selectedFacetList: type("object"),
-        openedFacetList: type("bool"),
-        config: type("object"),
-        dataSelectionHandler: type("func")
-    },
-
-    /**
-     * Init the state of the component.
-     * @returns {
-     *  {isExpanded: boolean True if the component is expanded, false if collapsed,
-     *   selectedFacetList: Map (key : facetKey, value : facetDataKey,
-     *   openedFacetList: Map (key : facetKey, value : true if facet expanded)}
-     *   }
-     */
-    getInitialState: function getInitialState() {
-        return {
-            isExpanded: true,
-            selectedFacetList: this.props.selectedFacetList || {},
-            openedFacetList: this.props.openedFacetList || {}
-        };
-    },
-    /**
-     * Render the component.
-     * @returns Html component code.
-     */
-    render: function renderLiverFilter() {
-        var className = this.state.isExpanded ? "live-filter" : "live-filter collapsed";
-        return React.createElement(
-            "div",
-            { className: className },
-            this.renderLiveFacetTitle(),
-            this.renderFilterFacetList()
-        );
-    },
-
-    /**
-     * Render the div title of the component.
-     * @Returns Html title code.
-     */
-    renderLiveFacetTitle: function renderLiveFacetTitle() {
-        var title = this.state.isExpanded ? "live.filter.title" : "";
-        return React.createElement(
-            "div",
-            { className: "header" },
-            React.createElement(
-                "span",
-                { className: "title" },
-                title
-            ),
-            React.createElement(
-                "span",
-                { className: "icon", onClick: this.liveFilterTitleClick },
-                " "
-            )
-        );
-    },
-
-    /**
-     * Render the list of the facets.
-     * @Returns Html facets code.
-     */
-    renderFilterFacetList: function renderFilterFacetList() {
-        if (!this.state.isExpanded) {
-            return;
-        }
-        var facets = [];
-        var isExpanded = Object.keys(this.state.openedFacetList).length == 0;
-        for (var key in this.props.facetList) {
-            var selectedDataKey = this.state.selectedFacetList[key] ? this.state.selectedFacetList[key].key : undefined;
-            facets.push(React.createElement(LiveFilterFacet, { facetKey: key,
-                facet: this.props.facetList[key],
-                selectedDataKey: selectedDataKey,
-                isExpanded: isExpanded || this.state.openedFacetList[key],
-                expandHandler: this.expandFacetHandler,
-                selectHandler: this.selectHandler,
-                type: this.props.config[key] }));
-            isExpanded = false;
-        }
-        return React.createElement(
-            "div",
-            null,
-            facets
-        );
-    },
-
-    /**
-     * Action on title click.
-     * Hide / Expand the component.
-     */
-    liveFilterTitleClick: function liveFilterTitleClick() {
-        this.setState({ isExpanded: !this.state.isExpanded });
-    },
-
-    /**
-     * Action on facet selection.
-     */
-    selectHandler: function selectLiverFilterHandler(facetKey, dataKey, data) {
-        var selectedFacetList = this.state.selectedFacetList;
-        if (dataKey == undefined) {
-            delete selectedFacetList[facetKey];
-        } else {
-            selectedFacetList[facetKey] = { key: dataKey, data: data };
-        }
-        this.setState({ selectedFacetList: selectedFacetList });
-
-        this.props.dataSelectionHandler(this.state.selectedFacetList);
-    },
-
-    /**
-     * Expand facet action.
-     * @param facetKey Key of the facet.
-     * @param isExpanded true if expand action, false if collapse action.
-     */
-    expandFacetHandler: function expandFacetHandler(facetKey, isExpanded) {
-        var openedFacetList = this.state.openedFacetList;
-        openedFacetList[facetKey] = isExpanded;
-        this.setState({ openedFacetList: openedFacetList });
-    },
-
-    /**
-     * Return component value.
-     * @returns {{
-     *      selectedFacetList: this.state.selectedFacetList,
-     *      openedFacetList: this.state.openedFacetList
-     *      }}
-     */
-    getValue: function getValue() {
-        return {
-            selectedFacetList: this.state.selectedFacetList,
-            openedFacetList: this.state.openedFacetList
-        };
-    }
-};
-
-module.exports = builder(liveFilterMixin);
-
-},{"./live-filter-facet":69,"focus/component/builder":21,"focus/component/types":22}],68:[function(require,module,exports){
-"use strict";
-
-/**@jsx*/
-var builder = require("focus/component/builder");
-var React = window.React;
-
-var liveFilterDataMixin = {
-
-    /**
-     * Display name.
-     */
-    displayName: "live-filter-data",
-
-    /**
-     * Render the component.
-     * @returns Html code of the component.
-     */
-    render: function renderFacet() {
-        return React.createElement(
-            "div",
-            { className: "lf-data", onClick: this.selectFacetData },
-            this.renderData(),
-            " "
-        );
-    },
-
-    /**
-     * Render the data.
-     * @returns Html generated code.
-     */
-    renderData: function renderData() {
-        if (this.props.type == "text") {
-            return this.props.data.label + " (" + this.props.data.count + ")";
-        }
-        throw new Error("Unknown property type : " + this.props.type);
-    },
-
-    /**
-     * Action of selection.
-     */
-    selectFacetData: function selectFacetDetail() {
-        return this.props.selectHandler(this.props.dataKey, this.props.data);
-    }
-};
-
-module.exports = builder(liveFilterDataMixin);
-
-},{"focus/component/builder":21}],69:[function(require,module,exports){
-"use strict";
-
-/**@jsx*/
-var builder = require("focus/component/builder");
-var React = window.React;
-var Data = require("./live-filter-data").component;
-
-var liveFilterFacetMixin = {
-
-    /**
-     * Display name.
-     */
-    displayName: "live-filter-facet",
-
-    /**
-     * Init the component state.
-     * @returns {{isShowAll: true if all the facets must be displayed or just be limited to this.props.nbDefaultDataList }}
-     */
-    getInitialState: function getInitialState() {
-        return {
-            isShowAll: false
-        };
-    },
-
-    /**
-     * Init the default props.
-     * @returns {{nbDefaultDataList: default number of data facets displayed.}}
-     */
-    getDefaultProps: function getLiveFilterFacetDefaultProperties() {
-        return {
-            nbDefaultDataList: 6
-        };
-    },
-
-    /**
-     * Render the component.
-     * @returns Html component code.
-     */
-    render: function renderLiverFilterFacet() {
-        var className = this.props.isExpanded ? "lf-facet" : "lf-facet collapsed";
-        if (this.props.selectedDataKey) {
-            className = "lf-facet selected";
-        }
-        return React.createElement(
-            "div",
-            { className: className },
-            this.renderLiveFilterFacetTitle(),
-            this.renderLiveFilterDataList()
-        );
-    },
-
-    /**
-     * Render the component title.
-     * @returns Html component code.
-     */
-    renderLiveFilterFacetTitle: function renderLiveFilterFacetTitle() {
-        var title = this.props.facetKey;
-        if (this.props.selectedDataKey) {
-            title += " : " + this.props.facet[this.props.selectedDataKey].label;
-        }
-        return React.createElement(
-            "div",
-            { className: "title", onClick: this.liveFilterFacetTitleClick },
-            title
-        );
-    },
-
-    /**
-     * Action on facet title click.
-     */
-    liveFilterFacetTitleClick: function liveFilterFacetTitleClick() {
-        this.props.expandHandler(this.props.facetKey, !this.props.isExpanded);
-        if (this.props.selectedDataKey) {
-            this.props.selectHandler(this.props.facetKey, undefined, undefined);
-        }
-        this.setState({ isExpanded: !this.props.isExpanded, isShowAll: false });
-    },
-
-    /**
-     * Render the list of data of the facet.
-     * @returns Html component code.
-     */
-    renderLiveFilterDataList: function renderLiveFilterDataList() {
-        if (!this.props.isExpanded || this.props.selectedDataKey) {
-            return;
-        }
-        var facetDetailList = [];
-        var i = 0;
-        for (var key in this.props.facet) {
-            if (!this.state.isShowAll && i >= this.props.nbDefaultDataList) {
-                break;
-            }
-            facetDetailList.push(React.createElement(
-                "li",
-                null,
-                React.createElement(Data, { dataKey: key, data: this.props.facet[key], selectHandler: this.selectHandler, type: this.props.type })
-            ));
-            i++;
-        }
-        return React.createElement(
-            "div",
-            null,
-            React.createElement(
-                "ul",
-                null,
-                facetDetailList
-            ),
-            " ",
-            this.renderShowAllDataList()
-        );
-    },
-
-    /**
-     * Action on facet data selection.
-     */
-    selectHandler: function selectHandler(dataKey, data) {
-        this.props.expandHandler(this.props.facetKey, false);
-        this.props.selectHandler(this.props.facetKey, dataKey, data);
-    },
-
-    /**
-     * Render all the data facets.
-     * @returns Html component code.
-     */
-    renderShowAllDataList: function renderShowAllDataList() {
-        if (!this.state.isShowAll && Object.keys(this.props.facet).length > this.props.nbDefaultDataList) {
-            return React.createElement(
-                "div",
-                { className: "show-all", onClick: this.showAllHandler },
-                " show.alls "
-            );
-        }
-    },
-
-    /**
-     * Action on "show all" action.
-     */
-    showAllHandler: function showAllHandler() {
-        this.setState({ isShowAll: !this.state.isShowAll });
-    }
-};
-
-module.exports = builder(liveFilterFacetMixin);
-
-},{"./live-filter-data":68,"focus/component/builder":21}],70:[function(require,module,exports){
-"use strict";
-
-module.exports = require("./input");
-
-},{"./input":71}],71:[function(require,module,exports){
-"use strict";
-
-var builder = require("focus/component/builder");
-var type = require("focus/component/types");
-var React = window.React;
-var Scope = require("./scope").component;
-//var Icon = require('../common/icon').component;
-var words = require("lodash/string/words");
-var SearchInputMixin = {
-  displayName: "SearchInput",
-  getDefaultProps: function getDefaultProps() {
-    return {
-      placeholder: "",
-      value: "defaultValue",
-      scope: 2,
-      scopes: [{ code: undefined, label: "None", style: "qs-scope-none" }, { code: 1, label: "Scope1", style: "qs-scope-1" }, { code: 2, label: "Scope2", style: "qs-scope-2" }, { code: 3, label: "Scope3", style: "qs-scope-3" }],
-      minChar: 0,
-      loading: false
-    };
-  },
-  propTypes: {
-    placeholder: type("string"),
-    value: type("string"),
-    scope: type(["string", "number"]),
-    scopes: type("array"),
-    minChar: type("number"),
-    loading: type("bool")
-  },
-  getInitialState: function getInitialState() {
-    return {
-      value: this.props.value,
-      scope: this.props.scope,
-      loading: this.props.loading
-    };
-  },
-  getValue: function getValue() {
-    return {
-      scope: this.refs.scope.getValue(),
-      query: this.refs.query.getDOMNode().value
-    };
-  },
-  handleKeyUp: function handleKeyUpInputSearch(event) {
-    var val = event.target.value;
-    if (val.length >= this.props.minChar) {
-      console.log("keyUp", words(val));
-      if (this.props.handleKeyUp) {
-        this.props.handleKeyUp(event);
-      }
-    }
-  },
-  handleOnClickScope: function handleOnClickScope() {
-    console.log("Search value", this.getValue());
-    this.setState({ scope: this.refs.scope.getValue() }, this.focusQuery);
-  },
-  renderHelp: function renderHelp() {
-    /*if(this.state.scope){
-      return;
-    }*/
-    return React.createElement(
-      "div",
-      { className: "qs-help", ref: "help" },
-      React.createElement("span", { name: "share" }),
-      React.createElement(
-        "span",
-        null,
-        "Define the scope of research"
-      )
-    );
-  },
-  focusQuery: function focusQuery() {
-    this.refs.query.getDOMNode().focus();
-  },
-  setStateFromSubComponent: function setStateFromSubComponent() {
-    return this.setState(this.getValue(), this.focusQuery);
-  },
-  render: function renderSearchInput() {
-    return React.createElement(
-      "div",
-      { className: "qs-quick-search" },
-      React.createElement(Scope, { ref: "scope", list: this.props.scopes, value: this.state.scope, handleOnClick: this.handleOnClickScope }),
-      React.createElement("input", { ref: "query", onKeyUp: this.handleKeyUp, type: "search" }),
-      this.renderHelp()
-    );
-  }
-};
-
-module.exports = builder(SearchInputMixin);
-
-},{"./scope":72,"focus/component/builder":21,"focus/component/types":22,"lodash/string/words":60}],72:[function(require,module,exports){
-"use strict";
-
-var builder = require("focus/component/builder");
-var type = require("focus/component/types");
-var React = window.React;
-
-//var type = require('../../core/validation/types');
-var find = require("lodash/collection/find");
-var uuid = require("uuid");
-var scopeMixin = {
-	/**
-  * Component tag name.
-  * @type {String}
-  */
-	displayName: "Scope",
-	/**
-  * Component default properties.
-  */
-	getDefaultProps: function getScopeDefaultProperties() {
-		return {
-			list: [],
-			value: undefined,
-			isDeployed: false
-		};
-	},
-	/**
-  * Scope property validation.
-  * @type {Object}
-  */
-	propTypes: {
-		list: type("array"),
-		isDeployed: type("bool"),
-		value: type(["string", "number"])
-	},
-	/**
-  * Get the initial state from the data.
-  */
-	getInitialState: function getScopeInitialState() {
-		return {
-			isDeployed: this.props.isDeployed,
-			value: this.props.value
-		};
-	},
-	/**
-  * Get the value of the scope.
-  */
-	getValue: function getValue() {
-		return this.state.value;
-	},
-	/**
-  * Define the scope label.
-  */
-	scopeLabel: function scopeLabel() {
-		return;
-		if (!this.state.value) {
-			return "Choose your scope";
-		}
-		return this.state.value;
-	},
-	/**
-  * Internal function which handles the click on the scope line element and call the real handleOnclick if it is defined.
-  * @param {object} event - Event trigger by the search.
-  */
-	_handleOnClick: function _handleOnClick(event) {
-		var val = event.target.hasAttribute("value") ? event.target.value : undefined;
-		this.setState({
-			value: val,
-			isDeployed: false
-		}, this.props.handleOnClick);
-	},
-	/**
-  * Handle the click on the scope element.
-  */
-	handleDeployClick: function handleDeployClick() {
-		this.setState({
-			isDeployed: !this.state.isDeployed
-		});
-	},
-	/**
-  * Get the current active scope.
-  */
-	getActiveScope: function getActiveScope() {
-		var _this = this;
-
-		return find(this.props.list, function (scope) {
-			return scope.code === _this.state.value;
-		});
-	},
-	/**
-  * Return the css class for the scope.
-  */
-	scopeStyle: function scopeStyle() {
-		return "" + this.getActiveScope().style;
-	},
-	renderScopeList: function renderScopeList() {
-		var _this = this;
-
-		if (!this.state.isDeployed) {
-			return;
-		}
-		var scopes = this.props.list.map(function (scope) {
-			var selectedValue = _this.state.value === scope.code ? "active" : "";
-			return React.createElement(
-				"li",
-				{ key: scope.code || uuid.v4(),
-					value: scope.code,
-					className: "" + selectedValue + " " + scope.style,
-					onClick: _this._handleOnClick },
-				" ",
-				scope.label,
-				" "
-			);
-		});
-		return React.createElement(
-			"ul",
-			{ className: "qs-scope-list" },
-			" ",
-			scopes,
-			" "
-		);
-	},
-	/**
-  * Render the complete scope element.
-  * @return {object} - The jsx element.
-  */
-	render: function renderScopeComponent() {
-		var cssClass = "qs-icon qs-scope-deploy-" + (this.state.isDeployed ? "up" : "down");
-		return React.createElement(
-			"div",
-			{ className: this.props.className + " qs-scope" },
-			React.createElement(
-				"div",
-				{ className: cssClass,
-					onClick: this.handleDeployClick },
-				React.createElement(
-					"div",
-					{ className: this.scopeStyle() },
-					" ",
-					this.scopeLabel(),
-					" "
-				)
-			),
-			" ",
-			this.renderScopeList(),
-			" "
-		);
-	}
-};
-
-module.exports = builder(scopeMixin);
-
-},{"focus/component/builder":21,"focus/component/types":22,"lodash/collection/find":24,"uuid":65}]},{},[1])(1)
-});
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focus = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
@@ -18782,7 +13309,7 @@ module.exports = {
   DOCUMENTATION: infos.documentation
 };
 
-},{"./application":2,"./component":5,"./definition":12,"./dispatcher":13,"./exception":19,"./helper":20,"./network":23,"./router":61,"./store":63,"./util":64}],2:[function(require,module,exports){
+},{"./application":2,"./component":5,"./definition":12,"./dispatcher":14,"./exception":20,"./helper":21,"./network":24,"./router":70,"./store":72,"./util":76}],2:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -18863,7 +13390,7 @@ module.exports = function (componentMixin, isMixinOnly) {
   }, createComponent(componentMixin, isMixinOnly));
 };
 
-},{"object-assign":60}],5:[function(require,module,exports){
+},{"object-assign":69}],5:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -18896,7 +13423,7 @@ module.exports = function (type) {
   return React.PropTypes.oneOf(type);
 };
 
-},{"lodash/lang/isArray":45,"lodash/lang/isString":50}],7:[function(require,module,exports){
+},{"lodash/lang/isArray":53,"lodash/lang/isString":58}],7:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -18960,7 +13487,7 @@ module.exports = {
   get: getDomain
 };
 
-},{"../../util/object/check":65,"../../util/string/check":68,"immutable":28,"lodash/lang/isObject":49,"lodash/lang/isString":50}],8:[function(require,module,exports){
+},{"../../util/object/check":77,"../../util/string/check":80,"immutable":29,"lodash/lang/isObject":57,"lodash/lang/isString":58}],8:[function(require,module,exports){
 "use strict";
 
 /**
@@ -19057,7 +13584,7 @@ module.exports = {
   getFieldInformations: getFieldInformations
 };
 
-},{"../../util/object/check":65,"../../util/object/checkIsNotNull":66,"../../util/string/check":68,"../domain/container":7,"./container":10,"immutable":28}],10:[function(require,module,exports){
+},{"../../util/object/check":77,"../../util/object/checkIsNotNull":78,"../../util/string/check":80,"../domain/container":7,"./container":10,"immutable":29}],10:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -19071,6 +13598,11 @@ var checkIsObject = require("../../util/object/check");
  */
 var SEPARATOR = ".";
 
+/**
+ * Definition of the search informations.
+ * @type {object}
+ */
+var searchDefinition = require("../../store/search/definition");
 /**
  * Container for the application entities.
  * @type {object}
@@ -19122,13 +13654,15 @@ function getFieldConfiguration(fieldPath, customFieldConf) {
   return _getNode(fieldPath, customFieldConf).toJS();
 }
 
+setEntityConfiguration(searchDefinition);
+
 module.exports = {
   getEntityConfiguration: getEntityConfiguration,
   setEntityConfiguration: setEntityConfiguration,
   getFieldConfiguration: getFieldConfiguration
 };
 
-},{"../../util/object/check":65,"../../util/string/check":68,"immutable":28}],11:[function(require,module,exports){
+},{"../../store/search/definition":73,"../../util/object/check":77,"../../util/string/check":80,"immutable":29}],11:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -19149,14 +13683,52 @@ module.exports = {
 
 //By default use the facebook flux dispatcher.
 var Dispatcher = require("flux").Dispatcher;
+/**
+ * Core Dispatcher.
+ * @type {Object}
+ */
+module.exports = Dispatcher;
+
+},{"flux":26}],14:[function(require,module,exports){
+"use strict";
+
+var Dispatcher = require("./Dispatcher");
+var assign = require("object-assign");
+
+var AppDispaytcher = assign(new Dispatcher(), {
+
+  /**
+   * @param {object} action The details of the action, including the action's
+   * type and additional data coming from the server.
+   */
+  handleServerAction: function handleServerAction(action) {
+    var payload = {
+      source: "SERVER_ACTION",
+      action: action
+    };
+    this.dispatch(payload);
+  },
+
+  /**
+   * @param {object} action The details of the action, including the action's
+   * type and additional data coming from the view.
+   */
+  handleViewAction: function handleViewAction(action) {
+    var payload = {
+      source: "VIEW_ACTION",
+      action: action
+    };
+    this.dispatch(payload);
+  }
+});
 
 /**
  * Application dispatcher.
  * @type {Object}
  */
-module.exports = Dispatcher;
+module.exports = AppDispaytcher;
 
-},{"flux":25}],14:[function(require,module,exports){
+},{"./Dispatcher":13,"object-assign":69}],15:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -19190,7 +13762,7 @@ var ArgumentInvalidException = (function (_CustomException) {
 
 module.exports = ArgumentInvalidException;
 
-},{"./CustomException":16}],15:[function(require,module,exports){
+},{"./CustomException":17}],16:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -19224,7 +13796,7 @@ var ArgumentNullException = (function (_CustomException) {
 
 module.expôrts = ArgumentNullException;
 
-},{"./CustomException":16}],16:[function(require,module,exports){
+},{"./CustomException":17}],17:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -19274,7 +13846,7 @@ var CustomException = (function (_Error) {
 
 module.exports = CustomException;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -19308,7 +13880,7 @@ var DependencyException = (function (_CustomException) {
 
 module.expôrts = DependencyException;
 
-},{"./CustomException":16}],18:[function(require,module,exports){
+},{"./CustomException":17}],19:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -19342,7 +13914,7 @@ var NotImplementedException = (function (_CustomException) {
 
 module.expôrts = NotImplementedException;
 
-},{"./CustomException":16}],19:[function(require,module,exports){
+},{"./CustomException":17}],20:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -19353,10 +13925,10 @@ module.exports = {
 	NotImplementedException: require("./NotImplementedException")
 };
 
-},{"./ArgumentInvalidException":14,"./ArgumentNullException":15,"./CustomException":16,"./DependencyException":17,"./NotImplementedException":18}],20:[function(require,module,exports){
+},{"./ArgumentInvalidException":15,"./ArgumentNullException":16,"./CustomException":17,"./DependencyException":18,"./NotImplementedException":19}],21:[function(require,module,exports){
 "use strict";
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 /*global XMLHttpRequest, XDomainRequest*/
@@ -19405,7 +13977,7 @@ module.exports = function createCORSRequest(method, url, options) {
   return xhr;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -19458,7 +14030,7 @@ function fetch(obj, options) {
 
 module.exports = fetch;
 
-},{"./cors":21}],23:[function(require,module,exports){
+},{"./cors":22}],24:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -19466,7 +14038,7 @@ module.exports = {
   fetch: require("./fetch")
 };
 
-},{"./cors":21,"./fetch":22}],24:[function(require,module,exports){
+},{"./cors":22,"./fetch":23}],25:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19769,7 +14341,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -19781,7 +14353,7 @@ function isUndefined(arg) {
 
 module.exports.Dispatcher = require('./lib/Dispatcher')
 
-},{"./lib/Dispatcher":26}],26:[function(require,module,exports){
+},{"./lib/Dispatcher":27}],27:[function(require,module,exports){
 /*
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -20033,7 +14605,7 @@ var _prefix = 'ID_';
 
 module.exports = Dispatcher;
 
-},{"./invariant":27}],27:[function(require,module,exports){
+},{"./invariant":28}],28:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -20088,7 +14660,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  *  Copyright (c) 2014-2015, Facebook, Inc.
  *  All rights reserved.
@@ -24946,7 +19518,109 @@ module.exports = invariant;
   return Immutable;
 
 }));
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
+var baseIndexOf = require('../internal/baseIndexOf'),
+    cacheIndexOf = require('../internal/cacheIndexOf'),
+    createCache = require('../internal/createCache'),
+    isArguments = require('../lang/isArguments'),
+    isArray = require('../lang/isArray');
+
+/**
+ * Creates an array of unique values in all provided arrays using `SameValueZero`
+ * for equality comparisons.
+ *
+ * **Note:** `SameValueZero` comparisons are like strict equality comparisons,
+ * e.g. `===`, except that `NaN` matches `NaN`. See the
+ * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
+ * for more details.
+ *
+ * @static
+ * @memberOf _
+ * @category Array
+ * @param {...Array} [arrays] The arrays to inspect.
+ * @returns {Array} Returns the new array of shared values.
+ * @example
+ * _.intersection([1, 2], [4, 2], [2, 1]);
+ * // => [2]
+ */
+function intersection() {
+  var args = [],
+      argsIndex = -1,
+      argsLength = arguments.length,
+      caches = [],
+      indexOf = baseIndexOf,
+      isCommon = true;
+
+  while (++argsIndex < argsLength) {
+    var value = arguments[argsIndex];
+    if (isArray(value) || isArguments(value)) {
+      args.push(value);
+      caches.push((isCommon && value.length >= 120) ? createCache(argsIndex && value) : null);
+    }
+  }
+  argsLength = args.length;
+  var array = args[0],
+      index = -1,
+      length = array ? array.length : 0,
+      result = [],
+      seen = caches[0];
+
+  outer:
+  while (++index < length) {
+    value = array[index];
+    if ((seen ? cacheIndexOf(seen, value) : indexOf(result, value, 0)) < 0) {
+      argsIndex = argsLength;
+      while (--argsIndex) {
+        var cache = caches[argsIndex];
+        if ((cache ? cacheIndexOf(cache, value) : indexOf(args[argsIndex], value, 0)) < 0) {
+          continue outer;
+        }
+      }
+      if (seen) {
+        seen.push(value);
+      }
+      result.push(value);
+    }
+  }
+  return result;
+}
+
+module.exports = intersection;
+
+},{"../internal/baseIndexOf":35,"../internal/cacheIndexOf":38,"../internal/createCache":40,"../lang/isArguments":52,"../lang/isArray":53}],31:[function(require,module,exports){
+(function (global){
+var cachePush = require('./cachePush'),
+    isNative = require('../lang/isNative');
+
+/** Native method references. */
+var Set = isNative(Set = global.Set) && Set;
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
+
+/**
+ *
+ * Creates a cache object to store unique values.
+ *
+ * @private
+ * @param {Array} [values] The values to cache.
+ */
+function SetCache(values) {
+  var length = values ? values.length : 0;
+
+  this.data = { 'hash': nativeCreate(null), 'set': new Set };
+  while (length--) {
+    this.push(values[length]);
+  }
+}
+
+// Add functions to the `Set` cache.
+SetCache.prototype.push = cachePush;
+
+module.exports = SetCache;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../lang/isNative":55,"./cachePush":39}],32:[function(require,module,exports){
 /** Used for native method references. */
 var objectProto = Object.prototype;
 
@@ -24974,7 +19648,7 @@ function assignOwnDefaults(objectValue, sourceValue, key, object) {
 
 module.exports = assignOwnDefaults;
 
-},{}],30:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var baseCopy = require('./baseCopy'),
     keys = require('../object/keys');
 
@@ -25011,7 +19685,7 @@ function baseAssign(object, source, customizer) {
 
 module.exports = baseAssign;
 
-},{"../object/keys":51,"./baseCopy":31}],31:[function(require,module,exports){
+},{"../object/keys":59,"./baseCopy":34}],34:[function(require,module,exports){
 /**
  * Copies the properties of `source` to `object`.
  *
@@ -25038,7 +19712,36 @@ function baseCopy(source, object, props) {
 
 module.exports = baseCopy;
 
-},{}],32:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
+var indexOfNaN = require('./indexOfNaN');
+
+/**
+ * The base implementation of `_.indexOf` without support for binary searches.
+ *
+ * @private
+ * @param {Array} array The array to search.
+ * @param {*} value The value to search for.
+ * @param {number} fromIndex The index to search from.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function baseIndexOf(array, value, fromIndex) {
+  if (value !== value) {
+    return indexOfNaN(array, fromIndex);
+  }
+  var index = fromIndex - 1,
+      length = array.length;
+
+  while (++index < length) {
+    if (array[index] === value) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+module.exports = baseIndexOf;
+
+},{"./indexOfNaN":43}],36:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -25056,7 +19759,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],33:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /**
  * The base implementation of `_.values` and `_.valuesIn` which creates an
  * array of `object` property values corresponding to the property names
@@ -25080,7 +19783,76 @@ function baseValues(object, props) {
 
 module.exports = baseValues;
 
-},{}],34:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
+var isObject = require('../lang/isObject');
+
+/**
+ * Checks if `value` is in `cache` mimicking the return signature of
+ * `_.indexOf` by returning `0` if the value is found, else `-1`.
+ *
+ * @private
+ * @param {Object} cache The cache to search.
+ * @param {*} value The value to search for.
+ * @returns {number} Returns `0` if `value` is found, else `-1`.
+ */
+function cacheIndexOf(cache, value) {
+  var data = cache.data,
+      result = (typeof value == 'string' || isObject(value)) ? data.set.has(value) : data.hash[value];
+
+  return result ? 0 : -1;
+}
+
+module.exports = cacheIndexOf;
+
+},{"../lang/isObject":57}],39:[function(require,module,exports){
+var isObject = require('../lang/isObject');
+
+/**
+ * Adds `value` to the cache.
+ *
+ * @private
+ * @name push
+ * @memberOf SetCache
+ * @param {*} value The value to cache.
+ */
+function cachePush(value) {
+  var data = this.data;
+  if (typeof value == 'string' || isObject(value)) {
+    data.set.add(value);
+  } else {
+    data.hash[value] = true;
+  }
+}
+
+module.exports = cachePush;
+
+},{"../lang/isObject":57}],40:[function(require,module,exports){
+(function (global){
+var SetCache = require('./SetCache'),
+    constant = require('../utility/constant'),
+    isNative = require('../lang/isNative');
+
+/** Native method references. */
+var Set = isNative(Set = global.Set) && Set;
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
+
+/**
+ * Creates a `Set` cache object to optimize linear searches of large arrays.
+ *
+ * @private
+ * @param {Array} [values] The values to cache.
+ * @returns {null|Object} Returns the new cache object if `Set` is supported, else `null`.
+ */
+var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
+  return new SetCache(values);
+};
+
+module.exports = createCache;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../lang/isNative":55,"../utility/constant":68,"./SetCache":31}],41:[function(require,module,exports){
 /** Used to map characters to HTML entities. */
 var htmlEscapes = {
   '&': '&amp;',
@@ -25104,7 +19876,7 @@ function escapeHtmlChar(chr) {
 
 module.exports = escapeHtmlChar;
 
-},{}],35:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /** Used to escape characters for inclusion in compiled string literals. */
 var stringEscapes = {
   '\\': '\\',
@@ -25129,7 +19901,33 @@ function escapeStringChar(chr) {
 
 module.exports = escapeStringChar;
 
-},{}],36:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
+/**
+ * Gets the index at which the first occurrence of `NaN` is found in `array`.
+ * If `fromRight` is provided elements of `array` are iterated from right to left.
+ *
+ * @private
+ * @param {Array} array The array to search.
+ * @param {number} fromIndex The index to search from.
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {number} Returns the index of the matched `NaN`, else `-1`.
+ */
+function indexOfNaN(array, fromIndex, fromRight) {
+  var length = array.length,
+      index = fromIndex + (fromRight ? 0 : -1);
+
+  while ((fromRight ? index-- : ++index < length)) {
+    var other = array[index];
+    if (other !== other) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+module.exports = indexOfNaN;
+
+},{}],44:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -25153,7 +19951,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],37:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -25187,7 +19985,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":49,"./isIndex":36,"./isLength":38}],38:[function(require,module,exports){
+},{"../lang/isObject":57,"./isIndex":44,"./isLength":46}],46:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -25212,7 +20010,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],39:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -25226,25 +20024,25 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],40:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /** Used to match template delimiters. */
 var reEscape = /<%-([\s\S]+?)%>/g;
 
 module.exports = reEscape;
 
-},{}],41:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /** Used to match template delimiters. */
 var reEvaluate = /<%([\s\S]+?)%>/g;
 
 module.exports = reEvaluate;
 
-},{}],42:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /** Used to match template delimiters. */
 var reInterpolate = /<%=([\s\S]+?)%>/g;
 
 module.exports = reInterpolate;
 
-},{}],43:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -25288,7 +20086,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":44,"../lang/isArray":45,"../object/keysIn":52,"../support":58,"./isIndex":36,"./isLength":38}],44:[function(require,module,exports){
+},{"../lang/isArguments":52,"../lang/isArray":53,"../object/keysIn":60,"../support":66,"./isIndex":44,"./isLength":46}],52:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -25328,7 +20126,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":38,"../internal/isObjectLike":39}],45:[function(require,module,exports){
+},{"../internal/isLength":46,"../internal/isObjectLike":47}],53:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -25371,7 +20169,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":38,"../internal/isObjectLike":39,"./isNative":47}],46:[function(require,module,exports){
+},{"../internal/isLength":46,"../internal/isObjectLike":47,"./isNative":55}],54:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -25410,7 +20208,7 @@ function isError(value) {
 
 module.exports = isError;
 
-},{"../internal/isObjectLike":39}],47:[function(require,module,exports){
+},{"../internal/isObjectLike":47}],55:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -25467,7 +20265,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":39,"../string/escapeRegExp":55}],48:[function(require,module,exports){
+},{"../internal/isObjectLike":47,"../string/escapeRegExp":63}],56:[function(require,module,exports){
 /**
  * Checks if `value` is `null`.
  *
@@ -25490,7 +20288,7 @@ function isNull(value) {
 
 module.exports = isNull;
 
-},{}],49:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -25522,7 +20320,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],50:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -25560,7 +20358,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"../internal/isObjectLike":39}],51:[function(require,module,exports){
+},{"../internal/isObjectLike":47}],59:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -25610,7 +20408,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":38,"../internal/shimKeys":43,"../lang/isNative":47,"../lang/isObject":49}],52:[function(require,module,exports){
+},{"../internal/isLength":46,"../internal/shimKeys":51,"../lang/isNative":55,"../lang/isObject":57}],60:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -25677,7 +20475,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":36,"../internal/isLength":38,"../lang/isArguments":44,"../lang/isArray":45,"../lang/isObject":49,"../support":58}],53:[function(require,module,exports){
+},{"../internal/isIndex":44,"../internal/isLength":46,"../lang/isArguments":52,"../lang/isArray":53,"../lang/isObject":57,"../support":66}],61:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -25700,7 +20498,7 @@ function capitalize(string) {
 
 module.exports = capitalize;
 
-},{"../internal/baseToString":32}],54:[function(require,module,exports){
+},{"../internal/baseToString":36}],62:[function(require,module,exports){
 var baseToString = require('../internal/baseToString'),
     escapeHtmlChar = require('../internal/escapeHtmlChar');
 
@@ -25750,7 +20548,7 @@ function escape(string) {
 
 module.exports = escape;
 
-},{"../internal/baseToString":32,"../internal/escapeHtmlChar":34}],55:[function(require,module,exports){
+},{"../internal/baseToString":36,"../internal/escapeHtmlChar":41}],63:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -25784,7 +20582,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":32}],56:[function(require,module,exports){
+},{"../internal/baseToString":36}],64:[function(require,module,exports){
 var assignOwnDefaults = require('../internal/assignOwnDefaults'),
     attempt = require('../utility/attempt'),
     baseAssign = require('../internal/baseAssign'),
@@ -26015,7 +20813,7 @@ function template(string, options, otherOptions) {
 
 module.exports = template;
 
-},{"../internal/assignOwnDefaults":29,"../internal/baseAssign":30,"../internal/baseToString":32,"../internal/baseValues":33,"../internal/escapeStringChar":35,"../internal/isIterateeCall":37,"../internal/reInterpolate":42,"../lang/isError":46,"../object/keys":51,"../utility/attempt":59,"./templateSettings":57}],57:[function(require,module,exports){
+},{"../internal/assignOwnDefaults":32,"../internal/baseAssign":33,"../internal/baseToString":36,"../internal/baseValues":37,"../internal/escapeStringChar":42,"../internal/isIterateeCall":45,"../internal/reInterpolate":50,"../lang/isError":54,"../object/keys":59,"../utility/attempt":67,"./templateSettings":65}],65:[function(require,module,exports){
 var escape = require('./escape'),
     reEscape = require('../internal/reEscape'),
     reEvaluate = require('../internal/reEvaluate'),
@@ -26084,7 +20882,7 @@ var templateSettings = {
 
 module.exports = templateSettings;
 
-},{"../internal/reEscape":40,"../internal/reEvaluate":41,"../internal/reInterpolate":42,"./escape":54}],58:[function(require,module,exports){
+},{"../internal/reEscape":48,"../internal/reEvaluate":49,"../internal/reInterpolate":50,"./escape":62}],66:[function(require,module,exports){
 (function (global){
 var isNative = require('./lang/isNative');
 
@@ -26163,7 +20961,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":47}],59:[function(require,module,exports){
+},{"./lang/isNative":55}],67:[function(require,module,exports){
 var isError = require('../lang/isError');
 
 /**
@@ -26203,7 +21001,32 @@ function attempt() {
 
 module.exports = attempt;
 
-},{"../lang/isError":46}],60:[function(require,module,exports){
+},{"../lang/isError":54}],68:[function(require,module,exports){
+/**
+ * Creates a function that returns `value`.
+ *
+ * @static
+ * @memberOf _
+ * @category Utility
+ * @param {*} value The value to return from the new function.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * var object = { 'user': 'fred' };
+ * var getter = _.constant(object);
+ *
+ * getter() === object;
+ * // => true
+ */
+function constant(value) {
+  return function() {
+    return value;
+  };
+}
+
+module.exports = constant;
+
+},{}],69:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -26231,12 +21054,12 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],61:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 "use strict";
 
 module.exports = {};
 
-},{}],62:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -26248,9 +21071,11 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 //The store is an event emitter.
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
+var isArray = require("lodash/lang/isArray");
 var getEntityInformations = require("../definition/entity/builder").getEntityInformations;
 var capitalize = require("lodash/string/capitalize");
 var Immutable = require("immutable");
+var AppDispatcher = require("../dispatcher");
 /**
  * @class CoreStore
  */
@@ -26267,9 +21092,13 @@ var CoreStore = (function (_EventEmitter) {
     assign(this, {
       config: config
     });
+    //Initialize the data as immutable map.
+    this.data = Immutable.Map({});
+    this.customHandler = assign({}, config.customHandler);
+    //Register all gernerated methods.
     this.buildDefinition();
     this.buildEachNodeChangeEventListener();
-    this.data = Immutable.Map({});
+    this.registerDispatcher();
   }
 
   _inherits(CoreStore, _EventEmitter);
@@ -26287,8 +21116,8 @@ var CoreStore = (function (_EventEmitter) {
          * Build the definitions for the entity (may be a subject.)
          * @type {object}
          */
-        this.definition = getEntityInformations(this.config.definitionPath, this.config.customDefinition);
-        return this.definitions;
+        this.definition = this.config.definition || getEntityInformations(this.config.definitionPath, this.config.customDefinition);
+        return this.definition;
       }
     },
     buildEachNodeChangeEventListener: {
@@ -26297,24 +21126,68 @@ var CoreStore = (function (_EventEmitter) {
       */
 
       value: function buildEachNodeChangeEventListener() {
+        var currentStore = this;
         //Loop through each store properties.
         for (var definition in this.definition) {
           var capitalizeDefinition = capitalize(definition);
           //Creates the change listener
-          this["add" + capitalizeDefinition + "ChangeListener"] = function (cb) {
-            this.addListener("" + definition + ":change", cb);
-          };
+          currentStore["add" + capitalizeDefinition + "ChangeListener"] = (function (def) {
+            return function (cb) {
+              currentStore.addListener("" + def + ":change", cb);
+            };
+          })(definition);
+          //Remove the change listener
+          currentStore["remove" + capitalizeDefinition + "ChangeListener"] = (function (def) {
+            return function (cb) {
+              currentStore.removeListener("" + def + ":change", cb);
+            };
+          })(definition);
           //Create an update method.
-          this["update" + capitalizeDefinition] = function (dataNode) {
-            //CheckIsObject
-            this.data = this.data.set(definition, dataNode);
-            this.emit("" + definition + ":change");
-          };
+          currentStore["update" + capitalizeDefinition] = (function (def) {
+            return function (dataNode) {
+              //CheckIsObject
+              var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
+              currentStore.data = currentStore.data.set(def, immutableNode);
+              currentStore.emit("" + def + ":change");
+            };
+          })(definition);
           //Create a get method.
-          this["get" + capitalizeDefinition] = function () {
-            return this.data.get(definition).toJS();
-          };
+          currentStore["get" + capitalizeDefinition] = (function (def) {
+            return function () {
+              return currentStore.data.get(def).toJS();
+            };
+          })(definition);
         }
+      }
+    },
+    registerDispatcher: {
+      /**
+       * The store registrer itself on the dispatcher.
+       */
+
+      value: function registerDispatcher() {
+        var currentStore = this;
+        this.dispatch = AppDispatcher.register(function (transferInfo) {
+          //Complete rewrie by the store.
+          //todo: see if this has meaning instead of an override
+          if (currentStore.globalCustomHandler) {
+            return currentStore.globalCustomHandler.call(currentStore, transferInfo);
+          }
+          var rawData = transferInfo.action.data;
+          var type = transferInfo.action.type;
+          for (var node in rawData) {
+            if (currentStore.definition[node]) {
+              //Call a custom handler if this exists.
+              if (currentStore.customHandler && currentStore.customHandler[node] && currentStore.customHandler[node][type]) {
+                currentStore.customHandler[node][type].call(currentStore, rawData[node]);
+              } else {
+                //Update the data for the given node. and emit the change/.
+                currentStore["" + type + "" + capitalize(node)](rawData[node]);
+              }
+            }
+          }
+          console.log("dispatchHandler:action", transferInfo);
+        });
       }
     },
     addListener: {
@@ -26327,6 +21200,17 @@ var CoreStore = (function (_EventEmitter) {
       value: function addListener(eventName, cb) {
         this.on(eventName, cb);
       }
+    },
+    removeListener: {
+      /**
+       * Remove a listener on a store event.
+       * @param {string}   eventName - Event name.
+       * @param {Function} cb - CallBack to call on the event change name.
+       */
+
+      value: function removeListener(eventName, cb) {
+        this.off(eventName, cb);
+      }
     }
   });
 
@@ -26335,14 +21219,145 @@ var CoreStore = (function (_EventEmitter) {
 
 module.exports = CoreStore;
 
-},{"../definition/entity/builder":9,"events":24,"immutable":28,"lodash/string/capitalize":53,"object-assign":60}],63:[function(require,module,exports){
+},{"../definition/entity/builder":9,"../dispatcher":14,"events":25,"immutable":29,"lodash/lang/isArray":53,"lodash/string/capitalize":61,"object-assign":69}],72:[function(require,module,exports){
 "use strict";
 
 module.exports = {
-	CoreStore: require("./CoreStore")
+	CoreStore: require("./CoreStore"),
+	SearchStore: require("./search")
 };
 
-},{"./CoreStore":62}],64:[function(require,module,exports){
+},{"./CoreStore":71,"./search":74}],73:[function(require,module,exports){
+"use strict";
+
+var Immutable = require("immutable");
+module.exports = {
+  /**
+   * Metadata defintion informations for the search.
+   * @type {Object}
+   */
+  search: {
+    facet: {
+      domain: "DO_TEXT"
+    },
+    list: {
+      domain: "DO_TEXT"
+    },
+    pageInfos: {
+      domain: "DO_TEXT"
+    },
+    searchContext: {
+      domain: "DO_TEXT"
+    }
+  }
+};
+
+},{"immutable":29}],74:[function(require,module,exports){
+"use strict";
+
+module.exports = require("./store");
+
+},{"./store":75}],75:[function(require,module,exports){
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+//Dependencies.
+var CoreStore = require("../CoreStore");
+var assign = require("object-assign");
+var AppDispatcher = require("../../dispatcher");
+var keys = require("lodash/object/keys");
+var intersection = require("lodash/array/intersection");
+var Immutable = require("immutable");
+var isArray = require("lodash/lang/isArray");
+
+/**
+ * Default configuration of the search.
+ * @type {Object}
+ */
+/*var defaultSearchConfig = {
+  facet:"facet",
+  list:"list",
+  pageInfos: "pageInfos"
+};*/
+
+var SearchStore = (function (_CoreStore) {
+  function SearchStore(conf) {
+    _classCallCheck(this, SearchStore);
+
+    var config = assign({}, { definitionPath: "search" }, conf);
+    _get(Object.getPrototypeOf(SearchStore.prototype), "constructor", this).call(this, config);
+  }
+
+  _inherits(SearchStore, _CoreStore);
+
+  _createClass(SearchStore, {
+    get: {
+      value: function get() {
+        return this.data.toJS();
+      }
+    },
+    update: {
+      /**
+       * Update all the data from the search.
+       * @return {}
+      */
+
+      value: function update(newData) {
+        var previousData = this.data.toJS();
+        var processedData = assign(previousData, newData);
+        if (previousData.searchContext.scope === newData.searchContext.scope && previousData.searchContext.query === newData.searchContext.query) {
+          processedData.list = previousData.list.concat(newData.list);
+        }
+        var data = {};
+        for (var key in processedData) {
+          data[key] = Immutable[isArray(processedData[key]) ? "List" : "Map"](processedData[key]);
+        }
+        this.data = Immutable.Map(data);
+        this.emit("search:change");
+      }
+    },
+    addSearchChangeListener: {
+      /**
+       * Add a listener on the global change on the search store.
+       * @param {Function} cb [description]
+       */
+
+      value: function addSearchChangeListener(cb) {
+        this.addListener("search:change", cb);
+      }
+    },
+    registerDispatcher: {
+      /**
+       * The store registrer itself on the dispatcher.
+       */
+
+      value: function registerDispatcher() {
+        var currentStore = this;
+        this.dispatch = AppDispatcher.register(function (transferInfo) {
+          var defKeys = keys(currentStore.definition); //TODO: a sub part of the keys may be needed.
+          var dataKeys = keys(transferInfo.action.data);
+          var intersectKeys = intersection(defKeys, dataKeys);
+          if (intersectKeys.length === defKeys.length) {
+            currentStore.update(transferInfo.action.data);
+          }
+        });
+      }
+    }
+  });
+
+  return SearchStore;
+})(CoreStore);
+
+module.exports = SearchStore;
+
+},{"../../dispatcher":14,"../CoreStore":71,"immutable":29,"lodash/array/intersection":30,"lodash/lang/isArray":53,"lodash/object/keys":59,"object-assign":69}],76:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -26351,7 +21366,7 @@ module.exports = {
 	url: require("./url")
 };
 
-},{"./object":67,"./string":69,"./url":71}],65:[function(require,module,exports){
+},{"./object":79,"./string":81,"./url":83}],77:[function(require,module,exports){
 "use strict";
 
 var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
@@ -26369,7 +21384,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":14,"lodash/lang/isObject":49}],66:[function(require,module,exports){
+},{"../../exception/ArgumentInvalidException":15,"lodash/lang/isObject":57}],78:[function(require,module,exports){
 "use strict";
 
 var ArgumentNullException = require("../../exception/ArgumentNullException");
@@ -26387,7 +21402,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentNullException":15,"lodash/lang/isNull":48}],67:[function(require,module,exports){
+},{"../../exception/ArgumentNullException":16,"lodash/lang/isNull":56}],79:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -26395,7 +21410,7 @@ module.exports = {
 	checkIsNotNull: require("./checkIsNotNull")
 };
 
-},{"./check":65,"./checkIsNotNull":66}],68:[function(require,module,exports){
+},{"./check":77,"./checkIsNotNull":78}],80:[function(require,module,exports){
 "use strict";
 
 var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
@@ -26413,14 +21428,14 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":14,"lodash/lang/isString":50}],69:[function(require,module,exports){
+},{"../../exception/ArgumentInvalidException":15,"lodash/lang/isString":58}],81:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	check: require("./check")
 };
 
-},{"./check":68}],70:[function(require,module,exports){
+},{"./check":80}],82:[function(require,module,exports){
 "use strict";
 
 var urlProcessor = require("./processor");
@@ -26444,7 +21459,7 @@ module.exports = function (url, method) {
   };
 };
 
-},{"./processor":72}],71:[function(require,module,exports){
+},{"./processor":84}],83:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -26452,7 +21467,7 @@ module.exports = {
   preprocessor: require("./processor")
 };
 
-},{"./builder":70,"./processor":72}],72:[function(require,module,exports){
+},{"./builder":82,"./processor":84}],84:[function(require,module,exports){
 "use strict";
 
 var compile = require("lodash/string/template");
@@ -26463,5 +21478,6360 @@ module.exports = function (url, data) {
   return compile(url)(data);
 };
 
-},{"lodash/string/template":56}]},{},[1])(1)
+},{"lodash/string/template":64}]},{},[1])(1)
+});
+//     Backbone.js 1.1.2
+
+//     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+//     Backbone may be freely distributed under the MIT license.
+//     For all details and documentation:
+//     http://backbonejs.org
+
+(function(root, factory) {
+
+  // Set up Backbone appropriately for the environment. Start with AMD.
+  if (typeof define === 'function' && define.amd) {
+    define(['underscore', 'jquery', 'exports'], function(_, $, exports) {
+      // Export global even in AMD case in case this script is loaded with
+      // others that may still expect a global Backbone.
+      root.Backbone = factory(root, exports, _, $);
+    });
+
+  // Next for Node.js or CommonJS. jQuery may not be needed as a module.
+  } else if (typeof exports !== 'undefined') {
+    var _ = require('underscore');
+    factory(root, exports, _);
+
+  // Finally, as a browser global.
+  } else {
+    root.Backbone = factory(root, {}, root._, (root.jQuery || root.Zepto || root.ender || root.$));
+  }
+
+}(this, function(root, Backbone, _, $) {
+
+  // Initial Setup
+  // -------------
+
+  // Save the previous value of the `Backbone` variable, so that it can be
+  // restored later on, if `noConflict` is used.
+  var previousBackbone = root.Backbone;
+
+  // Create local references to array methods we'll want to use later.
+  var array = [];
+  var push = array.push;
+  var slice = array.slice;
+  var splice = array.splice;
+
+  // Current version of the library. Keep in sync with `package.json`.
+  Backbone.VERSION = '1.1.2';
+
+  // For Backbone's purposes, jQuery, Zepto, Ender, or My Library (kidding) owns
+  // the `$` variable.
+  Backbone.$ = $;
+
+  // Runs Backbone.js in *noConflict* mode, returning the `Backbone` variable
+  // to its previous owner. Returns a reference to this Backbone object.
+  Backbone.noConflict = function() {
+    root.Backbone = previousBackbone;
+    return this;
+  };
+
+  // Turn on `emulateHTTP` to support legacy HTTP servers. Setting this option
+  // will fake `"PATCH"`, `"PUT"` and `"DELETE"` requests via the `_method` parameter and
+  // set a `X-Http-Method-Override` header.
+  Backbone.emulateHTTP = false;
+
+  // Turn on `emulateJSON` to support legacy servers that can't deal with direct
+  // `application/json` requests ... will encode the body as
+  // `application/x-www-form-urlencoded` instead and will send the model in a
+  // form param named `model`.
+  Backbone.emulateJSON = false;
+
+  // Backbone.Events
+  // ---------------
+
+  // A module that can be mixed in to *any object* in order to provide it with
+  // custom events. You may bind with `on` or remove with `off` callback
+  // functions to an event; `trigger`-ing an event fires all callbacks in
+  // succession.
+  //
+  //     var object = {};
+  //     _.extend(object, Backbone.Events);
+  //     object.on('expand', function(){ alert('expanded'); });
+  //     object.trigger('expand');
+  //
+  var Events = Backbone.Events = {
+
+    // Bind an event to a `callback` function. Passing `"all"` will bind
+    // the callback to all events fired.
+    on: function(name, callback, context) {
+      if (!eventsApi(this, 'on', name, [callback, context]) || !callback) return this;
+      this._events || (this._events = {});
+      var events = this._events[name] || (this._events[name] = []);
+      events.push({callback: callback, context: context, ctx: context || this});
+      return this;
+    },
+
+    // Bind an event to only be triggered a single time. After the first time
+    // the callback is invoked, it will be removed.
+    once: function(name, callback, context) {
+      if (!eventsApi(this, 'once', name, [callback, context]) || !callback) return this;
+      var self = this;
+      var once = _.once(function() {
+        self.off(name, once);
+        callback.apply(this, arguments);
+      });
+      once._callback = callback;
+      return this.on(name, once, context);
+    },
+
+    // Remove one or many callbacks. If `context` is null, removes all
+    // callbacks with that function. If `callback` is null, removes all
+    // callbacks for the event. If `name` is null, removes all bound
+    // callbacks for all events.
+    off: function(name, callback, context) {
+      var retain, ev, events, names, i, l, j, k;
+      if (!this._events || !eventsApi(this, 'off', name, [callback, context])) return this;
+      if (!name && !callback && !context) {
+        this._events = void 0;
+        return this;
+      }
+      names = name ? [name] : _.keys(this._events);
+      for (i = 0, l = names.length; i < l; i++) {
+        name = names[i];
+        if (events = this._events[name]) {
+          this._events[name] = retain = [];
+          if (callback || context) {
+            for (j = 0, k = events.length; j < k; j++) {
+              ev = events[j];
+              if ((callback && callback !== ev.callback && callback !== ev.callback._callback) ||
+                  (context && context !== ev.context)) {
+                retain.push(ev);
+              }
+            }
+          }
+          if (!retain.length) delete this._events[name];
+        }
+      }
+
+      return this;
+    },
+
+    // Trigger one or many events, firing all bound callbacks. Callbacks are
+    // passed the same arguments as `trigger` is, apart from the event name
+    // (unless you're listening on `"all"`, which will cause your callback to
+    // receive the true name of the event as the first argument).
+    trigger: function(name) {
+      if (!this._events) return this;
+      var args = slice.call(arguments, 1);
+      if (!eventsApi(this, 'trigger', name, args)) return this;
+      var events = this._events[name];
+      var allEvents = this._events.all;
+      if (events) triggerEvents(events, args);
+      if (allEvents) triggerEvents(allEvents, arguments);
+      return this;
+    },
+
+    // Tell this object to stop listening to either specific events ... or
+    // to every object it's currently listening to.
+    stopListening: function(obj, name, callback) {
+      var listeningTo = this._listeningTo;
+      if (!listeningTo) return this;
+      var remove = !name && !callback;
+      if (!callback && typeof name === 'object') callback = this;
+      if (obj) (listeningTo = {})[obj._listenId] = obj;
+      for (var id in listeningTo) {
+        obj = listeningTo[id];
+        obj.off(name, callback, this);
+        if (remove || _.isEmpty(obj._events)) delete this._listeningTo[id];
+      }
+      return this;
+    }
+
+  };
+
+  // Regular expression used to split event strings.
+  var eventSplitter = /\s+/;
+
+  // Implement fancy features of the Events API such as multiple event
+  // names `"change blur"` and jQuery-style event maps `{change: action}`
+  // in terms of the existing API.
+  var eventsApi = function(obj, action, name, rest) {
+    if (!name) return true;
+
+    // Handle event maps.
+    if (typeof name === 'object') {
+      for (var key in name) {
+        obj[action].apply(obj, [key, name[key]].concat(rest));
+      }
+      return false;
+    }
+
+    // Handle space separated event names.
+    if (eventSplitter.test(name)) {
+      var names = name.split(eventSplitter);
+      for (var i = 0, l = names.length; i < l; i++) {
+        obj[action].apply(obj, [names[i]].concat(rest));
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  // A difficult-to-believe, but optimized internal dispatch function for
+  // triggering events. Tries to keep the usual cases speedy (most internal
+  // Backbone events have 3 arguments).
+  var triggerEvents = function(events, args) {
+    var ev, i = -1, l = events.length, a1 = args[0], a2 = args[1], a3 = args[2];
+    switch (args.length) {
+      case 0: while (++i < l) (ev = events[i]).callback.call(ev.ctx); return;
+      case 1: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1); return;
+      case 2: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2); return;
+      case 3: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2, a3); return;
+      default: while (++i < l) (ev = events[i]).callback.apply(ev.ctx, args); return;
+    }
+  };
+
+  var listenMethods = {listenTo: 'on', listenToOnce: 'once'};
+
+  // Inversion-of-control versions of `on` and `once`. Tell *this* object to
+  // listen to an event in another object ... keeping track of what it's
+  // listening to.
+  _.each(listenMethods, function(implementation, method) {
+    Events[method] = function(obj, name, callback) {
+      var listeningTo = this._listeningTo || (this._listeningTo = {});
+      var id = obj._listenId || (obj._listenId = _.uniqueId('l'));
+      listeningTo[id] = obj;
+      if (!callback && typeof name === 'object') callback = this;
+      obj[implementation](name, callback, this);
+      return this;
+    };
+  });
+
+  // Aliases for backwards compatibility.
+  Events.bind   = Events.on;
+  Events.unbind = Events.off;
+
+  // Allow the `Backbone` object to serve as a global event bus, for folks who
+  // want global "pubsub" in a convenient place.
+  _.extend(Backbone, Events);
+
+  // Backbone.Model
+  // --------------
+
+  // Backbone **Models** are the basic data object in the framework --
+  // frequently representing a row in a table in a database on your server.
+  // A discrete chunk of data and a bunch of useful, related methods for
+  // performing computations and transformations on that data.
+
+  // Create a new model with the specified attributes. A client id (`cid`)
+  // is automatically generated and assigned for you.
+  var Model = Backbone.Model = function(attributes, options) {
+    var attrs = attributes || {};
+    options || (options = {});
+    this.cid = _.uniqueId('c');
+    this.attributes = {};
+    if (options.collection) this.collection = options.collection;
+    if (options.parse) attrs = this.parse(attrs, options) || {};
+    attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
+    this.set(attrs, options);
+    this.changed = {};
+    this.initialize.apply(this, arguments);
+  };
+
+  // Attach all inheritable methods to the Model prototype.
+  _.extend(Model.prototype, Events, {
+
+    // A hash of attributes whose current and previous value differ.
+    changed: null,
+
+    // The value returned during the last failed validation.
+    validationError: null,
+
+    // The default name for the JSON `id` attribute is `"id"`. MongoDB and
+    // CouchDB users may want to set this to `"_id"`.
+    idAttribute: 'id',
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function(){},
+
+    // Return a copy of the model's `attributes` object.
+    toJSON: function(options) {
+      return _.clone(this.attributes);
+    },
+
+    // Proxy `Backbone.sync` by default -- but override this if you need
+    // custom syncing semantics for *this* particular model.
+    sync: function() {
+      return Backbone.sync.apply(this, arguments);
+    },
+
+    // Get the value of an attribute.
+    get: function(attr) {
+      return this.attributes[attr];
+    },
+
+    // Get the HTML-escaped value of an attribute.
+    escape: function(attr) {
+      return _.escape(this.get(attr));
+    },
+
+    // Returns `true` if the attribute contains a value that is not null
+    // or undefined.
+    has: function(attr) {
+      return this.get(attr) != null;
+    },
+
+    // Set a hash of model attributes on the object, firing `"change"`. This is
+    // the core primitive operation of a model, updating the data and notifying
+    // anyone who needs to know about the change in state. The heart of the beast.
+    set: function(key, val, options) {
+      var attr, attrs, unset, changes, silent, changing, prev, current;
+      if (key == null) return this;
+
+      // Handle both `"key", value` and `{key: value}` -style arguments.
+      if (typeof key === 'object') {
+        attrs = key;
+        options = val;
+      } else {
+        (attrs = {})[key] = val;
+      }
+
+      options || (options = {});
+
+      // Run validation.
+      if (!this._validate(attrs, options)) return false;
+
+      // Extract attributes and options.
+      unset           = options.unset;
+      silent          = options.silent;
+      changes         = [];
+      changing        = this._changing;
+      this._changing  = true;
+
+      if (!changing) {
+        this._previousAttributes = _.clone(this.attributes);
+        this.changed = {};
+      }
+      current = this.attributes, prev = this._previousAttributes;
+
+      // Check for changes of `id`.
+      if (this.idAttribute in attrs) this.id = attrs[this.idAttribute];
+
+      // For each `set` attribute, update or delete the current value.
+      for (attr in attrs) {
+        val = attrs[attr];
+        if (!_.isEqual(current[attr], val)) changes.push(attr);
+        if (!_.isEqual(prev[attr], val)) {
+          this.changed[attr] = val;
+        } else {
+          delete this.changed[attr];
+        }
+        unset ? delete current[attr] : current[attr] = val;
+      }
+
+      // Trigger all relevant attribute changes.
+      if (!silent) {
+        if (changes.length) this._pending = options;
+        for (var i = 0, l = changes.length; i < l; i++) {
+          this.trigger('change:' + changes[i], this, current[changes[i]], options);
+        }
+      }
+
+      // You might be wondering why there's a `while` loop here. Changes can
+      // be recursively nested within `"change"` events.
+      if (changing) return this;
+      if (!silent) {
+        while (this._pending) {
+          options = this._pending;
+          this._pending = false;
+          this.trigger('change', this, options);
+        }
+      }
+      this._pending = false;
+      this._changing = false;
+      return this;
+    },
+
+    // Remove an attribute from the model, firing `"change"`. `unset` is a noop
+    // if the attribute doesn't exist.
+    unset: function(attr, options) {
+      return this.set(attr, void 0, _.extend({}, options, {unset: true}));
+    },
+
+    // Clear all attributes on the model, firing `"change"`.
+    clear: function(options) {
+      var attrs = {};
+      for (var key in this.attributes) attrs[key] = void 0;
+      return this.set(attrs, _.extend({}, options, {unset: true}));
+    },
+
+    // Determine if the model has changed since the last `"change"` event.
+    // If you specify an attribute name, determine if that attribute has changed.
+    hasChanged: function(attr) {
+      if (attr == null) return !_.isEmpty(this.changed);
+      return _.has(this.changed, attr);
+    },
+
+    // Return an object containing all the attributes that have changed, or
+    // false if there are no changed attributes. Useful for determining what
+    // parts of a view need to be updated and/or what attributes need to be
+    // persisted to the server. Unset attributes will be set to undefined.
+    // You can also pass an attributes object to diff against the model,
+    // determining if there *would be* a change.
+    changedAttributes: function(diff) {
+      if (!diff) return this.hasChanged() ? _.clone(this.changed) : false;
+      var val, changed = false;
+      var old = this._changing ? this._previousAttributes : this.attributes;
+      for (var attr in diff) {
+        if (_.isEqual(old[attr], (val = diff[attr]))) continue;
+        (changed || (changed = {}))[attr] = val;
+      }
+      return changed;
+    },
+
+    // Get the previous value of an attribute, recorded at the time the last
+    // `"change"` event was fired.
+    previous: function(attr) {
+      if (attr == null || !this._previousAttributes) return null;
+      return this._previousAttributes[attr];
+    },
+
+    // Get all of the attributes of the model at the time of the previous
+    // `"change"` event.
+    previousAttributes: function() {
+      return _.clone(this._previousAttributes);
+    },
+
+    // Fetch the model from the server. If the server's representation of the
+    // model differs from its current attributes, they will be overridden,
+    // triggering a `"change"` event.
+    fetch: function(options) {
+      options = options ? _.clone(options) : {};
+      if (options.parse === void 0) options.parse = true;
+      var model = this;
+      var success = options.success;
+      options.success = function(resp) {
+        if (!model.set(model.parse(resp, options), options)) return false;
+        if (success) success(model, resp, options);
+        model.trigger('sync', model, resp, options);
+      };
+      wrapError(this, options);
+      return this.sync('read', this, options);
+    },
+
+    // Set a hash of model attributes, and sync the model to the server.
+    // If the server returns an attributes hash that differs, the model's
+    // state will be `set` again.
+    save: function(key, val, options) {
+      var attrs, method, xhr, attributes = this.attributes;
+
+      // Handle both `"key", value` and `{key: value}` -style arguments.
+      if (key == null || typeof key === 'object') {
+        attrs = key;
+        options = val;
+      } else {
+        (attrs = {})[key] = val;
+      }
+
+      options = _.extend({validate: true}, options);
+
+      // If we're not waiting and attributes exist, save acts as
+      // `set(attr).save(null, opts)` with validation. Otherwise, check if
+      // the model will be valid when the attributes, if any, are set.
+      if (attrs && !options.wait) {
+        if (!this.set(attrs, options)) return false;
+      } else {
+        if (!this._validate(attrs, options)) return false;
+      }
+
+      // Set temporary attributes if `{wait: true}`.
+      if (attrs && options.wait) {
+        this.attributes = _.extend({}, attributes, attrs);
+      }
+
+      // After a successful server-side save, the client is (optionally)
+      // updated with the server-side state.
+      if (options.parse === void 0) options.parse = true;
+      var model = this;
+      var success = options.success;
+      options.success = function(resp) {
+        // Ensure attributes are restored during synchronous saves.
+        model.attributes = attributes;
+        var serverAttrs = model.parse(resp, options);
+        if (options.wait) serverAttrs = _.extend(attrs || {}, serverAttrs);
+        if (_.isObject(serverAttrs) && !model.set(serverAttrs, options)) {
+          return false;
+        }
+        if (success) success(model, resp, options);
+        model.trigger('sync', model, resp, options);
+      };
+      wrapError(this, options);
+
+      method = this.isNew() ? 'create' : (options.patch ? 'patch' : 'update');
+      if (method === 'patch') options.attrs = attrs;
+      xhr = this.sync(method, this, options);
+
+      // Restore attributes.
+      if (attrs && options.wait) this.attributes = attributes;
+
+      return xhr;
+    },
+
+    // Destroy this model on the server if it was already persisted.
+    // Optimistically removes the model from its collection, if it has one.
+    // If `wait: true` is passed, waits for the server to respond before removal.
+    destroy: function(options) {
+      options = options ? _.clone(options) : {};
+      var model = this;
+      var success = options.success;
+
+      var destroy = function() {
+        model.trigger('destroy', model, model.collection, options);
+      };
+
+      options.success = function(resp) {
+        if (options.wait || model.isNew()) destroy();
+        if (success) success(model, resp, options);
+        if (!model.isNew()) model.trigger('sync', model, resp, options);
+      };
+
+      if (this.isNew()) {
+        options.success();
+        return false;
+      }
+      wrapError(this, options);
+
+      var xhr = this.sync('delete', this, options);
+      if (!options.wait) destroy();
+      return xhr;
+    },
+
+    // Default URL for the model's representation on the server -- if you're
+    // using Backbone's restful methods, override this to change the endpoint
+    // that will be called.
+    url: function() {
+      var base =
+        _.result(this, 'urlRoot') ||
+        _.result(this.collection, 'url') ||
+        urlError();
+      if (this.isNew()) return base;
+      return base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id);
+    },
+
+    // **parse** converts a response into the hash of attributes to be `set` on
+    // the model. The default implementation is just to pass the response along.
+    parse: function(resp, options) {
+      return resp;
+    },
+
+    // Create a new model with identical attributes to this one.
+    clone: function() {
+      return new this.constructor(this.attributes);
+    },
+
+    // A model is new if it has never been saved to the server, and lacks an id.
+    isNew: function() {
+      return !this.has(this.idAttribute);
+    },
+
+    // Check if the model is currently in a valid state.
+    isValid: function(options) {
+      return this._validate({}, _.extend(options || {}, { validate: true }));
+    },
+
+    // Run validation against the next complete set of model attributes,
+    // returning `true` if all is well. Otherwise, fire an `"invalid"` event.
+    _validate: function(attrs, options) {
+      if (!options.validate || !this.validate) return true;
+      attrs = _.extend({}, this.attributes, attrs);
+      var error = this.validationError = this.validate(attrs, options) || null;
+      if (!error) return true;
+      this.trigger('invalid', this, error, _.extend(options, {validationError: error}));
+      return false;
+    }
+
+  });
+
+  // Underscore methods that we want to implement on the Model.
+  var modelMethods = ['keys', 'values', 'pairs', 'invert', 'pick', 'omit'];
+
+  // Mix in each Underscore method as a proxy to `Model#attributes`.
+  _.each(modelMethods, function(method) {
+    Model.prototype[method] = function() {
+      var args = slice.call(arguments);
+      args.unshift(this.attributes);
+      return _[method].apply(_, args);
+    };
+  });
+
+  // Backbone.Collection
+  // -------------------
+
+  // If models tend to represent a single row of data, a Backbone Collection is
+  // more analagous to a table full of data ... or a small slice or page of that
+  // table, or a collection of rows that belong together for a particular reason
+  // -- all of the messages in this particular folder, all of the documents
+  // belonging to this particular author, and so on. Collections maintain
+  // indexes of their models, both in order, and for lookup by `id`.
+
+  // Create a new **Collection**, perhaps to contain a specific type of `model`.
+  // If a `comparator` is specified, the Collection will maintain
+  // its models in sort order, as they're added and removed.
+  var Collection = Backbone.Collection = function(models, options) {
+    options || (options = {});
+    if (options.model) this.model = options.model;
+    if (options.comparator !== void 0) this.comparator = options.comparator;
+    this._reset();
+    this.initialize.apply(this, arguments);
+    if (models) this.reset(models, _.extend({silent: true}, options));
+  };
+
+  // Default options for `Collection#set`.
+  var setOptions = {add: true, remove: true, merge: true};
+  var addOptions = {add: true, remove: false};
+
+  // Define the Collection's inheritable methods.
+  _.extend(Collection.prototype, Events, {
+
+    // The default model for a collection is just a **Backbone.Model**.
+    // This should be overridden in most cases.
+    model: Model,
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function(){},
+
+    // The JSON representation of a Collection is an array of the
+    // models' attributes.
+    toJSON: function(options) {
+      return this.map(function(model){ return model.toJSON(options); });
+    },
+
+    // Proxy `Backbone.sync` by default.
+    sync: function() {
+      return Backbone.sync.apply(this, arguments);
+    },
+
+    // Add a model, or list of models to the set.
+    add: function(models, options) {
+      return this.set(models, _.extend({merge: false}, options, addOptions));
+    },
+
+    // Remove a model, or a list of models from the set.
+    remove: function(models, options) {
+      var singular = !_.isArray(models);
+      models = singular ? [models] : _.clone(models);
+      options || (options = {});
+      var i, l, index, model;
+      for (i = 0, l = models.length; i < l; i++) {
+        model = models[i] = this.get(models[i]);
+        if (!model) continue;
+        delete this._byId[model.id];
+        delete this._byId[model.cid];
+        index = this.indexOf(model);
+        this.models.splice(index, 1);
+        this.length--;
+        if (!options.silent) {
+          options.index = index;
+          model.trigger('remove', model, this, options);
+        }
+        this._removeReference(model, options);
+      }
+      return singular ? models[0] : models;
+    },
+
+    // Update a collection by `set`-ing a new list of models, adding new ones,
+    // removing models that are no longer present, and merging models that
+    // already exist in the collection, as necessary. Similar to **Model#set**,
+    // the core operation for updating the data contained by the collection.
+    set: function(models, options) {
+      options = _.defaults({}, options, setOptions);
+      if (options.parse) models = this.parse(models, options);
+      var singular = !_.isArray(models);
+      models = singular ? (models ? [models] : []) : _.clone(models);
+      var i, l, id, model, attrs, existing, sort;
+      var at = options.at;
+      var targetModel = this.model;
+      var sortable = this.comparator && (at == null) && options.sort !== false;
+      var sortAttr = _.isString(this.comparator) ? this.comparator : null;
+      var toAdd = [], toRemove = [], modelMap = {};
+      var add = options.add, merge = options.merge, remove = options.remove;
+      var order = !sortable && add && remove ? [] : false;
+
+      // Turn bare objects into model references, and prevent invalid models
+      // from being added.
+      for (i = 0, l = models.length; i < l; i++) {
+        attrs = models[i] || {};
+        if (attrs instanceof Model) {
+          id = model = attrs;
+        } else {
+          id = attrs[targetModel.prototype.idAttribute || 'id'];
+        }
+
+        // If a duplicate is found, prevent it from being added and
+        // optionally merge it into the existing model.
+        if (existing = this.get(id)) {
+          if (remove) modelMap[existing.cid] = true;
+          if (merge) {
+            attrs = attrs === model ? model.attributes : attrs;
+            if (options.parse) attrs = existing.parse(attrs, options);
+            existing.set(attrs, options);
+            if (sortable && !sort && existing.hasChanged(sortAttr)) sort = true;
+          }
+          models[i] = existing;
+
+        // If this is a new, valid model, push it to the `toAdd` list.
+        } else if (add) {
+          model = models[i] = this._prepareModel(attrs, options);
+          if (!model) continue;
+          toAdd.push(model);
+          this._addReference(model, options);
+        }
+
+        // Do not add multiple models with the same `id`.
+        model = existing || model;
+        if (order && (model.isNew() || !modelMap[model.id])) order.push(model);
+        modelMap[model.id] = true;
+      }
+
+      // Remove nonexistent models if appropriate.
+      if (remove) {
+        for (i = 0, l = this.length; i < l; ++i) {
+          if (!modelMap[(model = this.models[i]).cid]) toRemove.push(model);
+        }
+        if (toRemove.length) this.remove(toRemove, options);
+      }
+
+      // See if sorting is needed, update `length` and splice in new models.
+      if (toAdd.length || (order && order.length)) {
+        if (sortable) sort = true;
+        this.length += toAdd.length;
+        if (at != null) {
+          for (i = 0, l = toAdd.length; i < l; i++) {
+            this.models.splice(at + i, 0, toAdd[i]);
+          }
+        } else {
+          if (order) this.models.length = 0;
+          var orderedModels = order || toAdd;
+          for (i = 0, l = orderedModels.length; i < l; i++) {
+            this.models.push(orderedModels[i]);
+          }
+        }
+      }
+
+      // Silently sort the collection if appropriate.
+      if (sort) this.sort({silent: true});
+
+      // Unless silenced, it's time to fire all appropriate add/sort events.
+      if (!options.silent) {
+        for (i = 0, l = toAdd.length; i < l; i++) {
+          (model = toAdd[i]).trigger('add', model, this, options);
+        }
+        if (sort || (order && order.length)) this.trigger('sort', this, options);
+      }
+
+      // Return the added (or merged) model (or models).
+      return singular ? models[0] : models;
+    },
+
+    // When you have more items than you want to add or remove individually,
+    // you can reset the entire set with a new list of models, without firing
+    // any granular `add` or `remove` events. Fires `reset` when finished.
+    // Useful for bulk operations and optimizations.
+    reset: function(models, options) {
+      options || (options = {});
+      for (var i = 0, l = this.models.length; i < l; i++) {
+        this._removeReference(this.models[i], options);
+      }
+      options.previousModels = this.models;
+      this._reset();
+      models = this.add(models, _.extend({silent: true}, options));
+      if (!options.silent) this.trigger('reset', this, options);
+      return models;
+    },
+
+    // Add a model to the end of the collection.
+    push: function(model, options) {
+      return this.add(model, _.extend({at: this.length}, options));
+    },
+
+    // Remove a model from the end of the collection.
+    pop: function(options) {
+      var model = this.at(this.length - 1);
+      this.remove(model, options);
+      return model;
+    },
+
+    // Add a model to the beginning of the collection.
+    unshift: function(model, options) {
+      return this.add(model, _.extend({at: 0}, options));
+    },
+
+    // Remove a model from the beginning of the collection.
+    shift: function(options) {
+      var model = this.at(0);
+      this.remove(model, options);
+      return model;
+    },
+
+    // Slice out a sub-array of models from the collection.
+    slice: function() {
+      return slice.apply(this.models, arguments);
+    },
+
+    // Get a model from the set by id.
+    get: function(obj) {
+      if (obj == null) return void 0;
+      return this._byId[obj] || this._byId[obj.id] || this._byId[obj.cid];
+    },
+
+    // Get the model at the given index.
+    at: function(index) {
+      return this.models[index];
+    },
+
+    // Return models with matching attributes. Useful for simple cases of
+    // `filter`.
+    where: function(attrs, first) {
+      if (_.isEmpty(attrs)) return first ? void 0 : [];
+      return this[first ? 'find' : 'filter'](function(model) {
+        for (var key in attrs) {
+          if (attrs[key] !== model.get(key)) return false;
+        }
+        return true;
+      });
+    },
+
+    // Return the first model with matching attributes. Useful for simple cases
+    // of `find`.
+    findWhere: function(attrs) {
+      return this.where(attrs, true);
+    },
+
+    // Force the collection to re-sort itself. You don't need to call this under
+    // normal circumstances, as the set will maintain sort order as each item
+    // is added.
+    sort: function(options) {
+      if (!this.comparator) throw new Error('Cannot sort a set without a comparator');
+      options || (options = {});
+
+      // Run sort based on type of `comparator`.
+      if (_.isString(this.comparator) || this.comparator.length === 1) {
+        this.models = this.sortBy(this.comparator, this);
+      } else {
+        this.models.sort(_.bind(this.comparator, this));
+      }
+
+      if (!options.silent) this.trigger('sort', this, options);
+      return this;
+    },
+
+    // Pluck an attribute from each model in the collection.
+    pluck: function(attr) {
+      return _.invoke(this.models, 'get', attr);
+    },
+
+    // Fetch the default set of models for this collection, resetting the
+    // collection when they arrive. If `reset: true` is passed, the response
+    // data will be passed through the `reset` method instead of `set`.
+    fetch: function(options) {
+      options = options ? _.clone(options) : {};
+      if (options.parse === void 0) options.parse = true;
+      var success = options.success;
+      var collection = this;
+      options.success = function(resp) {
+        var method = options.reset ? 'reset' : 'set';
+        collection[method](resp, options);
+        if (success) success(collection, resp, options);
+        collection.trigger('sync', collection, resp, options);
+      };
+      wrapError(this, options);
+      return this.sync('read', this, options);
+    },
+
+    // Create a new instance of a model in this collection. Add the model to the
+    // collection immediately, unless `wait: true` is passed, in which case we
+    // wait for the server to agree.
+    create: function(model, options) {
+      options = options ? _.clone(options) : {};
+      if (!(model = this._prepareModel(model, options))) return false;
+      if (!options.wait) this.add(model, options);
+      var collection = this;
+      var success = options.success;
+      options.success = function(model, resp) {
+        if (options.wait) collection.add(model, options);
+        if (success) success(model, resp, options);
+      };
+      model.save(null, options);
+      return model;
+    },
+
+    // **parse** converts a response into a list of models to be added to the
+    // collection. The default implementation is just to pass it through.
+    parse: function(resp, options) {
+      return resp;
+    },
+
+    // Create a new collection with an identical list of models as this one.
+    clone: function() {
+      return new this.constructor(this.models);
+    },
+
+    // Private method to reset all internal state. Called when the collection
+    // is first initialized or reset.
+    _reset: function() {
+      this.length = 0;
+      this.models = [];
+      this._byId  = {};
+    },
+
+    // Prepare a hash of attributes (or other model) to be added to this
+    // collection.
+    _prepareModel: function(attrs, options) {
+      if (attrs instanceof Model) return attrs;
+      options = options ? _.clone(options) : {};
+      options.collection = this;
+      var model = new this.model(attrs, options);
+      if (!model.validationError) return model;
+      this.trigger('invalid', this, model.validationError, options);
+      return false;
+    },
+
+    // Internal method to create a model's ties to a collection.
+    _addReference: function(model, options) {
+      this._byId[model.cid] = model;
+      if (model.id != null) this._byId[model.id] = model;
+      if (!model.collection) model.collection = this;
+      model.on('all', this._onModelEvent, this);
+    },
+
+    // Internal method to sever a model's ties to a collection.
+    _removeReference: function(model, options) {
+      if (this === model.collection) delete model.collection;
+      model.off('all', this._onModelEvent, this);
+    },
+
+    // Internal method called every time a model in the set fires an event.
+    // Sets need to update their indexes when models change ids. All other
+    // events simply proxy through. "add" and "remove" events that originate
+    // in other collections are ignored.
+    _onModelEvent: function(event, model, collection, options) {
+      if ((event === 'add' || event === 'remove') && collection !== this) return;
+      if (event === 'destroy') this.remove(model, options);
+      if (model && event === 'change:' + model.idAttribute) {
+        delete this._byId[model.previous(model.idAttribute)];
+        if (model.id != null) this._byId[model.id] = model;
+      }
+      this.trigger.apply(this, arguments);
+    }
+
+  });
+
+  // Underscore methods that we want to implement on the Collection.
+  // 90% of the core usefulness of Backbone Collections is actually implemented
+  // right here:
+  var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
+    'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select',
+    'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke',
+    'max', 'min', 'toArray', 'size', 'first', 'head', 'take', 'initial', 'rest',
+    'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle',
+    'lastIndexOf', 'isEmpty', 'chain', 'sample'];
+
+  // Mix in each Underscore method as a proxy to `Collection#models`.
+  _.each(methods, function(method) {
+    Collection.prototype[method] = function() {
+      var args = slice.call(arguments);
+      args.unshift(this.models);
+      return _[method].apply(_, args);
+    };
+  });
+
+  // Underscore methods that take a property name as an argument.
+  var attributeMethods = ['groupBy', 'countBy', 'sortBy', 'indexBy'];
+
+  // Use attributes instead of properties.
+  _.each(attributeMethods, function(method) {
+    Collection.prototype[method] = function(value, context) {
+      var iterator = _.isFunction(value) ? value : function(model) {
+        return model.get(value);
+      };
+      return _[method](this.models, iterator, context);
+    };
+  });
+
+  // Backbone.View
+  // -------------
+
+  // Backbone Views are almost more convention than they are actual code. A View
+  // is simply a JavaScript object that represents a logical chunk of UI in the
+  // DOM. This might be a single item, an entire list, a sidebar or panel, or
+  // even the surrounding frame which wraps your whole app. Defining a chunk of
+  // UI as a **View** allows you to define your DOM events declaratively, without
+  // having to worry about render order ... and makes it easy for the view to
+  // react to specific changes in the state of your models.
+
+  // Creating a Backbone.View creates its initial element outside of the DOM,
+  // if an existing element is not provided...
+  var View = Backbone.View = function(options) {
+    this.cid = _.uniqueId('view');
+    options || (options = {});
+    _.extend(this, _.pick(options, viewOptions));
+    this._ensureElement();
+    this.initialize.apply(this, arguments);
+    this.delegateEvents();
+  };
+
+  // Cached regex to split keys for `delegate`.
+  var delegateEventSplitter = /^(\S+)\s*(.*)$/;
+
+  // List of view options to be merged as properties.
+  var viewOptions = ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
+
+  // Set up all inheritable **Backbone.View** properties and methods.
+  _.extend(View.prototype, Events, {
+
+    // The default `tagName` of a View's element is `"div"`.
+    tagName: 'div',
+
+    // jQuery delegate for element lookup, scoped to DOM elements within the
+    // current view. This should be preferred to global lookups where possible.
+    $: function(selector) {
+      return this.$el.find(selector);
+    },
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function(){},
+
+    // **render** is the core function that your view should override, in order
+    // to populate its element (`this.el`), with the appropriate HTML. The
+    // convention is for **render** to always return `this`.
+    render: function() {
+      return this;
+    },
+
+    // Remove this view by taking the element out of the DOM, and removing any
+    // applicable Backbone.Events listeners.
+    remove: function() {
+      this.$el.remove();
+      this.stopListening();
+      return this;
+    },
+
+    // Change the view's element (`this.el` property), including event
+    // re-delegation.
+    setElement: function(element, delegate) {
+      if (this.$el) this.undelegateEvents();
+      this.$el = element instanceof Backbone.$ ? element : Backbone.$(element);
+      this.el = this.$el[0];
+      if (delegate !== false) this.delegateEvents();
+      return this;
+    },
+
+    // Set callbacks, where `this.events` is a hash of
+    //
+    // *{"event selector": "callback"}*
+    //
+    //     {
+    //       'mousedown .title':  'edit',
+    //       'click .button':     'save',
+    //       'click .open':       function(e) { ... }
+    //     }
+    //
+    // pairs. Callbacks will be bound to the view, with `this` set properly.
+    // Uses event delegation for efficiency.
+    // Omitting the selector binds the event to `this.el`.
+    // This only works for delegate-able events: not `focus`, `blur`, and
+    // not `change`, `submit`, and `reset` in Internet Explorer.
+    delegateEvents: function(events) {
+      if (!(events || (events = _.result(this, 'events')))) return this;
+      this.undelegateEvents();
+      for (var key in events) {
+        var method = events[key];
+        if (!_.isFunction(method)) method = this[events[key]];
+        if (!method) continue;
+
+        var match = key.match(delegateEventSplitter);
+        var eventName = match[1], selector = match[2];
+        method = _.bind(method, this);
+        eventName += '.delegateEvents' + this.cid;
+        if (selector === '') {
+          this.$el.on(eventName, method);
+        } else {
+          this.$el.on(eventName, selector, method);
+        }
+      }
+      return this;
+    },
+
+    // Clears all callbacks previously bound to the view with `delegateEvents`.
+    // You usually don't need to use this, but may wish to if you have multiple
+    // Backbone views attached to the same DOM element.
+    undelegateEvents: function() {
+      this.$el.off('.delegateEvents' + this.cid);
+      return this;
+    },
+
+    // Ensure that the View has a DOM element to render into.
+    // If `this.el` is a string, pass it through `$()`, take the first
+    // matching element, and re-assign it to `el`. Otherwise, create
+    // an element from the `id`, `className` and `tagName` properties.
+    _ensureElement: function() {
+      if (!this.el) {
+        var attrs = _.extend({}, _.result(this, 'attributes'));
+        if (this.id) attrs.id = _.result(this, 'id');
+        if (this.className) attrs['class'] = _.result(this, 'className');
+        var $el = Backbone.$('<' + _.result(this, 'tagName') + '>').attr(attrs);
+        this.setElement($el, false);
+      } else {
+        this.setElement(_.result(this, 'el'), false);
+      }
+    }
+
+  });
+
+  // Backbone.sync
+  // -------------
+
+  // Override this function to change the manner in which Backbone persists
+  // models to the server. You will be passed the type of request, and the
+  // model in question. By default, makes a RESTful Ajax request
+  // to the model's `url()`. Some possible customizations could be:
+  //
+  // * Use `setTimeout` to batch rapid-fire updates into a single request.
+  // * Send up the models as XML instead of JSON.
+  // * Persist models via WebSockets instead of Ajax.
+  //
+  // Turn on `Backbone.emulateHTTP` in order to send `PUT` and `DELETE` requests
+  // as `POST`, with a `_method` parameter containing the true HTTP method,
+  // as well as all requests with the body as `application/x-www-form-urlencoded`
+  // instead of `application/json` with the model in a param named `model`.
+  // Useful when interfacing with server-side languages like **PHP** that make
+  // it difficult to read the body of `PUT` requests.
+  Backbone.sync = function(method, model, options) {
+    var type = methodMap[method];
+
+    // Default options, unless specified.
+    _.defaults(options || (options = {}), {
+      emulateHTTP: Backbone.emulateHTTP,
+      emulateJSON: Backbone.emulateJSON
+    });
+
+    // Default JSON-request options.
+    var params = {type: type, dataType: 'json'};
+
+    // Ensure that we have a URL.
+    if (!options.url) {
+      params.url = _.result(model, 'url') || urlError();
+    }
+
+    // Ensure that we have the appropriate request data.
+    if (options.data == null && model && (method === 'create' || method === 'update' || method === 'patch')) {
+      params.contentType = 'application/json';
+      params.data = JSON.stringify(options.attrs || model.toJSON(options));
+    }
+
+    // For older servers, emulate JSON by encoding the request into an HTML-form.
+    if (options.emulateJSON) {
+      params.contentType = 'application/x-www-form-urlencoded';
+      params.data = params.data ? {model: params.data} : {};
+    }
+
+    // For older servers, emulate HTTP by mimicking the HTTP method with `_method`
+    // And an `X-HTTP-Method-Override` header.
+    if (options.emulateHTTP && (type === 'PUT' || type === 'DELETE' || type === 'PATCH')) {
+      params.type = 'POST';
+      if (options.emulateJSON) params.data._method = type;
+      var beforeSend = options.beforeSend;
+      options.beforeSend = function(xhr) {
+        xhr.setRequestHeader('X-HTTP-Method-Override', type);
+        if (beforeSend) return beforeSend.apply(this, arguments);
+      };
+    }
+
+    // Don't process data on a non-GET request.
+    if (params.type !== 'GET' && !options.emulateJSON) {
+      params.processData = false;
+    }
+
+    // If we're sending a `PATCH` request, and we're in an old Internet Explorer
+    // that still has ActiveX enabled by default, override jQuery to use that
+    // for XHR instead. Remove this line when jQuery supports `PATCH` on IE8.
+    if (params.type === 'PATCH' && noXhrPatch) {
+      params.xhr = function() {
+        return new ActiveXObject("Microsoft.XMLHTTP");
+      };
+    }
+
+    // Make the request, allowing the user to override any Ajax options.
+    var xhr = options.xhr = Backbone.ajax(_.extend(params, options));
+    model.trigger('request', model, xhr, options);
+    return xhr;
+  };
+
+  var noXhrPatch =
+    typeof window !== 'undefined' && !!window.ActiveXObject &&
+      !(window.XMLHttpRequest && (new XMLHttpRequest).dispatchEvent);
+
+  // Map from CRUD to HTTP for our default `Backbone.sync` implementation.
+  var methodMap = {
+    'create': 'POST',
+    'update': 'PUT',
+    'patch':  'PATCH',
+    'delete': 'DELETE',
+    'read':   'GET'
+  };
+
+  // Set the default implementation of `Backbone.ajax` to proxy through to `$`.
+  // Override this if you'd like to use a different library.
+  Backbone.ajax = function() {
+    return Backbone.$.ajax.apply(Backbone.$, arguments);
+  };
+
+  // Backbone.Router
+  // ---------------
+
+  // Routers map faux-URLs to actions, and fire events when routes are
+  // matched. Creating a new one sets its `routes` hash, if not set statically.
+  var Router = Backbone.Router = function(options) {
+    options || (options = {});
+    if (options.routes) this.routes = options.routes;
+    this._bindRoutes();
+    this.initialize.apply(this, arguments);
+  };
+
+  // Cached regular expressions for matching named param parts and splatted
+  // parts of route strings.
+  var optionalParam = /\((.*?)\)/g;
+  var namedParam    = /(\(\?)?:\w+/g;
+  var splatParam    = /\*\w+/g;
+  var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+
+  // Set up all inheritable **Backbone.Router** properties and methods.
+  _.extend(Router.prototype, Events, {
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function(){},
+
+    // Manually bind a single named route to a callback. For example:
+    //
+    //     this.route('search/:query/p:num', 'search', function(query, num) {
+    //       ...
+    //     });
+    //
+    route: function(route, name, callback) {
+      if (!_.isRegExp(route)) route = this._routeToRegExp(route);
+      if (_.isFunction(name)) {
+        callback = name;
+        name = '';
+      }
+      if (!callback) callback = this[name];
+      var router = this;
+      Backbone.history.route(route, function(fragment) {
+        var args = router._extractParameters(route, fragment);
+        router.execute(callback, args);
+        router.trigger.apply(router, ['route:' + name].concat(args));
+        router.trigger('route', name, args);
+        Backbone.history.trigger('route', router, name, args);
+      });
+      return this;
+    },
+
+    // Execute a route handler with the provided parameters.  This is an
+    // excellent place to do pre-route setup or post-route cleanup.
+    execute: function(callback, args) {
+      if (callback) callback.apply(this, args);
+    },
+
+    // Simple proxy to `Backbone.history` to save a fragment into the history.
+    navigate: function(fragment, options) {
+      Backbone.history.navigate(fragment, options);
+      return this;
+    },
+
+    // Bind all defined routes to `Backbone.history`. We have to reverse the
+    // order of the routes here to support behavior where the most general
+    // routes can be defined at the bottom of the route map.
+    _bindRoutes: function() {
+      if (!this.routes) return;
+      this.routes = _.result(this, 'routes');
+      var route, routes = _.keys(this.routes);
+      while ((route = routes.pop()) != null) {
+        this.route(route, this.routes[route]);
+      }
+    },
+
+    // Convert a route string into a regular expression, suitable for matching
+    // against the current location hash.
+    _routeToRegExp: function(route) {
+      route = route.replace(escapeRegExp, '\\$&')
+                   .replace(optionalParam, '(?:$1)?')
+                   .replace(namedParam, function(match, optional) {
+                     return optional ? match : '([^/?]+)';
+                   })
+                   .replace(splatParam, '([^?]*?)');
+      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
+    },
+
+    // Given a route, and a URL fragment that it matches, return the array of
+    // extracted decoded parameters. Empty or unmatched parameters will be
+    // treated as `null` to normalize cross-browser behavior.
+    _extractParameters: function(route, fragment) {
+      var params = route.exec(fragment).slice(1);
+      return _.map(params, function(param, i) {
+        // Don't decode the search params.
+        if (i === params.length - 1) return param || null;
+        return param ? decodeURIComponent(param) : null;
+      });
+    }
+
+  });
+
+  // Backbone.History
+  // ----------------
+
+  // Handles cross-browser history management, based on either
+  // [pushState](http://diveintohtml5.info/history.html) and real URLs, or
+  // [onhashchange](https://developer.mozilla.org/en-US/docs/DOM/window.onhashchange)
+  // and URL fragments. If the browser supports neither (old IE, natch),
+  // falls back to polling.
+  var History = Backbone.History = function() {
+    this.handlers = [];
+    _.bindAll(this, 'checkUrl');
+
+    // Ensure that `History` can be used outside of the browser.
+    if (typeof window !== 'undefined') {
+      this.location = window.location;
+      this.history = window.history;
+    }
+  };
+
+  // Cached regex for stripping a leading hash/slash and trailing space.
+  var routeStripper = /^[#\/]|\s+$/g;
+
+  // Cached regex for stripping leading and trailing slashes.
+  var rootStripper = /^\/+|\/+$/g;
+
+  // Cached regex for detecting MSIE.
+  var isExplorer = /msie [\w.]+/;
+
+  // Cached regex for removing a trailing slash.
+  var trailingSlash = /\/$/;
+
+  // Cached regex for stripping urls of hash.
+  var pathStripper = /#.*$/;
+
+  // Has the history handling already been started?
+  History.started = false;
+
+  // Set up all inheritable **Backbone.History** properties and methods.
+  _.extend(History.prototype, Events, {
+
+    // The default interval to poll for hash changes, if necessary, is
+    // twenty times a second.
+    interval: 50,
+
+    // Are we at the app root?
+    atRoot: function() {
+      return this.location.pathname.replace(/[^\/]$/, '$&/') === this.root;
+    },
+
+    // Gets the true hash value. Cannot use location.hash directly due to bug
+    // in Firefox where location.hash will always be decoded.
+    getHash: function(window) {
+      var match = (window || this).location.href.match(/#(.*)$/);
+      return match ? match[1] : '';
+    },
+
+    // Get the cross-browser normalized URL fragment, either from the URL,
+    // the hash, or the override.
+    getFragment: function(fragment, forcePushState) {
+      if (fragment == null) {
+        if (this._hasPushState || !this._wantsHashChange || forcePushState) {
+          fragment = decodeURI(this.location.pathname + this.location.search);
+          var root = this.root.replace(trailingSlash, '');
+          if (!fragment.indexOf(root)) fragment = fragment.slice(root.length);
+        } else {
+          fragment = this.getHash();
+        }
+      }
+      return fragment.replace(routeStripper, '');
+    },
+
+    // Start the hash change handling, returning `true` if the current URL matches
+    // an existing route, and `false` otherwise.
+    start: function(options) {
+      if (History.started) throw new Error("Backbone.history has already been started");
+      History.started = true;
+
+      // Figure out the initial configuration. Do we need an iframe?
+      // Is pushState desired ... is it available?
+      this.options          = _.extend({root: '/'}, this.options, options);
+      this.root             = this.options.root;
+      this._wantsHashChange = this.options.hashChange !== false;
+      this._wantsPushState  = !!this.options.pushState;
+      this._hasPushState    = !!(this.options.pushState && this.history && this.history.pushState);
+      var fragment          = this.getFragment();
+      var docMode           = document.documentMode;
+      var oldIE             = (isExplorer.exec(navigator.userAgent.toLowerCase()) && (!docMode || docMode <= 7));
+
+      // Normalize root to always include a leading and trailing slash.
+      this.root = ('/' + this.root + '/').replace(rootStripper, '/');
+
+      if (oldIE && this._wantsHashChange) {
+        var frame = Backbone.$('<iframe src="javascript:0" tabindex="-1">');
+        this.iframe = frame.hide().appendTo('body')[0].contentWindow;
+        this.navigate(fragment);
+      }
+
+      // Depending on whether we're using pushState or hashes, and whether
+      // 'onhashchange' is supported, determine how we check the URL state.
+      if (this._hasPushState) {
+        Backbone.$(window).on('popstate', this.checkUrl);
+      } else if (this._wantsHashChange && ('onhashchange' in window) && !oldIE) {
+        Backbone.$(window).on('hashchange', this.checkUrl);
+      } else if (this._wantsHashChange) {
+        this._checkUrlInterval = setInterval(this.checkUrl, this.interval);
+      }
+
+      // Determine if we need to change the base url, for a pushState link
+      // opened by a non-pushState browser.
+      this.fragment = fragment;
+      var loc = this.location;
+
+      // Transition from hashChange to pushState or vice versa if both are
+      // requested.
+      if (this._wantsHashChange && this._wantsPushState) {
+
+        // If we've started off with a route from a `pushState`-enabled
+        // browser, but we're currently in a browser that doesn't support it...
+        if (!this._hasPushState && !this.atRoot()) {
+          this.fragment = this.getFragment(null, true);
+          this.location.replace(this.root + '#' + this.fragment);
+          // Return immediately as browser will do redirect to new url
+          return true;
+
+        // Or if we've started out with a hash-based route, but we're currently
+        // in a browser where it could be `pushState`-based instead...
+        } else if (this._hasPushState && this.atRoot() && loc.hash) {
+          this.fragment = this.getHash().replace(routeStripper, '');
+          this.history.replaceState({}, document.title, this.root + this.fragment);
+        }
+
+      }
+
+      if (!this.options.silent) return this.loadUrl();
+    },
+
+    // Disable Backbone.history, perhaps temporarily. Not useful in a real app,
+    // but possibly useful for unit testing Routers.
+    stop: function() {
+      Backbone.$(window).off('popstate', this.checkUrl).off('hashchange', this.checkUrl);
+      if (this._checkUrlInterval) clearInterval(this._checkUrlInterval);
+      History.started = false;
+    },
+
+    // Add a route to be tested when the fragment changes. Routes added later
+    // may override previous routes.
+    route: function(route, callback) {
+      this.handlers.unshift({route: route, callback: callback});
+    },
+
+    // Checks the current URL to see if it has changed, and if it has,
+    // calls `loadUrl`, normalizing across the hidden iframe.
+    checkUrl: function(e) {
+      var current = this.getFragment();
+      if (current === this.fragment && this.iframe) {
+        current = this.getFragment(this.getHash(this.iframe));
+      }
+      if (current === this.fragment) return false;
+      if (this.iframe) this.navigate(current);
+      this.loadUrl();
+    },
+
+    // Attempt to load the current URL fragment. If a route succeeds with a
+    // match, returns `true`. If no defined routes matches the fragment,
+    // returns `false`.
+    loadUrl: function(fragment) {
+      fragment = this.fragment = this.getFragment(fragment);
+      return _.any(this.handlers, function(handler) {
+        if (handler.route.test(fragment)) {
+          handler.callback(fragment);
+          return true;
+        }
+      });
+    },
+
+    // Save a fragment into the hash history, or replace the URL state if the
+    // 'replace' option is passed. You are responsible for properly URL-encoding
+    // the fragment in advance.
+    //
+    // The options object can contain `trigger: true` if you wish to have the
+    // route callback be fired (not usually desirable), or `replace: true`, if
+    // you wish to modify the current URL without adding an entry to the history.
+    navigate: function(fragment, options) {
+      if (!History.started) return false;
+      if (!options || options === true) options = {trigger: !!options};
+
+      var url = this.root + (fragment = this.getFragment(fragment || ''));
+
+      // Strip the hash for matching.
+      fragment = fragment.replace(pathStripper, '');
+
+      if (this.fragment === fragment) return;
+      this.fragment = fragment;
+
+      // Don't include a trailing slash on the root.
+      if (fragment === '' && url !== '/') url = url.slice(0, -1);
+
+      // If pushState is available, we use it to set the fragment as a real URL.
+      if (this._hasPushState) {
+        this.history[options.replace ? 'replaceState' : 'pushState']({}, document.title, url);
+
+      // If hash changes haven't been explicitly disabled, update the hash
+      // fragment to store history.
+      } else if (this._wantsHashChange) {
+        this._updateHash(this.location, fragment, options.replace);
+        if (this.iframe && (fragment !== this.getFragment(this.getHash(this.iframe)))) {
+          // Opening and closing the iframe tricks IE7 and earlier to push a
+          // history entry on hash-tag change.  When replace is true, we don't
+          // want this.
+          if(!options.replace) this.iframe.document.open().close();
+          this._updateHash(this.iframe.location, fragment, options.replace);
+        }
+
+      // If you've told us that you explicitly don't want fallback hashchange-
+      // based history, then `navigate` becomes a page refresh.
+      } else {
+        return this.location.assign(url);
+      }
+      if (options.trigger) return this.loadUrl(fragment);
+    },
+
+    // Update the hash location, either replacing the current entry, or adding
+    // a new one to the browser history.
+    _updateHash: function(location, fragment, replace) {
+      if (replace) {
+        var href = location.href.replace(/(javascript:|#).*$/, '');
+        location.replace(href + '#' + fragment);
+      } else {
+        // Some browsers require that `hash` contains a leading #.
+        location.hash = '#' + fragment;
+      }
+    }
+
+  });
+
+  // Create the default Backbone.history.
+  Backbone.history = new History;
+
+  // Helpers
+  // -------
+
+  // Helper function to correctly set up the prototype chain, for subclasses.
+  // Similar to `goog.inherits`, but uses a hash of prototype properties and
+  // class properties to be extended.
+  var extend = function(protoProps, staticProps) {
+    var parent = this;
+    var child;
+
+    // The constructor function for the new subclass is either defined by you
+    // (the "constructor" property in your `extend` definition), or defaulted
+    // by us to simply call the parent's constructor.
+    if (protoProps && _.has(protoProps, 'constructor')) {
+      child = protoProps.constructor;
+    } else {
+      child = function(){ return parent.apply(this, arguments); };
+    }
+
+    // Add static properties to the constructor function, if supplied.
+    _.extend(child, parent, staticProps);
+
+    // Set the prototype chain to inherit from `parent`, without calling
+    // `parent`'s constructor function.
+    var Surrogate = function(){ this.constructor = child; };
+    Surrogate.prototype = parent.prototype;
+    child.prototype = new Surrogate;
+
+    // Add prototype properties (instance properties) to the subclass,
+    // if supplied.
+    if (protoProps) _.extend(child.prototype, protoProps);
+
+    // Set a convenience property in case the parent's prototype is needed
+    // later.
+    child.__super__ = parent.prototype;
+
+    return child;
+  };
+
+  // Set up inheritance for the model, collection, router, view and history.
+  Model.extend = Collection.extend = Router.extend = View.extend = History.extend = extend;
+
+  // Throw an error when a URL is needed, and none is supplied.
+  var urlError = function() {
+    throw new Error('A "url" property or function must be specified');
+  };
+
+  // Wrap an optional error callback with a fallback error event.
+  var wrapError = function(model, options) {
+    var error = options.error;
+    options.error = function(resp) {
+      if (error) error(model, resp, options);
+      model.trigger('error', model, resp, options);
+    };
+  };
+
+  return Backbone;
+
+}));
+
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focusComponents = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+"use strict";
+
+//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
+console.log("\n\t.########..#######...######..##.....##..######...........######...#######..##.....##.########...#######..##....##.########.##....##.########..######.\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.###...###.##.....##.##.....##.###...##.##.......###...##....##....##....##\n.##.......##.....##.##.......##.....##.##...............##.......##.....##.####.####.##.....##.##.....##.####..##.##.......####..##....##....##......\n.######...##.....##.##.......##.....##..######..#######.##.......##.....##.##.###.##.########..##.....##.##.##.##.######...##.##.##....##.....######.\n.##.......##.....##.##.......##.....##.......##.........##.......##.....##.##.....##.##........##.....##.##..####.##.......##..####....##..........##\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.##.....##.##........##.....##.##...###.##.......##...###....##....##....##\n.##........#######...######...#######...######...........######...#######..##.....##.##.........#######..##....##.########.##....##....##.....######.\n");
+module.exports = {
+	common: require("./common"),
+	list: require("./list"),
+	search: require("./search"),
+	page: require("./page")
+};
+
+},{"./common":9,"./list":19,"./page":80,"./search":83}],2:[function(require,module,exports){
+"use strict";
+
+var React = window.React;
+var builder = window.focus.component.builder;
+/**
+ * Mixin used in order to create a block.
+ * @type {Object}
+ */
+var blockMixin = {
+  /**
+   * Header of theblock function.
+   * @return {[type]} [description]
+   */
+  heading: function heading() {
+    if (this.props.title) {
+      return React.createElement(
+        "div",
+        { className: "panel-heading" },
+        this.props.title
+      );
+    }
+  },
+  /**
+   * Render the a block container and the cild content of the block.
+   * @return {DOM}
+   */
+  render: function renderBlock() {
+    return React.createElement(
+      "div",
+      { className: "panel panel-default" },
+      this.heading(),
+      React.createElement(
+        "div",
+        { className: "panel-body" },
+        this.props.children
+      )
+    );
+  }
+};
+module.exports = builder(blockMixin);
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+var React = window.React;
+var builder = window.focus.component.builder;
+/**/
+var buttonMixin = {
+	getDefaultProps: function getInputDefaultProps() {
+		return {
+			type: "submit",
+			action: undefined,
+			isPressed: false,
+			style: {}
+		};
+	},
+	handleOnClick: function handleButtonOnclick() {
+		if (this.props.handleOnClick) {
+			return this.props.handleOnClick.apply(this, arguments);
+		}
+		if (!this.props.action || !this.action[this.props.action]) {
+			return console.warn("Your button action is not implemented");
+		}
+		return this.action[this.props.action].apply(this, arguments);
+	},
+	getInitialState: function getInitialState() {
+		return {
+			isPressed: this.props.isPressed
+		};
+	},
+	_className: function buttonClassName() {
+		return "btn btn-raised " + (this.props.style.className ? "btn-" + this.props.style.className : "");
+	},
+	renderPressedButton: function renderPressedButton() {
+		return React.createElement(
+			"button",
+			null,
+			"Loading..."
+		);
+	},
+	/**
+  * Render the button.
+  * @return {[type]} [description]
+  */
+	render: function renderInput() {
+		if (this.state.isPressed) {
+			return this.renderPressedButton();
+		}
+		return React.createElement(
+			"a",
+			{ href: "javascript:void(0)", onClick: this.handleOnClick, type: this.props.type, className: this._className() },
+			this.props.label
+		);
+	}
+};
+
+module.exports = builder(buttonMixin);
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+	action: require("./action")
+};
+
+},{"./action":3}],5:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var React = window.React;
+var Input = require("../input/text").component;
+var Label = require("../label").component;
+var FieldMixin = {
+	/**
+  * Get field default properties.
+  */
+	getDefaultProps: function getFieldDefaultProps() {
+		return {
+			hasLabel: true,
+			labelSize: 3,
+			type: "text",
+			value: undefined,
+			name: undefined
+		};
+	},
+	/**
+  * Get the css class of the field component.
+  */
+	_className: function _className() {
+		var stateClass = this.props.error ? "has-feedback has-error" : "";
+		return "form-group " + stateClass;
+	},
+	label: function label() {
+		if (this.props.hasLabel) {
+			var labelClassName = "control-label col-sm-" + this.props.labelSize;
+			return React.createElement(
+				"label",
+				{ className: labelClassName,
+					name: this.props.name,
+					key: this.props.name },
+				" ",
+				this.props.name,
+				" "
+			);
+		}
+	},
+	/**
+  * Validate the field.
+  * @return {object} - undefined if valid, {name: "errors"} if not valid.
+  */
+	validate: function validate() {
+		return this.refs.input.validate();
+	},
+	/**
+  * Get the value from the field.
+  */
+	getValue: function getValue() {
+		return this.refs.input.getValue();
+	},
+	input: function input() {
+		var inputClassName = "form-control col-sm-" + (12 - this.props.labelSize);
+		var addOn = function () {
+			"";
+		};
+		var feedBack = function () {
+			"";
+		};
+		return React.createElement(
+			"div",
+			{ className: "input-group" },
+			React.createElement(Input, { style: {
+					"class": inputClassName
+				},
+				id: this.props.name,
+				name: this.props.name,
+				value: this.props.value,
+				type: this.props.type,
+				ref: "input" })
+		);
+	},
+	error: function error() {
+		if (this.props.error) {
+			return (
+				/*<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>*/
+				React.createElement(
+					"span",
+					{ className: "help-block" },
+					" ",
+					this.props.error,
+					" "
+				)
+			);
+		}
+	},
+	help: function help() {
+		if (this.props.help) {
+			return React.createElement(
+				"span",
+				{ className: "help-block" },
+				" ",
+				this.props.help,
+				" "
+			);
+		}
+	},
+	render: function renderField() {
+		return React.createElement(
+			"div",
+			{ className: this._className() },
+			" ",
+			this.label(),
+			" ",
+			this.input(),
+			" ",
+			this.help(),
+			" ",
+			this.error(),
+			" "
+		);
+	}
+};
+module.exports = builder(FieldMixin);
+
+},{"../input/text":12,"../label":14}],6:[function(require,module,exports){
+"use strict";
+
+var React = window.React;
+var Field = require("../field").component;
+var Field = require("../field").component;
+var Button = require("../button/action").component;
+module.exports = { /**
+                   * Create a field for the given property metadata.
+                   * @param {string} name - property name.
+                   */
+  fieldFor: function fieldFor(name) {
+    return React.createElement(Field, {
+      name: name,
+      ref: name,
+      value: this.state[name],
+      error: this.state.error ? this.state.error[name] : undefined
+    });
+  },
+  /**
+   * Save button/
+   */
+  buttonDelete: function buttonDelete() {
+    return React.createElement(Button, {
+      label: "delete",
+      type: "button",
+      css: "delete"
+    });
+  },
+  /**
+   * Save button/
+   */
+  buttonSave: function buttonSave() {
+    return React.createElement(Button, {
+      label: "save",
+      type: "submit",
+      css: "primary"
+    });
+  } };
+
+},{"../button/action":3,"../field":5}],7:[function(require,module,exports){
+"use strict";
+
+var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
+
+var builder = window.focus.component.builder;
+var React = window.React;
+var assign = require("object-assign");
+var getEntityDefinition = window.focus.definition.entity.builder.getEntityInformations;
+var formElementsMixin = require("./formElementsMixin");
+/**
+ * Mixin to create a block for the rendering.
+ * @type {Object}
+ */
+var formMixin = {
+  mixins: [formElementsMixin],
+  /**
+   * Get default property for the form.
+   */
+  getDefaultProps: function getFormDefaultProps() {
+    return {
+      /**
+       * Defines it the form can have  an edit mode.
+       * @type {Boolean}
+       */
+      hasEdit: true,
+      /**
+       * Defines
+       * @type {Boolean}
+       */
+      isEdit: false
+    };
+  },
+  /**
+   * Build the entity definition givent the path of the definition.
+   */
+  _buildDefinition: function _buildDefinition() {
+    this.definition = getEntityDefinition(this.definitionPath, this.additionalDefinition);
+  },
+  getInitialState: function getInitialState() {
+    return {
+      id: this.props.id
+    };
+  },
+  _getStateFromStores: function _getStateFromStores() {
+    var _this = this;
+
+    if (this.getStateFromStore) {
+      return this.getStateFromStore();
+    }
+    if (this.stores.length === 1) {
+      return this.stores[0].value.get(this.props.id);
+    }
+    var newState = {};
+    this.stores.map(function (store) {
+      newState[store.name] = store.value.get(_this.props.id);
+    });
+    return newState;
+  },
+  /**
+   * Event handler for 'change' events coming from the stores
+   */
+  _onChange: function _onChange() {
+    this.setState(this._getStateFromStores());
+  },
+  callMountedActions: function callMountedActions() {
+    this._loadData();
+  },
+  _registerListeners: function _registerListeners() {
+    if (this.stores) {
+      this.stores.map(function (storeConf) {
+        storeConf.properties.map(function (property) {
+          storeConf.store["add" + storeConf + "ChangeListener"]();
+        });
+      });
+    }
+  },
+  _unRegisterListeners: function _unRegisterListeners() {
+    if (this.stores) {
+      this.stores.map(function (storeConf) {
+        storeConf.properties.map(function (property) {
+          storeConf.store["remove" + storeConf + "ChangeListener"]();
+        });
+      });
+    }
+  },
+  componentDidMount: function componentDidMount() {
+    this._registerListeners();
+    if (this.registerListeners) {
+      this.registerListeners();
+    }
+    if (this.callMountedActions) {
+      this.callMountedActions();
+    }
+  },
+  componentWillUnmount: function componentWillUnmount() {
+    //Build the definitions.
+    this._buildDefinition();
+    //
+    this._unRegisterListeners();
+    if (this.unregisterListeners) {
+      this.unregisterListeners();
+    }
+  },
+  _getId: function _getId() {
+    return this.state.id;
+  },
+  _loadData: function _loadData() {
+    this.action.load(this._getId());
+  },
+  _className: function _className() {
+    return "form-horizontal";
+  },
+  _getEntity: function _getEntity() {
+    return {
+      login: "pierr",
+      password: "pierre"
+    };
+  },
+  _handleSubmitForm: function handleSumbitForm(e) {
+    e.preventDefault();
+    console.log("submit", this.refs);
+    this.validate();
+    this.action.save(this._getEntity());
+    return false;
+  },
+  validate: function validateForm() {
+    var validationMap = {};
+    for (var inptKey in this.refs) {
+      assign(validationMap, _defineProperty({}, inptKey, this.refs[inptKey].validate()));
+    }
+    this.setState({
+      error: validationMap
+    });
+    //console.log(validationMap);
+  },
+  render: function render() {
+    return React.createElement(
+      "form",
+      {
+        onSubmit: this._handleSubmitForm,
+        className: this._className()
+      },
+      React.createElement(
+        "fieldset",
+        null,
+        this.renderContent()
+      )
+    );
+  }
+};
+
+module.exports = builder(formMixin);
+
+},{"./formElementsMixin":6,"object-assign":77}],8:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var React = window.React;
+
+var imgMixin = {
+    /**
+     * Display name.
+     */
+    displayName: "img",
+    /**
+     * Default props.
+     * @returns {{src: name of the picture, onClick: action handler on click.}}
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            src: undefined,
+            onClick: undefined
+        };
+    },
+    /**
+     * Render the img.
+     * @returns Html code.
+     */
+    render: function renderImg() {
+        var className = "icon " + this.props.src;
+        return React.createElement(
+            "span",
+            { className: className, onClick: this.props.onClick },
+            " "
+        );
+    }
+};
+
+module.exports = builder(imgMixin);
+
+},{}],9:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+	block: require("./block"),
+	button: require("./button"),
+	field: require("./field"),
+	form: require("./form"),
+	img: require("./img"),
+	input: require("./input"),
+	label: require("./label"),
+	selectAction: require("./select-action")
+};
+
+},{"./block":2,"./button":4,"./field":5,"./form":7,"./img":8,"./input":11,"./label":14,"./select-action":15}],10:[function(require,module,exports){
+"use strict";
+
+//Target
+/*
+<label>
+  <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
+</label>
+ */
+var builder = window.focus.component.builder;
+var React = window.React;
+var type = window.focus.component.types;
+
+var checkBoxMixin = {
+	/**
+  * Get the checkbox default attributes.
+  */
+	getDefaultProps: function getInputDefaultProps() {
+		return {
+			value: undefined,
+			label: undefined,
+			style: {}
+		};
+	},
+	/**
+  * Properties validation.
+  * @type {Object}
+  */
+	propTypes: {
+		value: type("bool"),
+		label: type("string"),
+		style: type("object")
+	},
+	getInitialState: function getInitialState() {
+		return {
+			isChecked: this.props.value
+		};
+	},
+	_onChange: function onChange(event) {
+		this.setState({
+			isChecked: !this.state.isChecked
+		});
+		if (this.props.onChange) {
+			this.props.onChange(event);
+		}
+	},
+	/**
+  * Get the value from the input in  the DOM.
+  */
+	getValue: function getValue() {
+		return this.getDOMNode().value;
+	},
+	/**
+  * Render the Checkbox HTML.
+  * @return {VirtualDOM} - The virtual DOM of the checkbox.
+  */
+	render: function renderCheckBox() {
+		return React.createElement(
+			"div",
+			{ className: "checkbox" },
+			React.createElement(
+				"label",
+				null,
+				React.createElement("input", { ref: "checkbox", checked: this.state.isChecked, onChange: this._onChange, type: "checkbox" }),
+				React.createElement("span", { className: "ripple" }),
+				React.createElement("span", { className: "check" }),
+				this.props.label ? this.props.label : ""
+			)
+		);
+	}
+};
+
+module.exports = builder(checkBoxMixin);
+
+},{}],11:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+	text: require("./text"),
+	checkbox: require("./checkbox"),
+	textarea: require("./textarea")
+	/*,
+   date: require('./date')*/
+};
+
+},{"./checkbox":10,"./text":12,"./textarea":13}],12:[function(require,module,exports){
+"use strict";
+
+//Dependencies.
+var builder = window.focus.component.builder;
+var React = window.React;
+var type = window.focus.component.types;
+
+/**
+ * Input text mixin.
+ * @type {Object}
+ */
+var inputTextMixin = {
+  /** @inheritdoc */
+  getDefaultProps: function getInputDefaultProps() {
+    return {
+      type: "text",
+      value: undefined,
+      name: undefined,
+      style: {}
+    };
+  },
+  /** @inheritdoc */
+  propTypes: {
+    type: type("string"),
+    value: type(["string", "number"]),
+    name: type("string"),
+    style: type("object")
+  },
+  /** @inheritdoc */
+  getInitialState: function getInitialStateInputText() {
+    return {
+      value: this.props.value
+    };
+  },
+  /**
+   * Validate the input.
+   * @return {object}
+   */
+  validate: function validateInputText() {
+    var value = this.getValue();
+    if (value === undefined || value === "") {
+      return "Le champ " + this.props.name + " est requis";
+    }
+    if (this.props.validator) {
+      return this.props.validator(value);
+    }
+  },
+  /**
+   * Get the value from the input in the DOM.
+   */
+  getValue: function getInputTextValue() {
+    return this.getDOMNode().value;
+  },
+  /**
+   * Handle the change value of the input.
+   * @param {object} event - The sanitize event of input.
+   */
+  _handleOnChange: function inputOnChange(event) {
+    this.setState({ value: event.target.value });
+    if (this.props.onChange) {
+      return this.props.onChange(event);
+    }
+  },
+  /**
+   * Render an input.
+   * @return {DOM} - The dom of an input.
+   */
+  render: function renderInput() {
+    return React.createElement("input", {
+      id: this.props.name,
+      name: this.props.name,
+      value: this.state.value,
+      type: this.props.type,
+      className: this.props.style["class"],
+      onChange: this._handleOnChange
+    });
+  }
+};
+
+module.exports = builder(inputTextMixin);
+
+},{}],13:[function(require,module,exports){
+"use strict";
+
+//Target
+/*
+<div class="checkbox">
+  <label>
+    <input type="checkbox"> Checkbox
+  </label>
+</div>
+ */
+var builder = window.focus.component.builder;
+var React = window.React;
+var type = window.focus.component.types;
+/**
+*
+* @type {Object}
+*/
+var textAreaMixin = {
+  /**
+   * Get the checkbox default attributes.
+   */
+  getDefaultProps: function getInputDefaultProps() {
+    return {
+      minlength: 0,
+      maxlength: undefined,
+      wrap: "soft",
+      required: false,
+      label: undefined,
+      style: {},
+      rows: 5,
+      cols: 50
+    };
+  },
+  /**
+   * Properties validation.
+   * @type {Object}
+   */
+  propTypes: {
+    minlength: type("number"),
+    maxlength: type("number"),
+    wrap: type("string"),
+    required: type("bool"),
+    value: type("string"),
+    label: type("string"),
+    style: type("object"),
+    rows: type("number"),
+    cols: type("number")
+  },
+  /** inheritedDoc */
+  getInitialState: function getTextAreaInitialState() {
+    return {
+      value: this.props.value
+    };
+  },
+  /**
+   * On change handler.
+   * @param {object} event - Sanitize event.
+   */
+  _onChange: function onChange(event) {
+    this.setState({ value: event.target.value });
+    if (this.props.onChange) {
+      this.props.onChange(event);
+    }
+  },
+  /**
+   * Get the value from the input in the DOM.
+   */
+  getValue: function getTextAreaValue() {
+    return this.getDOMNode().value;
+  },
+  /**
+   * Render the Checkbox HTML.
+   * @return {VirtualDOM} - The virtual DOM of the checkbox.
+   */
+  render: function renderTextArea() {
+    return React.createElement(
+      "textarea",
+      {
+        ref: "textarea",
+        onChange: this._onChange,
+        cols: this.props.cols,
+        rows: this.props.rows,
+        minlength: this.props.minlength,
+        maxlength: this.props.maxlength,
+        className: this.props.style.className
+      },
+      this.state.value
+    );
+  }
+};
+
+module.exports = builder(textAreaMixin);
+
+},{}],14:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var React = window.React;
+/**
+ * Label mixin for form.
+ * @type {Object}
+ */
+var labelMixin = {
+	getDefaultProps: function getDefaultProps() {
+		return {
+			name: undefined,
+			key: undefined
+		};
+	},
+	i18n: function i18n(prop) {
+		return prop;
+	},
+	render: function render() {
+		return React.createElement(
+			"label",
+			{ className: this.props.css,
+				htmlFor: this.props.name },
+			" ",
+			this.i18n(this.props.value),
+			" "
+		);
+	}
+};
+
+module.exports = builder(labelMixin);
+
+},{}],15:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var React = window.React;
+var Img = require("../img").component;
+
+var selectActionMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "select-action",
+    /**
+     * Default props.
+     * @returns {{ operationList: list of operations,
+     *              style: css class of the selector.}}
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            operationList: [],
+            style: "dots-three-vertical"
+        };
+    },
+
+    /**
+     * Handle action on selected item.
+     * @param key
+     * @returns {Function}
+     */
+    _handleAction: function handleSelectAction(action) {
+        var _this = this;
+
+        return function (event) {
+            if (_this.props.operationParam) {
+                action(_this.props.operationParam);
+            } else {
+                action();
+            }
+        };
+    },
+
+    _getList: function _getList(operationList) {
+        var liList = [];
+        for (var key in operationList) {
+            var operation = operationList[key];
+
+            liList.push(React.createElement(
+                "li",
+                { key: key, onClick: this._handleAction(operation.action), className: operation.style },
+                React.createElement(
+                    "a",
+                    { href: "javascript:void(0)" },
+                    operation.label
+                )
+            ));
+            if (operation.childOperationList) {
+                liList.push(React.createElement(
+                    "li",
+                    null,
+                    React.createElement(
+                        "ul",
+                        null,
+                        this._getList(operation.childOperationList)
+                    )
+                ));
+            }
+        }
+        return liList;
+    },
+
+    /**
+     * Render the component.
+     * @returns Htm code.
+     */
+    render: function renderSelectAcion() {
+        if (this.props.operationList.length == 0) {
+            return React.createElement("div", null);
+        }
+        var liList = this._getList(this.props.operationList);
+        var style = "btn btn-primary ";
+        return React.createElement(
+            "div",
+            { className: "select-action btn-group" },
+            React.createElement(
+                "a",
+                { href: "#", "data-target": "#", "class": "btn btn-primary dropdown-toggle", "data-toggle": "dropdown" },
+                React.createElement(Img, { src: this.props.style })
+            ),
+            React.createElement(
+                "ul",
+                { className: "dropdown-menu" },
+                liList
+            )
+        );
+    }
+
+};
+
+module.exports = builder(selectActionMixin);
+
+},{"../img":8}],16:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var React = window.React;
+
+var topicDisplayerMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "topic-displayer",
+
+    /**
+     * Default props.
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            style: undefined, // Component css style.
+            topicClickAction: function topicClickAction(key) {}, // Action when click on topic
+            topicList: {} // {topic1: "Label of topic one", topic2:"Label of topic 2"} List f topics
+        };
+    },
+
+    /**
+     * Render the component.
+     * @returns Htm code.
+     */
+    render: function renderSelectAcion() {
+        var topicList = [];
+        var className = "btn btn-primary btn-raised topic";
+        for (var key in this.props.topicList) {
+            topicList.push(React.createElement(
+                "a",
+                { href: "javascript:void(0)", onClick: this.topicClickHandler(key), className: className },
+                this.props.topicList[key]
+            ));
+        }
+        var style = "topic-displayer bs-component ";
+        if (this.props.style) {
+            style += this.props.style;
+        }
+        return React.createElement(
+            "p",
+            { className: style },
+            topicList
+        );
+    },
+
+    /**
+     * Action on the topic click.
+     */
+    topicClickHandler: function topicClickHandler(key) {
+        var _this = this;
+
+        return function (event) {
+            _this.props.topicClickAction(key);
+        };
+    }
+};
+
+module.exports = builder(topicDisplayerMixin);
+
+},{}],17:[function(require,module,exports){
+"use strict";
+
+/**@jsx*/
+var builder = window.focus.component.builder;
+var React = window.React;
+var type = window.focus.component.types;
+var SelectAction = require("../../common/select-action").component;
+var ActionContextual = require("../action-contextual").component;
+var TopicDisplayer = require("../../common/topic-displayer").component;
+
+var actionBarMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "list-action-bar",
+
+    /**
+     * INit default props
+     * @returns Defautkl props.
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            selectionStatus: 0, // 0=> None, 1 => All, other value =>  some
+            selectionAction: function selectionAction(selectionStatus) {}, // Action on selection click
+
+            orderableColumnList: {}, // [{key:"columnKey", label:"columnLabel"}]
+            orderAction: function orderAction(key, order) {}, // Action on click on order function
+            orderSelected: {},
+
+            facetClickAction: function facetClickAction(key) {}, // Action when click on facet
+            facetList: {}, // {facet1: "Label of facet one", facet2:"Label of facet 2"} List of facets
+
+            groupableColumnList: {}, // {col1: "Label1", col2: "Label2"}
+            groupAction: function groupAction(key) {}, // Action on group function
+            groupSelectedKey: undefined, // Defautl grouped key.
+
+            operationList: [] // List of contextual operations
+        };
+    },
+
+    /**
+     * Render the html
+     * @returns {XML}
+     */
+    render: function renderActionBar() {
+        return React.createElement(
+            "div",
+            { className: "action-bar" },
+            React.createElement(
+                "div",
+                { className: "general-action" },
+                this._getSelectionObject(),
+                this._getOrderObject(),
+                this._getGroupObject()
+            ),
+            React.createElement(
+                "div",
+                { className: "facet-container" },
+                React.createElement(TopicDisplayer, { topicList: this.props.facetList, topicClickAction: this.props.facetClickAction })
+            ),
+            React.createElement(
+                "div",
+                { className: "contextual-action" },
+                React.createElement(ActionContextual, { operationList: this.props.operationList })
+            )
+        );
+    },
+
+    /**
+     * @returns Selection component.
+     * @private
+     */
+    _getSelectionObject: function _getSelectionObject() {
+        // Selection datas
+        var selectionOperationList = [{ action: this._selectionFunction(1), label: "all", style: this._getSelectedStyle(this.props.selectionStatus, 1) }, { action: this._selectionFunction(0), label: "none", style: this._getSelectedStyle(this.props.selectionStatus, 0) }];
+        return React.createElement(SelectAction, { style: this._getSelectionObjectStyle(), operationList: selectionOperationList });
+    },
+
+    /**
+     * @returns Order component.
+     * @private
+     */
+    _getOrderObject: function _getOrderObject() {
+        // Order
+        var orderDescOperationList = [];
+        var orderAscOperationList = [];
+        var orderSelectedParsedKey = this.props.orderSelected.key + this.props.orderSelected.order;
+
+        for (var key in this.props.orderableColumnList) {
+            orderDescOperationList.push({
+                action: this._orderFunction(key, "desc"),
+                label: this.props.orderableColumnList[key],
+                style: this._getSelectedStyle(key + "desc", orderSelectedParsedKey)
+            });
+            orderAscOperationList.push({ action: this._orderFunction(key, "asc"), label: this.props.orderableColumnList[key], style: this._getSelectedStyle(key + "asc", orderSelectedParsedKey) });
+        }
+        var downStyle = this.props.orderSelected.order == "desc" ? "circle-down" : "chevron-down";
+        var upStyle = this.props.orderSelected.order == "asc" ? "circle-up" : "chevron-up";
+        return [React.createElement(SelectAction, { style: downStyle, operationList: orderDescOperationList }), React.createElement(SelectAction, { style: upStyle, operationList: orderAscOperationList })];
+    },
+
+    /**
+     * @returns Grouping component.
+     * @private
+     */
+    _getGroupObject: function _getGroupObject() {
+        var groupList = [];
+        for (var key in this.props.groupableColumnList) {
+            groupList.push({
+                action: this._groupFunction(key),
+                label: this.props.groupableColumnList[key],
+                style: this._getSelectedStyle(key, this.props.groupSelectedKey)
+            });
+        }
+        var groupOperationList = [{ label: "action.group", childOperationList: groupList }, { label: "action.ungroup", action: this._groupFunction(null) }];
+        var groupStyle = this.props.groupSelectedKey ? "controller-record" : "dots-three-vertical";
+        return React.createElement(SelectAction, { style: groupStyle, operationList: groupOperationList });
+    },
+
+    /**
+     * @param currentKey
+     * @param selectedKey
+     * @returns Class selected if currentKey corresponds to the selectedKey.
+     * @private
+     */
+    _getSelectedStyle: function _getSelectedStyle(currentKey, selectedKey) {
+        if (currentKey == selectedKey) {
+            return " selected ";
+        }
+        return undefined;
+    },
+
+    /**
+     * @return Style of the selection compoent icon.
+     * @private
+     */
+    _getSelectionObjectStyle: function _getSelectionObjectStyle() {
+        if (this.props.selectionStatus == 0) {
+            return "checkbox-unchecked";
+        } else if (this.props.selectionStatus == 1) {
+            return "checkbox-checked";
+        }
+        return "notification";
+    },
+
+    _selectionFunction: function _selectionFunction(selectionStatus) {
+        var _this = this;
+
+        return function (event) {
+            _this.props.selectionAction(selectionStatus);
+        };
+    },
+    _orderFunction: function _orderFunction(key, order) {
+        var _this = this;
+
+        return function (event) {
+            _this.props.orderAction(key, order);
+        };
+    },
+    _groupFunction: function _groupFunction(key) {
+        var _this = this;
+
+        return function (event) {
+            _this.props.groupAction(key);
+        };
+    }
+};
+
+module.exports = builder(actionBarMixin);
+
+},{"../../common/select-action":15,"../../common/topic-displayer":16,"../action-contextual":18}],18:[function(require,module,exports){
+"use strict";
+
+/**@jsx*/
+var builder = window.focus.component.builder;
+var React = window.React;
+var Button = require("../../common/button/action").component;
+var SelectAction = require("../../common/select-action").component;
+var type = window.focus.component.types;
+
+var actionContextualMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "list-action-contextual",
+
+    /**
+     * Init default props.
+     * @returns {{operationList: List of operations.}}
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            operationList: [],
+            operationParam: undefined
+        };
+    },
+    /**
+     * Init default state.
+     * @returns {{isSecondaryActionListExpanded: true if secondary actionList is expanded.}}
+     */
+    getInitialState: function getInitialState() {
+        return {
+            isSecondaryActionListExpanded: false
+        };
+    },
+
+    /**
+     * handle contextual action on click.
+     */
+    _handleAction: function handleContextualAction(key) {
+        var _this = this;
+
+        return function (event) {
+            if (_this.props.operationParam) {
+                _this.props.operationList[key].action(_this.props.operationParam);
+            } else {
+                _this.props.operationList[key].action();
+            }
+        };
+    },
+
+    /**
+     * render the component.
+     * @returns Html code.
+     */
+    render: function renderContextualAction() {
+        var primaryActionList = [];
+        var secondaryActionList = [];
+        for (var key in this.props.operationList) {
+            var operation = this.props.operationList[key];
+            if (operation.priority === 1) {
+                primaryActionList.push(React.createElement(Button, { key: key, style: operation.style, handleOnClick: this._handleAction(key), label: operation.label }));
+            } else {
+                secondaryActionList.push(operation);
+            }
+        }
+        return React.createElement(
+            "div",
+            { className: "list-action-contextual" },
+            React.createElement(
+                "span",
+                null,
+                " ",
+                primaryActionList
+            ),
+            React.createElement(SelectAction, { operationList: secondaryActionList, operationParam: this.props.operationParam, isExpanded: this.state.isSecondaryActionListExpanded })
+        );
+    }
+};
+
+module.exports = builder(actionContextualMixin);
+
+},{"../../common/button/action":3,"../../common/select-action":15}],19:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+	actionBar: require("./action-bar"),
+	actionContextual: require("./action-contextual"),
+	selection: require("./selection")
+};
+
+},{"./action-bar":17,"./action-contextual":18,"./selection":20}],20:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+    line: require("./line"),
+    list: require("./list")
+};
+
+},{"./line":22,"./list":23}],21:[function(require,module,exports){
+"use strict";
+
+var topOfElement = (function (_topOfElement) {
+    var _topOfElementWrapper = function topOfElement(_x) {
+        return _topOfElement.apply(this, arguments);
+    };
+
+    _topOfElementWrapper.toString = function () {
+        return _topOfElement.toString();
+    };
+
+    return _topOfElementWrapper;
+})(function (element) {
+    if (!element) {
+        return 0;
+    }
+    return element.offsetTop + topOfElement(element.offsetParent);
+});
+/**
+ *
+ * Mixin which add infinite scroll behavior.
+ */
+var InfiniteScrollMixin = {
+    /**
+     * defaults props for the mixin.
+     * @returns {{isInfiniteScroll: boolean, initialPage: number, offset: number}}
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            isInfiniteScroll: true,
+            initialPage: 1,
+            offset: 250
+        };
+    },
+
+    /**
+     * Before component mount
+     */
+    componentWillMount: function componentWillMount() {
+        this.nextPage = this.props.initialPage;
+        this.parentNode = this.props.parentSelector ? document.querySelector(this.props.parentSelector) : window;
+    },
+
+    /**
+     * Before component unmount.
+     */
+    componentWillUnmount: function componentWillUnmount() {
+        if (!this.props.isManualFetch) {
+            this.detachScrollListener();
+        }
+    },
+
+    /**
+     * After component Mount.
+     */
+    componentDidMount: function componentDidMount() {
+        if (!this.props.isManualFetch) {
+            this.attachScrollListener();
+        }
+    },
+
+    /**
+     * after component update.
+     */
+    componentDidUpdate: function componentDidUpdate() {
+        if (!this.props.isLoading && !this.props.isManualFetch) {
+            this.attachScrollListener();
+        }
+    },
+
+    /**
+     * Handler for the scroll event.
+     */
+    scrollListener: function scrollListener() {
+        var el = this.getDOMNode();
+        var scrollTop = this.parentNode.pageYOffset !== undefined ? this.parentNode.pageYOffset : this.parentNode.scrollTop;
+        if (topOfElement(el) + el.offsetHeight - scrollTop - (window.innerHeight || this.parentNode.offsetHeight) < this.props.offset) {
+            this.detachScrollListener();
+            this.fetchNextPage(this.nextPage++);
+        }
+
+        //calculate visible index in the list
+        /*var topHeader = topOfElement(el);
+        var pageHeight = topHeader+el.offsetHeight;
+        var scrollHeader = (topHeader / pageHeight)*window.innerHeight;
+        //console.log((scrollTop - (topHeader / pageHeight) / (el.offsetHeight - topHeader) * this.state.data.length);
+        var visibleIndex = (scrollTop - topHeader) / (el.offsetHeight) * this.state.data.length;
+        console.log(visibleIndex);*/
+    },
+
+    /**
+     * Attach scroll listener on the component.
+     */
+    attachScrollListener: function attachScrollListener() {
+        if (!this.props.hasMoreData) {
+            return;
+        }
+        this.parentNode.addEventListener("scroll", this.scrollListener);
+        this.parentNode.addEventListener("resize", this.scrollListener);
+        this.scrollListener();
+    },
+
+    /**
+     * detach scroll listener on the component
+     */
+    detachScrollListener: function detachScrollListener() {
+        this.parentNode.removeEventListener("scroll", this.scrollListener);
+        this.parentNode.removeEventListener("resize", this.scrollListener);
+    }
+};
+
+module.exports = { mixin: InfiniteScrollMixin };
+
+},{}],22:[function(require,module,exports){
+"use strict";
+
+/**@jsx*/
+var React = window.React;
+var builder = window.focus.component.builder;
+var type = window.focus.component.types;
+var ContextualActions = require("../action-contextual").component;
+var CheckBox = require("../../common/input/checkbox").component;
+var lineMixin = {
+    displayName: "selection-line",
+    /**
+     * Default properties for the line.
+     * @returns {{isSelection: boolean}}
+     */
+    getDefaultProps: function getLineDefaultProps() {
+        return {
+            isSelection: true,
+            operationList: []
+        };
+    },
+
+    /**
+     * line property validation.
+     * @type {Object}
+     */
+    propTypes: {
+        data: type("object"),
+        isSelection: type("bool"),
+        isSelected: type("bool"),
+        onLineClick: type("func"),
+        onSelection: type("func"),
+        operationList: type("array")
+    },
+
+    /**
+     * State initialization.
+     * @returns {{isSelected: boolean, lineItem: *}}
+     */
+    getInitialState: function getLineInitialState() {
+        return {
+            isSelected: this.props.isSelected || false
+        };
+    },
+
+    /**
+     * Get the line value.
+     * @returns {{item: *, isSelected: (*|isSelected|boolean)}}
+     */
+    getValue: function getLineValue() {
+        return {
+            item: this.props.data,
+            isSelected: this.state.isSelected
+        };
+    },
+
+    /**
+     * Selection Click handler.
+     * @param event
+     */
+    _handleSelectionClick: function handleSelectionClick(event) {
+        if (this.props.onSelection) {
+            this.props.onSelection(this.props.data);
+        }
+        var select = !this.state.isSelected;
+        this.setState({ isSelected: select });
+    },
+
+    /**
+     * Line Click handler.
+     * @param event
+     */
+    _handleLineClick: function handleLineClick(event) {
+        if (this.props.onLineClick) {
+            this.props.onLineClick(this.props.data);
+        }
+    },
+
+    /**
+     * Render the left box for selection
+     * @returns {XML}
+     */
+    _renderSelectionBox: function renderSelectionBox() {
+        if (this.props.isSelection) {
+            var selectionClass = this.state.isSelected ? "selected" : "no-selection";
+            //var image = this.state.isSelected? undefined : <img src={this.state.lineItem[this.props.iconfield]}/>
+            return React.createElement(
+                "div",
+                { className: "sl-selection " + selectionClass },
+                React.createElement(CheckBox, { value: this.state.isSelected, onChange: this._handleSelectionClick })
+            );
+        }
+        return null;
+    },
+
+    /**
+     * render content for a line.
+     * @returns {*}
+     */
+    _renderLineContent: function renderLineContent() {
+        if (this.renderLineContent) {
+            return this.renderLineContent(this.props.data);
+        } else {
+            return React.createElement(
+                "div",
+                null,
+                React.createElement(
+                    "div",
+                    null,
+                    this.props.data.title
+                ),
+                React.createElement(
+                    "div",
+                    null,
+                    this.props.data.body
+                )
+            );
+        }
+    },
+
+    /**
+     * Render actions wich can be applied on the line
+     */
+    _renderActions: function renderLineActions() {
+        if (this.props.operationList.length > 0) {
+            return React.createElement(
+                "div",
+                { className: "sl-actions" },
+                React.createElement(ContextualActions, { operationList: this.props.operationList, operationParam: this.props.data })
+            );
+        }
+    },
+
+    /**
+     * Render line in list.
+     * @returns {*}
+     */
+    render: function renderLine() {
+        if (this.renderLine) {
+            return this.renderLine();
+        } else {
+            return React.createElement(
+                "li",
+                { className: "sl-line" },
+                this._renderSelectionBox(),
+                React.createElement(
+                    "div",
+                    { className: "sl-content", onClick: this._handleLineClick },
+                    this._renderLineContent()
+                ),
+                this._renderActions()
+            );
+        }
+    }
+};
+
+module.exports = { mixin: lineMixin };
+
+},{"../../common/input/checkbox":10,"../action-contextual":18}],23:[function(require,module,exports){
+"use strict";
+
+/**@jsx*/
+var builder = window.focus.component.builder;
+var React = window.React;
+var Line = require("./line").mixin;
+var Button = require("../../common/button/action").component;
+var uuid = require("uuid");
+var type = window.focus.component.types;
+var InfiniteScrollMixin = require("./infinite-scroll").mixin;
+
+var listMixin = {
+    mixins: [InfiniteScrollMixin],
+    /**
+     * Display name.
+     */
+    displayName: "selection-list",
+
+    /**
+     * Default properties for the list.
+     * @returns {{isSelection: boolean}}
+     */
+    getDefaultProps: function getLineDefaultProps() {
+        return {
+            isSelection: true,
+            isAllSelected: false,
+            isLoading: false,
+            hasMoreData: false,
+            operationList: [],
+            isManualFetch: false
+        };
+    },
+
+    /**
+     * list property validation.
+     * @type {Object}
+     */
+    propTypes: {
+        data: type("array"),
+        isSelection: type("bool"),
+        isAllSelected: type("bool"),
+        onSelection: type("func"),
+        onLineClick: type("func"),
+        isLoading: type("bool"),
+        loader: type("func"),
+        FetchNextPage: type("func"),
+        operationList: type("array"),
+        isManualFetch: type("bool")
+    },
+
+    /**
+     * Return selected items in the list.
+     */
+    getSelectedItems: function getListSelectedItems() {
+        var selected = [];
+        for (var i = 1; i < this.props.data.length + 1; i++) {
+            var lineName = "line" + i;
+            var lineValue = this.refs[lineName].getValue();
+            if (lineValue.isSelected) {
+                selected.push(lineValue.item);
+            }
+        }
+        return selected;
+    },
+    fetchNextPage: function fetchNextPage(page) {
+        if (!this.props.hasMoreData) {
+            return;
+        }
+        if (this.props.fetchNextPage) {
+            return this.props.fetchNextPage(page);
+        }
+    },
+
+    /**
+     * handle manual fetch.
+     * @param event
+     */
+    _handleShowMore: function handleShowMore(event) {
+        this.nextPage++;
+        this.fetchNextPage(this.nextPage);
+    },
+
+    /**
+     * Render lines of the list.
+     * @returns {*}
+     */
+    _renderLines: function renderLines() {
+        var _this = this;
+
+        var lineCount = 1;
+        var LineComponent = this.props.lineComponent || React.createClass(Line);
+        return this.props.data.map(function (line) {
+            return React.createElement(LineComponent, {
+                key: line.id || uuid.v4(),
+                data: line,
+                ref: "line" + lineCount++,
+                isSelection: _this.props.isSelection,
+                isSelected: _this.props.isAllSelected,
+                onSelection: _this.props.onSelection,
+                onLineClick: _this.props.onLineClick,
+                operationList: _this.props.operationList
+            });
+        });
+    },
+    _renderLoading: function _renderLoading() {
+        if (this.props.isLoading) {
+            if (this.props.loader) {
+                return this.props.loader();
+            }
+            return React.createElement(
+                "li",
+                { className: "sl-loading" },
+                "Loading ..."
+            );
+        }
+    },
+
+    _renderManualFetch: function renderManualFetch() {
+        if (this.props.isManualFetch && this.props.hasMoreData) {
+            var style = { className: "primary" };
+            return React.createElement(
+                "li",
+                { className: "sl-button" },
+                React.createElement(Button, { label: "list.selection.button.showMore",
+                    type: "button",
+                    handleOnClick: this._handleShowMore,
+                    style: style })
+            );
+        }
+    },
+
+    /**
+     * Render the list.
+     * @returns {XML}
+     */
+    render: function renderList() {
+        return React.createElement(
+            "ul",
+            { className: "selection-list" },
+            this._renderLines(),
+            this._renderLoading(),
+            this._renderManualFetch()
+        );
+    }
+};
+
+module.exports = builder(listMixin);
+
+},{"../../common/button/action":3,"./infinite-scroll":21,"./line":22,"uuid":79}],24:[function(require,module,exports){
+var baseCallback = require('../internal/baseCallback');
+
+/**
+ * This method is like `_.find` except that it returns the index of the first
+ * element `predicate` returns truthy for, instead of the element itself.
+ *
+ * If a property name is provided for `predicate` the created `_.property`
+ * style callback returns the property value of the given element.
+ *
+ * If a value is also provided for `thisArg` the created `_.matchesProperty`
+ * style callback returns `true` for elements that have a matching property
+ * value, else `false`.
+ *
+ * If an object is provided for `predicate` the created `_.matches` style
+ * callback returns `true` for elements that have the properties of the given
+ * object, else `false`.
+ *
+ * @static
+ * @memberOf _
+ * @category Array
+ * @param {Array} array The array to search.
+ * @param {Function|Object|string} [predicate=_.identity] The function invoked
+ *  per iteration.
+ * @param {*} [thisArg] The `this` binding of `predicate`.
+ * @returns {number} Returns the index of the found element, else `-1`.
+ * @example
+ *
+ * var users = [
+ *   { 'user': 'barney',  'active': false },
+ *   { 'user': 'fred',    'active': false },
+ *   { 'user': 'pebbles', 'active': true }
+ * ];
+ *
+ * _.findIndex(users, function(chr) {
+ *   return chr.user == 'barney';
+ * });
+ * // => 0
+ *
+ * // using the `_.matches` callback shorthand
+ * _.findIndex(users, { 'user': 'fred', 'active': false });
+ * // => 1
+ *
+ * // using the `_.matchesProperty` callback shorthand
+ * _.findIndex(users, 'active', false);
+ * // => 0
+ *
+ * // using the `_.property` callback shorthand
+ * _.findIndex(users, 'active');
+ * // => 2
+ */
+function findIndex(array, predicate, thisArg) {
+  var index = -1,
+      length = array ? array.length : 0;
+
+  predicate = baseCallback(predicate, thisArg, 3);
+  while (++index < length) {
+    if (predicate(array[index], index, array)) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+module.exports = findIndex;
+
+},{"../internal/baseCallback":28}],25:[function(require,module,exports){
+var baseCallback = require('../internal/baseCallback'),
+    baseEach = require('../internal/baseEach'),
+    baseFind = require('../internal/baseFind'),
+    findIndex = require('../array/findIndex'),
+    isArray = require('../lang/isArray');
+
+/**
+ * Iterates over elements of `collection`, returning the first element
+ * `predicate` returns truthy for. The predicate is bound to `thisArg` and
+ * invoked with three arguments; (value, index|key, collection).
+ *
+ * If a property name is provided for `predicate` the created `_.property`
+ * style callback returns the property value of the given element.
+ *
+ * If a value is also provided for `thisArg` the created `_.matchesProperty`
+ * style callback returns `true` for elements that have a matching property
+ * value, else `false`.
+ *
+ * If an object is provided for `predicate` the created `_.matches` style
+ * callback returns `true` for elements that have the properties of the given
+ * object, else `false`.
+ *
+ * @static
+ * @memberOf _
+ * @alias detect
+ * @category Collection
+ * @param {Array|Object|string} collection The collection to search.
+ * @param {Function|Object|string} [predicate=_.identity] The function invoked
+ *  per iteration.
+ * @param {*} [thisArg] The `this` binding of `predicate`.
+ * @returns {*} Returns the matched element, else `undefined`.
+ * @example
+ *
+ * var users = [
+ *   { 'user': 'barney',  'age': 36, 'active': true },
+ *   { 'user': 'fred',    'age': 40, 'active': false },
+ *   { 'user': 'pebbles', 'age': 1,  'active': true }
+ * ];
+ *
+ * _.result(_.find(users, function(chr) {
+ *   return chr.age < 40;
+ * }), 'user');
+ * // => 'barney'
+ *
+ * // using the `_.matches` callback shorthand
+ * _.result(_.find(users, { 'age': 1, 'active': true }), 'user');
+ * // => 'pebbles'
+ *
+ * // using the `_.matchesProperty` callback shorthand
+ * _.result(_.find(users, 'active', false), 'user');
+ * // => 'fred'
+ *
+ * // using the `_.property` callback shorthand
+ * _.result(_.find(users, 'active'), 'user');
+ * // => 'barney'
+ */
+function find(collection, predicate, thisArg) {
+  if (isArray(collection)) {
+    var index = findIndex(collection, predicate, thisArg);
+    return index > -1 ? collection[index] : undefined;
+  }
+  predicate = baseCallback(predicate, thisArg, 3);
+  return baseFind(collection, predicate, baseEach);
+}
+
+module.exports = find;
+
+},{"../array/findIndex":24,"../internal/baseCallback":28,"../internal/baseEach":30,"../internal/baseFind":31,"../lang/isArray":65}],26:[function(require,module,exports){
+(function (global){
+var cachePush = require('./cachePush'),
+    isNative = require('../lang/isNative');
+
+/** Native method references. */
+var Set = isNative(Set = global.Set) && Set;
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
+
+/**
+ *
+ * Creates a cache object to store unique values.
+ *
+ * @private
+ * @param {Array} [values] The values to cache.
+ */
+function SetCache(values) {
+  var length = values ? values.length : 0;
+
+  this.data = { 'hash': nativeCreate(null), 'set': new Set };
+  while (length--) {
+    this.push(values[length]);
+  }
+}
+
+// Add functions to the `Set` cache.
+SetCache.prototype.push = cachePush;
+
+module.exports = SetCache;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../lang/isNative":66,"./cachePush":47}],27:[function(require,module,exports){
+/**
+ * A specialized version of `_.map` for arrays without support for callback
+ * shorthands or `this` binding.
+ *
+ * @private
+ * @param {Array} array The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the new mapped array.
+ */
+function arrayMap(array, iteratee) {
+  var index = -1,
+      length = array.length,
+      result = Array(length);
+
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result;
+}
+
+module.exports = arrayMap;
+
+},{}],28:[function(require,module,exports){
+var baseMatches = require('./baseMatches'),
+    baseMatchesProperty = require('./baseMatchesProperty'),
+    baseProperty = require('./baseProperty'),
+    bindCallback = require('./bindCallback'),
+    identity = require('../utility/identity'),
+    isBindable = require('./isBindable');
+
+/**
+ * The base implementation of `_.callback` which supports specifying the
+ * number of arguments to provide to `func`.
+ *
+ * @private
+ * @param {*} [func=_.identity] The value to convert to a callback.
+ * @param {*} [thisArg] The `this` binding of `func`.
+ * @param {number} [argCount] The number of arguments to provide to `func`.
+ * @returns {Function} Returns the callback.
+ */
+function baseCallback(func, thisArg, argCount) {
+  var type = typeof func;
+  if (type == 'function') {
+    return (typeof thisArg != 'undefined' && isBindable(func))
+      ? bindCallback(func, thisArg, argCount)
+      : func;
+  }
+  if (func == null) {
+    return identity;
+  }
+  if (type == 'object') {
+    return baseMatches(func);
+  }
+  return typeof thisArg == 'undefined'
+    ? baseProperty(func + '')
+    : baseMatchesProperty(func + '', thisArg);
+}
+
+module.exports = baseCallback;
+
+},{"../utility/identity":76,"./baseMatches":40,"./baseMatchesProperty":41,"./baseProperty":42,"./bindCallback":45,"./isBindable":53}],29:[function(require,module,exports){
+var baseIndexOf = require('./baseIndexOf'),
+    cacheIndexOf = require('./cacheIndexOf'),
+    createCache = require('./createCache');
+
+/**
+ * The base implementation of `_.difference` which accepts a single array
+ * of values to exclude.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {Array} values The values to exclude.
+ * @returns {Array} Returns the new array of filtered values.
+ */
+function baseDifference(array, values) {
+  var length = array ? array.length : 0,
+      result = [];
+
+  if (!length) {
+    return result;
+  }
+  var index = -1,
+      indexOf = baseIndexOf,
+      isCommon = true,
+      cache = (isCommon && values.length >= 200) ? createCache(values) : null,
+      valuesLength = values.length;
+
+  if (cache) {
+    indexOf = cacheIndexOf;
+    isCommon = false;
+    values = cache;
+  }
+  outer:
+  while (++index < length) {
+    var value = array[index];
+
+    if (isCommon && value === value) {
+      var valuesIndex = valuesLength;
+      while (valuesIndex--) {
+        if (values[valuesIndex] === value) {
+          continue outer;
+        }
+      }
+      result.push(value);
+    }
+    else if (indexOf(values, value, 0) < 0) {
+      result.push(value);
+    }
+  }
+  return result;
+}
+
+module.exports = baseDifference;
+
+},{"./baseIndexOf":36,"./cacheIndexOf":46,"./createCache":48}],30:[function(require,module,exports){
+var baseForOwn = require('./baseForOwn'),
+    isLength = require('./isLength'),
+    toObject = require('./toObject');
+
+/**
+ * The base implementation of `_.forEach` without support for callback
+ * shorthands and `this` binding.
+ *
+ * @private
+ * @param {Array|Object|string} collection The collection to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array|Object|string} Returns `collection`.
+ */
+function baseEach(collection, iteratee) {
+  var length = collection ? collection.length : 0;
+  if (!isLength(length)) {
+    return baseForOwn(collection, iteratee);
+  }
+  var index = -1,
+      iterable = toObject(collection);
+
+  while (++index < length) {
+    if (iteratee(iterable[index], index, iterable) === false) {
+      break;
+    }
+  }
+  return collection;
+}
+
+module.exports = baseEach;
+
+},{"./baseForOwn":35,"./isLength":56,"./toObject":63}],31:[function(require,module,exports){
+/**
+ * The base implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
+ * without support for callback shorthands and `this` binding, which iterates
+ * over `collection` using the provided `eachFunc`.
+ *
+ * @private
+ * @param {Array|Object|string} collection The collection to search.
+ * @param {Function} predicate The function invoked per iteration.
+ * @param {Function} eachFunc The function to iterate over `collection`.
+ * @param {boolean} [retKey] Specify returning the key of the found element
+ *  instead of the element itself.
+ * @returns {*} Returns the found element or its key, else `undefined`.
+ */
+function baseFind(collection, predicate, eachFunc, retKey) {
+  var result;
+  eachFunc(collection, function(value, key, collection) {
+    if (predicate(value, key, collection)) {
+      result = retKey ? key : value;
+      return false;
+    }
+  });
+  return result;
+}
+
+module.exports = baseFind;
+
+},{}],32:[function(require,module,exports){
+var isArguments = require('../lang/isArguments'),
+    isArray = require('../lang/isArray'),
+    isLength = require('./isLength'),
+    isObjectLike = require('./isObjectLike');
+
+/**
+ * The base implementation of `_.flatten` with added support for restricting
+ * flattening and specifying the start index.
+ *
+ * @private
+ * @param {Array} array The array to flatten.
+ * @param {boolean} isDeep Specify a deep flatten.
+ * @param {boolean} isStrict Restrict flattening to arrays and `arguments` objects.
+ * @param {number} fromIndex The index to start from.
+ * @returns {Array} Returns the new flattened array.
+ */
+function baseFlatten(array, isDeep, isStrict, fromIndex) {
+  var index = fromIndex - 1,
+      length = array.length,
+      resIndex = -1,
+      result = [];
+
+  while (++index < length) {
+    var value = array[index];
+
+    if (isObjectLike(value) && isLength(value.length) && (isArray(value) || isArguments(value))) {
+      if (isDeep) {
+        // Recursively flatten arrays (susceptible to call stack limits).
+        value = baseFlatten(value, isDeep, isStrict, 0);
+      }
+      var valIndex = -1,
+          valLength = value.length;
+
+      result.length += valLength;
+      while (++valIndex < valLength) {
+        result[++resIndex] = value[valIndex];
+      }
+    } else if (!isStrict) {
+      result[++resIndex] = value;
+    }
+  }
+  return result;
+}
+
+module.exports = baseFlatten;
+
+},{"../lang/isArguments":64,"../lang/isArray":65,"./isLength":56,"./isObjectLike":57}],33:[function(require,module,exports){
+var toObject = require('./toObject');
+
+/**
+ * The base implementation of `baseForIn` and `baseForOwn` which iterates
+ * over `object` properties returned by `keysFunc` invoking `iteratee` for
+ * each property. Iterator functions may exit iteration early by explicitly
+ * returning `false`.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @param {Function} keysFunc The function to get the keys of `object`.
+ * @returns {Object} Returns `object`.
+ */
+function baseFor(object, iteratee, keysFunc) {
+  var index = -1,
+      iterable = toObject(object),
+      props = keysFunc(object),
+      length = props.length;
+
+  while (++index < length) {
+    var key = props[index];
+    if (iteratee(iterable[key], key, iterable) === false) {
+      break;
+    }
+  }
+  return object;
+}
+
+module.exports = baseFor;
+
+},{"./toObject":63}],34:[function(require,module,exports){
+var baseFor = require('./baseFor'),
+    keysIn = require('../object/keysIn');
+
+/**
+ * The base implementation of `_.forIn` without support for callback
+ * shorthands and `this` binding.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Object} Returns `object`.
+ */
+function baseForIn(object, iteratee) {
+  return baseFor(object, iteratee, keysIn);
+}
+
+module.exports = baseForIn;
+
+},{"../object/keysIn":70,"./baseFor":33}],35:[function(require,module,exports){
+var baseFor = require('./baseFor'),
+    keys = require('../object/keys');
+
+/**
+ * The base implementation of `_.forOwn` without support for callback
+ * shorthands and `this` binding.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Object} Returns `object`.
+ */
+function baseForOwn(object, iteratee) {
+  return baseFor(object, iteratee, keys);
+}
+
+module.exports = baseForOwn;
+
+},{"../object/keys":69,"./baseFor":33}],36:[function(require,module,exports){
+var indexOfNaN = require('./indexOfNaN');
+
+/**
+ * The base implementation of `_.indexOf` without support for binary searches.
+ *
+ * @private
+ * @param {Array} array The array to search.
+ * @param {*} value The value to search for.
+ * @param {number} fromIndex The index to search from.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function baseIndexOf(array, value, fromIndex) {
+  if (value !== value) {
+    return indexOfNaN(array, fromIndex);
+  }
+  var index = fromIndex - 1,
+      length = array.length;
+
+  while (++index < length) {
+    if (array[index] === value) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+module.exports = baseIndexOf;
+
+},{"./indexOfNaN":52}],37:[function(require,module,exports){
+var baseIsEqualDeep = require('./baseIsEqualDeep');
+
+/**
+ * The base implementation of `_.isEqual` without support for `this` binding
+ * `customizer` functions.
+ *
+ * @private
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @param {Function} [customizer] The function to customize comparing values.
+ * @param {boolean} [isWhere] Specify performing partial comparisons.
+ * @param {Array} [stackA] Tracks traversed `value` objects.
+ * @param {Array} [stackB] Tracks traversed `other` objects.
+ * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+ */
+function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
+  // Exit early for identical values.
+  if (value === other) {
+    // Treat `+0` vs. `-0` as not equal.
+    return value !== 0 || (1 / value == 1 / other);
+  }
+  var valType = typeof value,
+      othType = typeof other;
+
+  // Exit early for unlike primitive values.
+  if ((valType != 'function' && valType != 'object' && othType != 'function' && othType != 'object') ||
+      value == null || other == null) {
+    // Return `false` unless both values are `NaN`.
+    return value !== value && other !== other;
+  }
+  return baseIsEqualDeep(value, other, baseIsEqual, customizer, isWhere, stackA, stackB);
+}
+
+module.exports = baseIsEqual;
+
+},{"./baseIsEqualDeep":38}],38:[function(require,module,exports){
+var equalArrays = require('./equalArrays'),
+    equalByTag = require('./equalByTag'),
+    equalObjects = require('./equalObjects'),
+    isArray = require('../lang/isArray'),
+    isTypedArray = require('../lang/isTypedArray');
+
+/** `Object#toString` result references. */
+var argsTag = '[object Arguments]',
+    arrayTag = '[object Array]',
+    objectTag = '[object Object]';
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the `toStringTag` of values.
+ * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+ * for more details.
+ */
+var objToString = objectProto.toString;
+
+/**
+ * A specialized version of `baseIsEqual` for arrays and objects which performs
+ * deep comparisons and tracks traversed objects enabling objects with circular
+ * references to be compared.
+ *
+ * @private
+ * @param {Object} object The object to compare.
+ * @param {Object} other The other object to compare.
+ * @param {Function} equalFunc The function to determine equivalents of values.
+ * @param {Function} [customizer] The function to customize comparing objects.
+ * @param {boolean} [isWhere] Specify performing partial comparisons.
+ * @param {Array} [stackA=[]] Tracks traversed `value` objects.
+ * @param {Array} [stackB=[]] Tracks traversed `other` objects.
+ * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
+ */
+function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, stackB) {
+  var objIsArr = isArray(object),
+      othIsArr = isArray(other),
+      objTag = arrayTag,
+      othTag = arrayTag;
+
+  if (!objIsArr) {
+    objTag = objToString.call(object);
+    if (objTag == argsTag) {
+      objTag = objectTag;
+    } else if (objTag != objectTag) {
+      objIsArr = isTypedArray(object);
+    }
+  }
+  if (!othIsArr) {
+    othTag = objToString.call(other);
+    if (othTag == argsTag) {
+      othTag = objectTag;
+    } else if (othTag != objectTag) {
+      othIsArr = isTypedArray(other);
+    }
+  }
+  var objIsObj = objTag == objectTag,
+      othIsObj = othTag == objectTag,
+      isSameTag = objTag == othTag;
+
+  if (isSameTag && !(objIsArr || objIsObj)) {
+    return equalByTag(object, other, objTag);
+  }
+  var valWrapped = objIsObj && hasOwnProperty.call(object, '__wrapped__'),
+      othWrapped = othIsObj && hasOwnProperty.call(other, '__wrapped__');
+
+  if (valWrapped || othWrapped) {
+    return equalFunc(valWrapped ? object.value() : object, othWrapped ? other.value() : other, customizer, isWhere, stackA, stackB);
+  }
+  if (!isSameTag) {
+    return false;
+  }
+  // Assume cyclic values are equal.
+  // For more information on detecting circular references see https://es5.github.io/#JO.
+  stackA || (stackA = []);
+  stackB || (stackB = []);
+
+  var length = stackA.length;
+  while (length--) {
+    if (stackA[length] == object) {
+      return stackB[length] == other;
+    }
+  }
+  // Add `object` and `other` to the stack of traversed objects.
+  stackA.push(object);
+  stackB.push(other);
+
+  var result = (objIsArr ? equalArrays : equalObjects)(object, other, equalFunc, customizer, isWhere, stackA, stackB);
+
+  stackA.pop();
+  stackB.pop();
+
+  return result;
+}
+
+module.exports = baseIsEqualDeep;
+
+},{"../lang/isArray":65,"../lang/isTypedArray":68,"./equalArrays":49,"./equalByTag":50,"./equalObjects":51}],39:[function(require,module,exports){
+var baseIsEqual = require('./baseIsEqual');
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * The base implementation of `_.isMatch` without support for callback
+ * shorthands or `this` binding.
+ *
+ * @private
+ * @param {Object} object The object to inspect.
+ * @param {Array} props The source property names to match.
+ * @param {Array} values The source values to match.
+ * @param {Array} strictCompareFlags Strict comparison flags for source values.
+ * @param {Function} [customizer] The function to customize comparing objects.
+ * @returns {boolean} Returns `true` if `object` is a match, else `false`.
+ */
+function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
+  var length = props.length;
+  if (object == null) {
+    return !length;
+  }
+  var index = -1,
+      noCustomizer = !customizer;
+
+  while (++index < length) {
+    if ((noCustomizer && strictCompareFlags[index])
+          ? values[index] !== object[props[index]]
+          : !hasOwnProperty.call(object, props[index])
+        ) {
+      return false;
+    }
+  }
+  index = -1;
+  while (++index < length) {
+    var key = props[index];
+    if (noCustomizer && strictCompareFlags[index]) {
+      var result = hasOwnProperty.call(object, key);
+    } else {
+      var objValue = object[key],
+          srcValue = values[index];
+
+      result = customizer ? customizer(objValue, srcValue, key) : undefined;
+      if (typeof result == 'undefined') {
+        result = baseIsEqual(srcValue, objValue, customizer, true);
+      }
+    }
+    if (!result) {
+      return false;
+    }
+  }
+  return true;
+}
+
+module.exports = baseIsMatch;
+
+},{"./baseIsEqual":37}],40:[function(require,module,exports){
+var baseIsMatch = require('./baseIsMatch'),
+    isStrictComparable = require('./isStrictComparable'),
+    keys = require('../object/keys');
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * The base implementation of `_.matches` which does not clone `source`.
+ *
+ * @private
+ * @param {Object} source The object of property values to match.
+ * @returns {Function} Returns the new function.
+ */
+function baseMatches(source) {
+  var props = keys(source),
+      length = props.length;
+
+  if (length == 1) {
+    var key = props[0],
+        value = source[key];
+
+    if (isStrictComparable(value)) {
+      return function(object) {
+        return object != null && object[key] === value && hasOwnProperty.call(object, key);
+      };
+    }
+  }
+  var values = Array(length),
+      strictCompareFlags = Array(length);
+
+  while (length--) {
+    value = source[props[length]];
+    values[length] = value;
+    strictCompareFlags[length] = isStrictComparable(value);
+  }
+  return function(object) {
+    return baseIsMatch(object, props, values, strictCompareFlags);
+  };
+}
+
+module.exports = baseMatches;
+
+},{"../object/keys":69,"./baseIsMatch":39,"./isStrictComparable":58}],41:[function(require,module,exports){
+var baseIsEqual = require('./baseIsEqual'),
+    isStrictComparable = require('./isStrictComparable');
+
+/**
+ * The base implementation of `_.matchesProperty` which does not coerce `key`
+ * to a string.
+ *
+ * @private
+ * @param {string} key The key of the property to get.
+ * @param {*} value The value to compare.
+ * @returns {Function} Returns the new function.
+ */
+function baseMatchesProperty(key, value) {
+  if (isStrictComparable(value)) {
+    return function(object) {
+      return object != null && object[key] === value;
+    };
+  }
+  return function(object) {
+    return object != null && baseIsEqual(value, object[key], null, true);
+  };
+}
+
+module.exports = baseMatchesProperty;
+
+},{"./baseIsEqual":37,"./isStrictComparable":58}],42:[function(require,module,exports){
+/**
+ * The base implementation of `_.property` which does not coerce `key` to a string.
+ *
+ * @private
+ * @param {string} key The key of the property to get.
+ * @returns {Function} Returns the new function.
+ */
+function baseProperty(key) {
+  return function(object) {
+    return object == null ? undefined : object[key];
+  };
+}
+
+module.exports = baseProperty;
+
+},{}],43:[function(require,module,exports){
+var identity = require('../utility/identity'),
+    metaMap = require('./metaMap');
+
+/**
+ * The base implementation of `setData` without support for hot loop detection.
+ *
+ * @private
+ * @param {Function} func The function to associate metadata with.
+ * @param {*} data The metadata.
+ * @returns {Function} Returns `func`.
+ */
+var baseSetData = !metaMap ? identity : function(func, data) {
+  metaMap.set(func, data);
+  return func;
+};
+
+module.exports = baseSetData;
+
+},{"../utility/identity":76,"./metaMap":59}],44:[function(require,module,exports){
+/**
+ * Converts `value` to a string if it is not one. An empty string is returned
+ * for `null` or `undefined` values.
+ *
+ * @private
+ * @param {*} value The value to process.
+ * @returns {string} Returns the string.
+ */
+function baseToString(value) {
+  if (typeof value == 'string') {
+    return value;
+  }
+  return value == null ? '' : (value + '');
+}
+
+module.exports = baseToString;
+
+},{}],45:[function(require,module,exports){
+var identity = require('../utility/identity');
+
+/**
+ * A specialized version of `baseCallback` which only supports `this` binding
+ * and specifying the number of arguments to provide to `func`.
+ *
+ * @private
+ * @param {Function} func The function to bind.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {number} [argCount] The number of arguments to provide to `func`.
+ * @returns {Function} Returns the callback.
+ */
+function bindCallback(func, thisArg, argCount) {
+  if (typeof func != 'function') {
+    return identity;
+  }
+  if (typeof thisArg == 'undefined') {
+    return func;
+  }
+  switch (argCount) {
+    case 1: return function(value) {
+      return func.call(thisArg, value);
+    };
+    case 3: return function(value, index, collection) {
+      return func.call(thisArg, value, index, collection);
+    };
+    case 4: return function(accumulator, value, index, collection) {
+      return func.call(thisArg, accumulator, value, index, collection);
+    };
+    case 5: return function(value, other, key, object, source) {
+      return func.call(thisArg, value, other, key, object, source);
+    };
+  }
+  return function() {
+    return func.apply(thisArg, arguments);
+  };
+}
+
+module.exports = bindCallback;
+
+},{"../utility/identity":76}],46:[function(require,module,exports){
+var isObject = require('../lang/isObject');
+
+/**
+ * Checks if `value` is in `cache` mimicking the return signature of
+ * `_.indexOf` by returning `0` if the value is found, else `-1`.
+ *
+ * @private
+ * @param {Object} cache The cache to search.
+ * @param {*} value The value to search for.
+ * @returns {number} Returns `0` if `value` is found, else `-1`.
+ */
+function cacheIndexOf(cache, value) {
+  var data = cache.data,
+      result = (typeof value == 'string' || isObject(value)) ? data.set.has(value) : data.hash[value];
+
+  return result ? 0 : -1;
+}
+
+module.exports = cacheIndexOf;
+
+},{"../lang/isObject":67}],47:[function(require,module,exports){
+var isObject = require('../lang/isObject');
+
+/**
+ * Adds `value` to the cache.
+ *
+ * @private
+ * @name push
+ * @memberOf SetCache
+ * @param {*} value The value to cache.
+ */
+function cachePush(value) {
+  var data = this.data;
+  if (typeof value == 'string' || isObject(value)) {
+    data.set.add(value);
+  } else {
+    data.hash[value] = true;
+  }
+}
+
+module.exports = cachePush;
+
+},{"../lang/isObject":67}],48:[function(require,module,exports){
+(function (global){
+var SetCache = require('./SetCache'),
+    constant = require('../utility/constant'),
+    isNative = require('../lang/isNative');
+
+/** Native method references. */
+var Set = isNative(Set = global.Set) && Set;
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
+
+/**
+ * Creates a `Set` cache object to optimize linear searches of large arrays.
+ *
+ * @private
+ * @param {Array} [values] The values to cache.
+ * @returns {null|Object} Returns the new cache object if `Set` is supported, else `null`.
+ */
+var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
+  return new SetCache(values);
+};
+
+module.exports = createCache;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../lang/isNative":66,"../utility/constant":75,"./SetCache":26}],49:[function(require,module,exports){
+/**
+ * A specialized version of `baseIsEqualDeep` for arrays with support for
+ * partial deep comparisons.
+ *
+ * @private
+ * @param {Array} array The array to compare.
+ * @param {Array} other The other array to compare.
+ * @param {Function} equalFunc The function to determine equivalents of values.
+ * @param {Function} [customizer] The function to customize comparing arrays.
+ * @param {boolean} [isWhere] Specify performing partial comparisons.
+ * @param {Array} [stackA] Tracks traversed `value` objects.
+ * @param {Array} [stackB] Tracks traversed `other` objects.
+ * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
+ */
+function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stackB) {
+  var index = -1,
+      arrLength = array.length,
+      othLength = other.length,
+      result = true;
+
+  if (arrLength != othLength && !(isWhere && othLength > arrLength)) {
+    return false;
+  }
+  // Deep compare the contents, ignoring non-numeric properties.
+  while (result && ++index < arrLength) {
+    var arrValue = array[index],
+        othValue = other[index];
+
+    result = undefined;
+    if (customizer) {
+      result = isWhere
+        ? customizer(othValue, arrValue, index)
+        : customizer(arrValue, othValue, index);
+    }
+    if (typeof result == 'undefined') {
+      // Recursively compare arrays (susceptible to call stack limits).
+      if (isWhere) {
+        var othIndex = othLength;
+        while (othIndex--) {
+          othValue = other[othIndex];
+          result = (arrValue && arrValue === othValue) || equalFunc(arrValue, othValue, customizer, isWhere, stackA, stackB);
+          if (result) {
+            break;
+          }
+        }
+      } else {
+        result = (arrValue && arrValue === othValue) || equalFunc(arrValue, othValue, customizer, isWhere, stackA, stackB);
+      }
+    }
+  }
+  return !!result;
+}
+
+module.exports = equalArrays;
+
+},{}],50:[function(require,module,exports){
+/** `Object#toString` result references. */
+var boolTag = '[object Boolean]',
+    dateTag = '[object Date]',
+    errorTag = '[object Error]',
+    numberTag = '[object Number]',
+    regexpTag = '[object RegExp]',
+    stringTag = '[object String]';
+
+/**
+ * A specialized version of `baseIsEqualDeep` for comparing objects of
+ * the same `toStringTag`.
+ *
+ * **Note:** This function only supports comparing values with tags of
+ * `Boolean`, `Date`, `Error`, `Number`, `RegExp`, or `String`.
+ *
+ * @private
+ * @param {Object} value The object to compare.
+ * @param {Object} other The other object to compare.
+ * @param {string} tag The `toStringTag` of the objects to compare.
+ * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
+ */
+function equalByTag(object, other, tag) {
+  switch (tag) {
+    case boolTag:
+    case dateTag:
+      // Coerce dates and booleans to numbers, dates to milliseconds and booleans
+      // to `1` or `0` treating invalid dates coerced to `NaN` as not equal.
+      return +object == +other;
+
+    case errorTag:
+      return object.name == other.name && object.message == other.message;
+
+    case numberTag:
+      // Treat `NaN` vs. `NaN` as equal.
+      return (object != +object)
+        ? other != +other
+        // But, treat `-0` vs. `+0` as not equal.
+        : (object == 0 ? ((1 / object) == (1 / other)) : object == +other);
+
+    case regexpTag:
+    case stringTag:
+      // Coerce regexes to strings and treat strings primitives and string
+      // objects as equal. See https://es5.github.io/#x15.10.6.4 for more details.
+      return object == (other + '');
+  }
+  return false;
+}
+
+module.exports = equalByTag;
+
+},{}],51:[function(require,module,exports){
+var keys = require('../object/keys');
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * A specialized version of `baseIsEqualDeep` for objects with support for
+ * partial deep comparisons.
+ *
+ * @private
+ * @param {Object} object The object to compare.
+ * @param {Object} other The other object to compare.
+ * @param {Function} equalFunc The function to determine equivalents of values.
+ * @param {Function} [customizer] The function to customize comparing values.
+ * @param {boolean} [isWhere] Specify performing partial comparisons.
+ * @param {Array} [stackA] Tracks traversed `value` objects.
+ * @param {Array} [stackB] Tracks traversed `other` objects.
+ * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
+ */
+function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, stackB) {
+  var objProps = keys(object),
+      objLength = objProps.length,
+      othProps = keys(other),
+      othLength = othProps.length;
+
+  if (objLength != othLength && !isWhere) {
+    return false;
+  }
+  var hasCtor,
+      index = -1;
+
+  while (++index < objLength) {
+    var key = objProps[index],
+        result = hasOwnProperty.call(other, key);
+
+    if (result) {
+      var objValue = object[key],
+          othValue = other[key];
+
+      result = undefined;
+      if (customizer) {
+        result = isWhere
+          ? customizer(othValue, objValue, key)
+          : customizer(objValue, othValue, key);
+      }
+      if (typeof result == 'undefined') {
+        // Recursively compare objects (susceptible to call stack limits).
+        result = (objValue && objValue === othValue) || equalFunc(objValue, othValue, customizer, isWhere, stackA, stackB);
+      }
+    }
+    if (!result) {
+      return false;
+    }
+    hasCtor || (hasCtor = key == 'constructor');
+  }
+  if (!hasCtor) {
+    var objCtor = object.constructor,
+        othCtor = other.constructor;
+
+    // Non `Object` object instances with different constructors are not equal.
+    if (objCtor != othCtor &&
+        ('constructor' in object && 'constructor' in other) &&
+        !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
+          typeof othCtor == 'function' && othCtor instanceof othCtor)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+module.exports = equalObjects;
+
+},{"../object/keys":69}],52:[function(require,module,exports){
+/**
+ * Gets the index at which the first occurrence of `NaN` is found in `array`.
+ * If `fromRight` is provided elements of `array` are iterated from right to left.
+ *
+ * @private
+ * @param {Array} array The array to search.
+ * @param {number} fromIndex The index to search from.
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {number} Returns the index of the matched `NaN`, else `-1`.
+ */
+function indexOfNaN(array, fromIndex, fromRight) {
+  var length = array.length,
+      index = fromIndex + (fromRight ? 0 : -1);
+
+  while ((fromRight ? index-- : ++index < length)) {
+    var other = array[index];
+    if (other !== other) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+module.exports = indexOfNaN;
+
+},{}],53:[function(require,module,exports){
+var baseSetData = require('./baseSetData'),
+    isNative = require('../lang/isNative'),
+    support = require('../support');
+
+/** Used to detect named functions. */
+var reFuncName = /^\s*function[ \n\r\t]+\w/;
+
+/** Used to detect functions containing a `this` reference. */
+var reThis = /\bthis\b/;
+
+/** Used to resolve the decompiled source of functions. */
+var fnToString = Function.prototype.toString;
+
+/**
+ * Checks if `func` is eligible for `this` binding.
+ *
+ * @private
+ * @param {Function} func The function to check.
+ * @returns {boolean} Returns `true` if `func` is eligible, else `false`.
+ */
+function isBindable(func) {
+  var result = !(support.funcNames ? func.name : support.funcDecomp);
+
+  if (!result) {
+    var source = fnToString.call(func);
+    if (!support.funcNames) {
+      result = !reFuncName.test(source);
+    }
+    if (!result) {
+      // Check if `func` references the `this` keyword and store the result.
+      result = reThis.test(source) || isNative(func);
+      baseSetData(func, result);
+    }
+  }
+  return result;
+}
+
+module.exports = isBindable;
+
+},{"../lang/isNative":66,"../support":74,"./baseSetData":43}],54:[function(require,module,exports){
+/**
+ * Used as the maximum length of an array-like value.
+ * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
+ * for more details.
+ */
+var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+/**
+ * Checks if `value` is a valid array-like index.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+ * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+ */
+function isIndex(value, length) {
+  value = +value;
+  length = length == null ? MAX_SAFE_INTEGER : length;
+  return value > -1 && value % 1 == 0 && value < length;
+}
+
+module.exports = isIndex;
+
+},{}],55:[function(require,module,exports){
+var isIndex = require('./isIndex'),
+    isLength = require('./isLength'),
+    isObject = require('../lang/isObject');
+
+/**
+ * Checks if the provided arguments are from an iteratee call.
+ *
+ * @private
+ * @param {*} value The potential iteratee value argument.
+ * @param {*} index The potential iteratee index or key argument.
+ * @param {*} object The potential iteratee object argument.
+ * @returns {boolean} Returns `true` if the arguments are from an iteratee call, else `false`.
+ */
+function isIterateeCall(value, index, object) {
+  if (!isObject(object)) {
+    return false;
+  }
+  var type = typeof index;
+  if (type == 'number') {
+    var length = object.length,
+        prereq = isLength(length) && isIndex(index, length);
+  } else {
+    prereq = type == 'string' && index in object;
+  }
+  if (prereq) {
+    var other = object[index];
+    return value === value ? (value === other) : (other !== other);
+  }
+  return false;
+}
+
+module.exports = isIterateeCall;
+
+},{"../lang/isObject":67,"./isIndex":54,"./isLength":56}],56:[function(require,module,exports){
+/**
+ * Used as the maximum length of an array-like value.
+ * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
+ * for more details.
+ */
+var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+/**
+ * Checks if `value` is a valid array-like length.
+ *
+ * **Note:** This function is based on ES `ToLength`. See the
+ * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength)
+ * for more details.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+ */
+function isLength(value) {
+  return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+}
+
+module.exports = isLength;
+
+},{}],57:[function(require,module,exports){
+/**
+ * Checks if `value` is object-like.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ */
+function isObjectLike(value) {
+  return (value && typeof value == 'object') || false;
+}
+
+module.exports = isObjectLike;
+
+},{}],58:[function(require,module,exports){
+var isObject = require('../lang/isObject');
+
+/**
+ * Checks if `value` is suitable for strict equality comparisons, i.e. `===`.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` if suitable for strict
+ *  equality comparisons, else `false`.
+ */
+function isStrictComparable(value) {
+  return value === value && (value === 0 ? ((1 / value) > 0) : !isObject(value));
+}
+
+module.exports = isStrictComparable;
+
+},{"../lang/isObject":67}],59:[function(require,module,exports){
+(function (global){
+var isNative = require('../lang/isNative');
+
+/** Native method references. */
+var WeakMap = isNative(WeakMap = global.WeakMap) && WeakMap;
+
+/** Used to store function metadata. */
+var metaMap = WeakMap && new WeakMap;
+
+module.exports = metaMap;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../lang/isNative":66}],60:[function(require,module,exports){
+var toObject = require('./toObject');
+
+/**
+ * A specialized version of `_.pick` that picks `object` properties specified
+ * by the `props` array.
+ *
+ * @private
+ * @param {Object} object The source object.
+ * @param {string[]} props The property names to pick.
+ * @returns {Object} Returns the new object.
+ */
+function pickByArray(object, props) {
+  object = toObject(object);
+
+  var index = -1,
+      length = props.length,
+      result = {};
+
+  while (++index < length) {
+    var key = props[index];
+    if (key in object) {
+      result[key] = object[key];
+    }
+  }
+  return result;
+}
+
+module.exports = pickByArray;
+
+},{"./toObject":63}],61:[function(require,module,exports){
+var baseForIn = require('./baseForIn');
+
+/**
+ * A specialized version of `_.pick` that picks `object` properties `predicate`
+ * returns truthy for.
+ *
+ * @private
+ * @param {Object} object The source object.
+ * @param {Function} predicate The function invoked per iteration.
+ * @returns {Object} Returns the new object.
+ */
+function pickByCallback(object, predicate) {
+  var result = {};
+  baseForIn(object, function(value, key, object) {
+    if (predicate(value, key, object)) {
+      result[key] = value;
+    }
+  });
+  return result;
+}
+
+module.exports = pickByCallback;
+
+},{"./baseForIn":34}],62:[function(require,module,exports){
+var isArguments = require('../lang/isArguments'),
+    isArray = require('../lang/isArray'),
+    isIndex = require('./isIndex'),
+    isLength = require('./isLength'),
+    keysIn = require('../object/keysIn'),
+    support = require('../support');
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * A fallback implementation of `Object.keys` which creates an array of the
+ * own enumerable property names of `object`.
+ *
+ * @private
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns the array of property names.
+ */
+function shimKeys(object) {
+  var props = keysIn(object),
+      propsLength = props.length,
+      length = propsLength && object.length;
+
+  var allowIndexes = length && isLength(length) &&
+    (isArray(object) || (support.nonEnumArgs && isArguments(object)));
+
+  var index = -1,
+      result = [];
+
+  while (++index < propsLength) {
+    var key = props[index];
+    if ((allowIndexes && isIndex(key, length)) || hasOwnProperty.call(object, key)) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+module.exports = shimKeys;
+
+},{"../lang/isArguments":64,"../lang/isArray":65,"../object/keysIn":70,"../support":74,"./isIndex":54,"./isLength":56}],63:[function(require,module,exports){
+var isObject = require('../lang/isObject');
+
+/**
+ * Converts `value` to an object if it is not one.
+ *
+ * @private
+ * @param {*} value The value to process.
+ * @returns {Object} Returns the object.
+ */
+function toObject(value) {
+  return isObject(value) ? value : Object(value);
+}
+
+module.exports = toObject;
+
+},{"../lang/isObject":67}],64:[function(require,module,exports){
+var isLength = require('../internal/isLength'),
+    isObjectLike = require('../internal/isObjectLike');
+
+/** `Object#toString` result references. */
+var argsTag = '[object Arguments]';
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the `toStringTag` of values.
+ * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+ * for more details.
+ */
+var objToString = objectProto.toString;
+
+/**
+ * Checks if `value` is classified as an `arguments` object.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+ * @example
+ *
+ * _.isArguments(function() { return arguments; }());
+ * // => true
+ *
+ * _.isArguments([1, 2, 3]);
+ * // => false
+ */
+function isArguments(value) {
+  var length = isObjectLike(value) ? value.length : undefined;
+  return (isLength(length) && objToString.call(value) == argsTag) || false;
+}
+
+module.exports = isArguments;
+
+},{"../internal/isLength":56,"../internal/isObjectLike":57}],65:[function(require,module,exports){
+var isLength = require('../internal/isLength'),
+    isNative = require('./isNative'),
+    isObjectLike = require('../internal/isObjectLike');
+
+/** `Object#toString` result references. */
+var arrayTag = '[object Array]';
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the `toStringTag` of values.
+ * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+ * for more details.
+ */
+var objToString = objectProto.toString;
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
+
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(function() { return arguments; }());
+ * // => false
+ */
+var isArray = nativeIsArray || function(value) {
+  return (isObjectLike(value) && isLength(value.length) && objToString.call(value) == arrayTag) || false;
+};
+
+module.exports = isArray;
+
+},{"../internal/isLength":56,"../internal/isObjectLike":57,"./isNative":66}],66:[function(require,module,exports){
+var escapeRegExp = require('../string/escapeRegExp'),
+    isObjectLike = require('../internal/isObjectLike');
+
+/** `Object#toString` result references. */
+var funcTag = '[object Function]';
+
+/** Used to detect host constructors (Safari > 5). */
+var reHostCtor = /^\[object .+?Constructor\]$/;
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var fnToString = Function.prototype.toString;
+
+/**
+ * Used to resolve the `toStringTag` of values.
+ * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+ * for more details.
+ */
+var objToString = objectProto.toString;
+
+/** Used to detect if a method is native. */
+var reNative = RegExp('^' +
+  escapeRegExp(objToString)
+  .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+);
+
+/**
+ * Checks if `value` is a native function.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
+ * @example
+ *
+ * _.isNative(Array.prototype.push);
+ * // => true
+ *
+ * _.isNative(_);
+ * // => false
+ */
+function isNative(value) {
+  if (value == null) {
+    return false;
+  }
+  if (objToString.call(value) == funcTag) {
+    return reNative.test(fnToString.call(value));
+  }
+  return (isObjectLike(value) && reHostCtor.test(value)) || false;
+}
+
+module.exports = isNative;
+
+},{"../internal/isObjectLike":57,"../string/escapeRegExp":72}],67:[function(require,module,exports){
+/**
+ * Checks if `value` is the language type of `Object`.
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * **Note:** See the [ES5 spec](https://es5.github.io/#x8) for more details.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(1);
+ * // => false
+ */
+function isObject(value) {
+  // Avoid a V8 JIT bug in Chrome 19-20.
+  // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+  var type = typeof value;
+  return type == 'function' || (value && type == 'object') || false;
+}
+
+module.exports = isObject;
+
+},{}],68:[function(require,module,exports){
+var isLength = require('../internal/isLength'),
+    isObjectLike = require('../internal/isObjectLike');
+
+/** `Object#toString` result references. */
+var argsTag = '[object Arguments]',
+    arrayTag = '[object Array]',
+    boolTag = '[object Boolean]',
+    dateTag = '[object Date]',
+    errorTag = '[object Error]',
+    funcTag = '[object Function]',
+    mapTag = '[object Map]',
+    numberTag = '[object Number]',
+    objectTag = '[object Object]',
+    regexpTag = '[object RegExp]',
+    setTag = '[object Set]',
+    stringTag = '[object String]',
+    weakMapTag = '[object WeakMap]';
+
+var arrayBufferTag = '[object ArrayBuffer]',
+    float32Tag = '[object Float32Array]',
+    float64Tag = '[object Float64Array]',
+    int8Tag = '[object Int8Array]',
+    int16Tag = '[object Int16Array]',
+    int32Tag = '[object Int32Array]',
+    uint8Tag = '[object Uint8Array]',
+    uint8ClampedTag = '[object Uint8ClampedArray]',
+    uint16Tag = '[object Uint16Array]',
+    uint32Tag = '[object Uint32Array]';
+
+/** Used to identify `toStringTag` values of typed arrays. */
+var typedArrayTags = {};
+typedArrayTags[float32Tag] = typedArrayTags[float64Tag] =
+typedArrayTags[int8Tag] = typedArrayTags[int16Tag] =
+typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] =
+typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] =
+typedArrayTags[uint32Tag] = true;
+typedArrayTags[argsTag] = typedArrayTags[arrayTag] =
+typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] =
+typedArrayTags[dateTag] = typedArrayTags[errorTag] =
+typedArrayTags[funcTag] = typedArrayTags[mapTag] =
+typedArrayTags[numberTag] = typedArrayTags[objectTag] =
+typedArrayTags[regexpTag] = typedArrayTags[setTag] =
+typedArrayTags[stringTag] = typedArrayTags[weakMapTag] = false;
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the `toStringTag` of values.
+ * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+ * for more details.
+ */
+var objToString = objectProto.toString;
+
+/**
+ * Checks if `value` is classified as a typed array.
+ *
+ * @static
+ * @memberOf _
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+ * @example
+ *
+ * _.isTypedArray(new Uint8Array);
+ * // => true
+ *
+ * _.isTypedArray([]);
+ * // => false
+ */
+function isTypedArray(value) {
+  return (isObjectLike(value) && isLength(value.length) && typedArrayTags[objToString.call(value)]) || false;
+}
+
+module.exports = isTypedArray;
+
+},{"../internal/isLength":56,"../internal/isObjectLike":57}],69:[function(require,module,exports){
+var isLength = require('../internal/isLength'),
+    isNative = require('../lang/isNative'),
+    isObject = require('../lang/isObject'),
+    shimKeys = require('../internal/shimKeys');
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
+
+/**
+ * Creates an array of the own enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects. See the
+ * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.keys)
+ * for more details.
+ *
+ * @static
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keys(new Foo);
+ * // => ['a', 'b'] (iteration order is not guaranteed)
+ *
+ * _.keys('hi');
+ * // => ['0', '1']
+ */
+var keys = !nativeKeys ? shimKeys : function(object) {
+  if (object) {
+    var Ctor = object.constructor,
+        length = object.length;
+  }
+  if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
+      (typeof object != 'function' && (length && isLength(length)))) {
+    return shimKeys(object);
+  }
+  return isObject(object) ? nativeKeys(object) : [];
+};
+
+module.exports = keys;
+
+},{"../internal/isLength":56,"../internal/shimKeys":62,"../lang/isNative":66,"../lang/isObject":67}],70:[function(require,module,exports){
+var isArguments = require('../lang/isArguments'),
+    isArray = require('../lang/isArray'),
+    isIndex = require('../internal/isIndex'),
+    isLength = require('../internal/isLength'),
+    isObject = require('../lang/isObject'),
+    support = require('../support');
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Creates an array of the own and inherited enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects.
+ *
+ * @static
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keysIn(new Foo);
+ * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+ */
+function keysIn(object) {
+  if (object == null) {
+    return [];
+  }
+  if (!isObject(object)) {
+    object = Object(object);
+  }
+  var length = object.length;
+  length = (length && isLength(length) &&
+    (isArray(object) || (support.nonEnumArgs && isArguments(object))) && length) || 0;
+
+  var Ctor = object.constructor,
+      index = -1,
+      isProto = typeof Ctor == 'function' && Ctor.prototype === object,
+      result = Array(length),
+      skipIndexes = length > 0;
+
+  while (++index < length) {
+    result[index] = (index + '');
+  }
+  for (var key in object) {
+    if (!(skipIndexes && isIndex(key, length)) &&
+        !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+module.exports = keysIn;
+
+},{"../internal/isIndex":54,"../internal/isLength":56,"../lang/isArguments":64,"../lang/isArray":65,"../lang/isObject":67,"../support":74}],71:[function(require,module,exports){
+var arrayMap = require('../internal/arrayMap'),
+    baseDifference = require('../internal/baseDifference'),
+    baseFlatten = require('../internal/baseFlatten'),
+    bindCallback = require('../internal/bindCallback'),
+    keysIn = require('./keysIn'),
+    pickByArray = require('../internal/pickByArray'),
+    pickByCallback = require('../internal/pickByCallback');
+
+/**
+ * The opposite of `_.pick`; this method creates an object composed of the
+ * own and inherited enumerable properties of `object` that are not omitted.
+ * Property names may be specified as individual arguments or as arrays of
+ * property names. If `predicate` is provided it is invoked for each property
+ * of `object` omitting the properties `predicate` returns truthy for. The
+ * predicate is bound to `thisArg` and invoked with three arguments;
+ * (value, key, object).
+ *
+ * @static
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The source object.
+ * @param {Function|...(string|string[])} [predicate] The function invoked per
+ *  iteration or property names to omit, specified as individual property
+ *  names or arrays of property names.
+ * @param {*} [thisArg] The `this` binding of `predicate`.
+ * @returns {Object} Returns the new object.
+ * @example
+ *
+ * var object = { 'user': 'fred', 'age': 40 };
+ *
+ * _.omit(object, 'age');
+ * // => { 'user': 'fred' }
+ *
+ * _.omit(object, _.isNumber);
+ * // => { 'user': 'fred' }
+ */
+function omit(object, predicate, thisArg) {
+  if (object == null) {
+    return {};
+  }
+  if (typeof predicate != 'function') {
+    var props = arrayMap(baseFlatten(arguments, false, false, 1), String);
+    return pickByArray(object, baseDifference(keysIn(object), props));
+  }
+  predicate = bindCallback(predicate, thisArg, 3);
+  return pickByCallback(object, function(value, key, object) {
+    return !predicate(value, key, object);
+  });
+}
+
+module.exports = omit;
+
+},{"../internal/arrayMap":27,"../internal/baseDifference":29,"../internal/baseFlatten":32,"../internal/bindCallback":45,"../internal/pickByArray":60,"../internal/pickByCallback":61,"./keysIn":70}],72:[function(require,module,exports){
+var baseToString = require('../internal/baseToString');
+
+/**
+ * Used to match `RegExp` special characters.
+ * See this [article on `RegExp` characters](http://www.regular-expressions.info/characters.html#special)
+ * for more details.
+ */
+var reRegExpChars = /[.*+?^${}()|[\]\/\\]/g,
+    reHasRegExpChars = RegExp(reRegExpChars.source);
+
+/**
+ * Escapes the `RegExp` special characters "\", "^", "$", ".", "|", "?", "*",
+ * "+", "(", ")", "[", "]", "{" and "}" in `string`.
+ *
+ * @static
+ * @memberOf _
+ * @category String
+ * @param {string} [string=''] The string to escape.
+ * @returns {string} Returns the escaped string.
+ * @example
+ *
+ * _.escapeRegExp('[lodash](https://lodash.com/)');
+ * // => '\[lodash\]\(https://lodash\.com/\)'
+ */
+function escapeRegExp(string) {
+  string = baseToString(string);
+  return (string && reHasRegExpChars.test(string))
+    ? string.replace(reRegExpChars, '\\$&')
+    : string;
+}
+
+module.exports = escapeRegExp;
+
+},{"../internal/baseToString":44}],73:[function(require,module,exports){
+var baseToString = require('../internal/baseToString'),
+    isIterateeCall = require('../internal/isIterateeCall');
+
+/** Used to match words to create compound words. */
+var reWords = (function() {
+  var upper = '[A-Z\\xc0-\\xd6\\xd8-\\xde]',
+      lower = '[a-z\\xdf-\\xf6\\xf8-\\xff]+';
+
+  return RegExp(upper + '+(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
+}());
+
+/**
+ * Splits `string` into an array of its words.
+ *
+ * @static
+ * @memberOf _
+ * @category String
+ * @param {string} [string=''] The string to inspect.
+ * @param {RegExp|string} [pattern] The pattern to match words.
+ * @param- {Object} [guard] Enables use as a callback for functions like `_.map`.
+ * @returns {Array} Returns the words of `string`.
+ * @example
+ *
+ * _.words('fred, barney, & pebbles');
+ * // => ['fred', 'barney', 'pebbles']
+ *
+ * _.words('fred, barney, & pebbles', /[^, ]+/g);
+ * // => ['fred', 'barney', '&', 'pebbles']
+ */
+function words(string, pattern, guard) {
+  if (guard && isIterateeCall(string, pattern, guard)) {
+    pattern = null;
+  }
+  string = baseToString(string);
+  return string.match(pattern || reWords) || [];
+}
+
+module.exports = words;
+
+},{"../internal/baseToString":44,"../internal/isIterateeCall":55}],74:[function(require,module,exports){
+(function (global){
+var isNative = require('./lang/isNative');
+
+/** Used to detect functions containing a `this` reference. */
+var reThis = /\bthis\b/;
+
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to detect DOM support. */
+var document = (document = global.window) && document.document;
+
+/** Native method references. */
+var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+/**
+ * An object environment feature flags.
+ *
+ * @static
+ * @memberOf _
+ * @type Object
+ */
+var support = {};
+
+(function(x) {
+
+  /**
+   * Detect if functions can be decompiled by `Function#toString`
+   * (all but Firefox OS certified apps, older Opera mobile browsers, and
+   * the PlayStation 3; forced `false` for Windows 8 apps).
+   *
+   * @memberOf _.support
+   * @type boolean
+   */
+  support.funcDecomp = !isNative(global.WinRTError) && reThis.test(function() { return this; });
+
+  /**
+   * Detect if `Function#name` is supported (all but IE).
+   *
+   * @memberOf _.support
+   * @type boolean
+   */
+  support.funcNames = typeof Function.name == 'string';
+
+  /**
+   * Detect if the DOM is supported.
+   *
+   * @memberOf _.support
+   * @type boolean
+   */
+  try {
+    support.dom = document.createDocumentFragment().nodeType === 11;
+  } catch(e) {
+    support.dom = false;
+  }
+
+  /**
+   * Detect if `arguments` object indexes are non-enumerable.
+   *
+   * In Firefox < 4, IE < 9, PhantomJS, and Safari < 5.1 `arguments` object
+   * indexes are non-enumerable. Chrome < 25 and Node.js < 0.11.0 treat
+   * `arguments` object indexes as non-enumerable and fail `hasOwnProperty`
+   * checks for indexes that exceed their function's formal parameters with
+   * associated values of `0`.
+   *
+   * @memberOf _.support
+   * @type boolean
+   */
+  try {
+    support.nonEnumArgs = !propertyIsEnumerable.call(arguments, 1);
+  } catch(e) {
+    support.nonEnumArgs = true;
+  }
+}(0, 0));
+
+module.exports = support;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./lang/isNative":66}],75:[function(require,module,exports){
+/**
+ * Creates a function that returns `value`.
+ *
+ * @static
+ * @memberOf _
+ * @category Utility
+ * @param {*} value The value to return from the new function.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * var object = { 'user': 'fred' };
+ * var getter = _.constant(object);
+ *
+ * getter() === object;
+ * // => true
+ */
+function constant(value) {
+  return function() {
+    return value;
+  };
+}
+
+module.exports = constant;
+
+},{}],76:[function(require,module,exports){
+/**
+ * This method returns the first argument provided to it.
+ *
+ * @static
+ * @memberOf _
+ * @category Utility
+ * @param {*} value Any value.
+ * @returns {*} Returns `value`.
+ * @example
+ *
+ * var object = { 'user': 'fred' };
+ *
+ * _.identity(object) === object;
+ * // => true
+ */
+function identity(value) {
+  return value;
+}
+
+module.exports = identity;
+
+},{}],77:[function(require,module,exports){
+'use strict';
+
+function ToObject(val) {
+	if (val == null) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+module.exports = Object.assign || function (target, source) {
+	var from;
+	var keys;
+	var to = ToObject(target);
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = arguments[s];
+		keys = Object.keys(Object(from));
+
+		for (var i = 0; i < keys.length; i++) {
+			to[keys[i]] = from[keys[i]];
+		}
+	}
+
+	return to;
+};
+
+},{}],78:[function(require,module,exports){
+(function (global){
+
+var rng;
+
+if (global.crypto && crypto.getRandomValues) {
+  // WHATWG crypto-based RNG - http://wiki.whatwg.org/wiki/Crypto
+  // Moderately fast, high quality
+  var _rnds8 = new Uint8Array(16);
+  rng = function whatwgRNG() {
+    crypto.getRandomValues(_rnds8);
+    return _rnds8;
+  };
+}
+
+if (!rng) {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var  _rnds = new Array(16);
+  rng = function() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      _rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return _rnds;
+  };
+}
+
+module.exports = rng;
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],79:[function(require,module,exports){
+//     uuid.js
+//
+//     Copyright (c) 2010-2012 Robert Kieffer
+//     MIT License - http://opensource.org/licenses/mit-license.php
+
+// Unique ID creation requires a high quality random # generator.  We feature
+// detect to determine the best RNG source, normalizing to a function that
+// returns 128-bits of randomness, since that's what's usually required
+var _rng = require('./rng');
+
+// Maps for number <-> hex string conversion
+var _byteToHex = [];
+var _hexToByte = {};
+for (var i = 0; i < 256; i++) {
+  _byteToHex[i] = (i + 0x100).toString(16).substr(1);
+  _hexToByte[_byteToHex[i]] = i;
+}
+
+// **`parse()` - Parse a UUID into it's component bytes**
+function parse(s, buf, offset) {
+  var i = (buf && offset) || 0, ii = 0;
+
+  buf = buf || [];
+  s.toLowerCase().replace(/[0-9a-f]{2}/g, function(oct) {
+    if (ii < 16) { // Don't overflow!
+      buf[i + ii++] = _hexToByte[oct];
+    }
+  });
+
+  // Zero out remaining bytes if string was short
+  while (ii < 16) {
+    buf[i + ii++] = 0;
+  }
+
+  return buf;
+}
+
+// **`unparse()` - Convert UUID byte array (ala parse()) into a string**
+function unparse(buf, offset) {
+  var i = offset || 0, bth = _byteToHex;
+  return  bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+// random #'s we need to init node and clockseq
+var _seedBytes = _rng();
+
+// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+var _nodeId = [
+  _seedBytes[0] | 0x01,
+  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
+];
+
+// Per 4.2.2, randomize (14 bit) clockseq
+var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
+
+// Previous uuid creation time
+var _lastMSecs = 0, _lastNSecs = 0;
+
+// See https://github.com/broofa/node-uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  var node = options.node || _nodeId;
+  for (var n = 0; n < 6; n++) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : unparse(b);
+}
+
+// **`v4()` - Generate random UUID**
+
+// See https://github.com/broofa/node-uuid for API details
+function v4(options, buf, offset) {
+  // Deprecated - 'format' argument, as supported in v1.2
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options == 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || _rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ii++) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || unparse(rnds);
+}
+
+// Export public API
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+uuid.parse = parse;
+uuid.unparse = unparse;
+
+module.exports = uuid;
+
+},{"./rng":78}],80:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+  search: require("./search")
+};
+
+},{"./search":82}],81:[function(require,module,exports){
+"use strict";
+
+/**@jsx*/
+var builder = window.focus.component.builder;
+var dispatcher = window.focus.dispatcher;
+var React = window.React;
+var LiveFilter = require("../../../search/live-filter/index").component;
+var ListActionBar = require("../../../list/action-bar/index").component;
+var ListSelection = require("../../../list/selection").list.component;
+var SearchStore = window.focus.store.SearchStore;
+
+var searchFilterResultMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "search-filter-result",
+
+    /**
+     * Init default props.
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            facetConfig: {},
+            orderableColumnList: {},
+            groupableColumnList: {},
+            operationList: {},
+            searchStore: new SearchStore(),
+            lineComponent: undefined,
+            isSelection: true,
+            lineOperationList: {}
+        };
+    },
+    /**
+     * Init default state.
+     */
+    getInitialState: function getInitialState() {
+        return {
+            facetList: {},
+            selectedFacetList: {},
+            openedFacetList: {},
+
+            selectionStatus: 0,
+            orderSelected: undefined,
+            groupSelectedKey: undefined,
+
+            list: []
+        };
+    },
+    /**
+     * render the component.
+     * @returns Html code.
+     */
+    render: function renderSearchResult() {
+        return React.createElement(
+            "div",
+            { className: "search-result" },
+            React.createElement(
+                "div",
+                { className: "liveFilterContainer" },
+                React.createElement(LiveFilter, { ref: "liveFilter", facetList: this.state.facetList,
+                    selectedFacetList: this.state.selectedFacetList,
+                    openedFacetList: this.state.openedFacetList,
+                    config: this.props.facetConfig,
+                    dataSelectionHandler: this._facetSelectionClick })
+            ),
+            React.createElement(
+                "div",
+                { className: "resultContainer" },
+                React.createElement(
+                    "div",
+                    { className: "listActionBarContainer panel" },
+                    React.createElement(ListActionBar, { selectionStatus: this.state.selectionStatus,
+                        selectionAction: this._selectionGroupLineClick,
+                        orderableColumnList: this.props.orderableColumnList,
+                        orderAction: this._orderClick,
+                        orderSelected: this.state.orderSelected,
+                        groupableColumnList: this.props.groupableColumnList,
+                        groupAction: this._groupClick,
+                        groupSelectedKey: this.state.groupSelectedKey,
+                        facetList: this._getFacetListForBar(),
+                        facetClickAction: this._facetBarClick,
+                        operationList: this.props.operationList })
+                ),
+                React.createElement(
+                    "div",
+                    { className: "listResultContainer panel" },
+                    React.createElement(ListSelection, { data: this.state.list,
+                        hasMoreData: true,
+                        lineComponent: this.props.lineComponent,
+                        onLineClick: this.props.onLineClick,
+                        isSelection: this.props.isSelection,
+                        operationList: this.props.lineOperationList })
+                )
+            )
+        );
+    },
+    componentDidMount: function componentDidMount() {
+        this._registerEventList();
+        this._doSearch();
+    },
+    _registerEventList: function registerEventList() {
+        this.props.searchStore.addSearchChangeListener(this._searchSuccessEvent);
+    },
+
+    _doSearch: function doSearch() {
+        var facets = [];
+        for (var selectedFacet in this.state.selectedFacetList) {
+            facets.push({ key: selectedFacet, value: this.state.selectedFacetList[selectedFacet].key });
+            // facets[selectedFacet] = this.state.selectedFacetList[selectedFacet].key;
+        }
+
+        this.props.action.search({
+            facets: facets,
+            criteria: {},
+            groupKey: this.state.groupSelectedKey,
+            order: this.state.orderSelected
+        });
+    },
+    _searchSuccessEvent: function searchSuccessEvent() {
+        console.log("Search success");
+        this.setState(this._getToUpdateState());
+    },
+    _getToUpdateState: function getToUpdateState() {
+        var data = this.props.searchStore.get("search");
+        return {
+            facetList: data.facet,
+            list: data.list
+        };
+    },
+
+    _getFacetListForBar: function _getFacetListForBar() {
+        var facetList = {};
+        for (var key in this.state.selectedFacetList) {
+            var facet = this.state.selectedFacetList[key];
+            facetList[key] = facet.data.label;
+        }
+        return facetList;
+    },
+
+    _facetBarClick: function _facetBarClick(key) {
+        var selectedFacetList = this.state.selectedFacetList;
+        delete selectedFacetList[key];
+
+        // TODO : do we do it now ?
+        this.setState({ selectedFacetList: selectedFacetList });
+        this._doSearch();
+    },
+    _groupClick: function _groupClick(key) {
+        console.log("Group by : " + key);
+        // TODO : do we do it now ?
+        this.setState({
+            groupSelectedKey: key,
+            orderSelected: key != undefined ? undefined : this.state.orderSelected
+        });
+
+        this._doSearch();
+    },
+
+    _orderClick: function _orderClick(key, order) {
+        console.log("Order : " + key + " - " + order);
+        // TODO : do we do it now ?
+        this.setState({ orderSelected: { key: key, order: order } });
+        this._doSearch();
+    },
+
+    /**
+     * Selection action handler.
+     * @param selectionStatus (0 => nonde, 1= > all, 2=> some).
+     */
+    _selectionGroupLineClick: function _selectionGroupLineClick(selectionStatus) {
+        console.log("Selection status : " + selectionStatus);
+        console.warn("TODO : implement check/uncheck on the list rows (it shoudl be working like this, but need to be checked)");
+        this.setState({ selectionStatus: selectionStatus });
+    },
+
+    /**
+     * Handler called when facet is selected.
+     * @param facetComponentData Data of facet.
+     */
+    _facetSelectionClick: function _facetSelectionClick(facetComponentData) {
+        var selectedFacetList = facetComponentData.selectedFacetList;
+        var openedFacetList = facetComponentData.openedFacetList;
+
+        console.warn("Facet selection ");
+        console.log(selectedFacetList);
+
+        // TODO : Do we do it now ?
+        this.setState({
+            selectedFacetList: selectedFacetList,
+            openedFacetList: openedFacetList
+        });
+
+        this._doSearch();
+    }
+};
+
+module.exports = builder(searchFilterResultMixin);
+
+},{"../../../list/action-bar/index":17,"../../../list/selection":20,"../../../search/live-filter/index":84}],82:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+    filterResult: require("./filter-result") };
+
+// searchResult: require('./search-result')
+
+},{"./filter-result":81}],83:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+  liveFilter: require("./live-filter"),
+  quickSearch: require("./quick-search")
+};
+
+},{"./live-filter":84,"./quick-search":87}],84:[function(require,module,exports){
+"use strict";
+
+var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
+
+/**@jsx*/
+var builder = window.focus.component.builder;
+var React = window.React;
+var LiveFilterFacet = require("./live-filter-facet").component;
+var type = window.focus.component.types;
+var assign = require("object-assign");
+var omit = require("lodash/object/omit");
+var Img = require("../../common/img").component;
+
+var liveFilterMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "live-filter",
+
+    /**
+     * Init the default properties
+     * @returns {{facetList: {}, selectedFacetList: {}, openedFacetList: {}, config: {}, dataSelectionHandler: undefined}}
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            facetList: {},
+            selectedFacetList: {},
+            openedFacetList: {},
+            config: {},
+            dataSelectionHandler: undefined
+        };
+    },
+
+    /**
+     * List property validation.
+     */
+    propTypes: {
+        facetList: type("object"),
+        selectedFacetList: type("object"),
+        openedFacetList: type("object"),
+        config: type("object"),
+        dataSelectionHandler: type("func")
+    },
+
+    /**
+     * Init the state of the component.
+     * @returns {
+     *  {isExpanded: boolean True if the component is expanded, false if collapsed,
+     *   openedFacetList: Map (key : facetKey, value : true if facet expanded)}
+     *   }
+     */
+    getInitialState: function getInitialState() {
+        var openedFacetList = this.props.openedFacetList;
+        if (Object.keys(openedFacetList).length == 0) {
+            for (var key in this.props.facetList) {
+                openedFacetList[key] = true;
+                break;
+            }
+        }
+        return {
+            isExpanded: true,
+            openedFacetList: openedFacetList
+        };
+    },
+    /**
+     * Render the component.
+     * @returns Html component code.
+     */
+    render: function renderLiverFilter() {
+        // var className = this.state.isExpanded ? "live-filter" : "live-filter collapsed";
+        var className = "panel live-filter";
+        if (this.state.isExpanded) {
+            className += " expanded";
+        }
+        return React.createElement(
+            "div",
+            { className: className },
+            this.renderLiveFacetTitle(),
+            this.renderFilterFacetList()
+        );
+    },
+
+    /**
+     * Render the div title of the component.
+     * @Returns Html title code.
+     */
+    renderLiveFacetTitle: function renderLiveFacetTitle() {
+        var title = this.state.isExpanded ? "live.filter.title" : "";
+        var img = this.state.isExpanded ? "chevron-thin-left" : "chevron-thin-right";
+        return React.createElement(
+            "div",
+            { className: "panel-heading" },
+            React.createElement(
+                "span",
+                null,
+                title
+            ),
+            React.createElement(Img, { src: img, onClick: this.liveFilterTitleClick })
+        );
+    },
+
+    /**
+     * Render the list of the facets.
+     * @Returns Html facets code.
+     */
+    renderFilterFacetList: function renderFilterFacetList() {
+        if (!this.state.isExpanded) {
+            return;
+        }
+        var facets = [];
+        for (var key in this.props.facetList) {
+            var selectedDataKey = this.props.selectedFacetList[key] ? this.props.selectedFacetList[key].key : undefined;
+            facets.push(React.createElement(LiveFilterFacet, { facetKey: key,
+                facet: this.props.facetList[key],
+                selectedDataKey: selectedDataKey,
+                isExpanded: this.state.openedFacetList[key],
+                expandHandler: this.expandFacetHandler,
+                selectHandler: this.selectHandler,
+                type: this.props.config[key] }));
+        }
+        return React.createElement(
+            "div",
+            { className: "panel-body" },
+            facets
+        );
+    },
+
+    /**
+     * Action on title click.
+     * Hide / Expand the component.
+     */
+    liveFilterTitleClick: function liveFilterTitleClick() {
+        this.setState({ isExpanded: !this.state.isExpanded });
+    },
+
+    /**
+     * Action on facet selection.
+     */
+    selectHandler: function selectLiverFilterHandler(facetKey, dataKey, data) {
+        var result = { openedFacetList: this.state.openedFacetList };
+        if (dataKey == undefined) {
+            result.selectedFacetList = omit(this.props.selectedFacetList, facetKey);
+        } else {
+            result.selectedFacetList = assign(this.props.selectedFacetList, _defineProperty({}, facetKey, { key: dataKey, data: data }));
+        }
+        this.props.dataSelectionHandler(result);
+    },
+
+    /**
+     * Expand facet action.
+     * @param facetKey Key of the facet.
+     * @param isExpanded true if expand action, false if collapse action.
+     */
+    expandFacetHandler: function expandFacetHandler(facetKey, isExpanded) {
+        var openedFacetList = this.state.openedFacetList;
+        openedFacetList[facetKey] = isExpanded;
+        this.setState({ openedFacetList: openedFacetList });
+    }
+};
+
+module.exports = builder(liveFilterMixin);
+
+},{"../../common/img":8,"./live-filter-facet":86,"lodash/object/omit":71,"object-assign":77}],85:[function(require,module,exports){
+"use strict";
+
+/**@jsx*/
+var builder = window.focus.component.builder;
+var React = window.React;
+
+var liveFilterDataMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "live-filter-data",
+
+    /**
+     * Render the component.
+     * @returns Html code of the component.
+     */
+    render: function renderFacet() {
+        return React.createElement(
+            "div",
+            { className: "lf-data", onClick: this.selectFacetData },
+            this.renderData(),
+            " "
+        );
+    },
+
+    /**
+     * Render the data.
+     * @returns Html generated code.
+     */
+    renderData: function renderData() {
+        if (this.props.type == "text") {
+            return this.props.data.label + " (" + this.props.data.count + ")";
+        }
+        throw new Error("Unknown property type : " + this.props.type);
+    },
+
+    /**
+     * Action of selection.
+     */
+    selectFacetData: function selectFacetDetail() {
+        return this.props.selectHandler(this.props.dataKey, this.props.data);
+    }
+};
+
+module.exports = builder(liveFilterDataMixin);
+
+},{}],86:[function(require,module,exports){
+"use strict";
+
+/**@jsx*/
+var builder = window.focus.component.builder;
+var React = window.React;
+var Data = require("./live-filter-data").component;
+
+var liveFilterFacetMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "live-filter-facet",
+
+    /**
+     * Init the component state.
+     * @returns {{isShowAll: true if all the facets must be displayed or just be limited to this.props.nbDefaultDataList }}
+     */
+    getInitialState: function getInitialState() {
+        return {
+            isShowAll: false
+        };
+    },
+
+    /**
+     * Init the default props.
+     * @returns {{nbDefaultDataList: default number of data facets displayed.}}
+     */
+    getDefaultProps: function getLiveFilterFacetDefaultProperties() {
+        return {
+            nbDefaultDataList: 6
+        };
+    },
+
+    /**
+     * Render the component.
+     * @returns Html component code.
+     */
+    render: function renderLiverFilterFacet() {
+        /*
+        var className = this.props.isExpanded ? "lf-facet" : "lf-facet collapsed";
+        if(this.props.selectedDataKey) {
+            className = "lf-facet selected";
+        }*/
+        var className = "panel panel-primary facet";
+        if (this.props.selectedDataKey) {
+            className += "-selected";
+        } else {
+            className += " unselected";
+        }
+        return React.createElement(
+            "div",
+            { className: className },
+            this.renderLiveFilterFacetTitle(),
+            this.renderLiveFilterDataList()
+        );
+    },
+
+    /**
+     * Render the component title.
+     * @returns Html component code.
+     */
+    renderLiveFilterFacetTitle: function renderLiveFilterFacetTitle() {
+        var title = this.props.facetKey;
+        if (this.props.selectedDataKey) {
+            title += " : " + this.props.facet[this.props.selectedDataKey].label;
+        }
+        // return <div className="title"  onClick={this.liveFilterFacetTitleClick}>{title}</div>
+        var className = "panel-heading";
+        // if(this.props.selectedDataKey || this.props.isExpanded)
+        return React.createElement(
+            "div",
+            { className: className, onClick: this.liveFilterFacetTitleClick },
+            title
+        );
+    },
+
+    /**
+     * Action on facet title click.
+     */
+    liveFilterFacetTitleClick: function liveFilterFacetTitleClick() {
+        this.props.expandHandler(this.props.facetKey, !this.props.isExpanded);
+        if (this.props.selectedDataKey) {
+            this.props.selectHandler(this.props.facetKey, undefined, undefined);
+        }
+        this.setState({ isExpanded: !this.props.isExpanded, isShowAll: false });
+    },
+
+    /**
+     * Render the list of data of the facet.
+     * @returns Html component code.
+     */
+    renderLiveFilterDataList: function renderLiveFilterDataList() {
+        if (!this.props.isExpanded || this.props.selectedDataKey) {
+            return;
+        }
+        var facetDetailList = [];
+        var i = 0;
+        for (var key in this.props.facet) {
+            if (!this.state.isShowAll && i >= this.props.nbDefaultDataList) {
+                break;
+            }
+            facetDetailList.push(React.createElement(
+                "li",
+                null,
+                React.createElement(Data, { dataKey: key, data: this.props.facet[key], selectHandler: this.selectHandler, type: this.props.type })
+            ));
+            i++;
+        }
+        return React.createElement(
+            "div",
+            { className: "panel-body" },
+            React.createElement(
+                "ul",
+                null,
+                facetDetailList
+            ),
+            " ",
+            this.renderShowAllDataList()
+        );
+    },
+
+    /**
+     * Action on facet data selection.
+     */
+    selectHandler: function selectHandler(dataKey, data) {
+        this.props.expandHandler(this.props.facetKey, false);
+        this.props.selectHandler(this.props.facetKey, dataKey, data);
+    },
+
+    /**
+     * Render all the data facets.
+     * @returns Html component code.
+     */
+    renderShowAllDataList: function renderShowAllDataList() {
+        if (!this.state.isShowAll && Object.keys(this.props.facet).length > this.props.nbDefaultDataList) {
+            return React.createElement(
+                "a",
+                { href: "javascript:void(0)", onClick: this.showAllHandler },
+                " show.alls "
+            );
+        }
+    },
+
+    /**
+     * Action on "show all" action.
+     */
+    showAllHandler: function showAllHandler() {
+        this.setState({ isShowAll: !this.state.isShowAll });
+    } };
+
+module.exports = builder(liveFilterFacetMixin);
+
+},{"./live-filter-data":85}],87:[function(require,module,exports){
+"use strict";
+
+module.exports = require("./input");
+
+},{"./input":88}],88:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var type = window.focus.component.types;
+var React = window.React;
+var Scope = require("./scope").component;
+//var Icon = require('../common/icon').component;
+var words = require("lodash/string/words");
+var SearchInputMixin = {
+  displayName: "SearchInput",
+  getDefaultProps: function getDefaultProps() {
+    return {
+      placeholder: "",
+      value: "defaultValue",
+      scope: 2,
+      scopes: [{ code: undefined, label: "None", style: "qs-scope-none" }, { code: 1, label: "Scope1", style: "qs-scope-1" }, { code: 2, label: "Scope2", style: "qs-scope-2" }, { code: 3, label: "Scope3", style: "qs-scope-3" }],
+      minChar: 0,
+      loading: false
+    };
+  },
+  propTypes: {
+    placeholder: type("string"),
+    value: type("string"),
+    scope: type(["string", "number"]),
+    scopes: type("array"),
+    minChar: type("number"),
+    loading: type("bool")
+  },
+  getInitialState: function getInitialState() {
+    return {
+      value: this.props.value,
+      scope: this.props.scope,
+      loading: this.props.loading
+    };
+  },
+  getValue: function getValue() {
+    return {
+      scope: this.refs.scope.getValue(),
+      query: this.refs.query.getDOMNode().value
+    };
+  },
+  handleKeyUp: function handleKeyUpInputSearch(event) {
+    var val = event.target.value;
+    if (val.length >= this.props.minChar) {
+      console.log("keyUp", words(val));
+      if (this.props.handleKeyUp) {
+        this.props.handleKeyUp(event);
+      }
+    }
+  },
+  handleOnClickScope: function handleOnClickScope() {
+    console.log("Search value", this.getValue());
+    this.setState({ scope: this.refs.scope.getValue() }, this.focusQuery);
+  },
+  renderHelp: function renderHelp() {
+    /*if(this.state.scope){
+      return;
+    }*/
+    return React.createElement(
+      "div",
+      { className: "qs-help", ref: "help" },
+      React.createElement("span", { name: "share" }),
+      React.createElement(
+        "span",
+        null,
+        "Define the scope of research"
+      )
+    );
+  },
+  focusQuery: function focusQuery() {
+    this.refs.query.getDOMNode().focus();
+  },
+  setStateFromSubComponent: function setStateFromSubComponent() {
+    return this.setState(this.getValue(), this.focusQuery);
+  },
+  render: function renderSearchInput() {
+    return React.createElement(
+      "div",
+      { className: "qs-quick-search" },
+      React.createElement(Scope, { ref: "scope", list: this.props.scopes, value: this.state.scope, handleOnClick: this.handleOnClickScope }),
+      React.createElement("input", { ref: "query", onKeyUp: this.handleKeyUp, type: "search" }),
+      this.renderHelp()
+    );
+  }
+};
+
+module.exports = builder(SearchInputMixin);
+
+},{"./scope":89,"lodash/string/words":73}],89:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var type = window.focus.component.types;
+var React = window.React;
+
+//var type = require('../../core/validation/types');
+var find = require("lodash/collection/find");
+var uuid = require("uuid");
+var scopeMixin = {
+	/**
+  * Component tag name.
+  * @type {String}
+  */
+	displayName: "Scope",
+	/**
+  * Component default properties.
+  */
+	getDefaultProps: function getScopeDefaultProperties() {
+		return {
+			list: [],
+			value: undefined,
+			isDeployed: false
+		};
+	},
+	/**
+  * Scope property validation.
+  * @type {Object}
+  */
+	propTypes: {
+		list: type("array"),
+		isDeployed: type("bool"),
+		value: type(["string", "number"])
+	},
+	/**
+  * Get the initial state from the data.
+  */
+	getInitialState: function getScopeInitialState() {
+		return {
+			isDeployed: this.props.isDeployed,
+			value: this.props.value
+		};
+	},
+	/**
+  * Get the value of the scope.
+  */
+	getValue: function getValue() {
+		return this.state.value;
+	},
+	/**
+  * Define the scope label.
+  */
+	scopeLabel: function scopeLabel() {
+		return;
+		if (!this.state.value) {
+			return "Choose your scope";
+		}
+		return this.state.value;
+	},
+	/**
+  * Internal function which handles the click on the scope line element and call the real handleOnclick if it is defined.
+  * @param {object} event - Event trigger by the search.
+  */
+	_handleOnClick: function _handleOnClick(event) {
+		var val = event.target.hasAttribute("value") ? event.target.value : undefined;
+		this.setState({
+			value: val,
+			isDeployed: false
+		}, this.props.handleOnClick);
+	},
+	/**
+  * Handle the click on the scope element.
+  */
+	handleDeployClick: function handleDeployClick() {
+		this.setState({
+			isDeployed: !this.state.isDeployed
+		});
+	},
+	/**
+  * Get the current active scope.
+  */
+	getActiveScope: function getActiveScope() {
+		var _this = this;
+
+		return find(this.props.list, function (scope) {
+			return scope.code === _this.state.value;
+		});
+	},
+	/**
+  * Return the css class for the scope.
+  */
+	scopeStyle: function scopeStyle() {
+		return "" + this.getActiveScope().style;
+	},
+	renderScopeList: function renderScopeList() {
+		var _this = this;
+
+		if (!this.state.isDeployed) {
+			return;
+		}
+		var scopes = this.props.list.map(function (scope) {
+			var selectedValue = _this.state.value === scope.code ? "active" : "";
+			return React.createElement(
+				"li",
+				{ key: scope.code || uuid.v4(),
+					value: scope.code,
+					className: "" + selectedValue + " " + scope.style,
+					onClick: _this._handleOnClick },
+				scope.label
+			);
+		});
+		return React.createElement(
+			"ul",
+			{ className: "qs-scope-list" },
+			" ",
+			scopes,
+			" "
+		);
+	},
+	/**
+  * Render the complete scope element.
+  * @return {object} - The jsx element.
+  */
+	render: function renderScopeComponent() {
+		var cssClass = "qs-icon qs-scope-deploy-" + (this.state.isDeployed ? "up" : "down");
+		return React.createElement(
+			"div",
+			{ className: this.props.className + " qs-scope" },
+			React.createElement(
+				"div",
+				{ className: cssClass,
+					onClick: this.handleDeployClick },
+				React.createElement(
+					"div",
+					{ className: this.scopeStyle() },
+					" ",
+					this.scopeLabel(),
+					" "
+				)
+			),
+			" ",
+			this.renderScopeList(),
+			" "
+		);
+	}
+};
+
+module.exports = builder(scopeMixin);
+
+},{"lodash/collection/find":25,"uuid":79}]},{},[1])(1)
 });

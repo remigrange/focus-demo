@@ -19,6 +19,8 @@
   	<link rel="stylesheet" href="http://fezvrasta.github.io/bootstrap-material-design/bootstrap-elements.html" /> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script>
     
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js" ></script>
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/css/material-wfont.css">
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.2/css/material.css">

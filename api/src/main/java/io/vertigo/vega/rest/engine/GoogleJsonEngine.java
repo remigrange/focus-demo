@@ -430,15 +430,19 @@ public final class GoogleJsonEngine implements JsonEngine {
 				// TODO Auto-generated method stub
 				final JsonObject jsonObject = new JsonObject();
 				final JsonArray jsonData = (JsonArray) context.serialize(src.getDtList());
-				jsonObject.add("data", jsonData);
+				jsonObject.add("list", jsonData);
 				final List<Facet> facets = src.getFacets();
 				final List<JsonObject> facetList = new ArrayList<JsonObject>();
 				for(final Facet facet : facets){
 					final JsonObject jsonFacet= new JsonObject();
 
-					final Map<String, Long> maps = new HashMap();
+					final Map<String, FacetObject> maps = new HashMap();
 					for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
-						maps.put(entry.getKey().getLabel().getDisplay() , entry.getValue());
+						final FacetObject facetObj = new FacetObject();
+						facetObj.setCount(entry.getValue());
+						facetObj.setLabel(entry.getKey().getLabel().getDisplay());
+						//maps.put(entry.getKey().getLabel().getDisplay() ,entry.getValue());
+						maps.put(entry.getKey().getLabel().getDisplay(), facetObj);
 					}
 
 
@@ -447,7 +451,7 @@ public final class GoogleJsonEngine implements JsonEngine {
 					jsonFacet.add(facetName, jsonFacetValues);
 					facetList.add(jsonFacet);
 				}
-				jsonObject.add("facets", context.serialize(facetList));
+				jsonObject.add("facet", context.serialize(facetList));
 				return jsonObject;
 			}
 		})
@@ -465,5 +469,24 @@ public final class GoogleJsonEngine implements JsonEngine {
 				return false;
 			}
 		}).create();
+	}
+
+	private class FacetObject {
+		private String label;
+		private Long count;
+
+		/**
+		 * @param label the label to set
+		 */
+		public void setLabel(final String label) {
+			this.label = label;
+		}
+		/**
+		 * @param count the count to set
+		 */
+		public void setCount(final Long count) {
+			this.count = count;
+		}
+
 	}
 }

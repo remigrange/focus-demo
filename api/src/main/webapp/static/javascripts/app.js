@@ -90,6 +90,25 @@
   globals.require.list = list;
   globals.require.brunch = true;
 })();
+require.register("action/index", function(exports, require, module) {
+var AppDispatcher =  focus.dispatcher;
+//var fetch = require('../../core/fetch');
+//var URL = require('../../config/server');
+
+var data = [{id:1, title : "toto", body:"ceci est un test"},{id:2, title:"tata",body:"deuxieme test"}]
+var countId = 3;
+module.exports = {
+    searchByScope: function search(criteria){
+        var url = "./searchByScope";
+         //Promisify.model(url, {}).fetch();
+       // Promisify.collection(url).search({criteria: criteria, pagesInfos: pagesInfos});
+        //AppDispatcher.handleServerAction()
+        return fetch.model(url, {}).fetch();
+    }
+};
+
+});
+
 require.register("application", function(exports, require, module) {
 console.log('Application');
 });
@@ -382,6 +401,52 @@ require.register("config/entityDefinition/index", function(exports, require, mod
  * @type {Object}
  */
 module.exports = {
+	"searchCriteria": {
+			"scope": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"searchText": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			}		
+	},
+	"searchRet": {
+			"type": {
+				"domain": "DO_LIBELLE_50",
+				"required": false
+			},		
+			"field1": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field2": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field3": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"field4": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			}		
+	},
+	"selectedFacet": {
+			"key": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"facetQuery": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"value": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			}		
+	},
 	"fileInfo": {
 			"filId": {
 				"domain": "DO_ID",
@@ -664,28 +729,6 @@ module.exports = {
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
-			}		
-	},
-	"searchRet": {
-			"type": {
-				"domain": "DO_LIBELLE_50",
-				"required": false
-			},		
-			"field1": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field2": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field3": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field4": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
 			}		
 	},
 	"casting": {
@@ -992,6 +1035,22 @@ module.exports = {
  */
 
 module.exports = {
+    "searchCriteria": {
+        "scope" : "The Scope",
+        "searchText" : "Field 1"
+    },
+    "searchRet": {
+        "type" : "Type of the object",
+        "field1" : "Field 1",
+        "field2" : "Field 2",
+        "field3" : "Field 3",
+        "field4" : "Field 4"
+    },
+    "selectedFacet": {
+        "key" : "Facet Name",
+        "facetQuery" : "Facet query",
+        "value" : "Facet key value"
+    },
     "fileInfo": {
         "filId" : "FIL_ID",
         "fileName" : "FILE_NAME",
@@ -1080,13 +1139,6 @@ module.exports = {
         "countryIds" : "Movie's contries identifiers",
         "languageIds" : "Movie's languages identifiers",
         "rank" : "rank"
-    },
-    "searchRet": {
-        "type" : "Type of the object",
-        "field1" : "Field 1",
-        "field2" : "Field 2",
-        "field3" : "Field 3",
-        "field4" : "Field 4"
     },
     "casting": {
         "castId" : "Cast_id",
@@ -1227,7 +1279,8 @@ var render = focus.application.render;
 var AppRouter = Router.extend({
   routes: {
     '': 'home',
-    'search': 'search'
+    'filterResult': 'filterResult',
+    'searchResult': 'searchResult'
   },
   home: function handleHomeRoute(){
     console.log('ROUTE: HOME');
@@ -1238,22 +1291,225 @@ var AppRouter = Router.extend({
        props:{userId: "6c4a5d96-dc8a-461d-8b23-d9b5ed2f4883"}
      });*/
   },
-    search: function handleSearch(){
-      console.log('ROUTE: SEARCH');
+  filterResult: function handleFilterResult(){
+      console.log('ROUTE: FILTER RESULT');
       //Require the applications modules
-       var SearchView  = require('../views/search');
+       var FilterResultView  = require('../views/filter-result');
       //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
-      render(SearchView, '#page');
+      render(FilterResultView, '#page');
+  },
+  searchResult: function handleSearchResult(){
+      console.log('ROUTE: SEARCH RESULT');
+      //Require the applications modules
+      var SearchResultView  = require('../views/search-result');
+      //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
+      render(SearchResultView, '#page');
     }
 });
 module.exports = new AppRouter();
 
 });
 
-require.register("views/search/index", function(exports, require, module) {
+require.register("views/filter-result/index", function(exports, require, module) {
+var SearchFilterResult = focusComponents.page.search.filterResult.component;
+var serviceMachin = require('../../action');
+
 module.exports =  React.createClass({displayName: "exports",
     render:function(){
-        return React.createElement("div", null, " Rodolphe Search ROUTE ");
+
+        var returnedData =  {
+            facet: {
+                FCT_PAYS: {
+                    "FRA": {label: "France", count: 5},
+                    "GER": {label: "Germany", count: 8}
+                },
+                FCT_STATUS: {
+                    "OPE": {label: "Open", count: 7},
+                    "CLO": {label: "Closed", count: 2},
+                    "ST1": {label: "Status 1", count: 2},
+                    "ST2": {label: "Status 2", count: 2},
+                    "ST3": {label: "Status 3", count: 2},
+                    "ST4": {label: "Status 4", count: 2},
+                    "ST5": {label: "Status 5", count: 2}
+                },
+                FCT_REGION: {
+                    "IDF": {label: "Ile de France", count: 11},
+                    "NPC": {label: "Nord - Pas de Calais", count: 6}
+                }
+            },
+            data: [{id:1, title : "toto", body:"ceci est un test"},{id:2, title:"tata",body:"deuxieme test"}, {id:3, title:"titi",body:"troisième test"}],
+            pageInfos: {},
+            searchContext: {}
+        };
+
+        var action = {
+
+            search: function(criteria) {
+                serviceMachin.searchByScope(criteria).then(
+                    function success(data) {
+                        focus.dispatcher.handleServerAction({data: data, type: "update"});
+                    },
+                    function error(error) {
+                        //TODO
+                        console.info("Errrors");
+                    }
+                );
+            }
+        };
+        var Line = React.createClass({displayName: "Line",
+            mixins: [focusComponents.list.selection.line.mixin],
+            renderLineContent: function(data){
+                return React.createElement("div", null, React.createElement("div", null, "data.title"), React.createElement("div", null, "data.description"));
+            }
+        });
+
+        var config = {
+            facetConfig: {
+                FCT_MOVIE_COUNTRY: "text",
+                FCT_MOVIE_GENRE: "text",
+                FCT_MOVIE_LANGUAGE: "text"
+            },
+            orderableColumnList:{title: "key.title", description: "key.description"},
+            groupableColumnList:{title: "key.title"},
+            operationList: [
+                {label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
+                {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
+                {label: "Button2_a",action: function() {alert("Button2a");},style:undefined,priority: 2},
+                {label: "Button2_b",action: function() {alert("Button2b");},style: undefined,priority: 2},
+            ],
+            action: action,
+            lineComponent: Line,
+            onLineClick : function onLineClick(line){
+                alert('click sur la ligne ' + line.title);
+            },
+            isSelection:true,
+            lineOperationList:[
+                {label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
+                {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
+                {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
+                {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}
+            ]
+
+        }
+
+        return React.createElement(SearchFilterResult, {facetConfig: config.facetConfig, 
+                                    orderableColumnList: config.orderableColumnList, 
+                                    groupableColumnList: config.groupableColumnList, 
+                                    operationList: config.operationList, 
+                                    action: config.action, 
+                                    lineComponent: Line, 
+                                    onLineClick: function onLineClick(line){ alert('click sur la ligne ' + line.title); }, 
+                                    isSelection: true, 
+                                    lineOperationList: config.lineOperationList}
+
+
+        );
+        //return <div> Rodolphe Search ROUTE </div>
+    }
+});
+});
+
+require.register("views/search-result/index", function(exports, require, module) {
+var SearchFilterResult = focusComponents.page.searchfilterResult
+
+
+module.exports =  React.createClass({displayName: "exports",
+    render:function(){
+
+        var returnedData =  {
+            facet: {
+                FCT_PAYS: {
+                    "FRA": {label: "France", count: 5},
+                    "GER": {label: "Germany", count: 8}
+                },
+                FCT_STATUS: {
+                    "OPE": {label: "Open", count: 7},
+                    "CLO": {label: "Closed", count: 2},
+                    "ST1": {label: "Status 1", count: 2},
+                    "ST2": {label: "Status 2", count: 2},
+                    "ST3": {label: "Status 3", count: 2},
+                    "ST4": {label: "Status 4", count: 2},
+                    "ST5": {label: "Status 5", count: 2}
+                },
+                FCT_REGION: {
+                    "IDF": {label: "Ile de France", count: 11},
+                    "NPC": {label: "Nord - Pas de Calais", count: 6}
+                }
+            },
+            list: [{id:1, title : "toto", body:"ceci est un test"},{id:2, title:"tata",body:"deuxieme test"}, {id:3, title:"titi",body:"troisième test"}],
+            pageInfos: {},
+            searchContext: {}
+        };
+
+        var action = {
+            search: function(criteria) {
+                window.setTimeout(
+                    function() {
+                        var data = {
+                            facet: returnedData.facet,
+                            list: returnedData.list,
+                            pageInfos:returnedData.pageInfos,
+                            searchContext: returnedData.searchContext
+                        };
+
+                        focus.dispatcher.handleServerAction({
+                            data: data, type: "update"
+                        })
+                    },
+                    1000);
+            }
+        };
+        var Line = React.createClass({displayName: "Line",
+            mixins: [focusComponents.list.selection.line.mixin],
+            renderLineContent: function(data){
+                var title = React.createElement('div',null,data.title);
+                var body = React.createElement('div',null,data.body);
+                var root = React.createElement('div',null,title,body);
+                return root;
+            }
+        });
+
+        var config = {
+            facetConfig: {
+                FCT_PAYS: "text",
+                FCT_STATUS: "text",
+                FCT_REGION: "text"
+            },
+            orderableColumnList:{col1: "Colonne 1", col2: "Colonne 2", col3: "Colonne 3"},
+            groupableColumnList:{col1: "Colonne 1", col2: "Colonne 2"},
+            operationList: [
+                {label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
+                {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
+                {label: "Button2_a",action: function() {alert("Button2a");},style:undefined,priority: 2},
+                {label: "Button2_b",action: function() {alert("Button2b");},style: undefined,priority: 2},
+            ],
+            action: action,
+            lineComponent: Line,
+            onLineClick : function onLineClick(line){
+                alert('click sur la ligne ' + line.title);
+            },
+            isSelection:true,
+            lineOperationList:[
+                {label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
+                {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
+                {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
+                {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}
+            ]
+
+        }
+
+        return React.createElement(SearchFilterResult, {config: config.config, 
+                                    orderableColumnList: config.orderableColumnList, 
+                                    groupableColumnList: config.groupableColumnList, 
+                                    operationList: config.operationList, 
+                                    action: config.action, 
+                                    lineComponent: Line, 
+                                    onLineClick: function onLineClick(line){ alert('click sur la ligne ' + line.title); }, 
+                                    isSelection: true, 
+                                    lineOperationList: config.lineOperationList}
+
+
+        );
     }
 });
 });
