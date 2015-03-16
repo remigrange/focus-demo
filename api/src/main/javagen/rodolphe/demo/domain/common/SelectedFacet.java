@@ -15,27 +15,27 @@ public final class SelectedFacet implements DtObject {
 	/** SerialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	private String facetName;
+	private String key;
 	private String facetQuery;
-	private String facetValueKey;
+	private String value;
 
 	/**
 	 * Champ : DATA.
 	 * Récupère la valeur de la propriété 'Facet Name'. 
-	 * @return String facetName 
+	 * @return String key 
 	 */
 	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Facet Name")
-	public String getFacetName() {
-		return facetName;
+	public String getKey() {
+		return key;
 	}
 
 	/**
 	 * Champ : DATA.
 	 * Définit la valeur de la propriété 'Facet Name'.
-	 * @param facetName String 
+	 * @param key String 
 	 */
-	public void setFacetName(final String facetName) {
-		this.facetName = facetName;
+	public void setKey(final String key) {
+		this.key = key;
 	}
 
 	/**
@@ -60,20 +60,20 @@ public final class SelectedFacet implements DtObject {
 	/**
 	 * Champ : DATA.
 	 * Récupère la valeur de la propriété 'Facet key value'. 
-	 * @return String facetValueKey 
+	 * @return String value 
 	 */
 	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Facet key value")
-	public String getFacetValueKey() {
-		return facetValueKey;
+	public String getValue() {
+		return value;
 	}
 
 	/**
 	 * Champ : DATA.
 	 * Définit la valeur de la propriété 'Facet key value'.
-	 * @param facetValueKey String 
+	 * @param value String 
 	 */
-	public void setFacetValueKey(final String facetValueKey) {
-		this.facetValueKey = facetValueKey;
+	public void setValue(final String value) {
+		this.value = value;
 	}
 
 	//Aucune Association déclarée

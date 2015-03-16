@@ -17,7 +17,7 @@ create DtDefinition DT_SEARCH_CRITERIA {
 
 create DtDefinition DT_SELECTED_FACET {
 	persistent:"false"
-	field FACET_NAME {domain: DO_LIBELLE_250 label: "Facet Name" notNull:"false" }
+	field KEY {domain: DO_LIBELLE_250 label: "Facet Name" notNull:"false" }
 	field FACET_QUERY  {domain: DO_LIBELLE_250 label: "Facet query" notNull:"false"}
-	field FACET_VALUE_KEY  {domain: DO_LIBELLE_250 label: "Facet key value" notNull:"false"}
+	field VALUE  {domain: DO_LIBELLE_250 label: "Facet key value" notNull:"false"}
 }

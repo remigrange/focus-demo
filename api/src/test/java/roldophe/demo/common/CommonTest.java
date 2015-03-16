@@ -3,8 +3,12 @@
  */
 package roldophe.demo.common;
 
+import io.vertigo.dynamo.collections.model.Facet;
+import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
+
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
@@ -19,6 +23,7 @@ import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.search.FacetConst;
 import rodolphe.demo.services.common.CommonServices;
 import rodolphe.demo.services.search.SearchCriterium;
 import roldophe.demo.tools.AbstractRodolpheTestCase;
@@ -40,9 +45,24 @@ public class CommonTest extends AbstractRodolpheTestCase{
 		criteria.setScope(CodeScope.MOVIE.name());
 		criteria.setSearchText("Fantastic");
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
-		final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies  = (FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>>)
+		FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies  = (FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>>)
 				commonServices.search(criteria, selection);
 		Logger.getLogger(getClass()).info("result : "+ movies.getCount());
+		for (final Facet facet : movies.getFacets()) {
+			getLogger().info(facet.getDefinition().getLabel().getDisplay());
+			for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+				getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
+				getLogger().info("filter " + entry.getKey().getListFilter().getFilterValue());
+			}
+		}
+		//Test with selected facet.
+		final SelectedFacet selected = new  SelectedFacet();
+		selected.setKey(FacetConst.FCT_MOVIE_COUNTRY.getFacetName());
+		selected.setValue("USA");
+		selection.add(selected);
+		movies  = (FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>>)
+				commonServices.search(criteria, selection);
+		Logger.getLogger(getClass()).info("result with facet : "+ movies.getCount());
 
 	}
 	@Test

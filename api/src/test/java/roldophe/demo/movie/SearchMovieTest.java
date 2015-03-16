@@ -175,7 +175,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		getLogger().info("results : " + movies.getCount());
 		//Search with selected facet.
 		if(selectedFacetValue!=null){
-			getLogger().info("facet filter : " + selectedFacet.getDefinition().getName()+" test1 " +selectedFacetValue.getLabel().getDisplay()+" test2 "+selectedFacetValue.getListFilter().getFilterValue());
+			getLogger().info("facet filter : " + selectedFacet.getDefinition().getName()+"  " +selectedFacetValue.getLabel().getDisplay()+"  "+selectedFacetValue.getListFilter().getFilterValue());
 			final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(),selectedFacetValue.getLabel().getDisplay(), selectedFacetValue.getListFilter());
 			movies = movieServices.getMoviesByCriteria(crit, sel);
 			getLogger().info("results : " + movies.getCount());

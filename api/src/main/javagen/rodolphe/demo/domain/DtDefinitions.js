@@ -36,7 +36,7 @@ module.exports = {
 			}		
 	},
 	"selectedFacet": {
-			"facetName": {
+			"key": {
 				"domain": "DO_LIBELLE_250",
 				"required": false
 			},		
@@ -44,7 +44,7 @@ module.exports = {
 				"domain": "DO_LIBELLE_250",
 				"required": false
 			},		
-			"facetValueKey": {
+			"value": {
 				"domain": "DO_LIBELLE_250",
 				"required": false
 			}		

@@ -112,11 +112,11 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	 */
 	public enum SelectedFacetFields implements DtFieldName {
 		/** Propriété 'Facet Name'. */
-		FACET_NAME,
+		KEY,
 		/** Propriété 'Facet query'. */
 		FACET_QUERY,
 		/** Propriété 'Facet key value'. */
-		FACET_VALUE_KEY,
+		VALUE,
 	}
 
 	/**

@@ -16,9 +16,9 @@ module.exports = {
         "field4" : "Field 4"
     },
     "selectedFacet": {
-        "facetName" : "Facet Name",
+        "key" : "Facet Name",
         "facetQuery" : "Facet query",
-        "facetValueKey" : "Facet key value"
+        "value" : "Facet key value"
     },
     "fileInfo": {
         "filId" : "FIL_ID",

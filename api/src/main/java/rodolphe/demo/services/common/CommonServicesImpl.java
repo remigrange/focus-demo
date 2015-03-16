@@ -18,6 +18,7 @@ import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.search.FacetConst;
 import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.people.PeopleServices;
 import rodolphe.demo.services.search.FacetSelection;
@@ -51,11 +52,21 @@ public class CommonServicesImpl implements CommonServices {
 		peopleCrit.setFirstName(searchText);
 		peopleCrit.setLastName(searchText);
 		final FacetSelection [] facetSel = new FacetSelection[selection.size()];
+		//facet selection list.
 		for(int i=0; i<selection.size(); i++){
 			final SelectedFacet selected = selection.get(i);
-			final ListFilter filter = new ListFilter(selected.getFacetQuery());
-			facetSel[i]= new FacetSelection(selected.getFacetName(), selected.getFacetValueKey(), filter);
-
+			FacetConst selectedFacetConst =null;
+			final FacetConst[] listFacets = FacetConst.values();
+			for(final FacetConst facetConst : listFacets){
+				if(facetConst.getFacetName().equalsIgnoreCase(selected.getKey())){
+					selectedFacetConst = facetConst;
+					break;
+				}
+			}
+			if(selectedFacetConst!=null){
+				final ListFilter filter = new ListFilter(selectedFacetConst.getField().name()+":\""+selected.getValue()+"\"");
+				facetSel[i]= new FacetSelection(selectedFacetConst.name(), selected.getValue(), filter);
+			}
 		}
 
 		if(CodeScope.MOVIE.name().equals(scope)){
