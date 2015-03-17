@@ -11,17 +11,17 @@ var AppRouter = Router.extend({
     '': 'home',
     'filterResult': 'filterResult',
     'searchResult': 'searchResult',
-    'movie': 'movie'
+    'movie/:id': 'movie'
   },
   home: function handleHomeRoute(){
       console.log('ROUTE: HOME');
     //Require the applications modules
   },
-    movie: function handleMovieRoute() {
+    movie: function handleMovieRoute(id) {
         console.log('ROUTE: MOVIE');
         //Require the applications modules
         var MovieDetailView = require('../views/movie');
-        render(MovieDetailView, '#page', {props: {id: "5"}});
+        render(MovieDetailView, '#page', {props: {id: id}});
     },
   filterResult: function handleFilterResult(){
       console.log('ROUTE: FILTER RESULT');

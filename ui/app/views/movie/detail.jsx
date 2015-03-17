@@ -14,7 +14,6 @@ module.exports =  React.createClass({
             <Block title={"Fiche de d'un film"}>
                 {this.fieldFor("movId")}
                 {this.fieldFor("title")}
-                {this.buttonSave()}
            </Block>
         );
     }
