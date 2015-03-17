@@ -109,12 +109,15 @@ module.exports = {
 
 });
 
-require.register("application", function(exports, require, module) {
+require.register("action/movie/index", function(exports, require, module) {
+
+});
+
+;require.register("application", function(exports, require, module) {
 console.log('Application');
 });
 
 require.register("config/domain/index", function(exports, require, module) {
-var stitchFormatters = require('../../helper/formatter/formatter_helper');
 module.exports = {
     "DO_BOOLEEN": {
         "type": "boolean"
@@ -124,7 +127,7 @@ module.exports = {
         "decorator": "datePicker",
         "style": "date right",
         "format": {
-            "value": Fmk.Helpers.formaters.date
+            "value": function(data){return data;}
         }
     },
     "DO_MONTANT": {
@@ -135,7 +138,7 @@ module.exports = {
         }],
         "symbol": "\u20AC",
         "format": {
-            "value": Fmk.Helpers.formaters.currency
+            "value": function(data){return data;}
         }
     },
     "DO_EMAIL": {
@@ -274,7 +277,7 @@ module.exports = {
         "decorator": "datePicker",
         "style": "date right",
         "format": {
-            "value": stitchFormatters.dateTime
+            "value": function(data){return data;}
         }
     },
     "DO_DECIMAL_3": {
@@ -1254,6 +1257,8 @@ var Hello = React.createClass({displayName: "Hello",
         return React.createElement("div", null, "Hello ", this.props.name);
     }
 });
+//Require dependencies.
+require('./initializer');
 require("router");
 Backbone.history.start();
 //setTimeout(focus.application.render(Hello, document.querySelector('#container')), 3000);
@@ -1267,18 +1272,27 @@ focus.definition.entity.container.setEntityConfiguration(require('../config/enti
 
 });
 
+require.register("initializer/domain-initializer", function(exports, require, module) {
+/*global focus*/
+focus.definition.domain.container.setAll(require('../config/domain'));
+});
+
 require.register("initializer/index", function(exports, require, module) {
-global.$ = require('jquery');//(window);
+/*global.$ = require('jquery');//(window);
 global.Backbone = require('backbone');
-Backbone.$ = $;
+Backbone.$ = $;*/
 //React tap event initializer.
-var injectTapEventPlugin = require("react-tap-event-plugin");
+//var injectTapEventPlugin = require("react-tap-event-plugin");
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release
 //Check this repo:
 //https://github.com/zilverline/react-tap-event-plugin
-injectTapEventPlugin();
+//injectTapEventPlugin();
+
+require("./domain-initializer");
+require("./definition-initializer");
+
 
 });
 
@@ -1286,7 +1300,6 @@ require.register("router/index", function(exports, require, module) {
 //Dependencies.
 var Router = Backbone.Router;
 var render = focus.application.render;
-
 
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
@@ -1296,17 +1309,19 @@ var AppRouter = Router.extend({
   routes: {
     '': 'home',
     'filterResult': 'filterResult',
-    'searchResult': 'searchResult'
+    'searchResult': 'searchResult',
+    'movie': 'movie'
   },
   home: function handleHomeRoute(){
-    console.log('ROUTE: HOME');
+      console.log('ROUTE: HOME');
     //Require the applications modules
-    /*var UserDetailView = require('../view/user');
-    //React.render(<UserDetailView userId="12344"/>, document.querySelector('#page'));
-     render(UserDetailView, '#page', {
-       props:{userId: "6c4a5d96-dc8a-461d-8b23-d9b5ed2f4883"}
-     });*/
   },
+    movie: function handleMovieRoute() {
+        console.log('ROUTE: MOVIE');
+        //Require the applications modules
+        var MovieDetailView = require('../views/movie');
+        render(MovieDetailView, '#page', {props: {id: "5"}});
+    },
   filterResult: function handleFilterResult(){
       console.log('ROUTE: FILTER RESULT');
       //Require the applications modules
@@ -1460,16 +1475,25 @@ module.exports =  React.createClass({displayName: "exports",
 
 require.register("views/movie/detail", function(exports, require, module) {
 //Get the form mixin.
-var React = require('react');
 var formMixin = focus.components.common.form.mixin;
 var Block = focus.components.common.block.component;
-var actionsMovie = undefined;
+//var actionsMovie = require('../../action/movie');;
 var movieStore = require('../../stores/movie');
 module.exports =  React.createClass({displayName: "exports",
+    definitionPath: "movie",
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["movie"]}],
-  actions: actionsUser,
-  renderContent:function renderUserDetail(){
+    action: {
+        load: function(){
+            Promise.resolve({movie: {title: "pierre", description: "besson"}}).then(
+                function(data){
+                    focus.dispatcher.handleServerAction({
+                        data: data,
+                        type: "update"
+                    });
+                });
+        }},
+  renderContent:function renderMovieDetail(){
     return(
         React.createElement(Block, {title: "Fiche de d'un film"}, 
             this.fieldFor("title"), 
@@ -1483,11 +1507,10 @@ module.exports =  React.createClass({displayName: "exports",
 });
 
 require.register("views/movie/index", function(exports, require, module) {
-var React = require('react');
 var MovieDetail = require('./detail');
 
 module.exports =  React.createClass({
-  displayName:"MovieView",
+  displayName: "MovieView",
   render:function(){
     return (
       React.createElement("div", {className: "movieView"}, 

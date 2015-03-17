@@ -1,4 +1,3 @@
-var React = require('react');
 var MovieDetail = require('./detail');
 
 module.exports =  React.createClass({

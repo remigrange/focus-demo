@@ -1,4 +1,3 @@
-var stitchFormatters = require('../../helper/formatter/formatter_helper');
 module.exports = {
     "DO_BOOLEEN": {
         "type": "boolean"
@@ -8,7 +7,7 @@ module.exports = {
         "decorator": "datePicker",
         "style": "date right",
         "format": {
-            "value": Fmk.Helpers.formaters.date
+            "value": function(data){return data;}
         }
     },
     "DO_MONTANT": {
@@ -19,7 +18,7 @@ module.exports = {
         }],
         "symbol": "\u20AC",
         "format": {
-            "value": Fmk.Helpers.formaters.currency
+            "value": function(data){return data;}
         }
     },
     "DO_EMAIL": {
@@ -158,7 +157,7 @@ module.exports = {
         "decorator": "datePicker",
         "style": "date right",
         "format": {
-            "value": stitchFormatters.dateTime
+            "value": function(data){return data;}
         }
     },
     "DO_DECIMAL_3": {

@@ -1,15 +1,15 @@
-global.$ = require('jquery');//(window);
+/*global.$ = require('jquery');//(window);
 global.Backbone = require('backbone');
-Backbone.$ = $;
+Backbone.$ = $;*/
 //React tap event initializer.
-var injectTapEventPlugin = require("react-tap-event-plugin");
+//var injectTapEventPlugin = require("react-tap-event-plugin");
 
 //Needed for onTouchTap
 //Can go away when react 1.0 release
 //Check this repo:
 //https://github.com/zilverline/react-tap-event-plugin
-injectTapEventPlugin();
+//injectTapEventPlugin();
 
-var domains = require("./domain-initializer");
-var entities = require("./definition-initializer");
+require("./domain-initializer");
+require("./definition-initializer");
 
