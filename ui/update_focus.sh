@@ -1,12 +1,11 @@
-npm update focus
+npm install
 cd node_modules/focus
 npm install
 gulp browserify
 cd ../..
-npm update focus-components
 cd node_modules/focus-components
 npm install
 gulp componentify
-gulp browserify
+gulp build
 cd ../..
 

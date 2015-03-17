@@ -1380,37 +1380,26 @@ var serviceComman = require('../../services');
 module.exports =  React.createClass({displayName: "exports",
     render:function(){
 
-        var returnedData =  {
-            facet: {
-                FCT_PAYS: {
-                    "FRA": {label: "France", count: 5},
-                    "GER": {label: "Germany", count: 8}
-                },
-                FCT_STATUS: {
-                    "OPE": {label: "Open", count: 7},
-                    "CLO": {label: "Closed", count: 2},
-                    "ST1": {label: "Status 1", count: 2},
-                    "ST2": {label: "Status 2", count: 2},
-                    "ST3": {label: "Status 3", count: 2},
-                    "ST4": {label: "Status 4", count: 2},
-                    "ST5": {label: "Status 5", count: 2}
-                },
-                FCT_REGION: {
-                    "IDF": {label: "Ile de France", count: 11},
-                    "NPC": {label: "Nord - Pas de Calais", count: 6}
-                }
-            },
-            data: [{id:1, title : "toto", body:"ceci est un test"},{id:2, title:"tata",body:"deuxieme test"}, {id:3, title:"titi",body:"troisième test"}],
-            pageInfos: {},
-            searchContext: {}
-        };
-
         var action = {
-            //var crite
             search: function(criteria) {
-                serviceComman.common.searchByScope(criteria).then(
+                var critere = {
+                    criteria: {
+                        scope: "MOVIE",
+                        searchText : "Fantastic"
+                    },
+                    facets: [
+                    ]
+                };
+                serviceComman.common.searchByScope(critere).then(
                     function success(data) {
-                        focus.dispatcher.handleServerAction({data: data, type: "update"});
+
+                        var dataRet = {
+                            facet: data.facet,
+                            list: data.list,
+                            pageInfos:{},
+                            searchContext:{}
+                        };
+                        focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
                     },
                     function error(error) {
                         //TODO
@@ -1422,17 +1411,32 @@ module.exports =  React.createClass({displayName: "exports",
         var Line = React.createClass({displayName: "Line",
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
-                return React.createElement("div", null, React.createElement("div", null, "data.title"), React.createElement("div", null, "data.description"));
+               return React.createElement("div", null, 
+                        React.createElement("div", {className: "mov-logo"}, 
+                            React.createElement("img", {src: "./static/img/logoMovie.png"})
+                        ), 
+                        React.createElement("div", null, 
+                            React.createElement("div", {className: "title-level-1"}, 
+                            data.title
+                            ), 
+                            React.createElement("div", {className: "title-level-2"}, 
+                            data.genreIds
+                            ), 
+                            React.createElement("div", {className: "title-level-3"}, 
+                            data.released
+                            )
+                        )
+                     );
             }
         });
 
         var config = {
             facetConfig: {
-                FCT_MOVIE_COUNTRY: "text",
-                FCT_MOVIE_GENRE: "text",
-                FCT_MOVIE_LANGUAGE: "text"
+                Language: "text",
+                Genre: "text",
+                Country: "text"
             },
-            orderableColumnList:{title: "key.title", description: "key.description"},
+            orderableColumnList:{title: "key.title", description: "key.genreIds"},
             groupableColumnList:{title: "key.title"},
             operationList: [
                 {label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
