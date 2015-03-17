@@ -1403,6 +1403,38 @@ module.exports =  React.createClass({displayName: "exports",
         var Line = React.createClass({displayName: "Line",
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
+             /* if(data.movId !== undefined){
+                  return <div>
+                      <div className="mov-logo" >
+                          <img src="./static/img/logoMovie.png"/>
+                      </div>
+                      <div>
+                          <div className="title-level-1">
+                            {data.title}
+                          </div>
+                          <div className="title-level-2">
+                            {data.genreIds}
+                          </div>
+                          <div className="title-level-3">
+                            {data.released}
+                          </div>
+                      </div>
+                  </div>;
+               } else {
+                  return <div>
+                      <div className="user-logo" >
+                          <img src="./static/img/logoMovie.png"/>
+                      </div>
+                      <div>
+                          <div className="title-level-1">
+                            {data.title}
+                          </div>
+                          <div className="title-level-3">
+                            {data.released}
+                          </div>
+                      </div>
+                  </div>;
+               }*/
                return React.createElement("div", null, 
                         React.createElement("div", {className: "mov-logo"}, 
                             React.createElement("img", {src: "./static/img/logoMovie.png"})
@@ -1454,7 +1486,7 @@ module.exports =  React.createClass({displayName: "exports",
             }
         }
 
-
+        
         return React.createElement(SearchFilterResult, {facetConfig: config.facetConfig, 
                                     orderableColumnList: config.orderableColumnList, 
                                     groupableColumnList: config.groupableColumnList, 

@@ -21309,7 +21309,7 @@ var SearchStore = (function (_CoreStore) {
       value: function update(newData) {
         var previousData = this.data.toJS();
         var processedData = assign({}, previousData, newData);
-        if (previousData.searchContext !== undefined && previousData.searchContext.scope === newData.searchContext.scope && previousData.searchContext.query === newData.searchContext.query) {
+        if (this._isConcatenation(previousData, newData)) {
           processedData.list = previousData.list.concat(newData.list);
         }
         //add calculated fields on data
@@ -21324,7 +21324,18 @@ var SearchStore = (function (_CoreStore) {
         this.emit("search:change");
       }
     },
+    _isConcatenation: {
+
+      /**
+       * Check if the search need to concat the nexData with the previous data (infinite scrol case).
+       */
+
+      value: function _isConcatenation(previousData, newData) {
+        return previousData.searchContext !== undefined && previousData.searchContext.scope === newData.searchContext.scope && previousData.searchContext.query === newData.searchContext.query && previousData.facet === newData.facet;
+      }
+    },
     addSearchChangeListener: {
+
       /**
        * Add a listener on the global change on the search store.
        * @param {Function} cb [description]
@@ -23097,9 +23108,9 @@ module.exports = function (url, data) {
 }));
 
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focusComponents = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
 "use strict";
 
-//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
 console.log("\n\t.########..#######...######..##.....##..######...........######...#######..##.....##.########...#######..##....##.########.##....##.########..######.\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.###...###.##.....##.##.....##.###...##.##.......###...##....##....##....##\n.##.......##.....##.##.......##.....##.##...............##.......##.....##.####.####.##.....##.##.....##.####..##.##.......####..##....##....##......\n.######...##.....##.##.......##.....##..######..#######.##.......##.....##.##.###.##.########..##.....##.##.##.##.######...##.##.##....##.....######.\n.##.......##.....##.##.......##.....##.......##.........##.......##.....##.##.....##.##........##.....##.##..####.##.......##..####....##..........##\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.##.....##.##........##.....##.##...###.##.......##...###....##....##....##\n.##........#######...######...#######...######...........######...#######..##.....##.##.........#######..##....##.########.##....##....##.....######.\n");
 module.exports = {
 	common: require("./common"),
@@ -23279,6 +23290,9 @@ var FieldMixin = {
   getValue: function getValue() {
     return this.refs.input.getValue();
   },
+  clearError: function clearError(e) {
+    this.setState({ error: undefined });
+  },
   input: function input() {
     var inputClassName = "form-control col-sm-" + (12 - this.props.labelSize);
     return React.createElement(
@@ -23291,9 +23305,7 @@ var FieldMixin = {
         value: this.props.value,
         type: this.props.type,
         validator: this.props.validator,
-        onChange: function (e) {
-          this.setState({ error: undefined });
-        },
+        onChange: this.clearError,
         ref: "input"
       })
     );
@@ -23636,14 +23648,14 @@ module.exports = {
 };
 
 },{"./block":2,"./button":4,"./field":5,"./form":7,"./img":8,"./input":11,"./label":14,"./select-action":15}],10:[function(require,module,exports){
-"use strict";
-
 //Target
 /*
 <label>
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
+"use strict";
+
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -23721,9 +23733,9 @@ module.exports = {
 };
 
 },{"./checkbox":10,"./text":12,"./textarea":13}],12:[function(require,module,exports){
+//Dependencies.
 "use strict";
 
-//Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -23786,10 +23798,14 @@ var inputTextMixin = {
    * @param {object} event - The sanitize event of input.
    */
   _handleOnChange: function inputOnChange(event) {
-    this.setState({ value: event.target.value });
-    if (this.props.onChange) {
-      return this.props.onChange(event);
+    //On change handler.
+    function onChg() {
+      if (this.props.onChange) {
+        return this.props.onChange(event);
+      }
     }
+    //Set the state then call the change handler.
+    this.setState({ value: event.target.value }, onChg);
   },
   /**
    * Render an input.
@@ -23810,8 +23826,6 @@ var inputTextMixin = {
 module.exports = builder(inputTextMixin);
 
 },{}],13:[function(require,module,exports){
-"use strict";
-
 //Target
 /*
 <div class="checkbox">
@@ -23820,6 +23834,8 @@ module.exports = builder(inputTextMixin);
   </label>
 </div>
  */
+"use strict";
+
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -24101,9 +24117,9 @@ var topicDisplayerMixin = {
 module.exports = builder(topicDisplayerMixin);
 
 },{}],17:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -24273,9 +24289,9 @@ var actionBarMixin = {
 module.exports = builder(actionBarMixin);
 
 },{"../../common/select-action":15,"../../common/topic-displayer":16,"../action-contextual":18}],18:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Button = require("../../common/button/action").component;
@@ -24487,9 +24503,9 @@ var InfiniteScrollMixin = {
 module.exports = { mixin: InfiniteScrollMixin };
 
 },{}],22:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var React = window.React;
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
@@ -24645,9 +24661,9 @@ var lineMixin = {
 module.exports = { mixin: lineMixin };
 
 },{"../../common/input/checkbox":10,"../action-contextual":18}],23:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Line = require("./line").mixin;
@@ -25066,7 +25082,7 @@ function baseDifference(array, values) {
       }
       result.push(value);
     }
-    else if (indexOf(values, value) < 0) {
+    else if (indexOf(values, value, 0) < 0) {
       result.push(value);
     }
   }
@@ -25146,13 +25162,13 @@ var isArguments = require('../lang/isArguments'),
  *
  * @private
  * @param {Array} array The array to flatten.
- * @param {boolean} [isDeep] Specify a deep flatten.
- * @param {boolean} [isStrict] Restrict flattening to arrays and `arguments` objects.
- * @param {number} [fromIndex=0] The index to start from.
+ * @param {boolean} isDeep Specify a deep flatten.
+ * @param {boolean} isStrict Restrict flattening to arrays and `arguments` objects.
+ * @param {number} fromIndex The index to start from.
  * @returns {Array} Returns the new flattened array.
  */
 function baseFlatten(array, isDeep, isStrict, fromIndex) {
-  var index = (fromIndex || 0) - 1,
+  var index = fromIndex - 1,
       length = array.length,
       resIndex = -1,
       result = [];
@@ -25163,7 +25179,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
     if (isObjectLike(value) && isLength(value.length) && (isArray(value) || isArguments(value))) {
       if (isDeep) {
         // Recursively flatten arrays (susceptible to call stack limits).
-        value = baseFlatten(value, isDeep, isStrict);
+        value = baseFlatten(value, isDeep, isStrict, 0);
       }
       var valIndex = -1,
           valLength = value.length;
@@ -25260,14 +25276,14 @@ var indexOfNaN = require('./indexOfNaN');
  * @private
  * @param {Array} array The array to search.
  * @param {*} value The value to search for.
- * @param {number} [fromIndex=0] The index to search from.
+ * @param {number} fromIndex The index to search from.
  * @returns {number} Returns the index of the matched value, else `-1`.
  */
 function baseIndexOf(array, value, fromIndex) {
   if (value !== value) {
     return indexOfNaN(array, fromIndex);
   }
-  var index = (fromIndex || 0) - 1,
+  var index = fromIndex - 1,
       length = array.length;
 
   while (++index < length) {
@@ -25903,8 +25919,10 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
         othCtor = other.constructor;
 
     // Non `Object` object instances with different constructors are not equal.
-    if (objCtor != othCtor && ('constructor' in object && 'constructor' in other) &&
-        !(typeof objCtor == 'function' && objCtor instanceof objCtor && typeof othCtor == 'function' && othCtor instanceof othCtor)) {
+    if (objCtor != othCtor &&
+        ('constructor' in object && 'constructor' in other) &&
+        !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
+          typeof othCtor == 'function' && othCtor instanceof othCtor)) {
       return false;
     }
   }
@@ -25920,13 +25938,13 @@ module.exports = equalObjects;
  *
  * @private
  * @param {Array} array The array to search.
- * @param {number} [fromIndex] The index to search from.
+ * @param {number} fromIndex The index to search from.
  * @param {boolean} [fromRight] Specify iterating from right to left.
  * @returns {number} Returns the index of the matched `NaN`, else `-1`.
  */
 function indexOfNaN(array, fromIndex, fromRight) {
   var length = array.length,
-      index = fromRight ? (fromIndex || length) : ((fromIndex || 0) - 1);
+      index = fromIndex + (fromRight ? 0 : -1);
 
   while ((fromRight ? index-- : ++index < length)) {
     var other = array[index];
@@ -26030,7 +26048,7 @@ function isIterateeCall(value, index, object) {
   }
   if (prereq) {
     var other = object[index];
-    return value === value ? value === other : other !== other;
+    return value === value ? (value === other) : (other !== other);
   }
   return false;
 }
@@ -26313,7 +26331,7 @@ var isArguments = require('./isArguments'),
     keys = require('../object/keys');
 
 /**
- * Checks if a value is empty. A value is considered empty unless it is an
+ * Checks if `value` is empty. A value is considered empty unless it is an
  * `arguments` object, array, string, or jQuery-like collection with a length
  * greater than `0` or an object with own enumerable properties.
  *
@@ -26646,7 +26664,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
         length = object.length;
   }
   if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-     (typeof object != 'function' && (length && isLength(length)))) {
+      (typeof object != 'function' && (length && isLength(length)))) {
     return shimKeys(object);
   }
   return isObject(object) ? nativeKeys(object) : [];
@@ -26840,7 +26858,7 @@ var reWords = (function() {
   var upper = '[A-Z\\xc0-\\xd6\\xd8-\\xde]',
       lower = '[a-z\\xdf-\\xf6\\xf8-\\xff]+';
 
-  return RegExp(upper + '{2,}(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
+  return RegExp(upper + '+(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
 }());
 
 /**
@@ -27253,9 +27271,9 @@ module.exports = {
 };
 
 },{"./search":87}],86:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var dispatcher = window.focus.dispatcher;
 var React = window.React;
@@ -27643,9 +27661,9 @@ var liveFilterMixin = {
 module.exports = builder(liveFilterMixin);
 
 },{"../../common/img":8,"./live-filter-facet":91,"lodash/object/omit":75,"object-assign":82}],90:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 
@@ -27691,9 +27709,9 @@ var liveFilterDataMixin = {
 module.exports = builder(liveFilterDataMixin);
 
 },{}],91:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Data = require("./live-filter-data").component;

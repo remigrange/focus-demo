@@ -27,6 +27,38 @@ module.exports =  React.createClass({
         var Line = React.createClass({
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
+             /* if(data.movId !== undefined){
+                  return <div>
+                      <div className="mov-logo" >
+                          <img src="./static/img/logoMovie.png"/>
+                      </div>
+                      <div>
+                          <div className="title-level-1">
+                            {data.title}
+                          </div>
+                          <div className="title-level-2">
+                            {data.genreIds}
+                          </div>
+                          <div className="title-level-3">
+                            {data.released}
+                          </div>
+                      </div>
+                  </div>;
+               } else {
+                  return <div>
+                      <div className="user-logo" >
+                          <img src="./static/img/logoMovie.png"/>
+                      </div>
+                      <div>
+                          <div className="title-level-1">
+                            {data.title}
+                          </div>
+                          <div className="title-level-3">
+                            {data.released}
+                          </div>
+                      </div>
+                  </div>;
+               }*/
                return <div>
                         <div className="mov-logo" >
                             <img src="./static/img/logoMovie.png"/>
@@ -78,7 +110,7 @@ module.exports =  React.createClass({
             }
         }
 
-
+        
         return <SearchFilterResult  facetConfig={config.facetConfig}
                                     orderableColumnList={config.orderableColumnList}
                                     groupableColumnList={config.groupableColumnList}
