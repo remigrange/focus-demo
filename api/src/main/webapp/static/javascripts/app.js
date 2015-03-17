@@ -110,10 +110,23 @@ module.exports = {
 });
 
 require.register("action/movie/index", function(exports, require, module) {
+var AppDispatcher =  focus.dispatcher;
+var movieServices = require('../../services/movie');
+module.exports = {
+    load: function(id){
+        movieServices.getMovieById(id).then(
+            function(data){
+                focus.dispatcher.handleServerAction({
+                    data: {movie: data},
+                    type: "update"
+                });
+            });
+    }
+};
 
 });
 
-;require.register("application", function(exports, require, module) {
+require.register("application", function(exports, require, module) {
 console.log('Application');
 });
 
@@ -1005,7 +1018,7 @@ module.exports = {
   getAll: url(root, 'GET'),
   update: url(root + "${id}/",'PUT'),
   create: url(root, 'POST'),
-  get: url(root + "${id}/", 'GET')
+  get: url(root + "${id}", 'GET')
 };
 
 });
@@ -1310,17 +1323,17 @@ var AppRouter = Router.extend({
     '': 'home',
     'filterResult': 'filterResult',
     'searchResult': 'searchResult',
-    'movie': 'movie'
+    'movie/:id': 'movie'
   },
   home: function handleHomeRoute(){
       console.log('ROUTE: HOME');
     //Require the applications modules
   },
-    movie: function handleMovieRoute() {
+    movie: function handleMovieRoute(id) {
         console.log('ROUTE: MOVIE');
         //Require the applications modules
         var MovieDetailView = require('../views/movie');
-        render(MovieDetailView, '#page', {props: {id: "5"}});
+        render(MovieDetailView, '#page', {props: {id: id}});
     },
   filterResult: function handleFilterResult(){
       console.log('ROUTE: FILTER RESULT');
@@ -1353,7 +1366,18 @@ module.exports = {
 
 require.register("services/index", function(exports, require, module) {
 module.exports= {
-    common: require('./common')
+    common: require('./common'),
+    movie: require('./movie')
+};
+});
+
+require.register("services/movie", function(exports, require, module) {
+var URL = require('../../config/server');
+var fetch = focus.network.fetch;
+module.exports = {
+    getMovieById: function getMovieById(id){
+        return fetch(URL.movie.get({urlData:{id: id}}));
+    }
 };
 });
 
@@ -1509,31 +1533,22 @@ require.register("views/movie/detail", function(exports, require, module) {
 //Get the form mixin.
 var formMixin = focus.components.common.form.mixin;
 var Block = focus.components.common.block.component;
-//var actionsMovie = require('../../action/movie');;
+var fetch = focus.network.fetch;
+var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 module.exports =  React.createClass({displayName: "exports",
     definitionPath: "movie",
-  mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["movie"]}],
-    action: {
-        load: function(){
-            Promise.resolve({movie: {title: "pierre", description: "besson"}}).then(
-                function(data){
-                    focus.dispatcher.handleServerAction({
-                        data: data,
-                        type: "update"
-                    });
-                });
-        }},
-  renderContent:function renderMovieDetail(){
-    return(
-        React.createElement(Block, {title: "Fiche de d'un film"}, 
-            this.fieldFor("title"), 
-            this.fieldFor("description"), 
-            this.buttonSave()
-       )
-    );
-  }
+    mixins: [formMixin],
+    stores: [{store: movieStore, properties: ["movie"]}],
+    action: movieActions,
+    renderContent:function renderMovieDetail(){
+        return(
+            React.createElement(Block, {title: "Fiche de d'un film"}, 
+                this.fieldFor("movId"), 
+                this.fieldFor("title")
+           )
+        );
+    }
 });
 
 });
