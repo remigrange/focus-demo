@@ -329,6 +329,7 @@ ul.selection-list {
 }
 body {
   background-color: #EEEEEE;
+  font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
 }
 #leftMenu {
   height: 100%;
@@ -376,5 +377,23 @@ body {
   background: #ffffff;
   margin-top: 20px;
   padding: 10px;
+}
+.title-level-1 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #824A34;
+}
+.title-level-2 {
+  font-size: 14px;
+  font-weight: bold;
+}
+.title-level-3 {
+  font-size: 14px;
+}
+.mov-logo {
+  float: left;
+  width: 40px;
+  height: 40px;
+  margin: 5px 5px 0 0;
 }
 

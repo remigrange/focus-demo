@@ -4,31 +4,6 @@ var serviceComman = require('../../services');
 module.exports =  React.createClass({
     render:function(){
 
-        var returnedData =  {
-            facet: {
-                FCT_PAYS: {
-                    "FRA": {label: "France", count: 5},
-                    "GER": {label: "Germany", count: 8}
-                },
-                FCT_STATUS: {
-                    "OPE": {label: "Open", count: 7},
-                    "CLO": {label: "Closed", count: 2},
-                    "ST1": {label: "Status 1", count: 2},
-                    "ST2": {label: "Status 2", count: 2},
-                    "ST3": {label: "Status 3", count: 2},
-                    "ST4": {label: "Status 4", count: 2},
-                    "ST5": {label: "Status 5", count: 2}
-                },
-                FCT_REGION: {
-                    "IDF": {label: "Ile de France", count: 11},
-                    "NPC": {label: "Nord - Pas de Calais", count: 6}
-                }
-            },
-            data: [{id:1, title : "toto", body:"ceci est un test"},{id:2, title:"tata",body:"deuxieme test"}, {id:3, title:"titi",body:"troisième test"}],
-            pageInfos: {},
-            searchContext: {}
-        };
-
         var action = {
             search: function(criteria) {
                 var critere = {
@@ -60,11 +35,22 @@ module.exports =  React.createClass({
         var Line = React.createClass({
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
-               /* return <div><div>data.title</div><div>data.description</div></div>;*/
-                var title = React.createElement('div',null,data.title);
-                var body = React.createElement('div',null,data.body);
-                var root = React.createElement('div',null,title,body);
-                return root;
+               return <div>
+                        <div className="mov-logo" >
+                            <img src="./static/img/logoMovie.png"/>
+                        </div>
+                        <div>
+                            <div className="title-level-1">
+                            {data.title}
+                            </div>
+                            <div className="title-level-2">
+                            {data.genreIds}
+                            </div>
+                            <div className="title-level-3">
+                            {data.released}
+                            </div>
+                        </div>
+                     </div>;
             }
         });
 
@@ -74,7 +60,7 @@ module.exports =  React.createClass({
                 Genre: "text",
                 Country: "text"
             },
-            orderableColumnList:{title: "key.title", description: "key.description"},
+            orderableColumnList:{title: "key.title", description: "key.genreIds"},
             groupableColumnList:{title: "key.title"},
             operationList: [
                 {label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
