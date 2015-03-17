@@ -1,5 +1,5 @@
 var AppDispatcher =  focus.dispatcher;
-var movieServices = require('../../services/movie');
+var movieServices = require('../../services').movie;
 module.exports = {
     load: function(id){
         movieServices.getMovieById(id).then(
