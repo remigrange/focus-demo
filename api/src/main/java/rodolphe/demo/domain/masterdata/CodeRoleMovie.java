@@ -28,18 +28,12 @@ public enum CodeRoleMovie implements CodeEnumWithDto<RoleMovie> {
 	/** writer */
 	writer;
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.domain.CodeEnumWithDto#getDto()
-	 */
 	/** {@inheritDoc} */
 	@Override
 	public RoleMovie getDto() {
 		return MdlUtil.getObject(getDtoClass(), name());
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.domain.CodeEnumWithDto#getDtoClass()
-	 */
 	/** {@inheritDoc} */
 	@Override
 	public Class<RoleMovie> getDtoClass() {
