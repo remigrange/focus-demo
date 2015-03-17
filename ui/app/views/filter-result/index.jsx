@@ -6,15 +6,7 @@ module.exports =  React.createClass({
 
         var action = {
             search: function(criteria) {
-                var critere = {
-                    criteria: {
-                        scope: "MOVIE",
-                        searchText : "Fantastic"
-                    },
-                    facets: [
-                    ]
-                };
-                serviceComman.common.searchByScope(critere).then(
+                serviceComman.common.searchByScope(criteria).then(
                     function success(data) {
 
                         var dataRet = {
@@ -79,8 +71,11 @@ module.exports =  React.createClass({
                 {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
                 {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
                 {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}
-            ]
-
+            ],
+            criteria: {
+                scope: "MOVIE",
+                searchText : "Fantastic"
+            }
         }
 
 
@@ -93,6 +88,7 @@ module.exports =  React.createClass({
                                     onLineClick={function onLineClick(line){ alert('click sur la ligne ' + line.title); }}
                                     isSelection={true}
                                     lineOperationList={config.lineOperationList}
+                                    criteria={config.criteria}
 
 
         />;
