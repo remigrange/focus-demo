@@ -2,7 +2,7 @@ var React = require('react');
 var MovieDetail = require('./detail');
 
 module.exports =  React.createClass({
-  displayName:"MovieView",
+  displayName: "MovieView",
   render:function(){
     return (
       <div className="movieView">

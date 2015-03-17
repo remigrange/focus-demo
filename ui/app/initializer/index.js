@@ -9,3 +9,7 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 //Check this repo:
 //https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin();
+
+var domains = require("./domain-initializer");
+var entities = require("./definition-initializer");
+

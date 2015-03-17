@@ -6,11 +6,10 @@ console.log("\n\t.########..#######...######..##.....##..######...........######
 module.exports = {
 	common: require("./common"),
 	list: require("./list"),
-	search: require("./search"),
-	page: require("./page")
+	search: require("./search")
 };
 
-},{"./common":9,"./list":19,"./page":80,"./search":83}],2:[function(require,module,exports){
+},{"./common":9,"./list":19,"./search":80}],2:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -3913,226 +3912,11 @@ module.exports = uuid;
 "use strict";
 
 module.exports = {
-  search: require("./search")
-};
-
-},{"./search":82}],81:[function(require,module,exports){
-"use strict";
-
-/**@jsx*/
-var builder = window.focus.component.builder;
-var dispatcher = window.focus.dispatcher;
-var React = window.React;
-var LiveFilter = require("../../../search/live-filter/index").component;
-var ListActionBar = require("../../../list/action-bar/index").component;
-var ListSelection = require("../../../list/selection").list.component;
-var SearchStore = window.focus.store.SearchStore;
-
-var searchFilterResultMixin = {
-
-    /**
-     * Display name.
-     */
-    displayName: "search-filter-result",
-
-    /**
-     * Init default props.
-     */
-    getDefaultProps: function getDefaultProps() {
-        return {
-            facetConfig: {},
-            orderableColumnList: {},
-            groupableColumnList: {},
-            operationList: {},
-            searchStore: new SearchStore(),
-            lineComponent: undefined,
-            isSelection: true,
-            lineOperationList: {}
-        };
-    },
-    /**
-     * Init default state.
-     */
-    getInitialState: function getInitialState() {
-        return {
-            facetList: {},
-            selectedFacetList: {},
-            openedFacetList: {},
-
-            selectionStatus: 0,
-            orderSelected: undefined,
-            groupSelectedKey: undefined,
-
-            list: []
-        };
-    },
-    /**
-     * render the component.
-     * @returns Html code.
-     */
-    render: function renderSearchResult() {
-        return React.createElement(
-            "div",
-            { className: "search-result" },
-            React.createElement(
-                "div",
-                { className: "liveFilterContainer" },
-                React.createElement(LiveFilter, { ref: "liveFilter", facetList: this.state.facetList,
-                    selectedFacetList: this.state.selectedFacetList,
-                    openedFacetList: this.state.openedFacetList,
-                    config: this.props.facetConfig,
-                    dataSelectionHandler: this._facetSelectionClick })
-            ),
-            React.createElement(
-                "div",
-                { className: "resultContainer" },
-                React.createElement(
-                    "div",
-                    { className: "listActionBarContainer panel" },
-                    React.createElement(ListActionBar, { selectionStatus: this.state.selectionStatus,
-                        selectionAction: this._selectionGroupLineClick,
-                        orderableColumnList: this.props.orderableColumnList,
-                        orderAction: this._orderClick,
-                        orderSelected: this.state.orderSelected,
-                        groupableColumnList: this.props.groupableColumnList,
-                        groupAction: this._groupClick,
-                        groupSelectedKey: this.state.groupSelectedKey,
-                        facetList: this._getFacetListForBar(),
-                        facetClickAction: this._facetBarClick,
-                        operationList: this.props.operationList })
-                ),
-                React.createElement(
-                    "div",
-                    { className: "listResultContainer panel" },
-                    React.createElement(ListSelection, { data: this.state.list,
-                        hasMoreData: true,
-                        lineComponent: this.props.lineComponent,
-                        onLineClick: this.props.onLineClick,
-                        isSelection: this.props.isSelection,
-                        operationList: this.props.lineOperationList })
-                )
-            )
-        );
-    },
-    componentDidMount: function componentDidMount() {
-        this._registerEventList();
-        this._doSearch();
-    },
-    _registerEventList: function registerEventList() {
-        this.props.searchStore.addSearchChangeListener(this._searchSuccessEvent);
-    },
-
-    _doSearch: function doSearch() {
-        var facets = [];
-        for (var selectedFacet in this.state.selectedFacetList) {
-            facets.push({ key: selectedFacet, value: this.state.selectedFacetList[selectedFacet].key });
-            // facets[selectedFacet] = this.state.selectedFacetList[selectedFacet].key;
-        }
-
-        this.props.action.search({
-            facets: facets,
-            criteria: {},
-            groupKey: this.state.groupSelectedKey,
-            order: this.state.orderSelected
-        });
-    },
-    _searchSuccessEvent: function searchSuccessEvent() {
-        console.log("Search success");
-        this.setState(this._getToUpdateState());
-    },
-    _getToUpdateState: function getToUpdateState() {
-        var data = this.props.searchStore.get("search");
-        return {
-            facetList: data.facet,
-            list: data.list
-        };
-    },
-
-    _getFacetListForBar: function _getFacetListForBar() {
-        var facetList = {};
-        for (var key in this.state.selectedFacetList) {
-            var facet = this.state.selectedFacetList[key];
-            facetList[key] = facet.data.label;
-        }
-        return facetList;
-    },
-
-    _facetBarClick: function _facetBarClick(key) {
-        var selectedFacetList = this.state.selectedFacetList;
-        delete selectedFacetList[key];
-
-        // TODO : do we do it now ?
-        this.setState({ selectedFacetList: selectedFacetList });
-        this._doSearch();
-    },
-    _groupClick: function _groupClick(key) {
-        console.log("Group by : " + key);
-        // TODO : do we do it now ?
-        this.setState({
-            groupSelectedKey: key,
-            orderSelected: key != undefined ? undefined : this.state.orderSelected
-        });
-
-        this._doSearch();
-    },
-
-    _orderClick: function _orderClick(key, order) {
-        console.log("Order : " + key + " - " + order);
-        // TODO : do we do it now ?
-        this.setState({ orderSelected: { key: key, order: order } });
-        this._doSearch();
-    },
-
-    /**
-     * Selection action handler.
-     * @param selectionStatus (0 => nonde, 1= > all, 2=> some).
-     */
-    _selectionGroupLineClick: function _selectionGroupLineClick(selectionStatus) {
-        console.log("Selection status : " + selectionStatus);
-        console.warn("TODO : implement check/uncheck on the list rows (it shoudl be working like this, but need to be checked)");
-        this.setState({ selectionStatus: selectionStatus });
-    },
-
-    /**
-     * Handler called when facet is selected.
-     * @param facetComponentData Data of facet.
-     */
-    _facetSelectionClick: function _facetSelectionClick(facetComponentData) {
-        var selectedFacetList = facetComponentData.selectedFacetList;
-        var openedFacetList = facetComponentData.openedFacetList;
-
-        console.warn("Facet selection ");
-        console.log(selectedFacetList);
-
-        // TODO : Do we do it now ?
-        this.setState({
-            selectedFacetList: selectedFacetList,
-            openedFacetList: openedFacetList
-        });
-
-        this._doSearch();
-    }
-};
-
-module.exports = builder(searchFilterResultMixin);
-
-},{"../../../list/action-bar/index":17,"../../../list/selection":20,"../../../search/live-filter/index":84}],82:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-    filterResult: require("./filter-result") };
-
-// searchResult: require('./search-result')
-
-},{"./filter-result":81}],83:[function(require,module,exports){
-"use strict";
-
-module.exports = {
   liveFilter: require("./live-filter"),
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":84,"./quick-search":87}],84:[function(require,module,exports){
+},{"./live-filter":81,"./quick-search":84}],81:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -4296,7 +4080,7 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/img":8,"./live-filter-facet":86,"lodash/object/omit":71,"object-assign":77}],85:[function(require,module,exports){
+},{"../../common/img":8,"./live-filter-facet":83,"lodash/object/omit":71,"object-assign":77}],82:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -4344,7 +4128,7 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],86:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -4498,12 +4282,12 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":85}],87:[function(require,module,exports){
+},{"./live-filter-data":82}],84:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":88}],88:[function(require,module,exports){
+},{"./input":85}],85:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -4592,7 +4376,7 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":89,"lodash/string/words":73}],89:[function(require,module,exports){
+},{"./scope":86,"lodash/string/words":73}],86:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;

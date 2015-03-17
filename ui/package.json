@@ -26,6 +26,7 @@
     "focus-components": "https://github.com/KleeGroup/focus-components/tarball/master",
     "less-brunch": "^1.8.1",
     "react": "^0.12.2",
+    "react-brunch": "^1.0.7",
     "sass-brunch": "^1.8.9",
     "uglify": "^0.1.1"
   },
@@ -35,6 +36,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "brunch": "^1.7.20",
     "javascript-brunch": "^1.7.1",
     "react-brunch": "^1.0.7",
     "sass-brunch": "^1.8.9"

@@ -1,7 +1,7 @@
 //Dependencies.
 var Router = Backbone.Router;
 var render = focus.application.render;
-
+console.log('test ');
 
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
@@ -14,13 +14,10 @@ var AppRouter = Router.extend({
     'searchResult': 'searchResult'
   },
   home: function handleHomeRoute(){
-    console.log('ROUTE: HOME');
+      console.log('ROUTE: HOME');
     //Require the applications modules
-    /*var UserDetailView = require('../view/user');
-    //React.render(<UserDetailView userId="12344"/>, document.querySelector('#page'));
-     render(UserDetailView, '#page', {
-       props:{userId: "6c4a5d96-dc8a-461d-8b23-d9b5ed2f4883"}
-     });*/
+      var MovieDetailView = require('../views/movie');
+      render(MovieDetailView, '#page', {props: {id: "5"}});
   },
   filterResult: function handleFilterResult(){
       console.log('ROUTE: FILTER RESULT');
