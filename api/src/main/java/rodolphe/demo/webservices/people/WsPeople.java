@@ -22,14 +22,15 @@ import rodolphe.demo.services.search.SearchCriterium;
  * @author JDALMEIDA
  *
  */
-public class WsPeople implements RestfulService{
+public final class WsPeople implements RestfulService{
 
-	@Inject PeopleServices peopleServices;
+	@Inject
+	private PeopleServices peopleServices;
 
 
 	/**
 	 * Search people
-	 * @param searchText search criteria
+	 * @param peopleCriteria search criteria
 	 * @return search results
 	 */
 	@POST("/people")
@@ -57,6 +58,11 @@ public class WsPeople implements RestfulService{
 	 * @param people people
 	 * @return people
 	 */
+	//TODO !!!!!
+	//TODO !!!!! NON
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
 	@POST("/people/new")
 	@AnonymousAccessAllowed
 	public People savePeople(final People people){
@@ -68,6 +74,12 @@ public class WsPeople implements RestfulService{
 	 * @param peoId people identifier
 	 * @return movies list
 	 */
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
 	@GET("/moviesByPeo/{id}")
 	@AnonymousAccessAllowed
 	public DtList<Movie> getMoviesByPeo(@PathParam("id") final Long peoId){

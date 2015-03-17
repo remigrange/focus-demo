@@ -19,18 +19,12 @@ public enum CodeTitle implements CodeEnumWithDto<Title> {
 	/** MR */
 	M;
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.domain.CodeEnumWithDto#getDto()
-	 */
 	/** {@inheritDoc} */
 	@Override
 	public Title getDto() {
 		return MdlUtil.getObject(getDtoClass(), name());
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.domain.CodeEnumWithDto#getDtoClass()
-	 */
 	/** {@inheritDoc} */
 	@Override
 	public Class<Title> getDtoClass() {

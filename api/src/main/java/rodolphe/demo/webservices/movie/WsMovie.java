@@ -23,16 +23,15 @@ import rodolphe.demo.services.search.SearchCriterium;
  * @author JDALMEIDA
  *
  */
-public class WsMovie implements RestfulService {
+public final class WsMovie implements RestfulService {
 
 	@Inject
-	MovieServices movieServices;
+	private MovieServices movieServices;
 
 	/**
 	 * Search movies
 	 *
-	 * @param movieCriteria
-	 *            search criteria
+	 * @param movieCriteria search criteria
 	 * @return search result.
 	 */
 	@POST("/movies")
@@ -53,6 +52,11 @@ public class WsMovie implements RestfulService {
 		return movieServices.getMovie(movId);
 	}
 
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!! NON
+	//TODO !!!!!
+	//TODO !!!!!
 	@POST("/movies/new")
 	@AnonymousAccessAllowed
 	public Movie saveMovie(final Movie movie){
@@ -64,6 +68,14 @@ public class WsMovie implements RestfulService {
 	 * @param movId moivie identifier
 	 * @return people list
 	 */
+
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
+	//TODO !!!!!
 	@GET("/actors/{id}")
 	@AnonymousAccessAllowed
 	public DtList<People> getActors(@PathParam("id")  final Long movId) {

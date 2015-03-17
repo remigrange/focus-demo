@@ -2,6 +2,7 @@ package rodolphe.demo.services.movie;
 
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
 
@@ -29,7 +30,7 @@ import rodolphe.demo.services.search.SearchServices;
  * @author JDALMEIDA
  *
  */
-public class MovieServicesImpl implements MovieServices {
+public final class MovieServicesImpl implements MovieServices {
 
 	@Inject
 	private MovieDAO movieDAO;
@@ -41,17 +42,13 @@ public class MovieServicesImpl implements MovieServices {
 	private RolePeopleDAO rolePeopleDAO;
 
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.movie.MovieServices#getMoviesByCriteria(rodolphe.demo.domain.movies.MovieCriteria)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
 	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(final MovieCriteria crit, final FacetSelection ...selection) {
 		/*final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
 				FacetedSearchConst.QRY_MOVIE_WO_FCT.getQuery());*/
-		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
-				FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
+		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
 		criteria.setCriteria(crit);
 		for (final FacetSelection sel : selection) {
 			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
@@ -61,9 +58,6 @@ public class MovieServicesImpl implements MovieServices {
 
 
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.movie.MovieServices#getMovie(java.lang.Long)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
@@ -72,26 +66,20 @@ public class MovieServicesImpl implements MovieServices {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.movie.MovieServices#saveMovie(rodolphe.demo.domain.movies.Movie)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
-	public Movie saveMovie(final Movie mov) {
-		if (mov.getMovId() == null) {
-			movieDAO.create(mov);
+	public Movie saveMovie(final Movie movie) {
+		if (movie.getMovId() == null) {
+			movieDAO.create(movie);
 		} else {
-			movieDAO.update(mov);
+			movieDAO.update(movie);
 		}
-		searchServices.indexMovie(mov.getMovId());
-		return mov;
+		searchServices.indexMovie(movie.getMovId());
+		return movie;
 	}
 
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.movie.MovieServices#getActors(java.lang.Long)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
@@ -109,18 +97,16 @@ public class MovieServicesImpl implements MovieServices {
 
 
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.movie.MovieServices#getProducers(java.lang.Long)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
 	public DtList<People> getProducers(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteriaBuilder<RolePeople> builder= new FilterCriteriaBuilder<>();
-		builder.withFilter(RolePeopleFields.MOV_ID.name(), movId);
-		builder.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.producer.name());
-		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(builder.build(), Integer.MAX_VALUE);
+		final FilterCriteria<RolePeople> RolePeopleCriteria= new FilterCriteriaBuilder<RolePeople>()
+				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
+				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.producer.name())
+				.build();
+		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(RolePeopleCriteria, Integer.MAX_VALUE);
 		for(final RolePeople  rolePeople : rolePeopleList){
 			ret.add(rolePeople.getPeople());
 
@@ -130,18 +116,17 @@ public class MovieServicesImpl implements MovieServices {
 
 
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.movie.MovieServices#getDirectors(java.lang.Long)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
 	public DtList<People> getDirectors(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteriaBuilder<RolePeople> builder= new FilterCriteriaBuilder<>();
-		builder.withFilter(RolePeopleFields.MOV_ID.name(), movId);
-		builder.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.director.name());
-		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(builder.build(), Integer.MAX_VALUE);
+		final FilterCriteria<RolePeople> RolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
+				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
+				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.director.name())
+				.build();
+
+		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(RolePeopleCriteria, Integer.MAX_VALUE);
 		for(final RolePeople  rolePeople : rolePeopleList){
 			ret.add(rolePeople.getPeople());
 

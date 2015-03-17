@@ -17,9 +17,6 @@ public class SearchServicesImpl implements SearchServices {
 	@Inject
 	private PeopleSearchHandler peopleSearchHandler;
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.SearchServices#indexMovies()
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
@@ -28,18 +25,12 @@ public class SearchServicesImpl implements SearchServices {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.SearchServices#indexMovie(java.lang.Long)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
 	public void indexMovie(final Long movId) {
 		movieSearchHandler.indexerItem(movId);	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.SearchServices#removeMovieFromIndex(java.lang.Long)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
@@ -47,9 +38,6 @@ public class SearchServicesImpl implements SearchServices {
 		movieSearchHandler.supprimerItem(movId);
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.SearchServices#searchMovie(rodolphe.demo.services.search.SearchCriterium)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
@@ -58,9 +46,6 @@ public class SearchServicesImpl implements SearchServices {
 		return movieSearchHandler.rechercher(criteria);
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.SearchServices#indexPeople()
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
@@ -69,9 +54,6 @@ public class SearchServicesImpl implements SearchServices {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.SearchServices#indexPeople(java.lang.Long)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
@@ -80,9 +62,6 @@ public class SearchServicesImpl implements SearchServices {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.SearchServices#searchPeople(rodolphe.demo.services.search.SearchCriterium)
-	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
