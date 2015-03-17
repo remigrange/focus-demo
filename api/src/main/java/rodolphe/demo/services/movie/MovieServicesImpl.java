@@ -85,12 +85,14 @@ public final class MovieServicesImpl implements MovieServices {
 	@Transactional
 	public DtList<People> getActors(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteriaBuilder<Casting> builder= new FilterCriteriaBuilder<>();
-		builder.withFilter(CastingFields.MOV_ID.name(), movId);
-		builder.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.actor.name());
-		final DtList<Casting> castingList = castingDAO.getList(builder.build(), Integer.MAX_VALUE);
-		for(final Casting  cast : castingList){
-			ret.add(cast.getPeople());
+		final FilterCriteria<Casting> castingCriteria= new FilterCriteriaBuilder<Casting>()
+				.withFilter(CastingFields.MOV_ID.name(), movId)
+				.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.actor.name())
+				.build();
+		final DtList<Casting> castingList = castingDAO.getList(castingCriteria, Integer.MAX_VALUE);
+
+		for(final Casting  casting : castingList){
+			ret.add(casting.getPeople());
 		}
 		return ret;
 	}
