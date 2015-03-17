@@ -37,7 +37,6 @@ import io.vertigo.vega.rest.model.DtListDelta;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -432,10 +431,10 @@ public final class GoogleJsonEngine implements JsonEngine {
 				final JsonArray jsonData = (JsonArray) context.serialize(src.getDtList());
 				jsonObject.add("list", jsonData);
 				final List<Facet> facets = src.getFacets();
-				final List<JsonObject> facetList = new ArrayList<JsonObject>();
+				//final List<JsonObject> facetList = new ArrayList<JsonObject>();
+				final Map<String,JsonObject> mapFacetList = new HashMap();
 				for(final Facet facet : facets){
 					final JsonObject jsonFacet= new JsonObject();
-
 					final Map<String, FacetObject> maps = new HashMap();
 					for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
 						final FacetObject facetObj = new FacetObject();
@@ -449,9 +448,10 @@ public final class GoogleJsonEngine implements JsonEngine {
 					final JsonObject jsonFacetValues =  (JsonObject) context.serialize(maps);
 					final String facetName = facet.getDefinition().getLabel().getDisplay();
 					jsonFacet.add(facetName, jsonFacetValues);
-					facetList.add(jsonFacet);
+
+					mapFacetList.put(facetName, jsonFacetValues);
 				}
-				jsonObject.add("facet", context.serialize(facetList));
+				jsonObject.add("facet", context.serialize(mapFacetList));
 				return jsonObject;
 			}
 		})

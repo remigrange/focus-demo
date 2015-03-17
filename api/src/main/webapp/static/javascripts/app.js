@@ -1391,11 +1391,25 @@ module.exports =  React.createClass({displayName: "exports",
         };
 
         var action = {
-            //var crite
             search: function(criteria) {
-                serviceComman.common.searchByScope(criteria).then(
+                var critere = {
+                    criteria: {
+                        scope: "MOVIE",
+                        searchText : "Fantastic"
+                    },
+                    facets: [
+                    ]
+                };
+                serviceComman.common.searchByScope(critere).then(
                     function success(data) {
-                        focus.dispatcher.handleServerAction({data: data, type: "update"});
+
+                        var dataRet = {
+                            facet: data.facet,
+                            list: data.list,
+                            pageInfos:{},
+                            searchContext:{}
+                        };
+                        focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
                     },
                     function error(error) {
                         //TODO
@@ -1407,15 +1421,19 @@ module.exports =  React.createClass({displayName: "exports",
         var Line = React.createClass({displayName: "Line",
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
-                return React.createElement("div", null, React.createElement("div", null, "data.title"), React.createElement("div", null, "data.description"));
+               /* return <div><div>data.title</div><div>data.description</div></div>;*/
+                var title = React.createElement('div',null,data.title);
+                var body = React.createElement('div',null,data.body);
+                var root = React.createElement('div',null,title,body);
+                return root;
             }
         });
 
         var config = {
             facetConfig: {
-                FCT_MOVIE_COUNTRY: "text",
-                FCT_MOVIE_GENRE: "text",
-                FCT_MOVIE_LANGUAGE: "text"
+                Language: "text",
+                Genre: "text",
+                Country: "text"
             },
             orderableColumnList:{title: "key.title", description: "key.description"},
             groupableColumnList:{title: "key.title"},
