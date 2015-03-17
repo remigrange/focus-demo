@@ -1399,14 +1399,14 @@ module.exports = movieStore;
 
 require.register("views/filter-result/index", function(exports, require, module) {
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
-var serviceComman = require('../../services');
+var serviceCommon = require('../../services');
 
 module.exports =  React.createClass({displayName: "exports",
     render:function(){
 
         var action = {
             search: function(criteria) {
-                serviceComman.common.searchByScope(criteria).then(
+                serviceCommon.common.searchByScope(criteria).then(
                     function success(data) {
 
                         var dataRet = {
@@ -1510,7 +1510,7 @@ module.exports =  React.createClass({displayName: "exports",
             }
         }
 
-        
+
         return React.createElement(SearchFilterResult, {facetConfig: config.facetConfig, 
                                     orderableColumnList: config.orderableColumnList, 
                                     groupableColumnList: config.groupableColumnList, 

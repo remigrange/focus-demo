@@ -1,12 +1,12 @@
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
-var serviceComman = require('../../services');
+var serviceCommon = require('../../services');
 
 module.exports =  React.createClass({
     render:function(){
 
         var action = {
             search: function(criteria) {
-                serviceComman.common.searchByScope(criteria).then(
+                serviceCommon.common.searchByScope(criteria).then(
                     function success(data) {
 
                         var dataRet = {
@@ -110,7 +110,7 @@ module.exports =  React.createClass({
             }
         }
 
-        
+
         return <SearchFilterResult  facetConfig={config.facetConfig}
                                     orderableColumnList={config.orderableColumnList}
                                     groupableColumnList={config.groupableColumnList}
