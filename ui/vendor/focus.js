@@ -1,7 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focus = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus
 "use strict";
 
-//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus
 console.log("\n    .########..#######...######..##.....##..######.\n    .##.......##.....##.##....##.##.....##.##....##\n    .##.......##.....##.##.......##.....##.##......\n    .######...##.....##.##.......##.....##..######.\n    .##.......##.....##.##.......##.....##.......##\n    .##.......##.....##.##....##.##.....##.##....##\n    .##........#######...######...#######...######.\n");
 var infos = {
   author: "pbesson",
@@ -38,7 +38,6 @@ module.exports = {
 
 },{"./render":3}],3:[function(require,module,exports){
 "use strict";
-
 /*global document*/
 var React = window.React;
 /**
@@ -69,7 +68,6 @@ module.exports = function (component, selector, options) {
 
 },{}],4:[function(require,module,exports){
 "use strict";
-
 var React = window.React;
 var assign = require("object-assign");
 //var isObject = require('lodash/lang/isObject');
@@ -112,7 +110,6 @@ module.exports = function (componentMixin, isMixinOnly) {
 
 },{"object-assign":69}],5:[function(require,module,exports){
 "use strict";
-
 module.exports = {
   builder: require("./builder"),
   types: require("./types")
@@ -120,7 +117,6 @@ module.exports = {
 
 },{"./builder":4,"./types":6}],6:[function(require,module,exports){
 "use strict";
-
 //Dependencies.
 var React = window.React;
 var isString = require("lodash/lang/isString");
@@ -140,7 +136,9 @@ module.exports = function (type) {
   if (isStringType) {
     return React.PropTypes[type];
   }
-  return React.PropTypes.oneOf(type);
+  return React.PropTypes.oneOfType(type.map(function (type) {
+    return React.PropTypes[type];
+  }));
 };
 
 },{"lodash/lang/isArray":53,"lodash/lang/isString":58}],7:[function(require,module,exports){
@@ -208,12 +206,12 @@ module.exports = {
 };
 
 },{"../../util/object/check":77,"../../util/string/check":80,"immutable":29,"lodash/lang/isObject":57,"lodash/lang/isString":58}],8:[function(require,module,exports){
-"use strict";
-
 /**
  * Application domain gestion.
  * @type {Object}
  */
+"use strict";
+
 module.exports = {
   container: require("./container")
 };
@@ -399,9 +397,9 @@ module.exports = {
 };
 
 },{"./domain":8,"./entity":11}],13:[function(require,module,exports){
+//By default use the facebook flux dispatcher.
 "use strict";
 
-//By default use the facebook flux dispatcher.
 var Dispatcher = require("flux").Dispatcher;
 /**
  * Core Dispatcher.
@@ -650,7 +648,6 @@ module.exports = {
 
 },{}],22:[function(require,module,exports){
 "use strict";
-
 /*global XMLHttpRequest, XDomainRequest*/
 /**
  * Error.
@@ -699,7 +696,6 @@ module.exports = function createCORSRequest(method, url, options) {
 
 },{}],23:[function(require,module,exports){
 "use strict";
-
 /**
  * Dependency on the CORS module.
  * @type {object}
@@ -7874,7 +7870,8 @@ var CoreStore = (function (_EventEmitter) {
           //Create a get method.
           currentStore["get" + capitalizeDefinition] = (function (def) {
             return function () {
-              return currentStore.data.get(def).toJS();
+              var hasData = currentStore.data.has(def);
+              return hasData ? currentStore.data.get(def).toJS() : undefined;
             };
           })(definition);
         }
@@ -8031,8 +8028,8 @@ var SearchStore = (function (_CoreStore) {
 
       value: function update(newData) {
         var previousData = this.data.toJS();
-        var processedData = assign(previousData, newData);
-        if (previousData.searchContext.scope === newData.searchContext.scope && previousData.searchContext.query === newData.searchContext.query) {
+        var processedData = assign({}, previousData, newData);
+        if (previousData.searchContext !== undefined && previousData.searchContext.scope === newData.searchContext.scope && previousData.searchContext.query === newData.searchContext.query) {
           processedData.list = previousData.list.concat(newData.list);
         }
         var data = {};
@@ -8051,6 +8048,11 @@ var SearchStore = (function (_CoreStore) {
 
       value: function addSearchChangeListener(cb) {
         this.addListener("search:change", cb);
+      }
+    },
+    removeSearchChangeListener: {
+      value: function removeSearchChangeListener(cb) {
+        this.removeListener("search:change", cb);
       }
     },
     registerDispatcher: {
@@ -8168,13 +8170,15 @@ var urlProcessor = require("./processor");
 module.exports = function (url, method) {
   /**
    * Function returns by the module.
-   * @param  {object} data - The JSON data to inject in the URL.
+   * @param  {object} urlData - The JSON data to inject in the URL.
+   * @param  {object} data - The JSON data to give to the request.
    * @return {function} returns a function which takes the URL as parameters.
    */
-  return function generateUrl(data) {
+  return function generateUrl(urlData, data) {
     return {
-      url: urlProcessor(url, data),
-      method: method
+      url: urlProcessor(url, urlData),
+      method: method,
+      data: data
     };
   };
 };

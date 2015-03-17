@@ -2,7 +2,7 @@
 var React = require('react');
 var formMixin = focus.components.common.form.mixin;
 var Block = focus.components.common.block.component;
-var actionsMovie = ;
+var actionsMovie = undefined;
 var movieStore = require('../../stores/movie');
 module.exports =  React.createClass({
   mixins: [formMixin],

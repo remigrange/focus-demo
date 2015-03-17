@@ -164,6 +164,7 @@ div.qs-quick-search {
 .action-bar .facet-container {
   width: 400px; }
 
+
 /* Style for the list component*/
 /*variables*/
 /*styles*/
@@ -207,7 +208,6 @@ ul.selection-list {
     ul.selection-list li.sl-button a {
       position: absolute;
       right: 0px; }
-
 
 .liveFilterContainer {
   padding-right: 10px; }
