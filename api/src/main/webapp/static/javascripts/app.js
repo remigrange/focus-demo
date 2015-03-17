@@ -977,17 +977,27 @@ module.exports = {
 
 });
 
+require.register("config/server/common", function(exports, require, module) {
+var root = "./searchByScope";
+var url = focus.util.url.builder;
+module.exports = {
+    searchByScope: url(root, 'POST')
+};
+
+});
+
 require.register("config/server/index", function(exports, require, module) {
 module.exports= {
     movie: require('./movie'),
-    people: require('./people')
+    people: require('./people'),
+    common: require('./common')
 };
 
 });
 
 require.register("config/server/movie", function(exports, require, module) {
-var root = require('../../conf.json').url + "movies/";
-var url = require('./url-builder');
+var root = "./movies/";
+var url = focus.util.url.builder;
 module.exports = {
   getAll: url(root, 'GET'),
   update: url(root + "${id}/",'PUT'),
@@ -998,8 +1008,8 @@ module.exports = {
 });
 
 require.register("config/server/people", function(exports, require, module) {
-var root = require('../../conf.json').url + "people/";
-var url = require('./url-builder');
+var root = "./people/";
+var url = focus.util.url.builder;
 module.exports = {
   getAll: url(root, 'GET'),
   update: url(root + "${id}/",'PUT'),
@@ -1251,6 +1261,12 @@ Backbone.history.start();
 
 });
 
+require.register("initializer/definition-initializer", function(exports, require, module) {
+/*global focus*/
+focus.definition.entity.container.setEntityConfiguration(require('../config/entityDefinition'));
+
+});
+
 require.register("initializer/index", function(exports, require, module) {
 global.$ = require('jquery');//(window);
 global.Backbone = require('backbone');
@@ -1310,9 +1326,41 @@ module.exports = new AppRouter();
 
 });
 
+require.register("services/common", function(exports, require, module) {
+var URL = require('../../config/server');
+var fetch = focus.network.fetch;
+module.exports = {
+    searchByScope: function searchByScope(criteria){
+        return fetch(URL.common.searchByScope(undefined, criteria));
+    }
+};
+});
+
+require.register("services/index", function(exports, require, module) {
+module.exports= {
+    common: require('./common')
+};
+});
+
+require.register("stores/movie", function(exports, require, module) {
+/* global focus*/
+/**
+ * Store dealing with the movie subject.
+ * @type {focus}
+ */
+var movieStore = new focus.store.CoreStore({
+    definition : {
+      'movie': 'movie',
+      'people': 'people'
+      }
+  });
+module.exports = movieStore;
+
+});
+
 require.register("views/filter-result/index", function(exports, require, module) {
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
-var serviceMachin = require('../../action');
+var serviceComman = require('../../services');
 
 module.exports =  React.createClass({displayName: "exports",
     render:function(){
@@ -1343,9 +1391,9 @@ module.exports =  React.createClass({displayName: "exports",
         };
 
         var action = {
-
+            //var crite
             search: function(criteria) {
-                serviceMachin.searchByScope(criteria).then(
+                serviceComman.common.searchByScope(criteria).then(
                     function success(data) {
                         focus.dispatcher.handleServerAction({data: data, type: "update"});
                     },
@@ -1392,6 +1440,7 @@ module.exports =  React.createClass({displayName: "exports",
 
         }
 
+
         return React.createElement(SearchFilterResult, {facetConfig: config.facetConfig, 
                                     orderableColumnList: config.orderableColumnList, 
                                     groupableColumnList: config.groupableColumnList, 
@@ -1407,6 +1456,48 @@ module.exports =  React.createClass({displayName: "exports",
         //return <div> Rodolphe Search ROUTE </div>
     }
 });
+});
+
+require.register("views/movie/detail", function(exports, require, module) {
+//Get the form mixin.
+var React = require('react');
+var formMixin = focus.components.common.form.mixin;
+var Block = focus.components.common.block.component;
+var actionsMovie = undefined;
+var movieStore = require('../../stores/movie');
+module.exports =  React.createClass({displayName: "exports",
+  mixins: [formMixin],
+  stores: [{store: movieStore, properties: ["movie"]}],
+  actions: actionsUser,
+  renderContent:function renderUserDetail(){
+    return(
+        React.createElement(Block, {title: "Fiche de d'un film"}, 
+            this.fieldFor("title"), 
+            this.fieldFor("description"), 
+            this.buttonSave()
+       )
+    );
+  }
+});
+
+});
+
+require.register("views/movie/index", function(exports, require, module) {
+var React = require('react');
+var MovieDetail = require('./detail');
+
+module.exports =  React.createClass({
+  displayName:"MovieView",
+  render:function(){
+    return (
+      React.createElement("div", {className: "movieView"}, 
+        React.createElement("h2", null, "Film"), 
+        React.createElement(MovieDetail, {id: this.props.id})
+      )
+    );
+  }
+});
+
 });
 
 require.register("views/search-result/index", function(exports, require, module) {

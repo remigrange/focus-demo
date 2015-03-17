@@ -34,3 +34,4 @@ ui/.npmrc
 *.bak
 *.oob
 ui/public/*
+api/src/main/webapp/static/img

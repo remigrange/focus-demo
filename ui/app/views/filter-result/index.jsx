@@ -1,5 +1,5 @@
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
-var serviceMachin = require('../../action');
+var serviceComman = require('../../services');
 
 module.exports =  React.createClass({
     render:function(){
@@ -30,9 +30,9 @@ module.exports =  React.createClass({
         };
 
         var action = {
-
+            //var crite
             search: function(criteria) {
-                serviceMachin.searchByScope(criteria).then(
+                serviceComman.common.searchByScope(criteria).then(
                     function success(data) {
                         focus.dispatcher.handleServerAction({data: data, type: "update"});
                     },
@@ -78,6 +78,7 @@ module.exports =  React.createClass({
             ]
 
         }
+
 
         return <SearchFilterResult  facetConfig={config.facetConfig}
                                     orderableColumnList={config.orderableColumnList}
