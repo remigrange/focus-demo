@@ -372,7 +372,7 @@ body {
 }
 #logo:hover,
 #search:hover {
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
 }
 #container {
   margin-left: 100px;
@@ -411,5 +411,69 @@ body {
   width: 40px;
   height: 40px;
   margin: 5px 5px 0 0;
+}
+.resultContainer {
+  width: 50% !important;
+}
+.item:hover {
+  background: #d8e5fa;
+}
+#lineResume {
+  margin-left: 10px;
+  display: inline-block;
+  width: 33%;
+}
+.movie-lineResume {
+  width: 100%;
+  display: inline-block;
+  padding-bottom: 20px;
+  border-bottom: 1px #c3c3c3 solid;
+}
+.movie-resume-logo img {
+  float: left;
+  width: 50px;
+  height: 50px;
+  margin: 0 10px 0 0;
+}
+.movie-info {
+  float: left;
+  width: 65%;
+}
+.movie-link-detailed-sheet {
+  float: left;
+  width: 20%;
+  text-align: right;
+  cursor: pointer;
+  text-decoration: none;
+}
+.movie-descrition {
+  padding: 10px 0 20px 0;
+  border-bottom: 1px #c3c3c3 solid;
+}
+.container-title,
+.details-panel-title {
+  font-size: 16px;
+  text-transform: uppercase;
+  color: #acacac;
+}
+.movie-details {
+  padding: 10px 0 20px 0;
+}
+.movie-detail-line {
+  width: 100%;
+  display: inline-block;
+}
+.details-label-name {
+  float: left;
+  width: 150px;
+  text-align: right;
+  font-weight: bold;
+}
+.details-label-value {
+  float: left;
+  padding-left: 20px;
+}
+.clear {
+  clear: both;
 }
 

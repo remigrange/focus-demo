@@ -1265,16 +1265,10 @@ require.register("initialize", function(exports, require, module) {
 console.log(focus);
 console.log(focusComponents);
 focus.components = focusComponents;
-var Hello = React.createClass({displayName: "Hello",
-    render: function() {
-        return React.createElement("div", null, "Hello ", this.props.name);
-    }
-});
 //Require dependencies.
 require('./initializer');
 require("router");
 Backbone.history.start();
-//setTimeout(focus.application.render(Hello, document.querySelector('#container')), 3000);
 //focus.application.render(Hello, '#page', {props: {name: "rodolphe ....."}});
 
 });
@@ -1400,6 +1394,8 @@ module.exports = movieStore;
 require.register("views/filter-result/index", function(exports, require, module) {
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var serviceCommon = require('../../services');
+var lineResume = require('./lineResume');
+
 
 module.exports =  React.createClass({displayName: "exports",
     render:function(){
@@ -1428,39 +1424,7 @@ module.exports =  React.createClass({displayName: "exports",
         var Line = React.createClass({displayName: "Line",
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
-             /* if(data.movId !== undefined){
-                  return <div>
-                      <div className="mov-logo" >
-                          <img src="./static/img/logoMovie.png"/>
-                      </div>
-                      <div>
-                          <div className="title-level-1">
-                            {data.title}
-                          </div>
-                          <div className="title-level-2">
-                            {data.genreIds}
-                          </div>
-                          <div className="title-level-3">
-                            {data.released}
-                          </div>
-                      </div>
-                  </div>;
-               } else {
-                  return <div>
-                      <div className="user-logo" >
-                          <img src="./static/img/logoMovie.png"/>
-                      </div>
-                      <div>
-                          <div className="title-level-1">
-                            {data.title}
-                          </div>
-                          <div className="title-level-3">
-                            {data.released}
-                          </div>
-                      </div>
-                  </div>;
-               }*/
-               return React.createElement("div", null, 
+               return React.createElement("div", {className: "item"}, 
                         React.createElement("div", {className: "mov-logo"}, 
                             React.createElement("img", {src: "./static/img/logoMovie.png"})
                         ), 
@@ -1496,7 +1460,16 @@ module.exports =  React.createClass({displayName: "exports",
             action: action,
             lineComponent: Line,
             onLineClick : function onLineClick(line){
-                alert('click sur la ligne ' + line.title);
+                var data = line;
+                focus.application.render(lineResume, '#lineResume',
+                    {props: {
+                        title: data.title,
+                        description: data.description,
+                        released: data.released,
+                        countryIds: data.countryIds,
+                        languageIds : data.languageIds,
+                        runtime: this.runtime }});
+                //alert('click sur la ligne ' + line.title);
             },
             isSelection:true,
             lineOperationList:[
@@ -1518,7 +1491,7 @@ module.exports =  React.createClass({displayName: "exports",
                                     operationList: config.operationList, 
                                     action: config.action, 
                                     lineComponent: Line, 
-                                    onLineClick: function onLineClick(line){ alert('click sur la ligne ' + line.title); }, 
+                                    onLineClick: config.onLineClick, 
                                     isSelection: true, 
                                     lineOperationList: config.lineOperationList, 
                                     criteria: config.criteria}
@@ -1528,6 +1501,84 @@ module.exports =  React.createClass({displayName: "exports",
         //return <div> Rodolphe Search ROUTE </div>
     }
 });
+});
+
+require.register("views/filter-result/lineResume", function(exports, require, module) {
+//Get the form mixin.
+var formMixin = focus.components.common.form.mixin;
+var Block = focus.components.common.block.component;
+var Label = focus.components.common.label.component;
+var movieStore = require('../../stores/movie');
+module.exports =  React.createClass({displayName: "exports",
+    definitionPath: "movie",
+    mixins: [formMixin],
+    stores: [{store: movieStore, properties: ["movie"]}],
+    renderContent:function renderMovieResume(){
+        return(
+            React.createElement(Block, null, 
+                React.createElement("div", {className: "movie-lineResume"}, 
+                    React.createElement("div", {className: "movie-resume-logo"}, 
+                        React.createElement("img", {src: "./static/img/logoMovie.png"})
+                    ), 
+                    React.createElement("div", {className: "movie-info"}, 
+                        React.createElement("div", {className: "title-level-2"}, 
+                         React.createElement(Label, {name: "title", value: this.props.title})
+                        ), 
+                        React.createElement("div", {className: "title-level-3"}, 
+                            this.props.imdbId
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-link-detailed-sheet"}, 
+                        React.createElement("a", {href: "#"}, "Detailed sheet")
+                    )
+                ), 
+                React.createElement("div", {className: "movie-descrition"}, 
+                   React.createElement("div", {className: "container-title"}, "Storyline"), 
+                   React.createElement("div", null, this.props.description)
+                ), 
+
+                React.createElement("div", {className: "movie-details"}, 
+                    React.createElement("div", {className: "details-panel-title"}, "Details"), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Country")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.countryIds)
+                        )
+                    ), 
+
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Language")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.languageIds)
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Release date")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.released)
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Runtime")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.runtime)
+                        )
+                    )
+                )
+
+            )
+        );
+    }
+});
+
 });
 
 require.register("views/movie/detail", function(exports, require, module) {

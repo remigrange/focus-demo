@@ -53,6 +53,7 @@
 				<div id="notification"><img/></div>
 			</div>
 			<div id="page"></div>
+			<div id="lineResume"></div>
 		</div>
 	</div>
 	<script>require('initialize');</script>
