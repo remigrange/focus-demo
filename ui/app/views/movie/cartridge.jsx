@@ -11,10 +11,14 @@ module.exports =  React.createClass({
     action: movieActions,
     renderContent:function renderMovieDetail(){
         return(
-            <Block title={"Fiche de d'un film"}>
-                {this.fieldFor("movId")}
-                {this.fieldFor("title")}
-           </Block>
+            <div>
+                <div className="title">
+                    {this.fieldFor("movId")}
+                </div>
+                <div className="field">
+                    {this.fieldFor("title")}
+                </div>
+            </div>
         );
     }
 });

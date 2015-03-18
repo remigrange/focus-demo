@@ -1,12 +1,11 @@
-var MovieDetail = require('./detail');
+var MovieCartridge = require('./cartridge');
 
 module.exports =  React.createClass({
-  displayName: "MovieView",
+  displayName: "MovieCartridge",
   render:function(){
     return (
-      <div className="movieView">
-        <h2>{"Film"}</h2>
-        <MovieDetail id={this.props.id} />
+      <div className="movieCartridge">
+        <MovieCartridge id={this.props.id} />
       </div>
     );
   }
