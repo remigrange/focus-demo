@@ -1485,13 +1485,13 @@ module.exports =  React.createClass({displayName: "exports",
                 Genre: "text",
                 Country: "text"
             },
-            orderableColumnList:{col1: "title", col2: "key.genreIds"},
-            groupableColumnList:{title: "title"},
+            orderableColumnList:{title: "Title", genreIds: "Genre"},
+            groupableColumnList:{genreIds: "Genre"},
             operationList: [
-                {label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
+                /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
                 {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
                 {label: "Button2_a",action: function() {alert("Button2a");},style:undefined,priority: 2},
-                {label: "Button2_b",action: function() {alert("Button2b");},style: undefined,priority: 2},
+                {label: "Button2_b",action: function() {alert("Button2b");},style: undefined,priority: 2},*/
             ],
             action: action,
             lineComponent: Line,
@@ -1500,10 +1500,10 @@ module.exports =  React.createClass({displayName: "exports",
             },
             isSelection:true,
             lineOperationList:[
-                {label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
+                /*{label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
                 {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
                 {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
-                {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}
+                {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}*/
             ],
             criteria: {
                 scope: "MOVIE",
