@@ -360,10 +360,9 @@ body {
   padding-top: 10px;
 }
 #leftMenu img {
-  width: 60px;
-  height: 60px;
-  margin: 10px;
-  border: 1px dashed white;
+  width: 40px;
+  height: 40px;
+  margin: 20px 0 20px 10px;
   cursor: pointer;
 }
 #logo,
@@ -392,8 +391,7 @@ body {
   border: 1px dashed white;
 }
 #page {
-  background: #ffffff;
-  margin-top: 20px;
+  margin: 0;
   padding: 10px;
 }
 .title-level-1 {

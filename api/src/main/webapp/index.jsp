@@ -45,7 +45,7 @@
 	<div id="pageContent">
 		<div id="leftMenu">
 			<div id="logo"><img/></div>
-			<div id="search"><img/></div>
+			<div id="search"><a href="#filterResult"><img src="static/img/search.png"/></a></div>
 		</div>
 		<div id="container">
 			<div id="header">
