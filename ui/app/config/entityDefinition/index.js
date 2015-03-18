@@ -11,6 +11,10 @@ module.exports = {
 			"searchText": {
 				"domain": "DO_COMMENTAIRE",
 				"required": false
+			},		
+			"query": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
 			}		
 	},
 	"searchRet": {

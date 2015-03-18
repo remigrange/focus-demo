@@ -205,7 +205,7 @@ ul.selection-list {
   ul.selection-list li.sl-button {
     background-color: transparent;
     position: relative; }
-    ul.selection-list li.sl-button a {
+    ul.selection-list li.sl-button a, ul.selection-list li.sl-button button {
       position: absolute;
       right: 0px; }
 

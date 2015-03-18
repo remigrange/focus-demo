@@ -6,7 +6,8 @@
 module.exports = {
     "searchCriteria": {
         "scope" : "The Scope",
-        "searchText" : "Field 1"
+        "searchText" : "Search Text",
+        "query" : "query"
     },
     "searchRet": {
         "type" : "Type of the object",

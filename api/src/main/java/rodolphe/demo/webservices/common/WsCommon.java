@@ -33,11 +33,12 @@ public class WsCommon implements RestfulService {
 	 * @param searchText search criteria.
 	 * @return
 	 */
-	@POST("searchByScope")
+	@POST("/searchByScope")
 	@AnonymousAccessAllowed
 	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria , @InnerBodyParam("facets") final DtList<SelectedFacet> selection, @QueryParam("")final UiListState uiListState) {
 		return commonServices.search(searchCriteria, selection);
 
 	}
+
 
 }

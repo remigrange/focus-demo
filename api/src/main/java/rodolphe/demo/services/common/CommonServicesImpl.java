@@ -44,7 +44,7 @@ public class CommonServicesImpl implements CommonServices {
 	@Transactional
 	public Object search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection) {
 		final MovieCriteria movieCrit = new MovieCriteria();
-		final String searchText = searchCriteria.getSearchText();
+		final String searchText = searchCriteria.getQuery();
 		final String scope = searchCriteria.getScope();
 		movieCrit.setTitle(searchText);
 		final PeopleCriteria peopleCrit = new PeopleCriteria();

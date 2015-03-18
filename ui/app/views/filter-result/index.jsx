@@ -15,8 +15,15 @@ module.exports =  React.createClass({
                         var dataRet = {
                             facet: data.facet,
                             list: data.list,
-                            pageInfos:{},
-                            searchContext:{}
+                            pageInfos:{
+                                currentPage: 2,
+                                perPage: 50,
+                                totalRecords: 547
+                            },
+                            searchContext: {
+                                scope: criteria.scope,
+                                query: criteria.query
+                            }
                         };
                         focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
                     },

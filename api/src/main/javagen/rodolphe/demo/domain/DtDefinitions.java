@@ -87,8 +87,10 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	public enum SearchCriteriaFields implements DtFieldName {
 		/** Propriété 'The Scope'. */
 		SCOPE,
-		/** Propriété 'Field 1'. */
+		/** Propriété 'Search Text'. */
 		SEARCH_TEXT,
+		/** Propriété 'query'. */
+		QUERY,
 	}
 
 	/**

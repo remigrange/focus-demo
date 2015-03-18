@@ -12,7 +12,8 @@ create DtDefinition DT_SEARCH_RET {
 create DtDefinition DT_SEARCH_CRITERIA {
 	persistent:"false"
 	field SCOPE {domain: DO_LIBELLE_50 label: "The Scope" notNull:"false" }
-	field SEARCH_TEXT {domain: DO_COMMENTAIRE label: "Field 1" notNull:"false"}
+	field SEARCH_TEXT {domain: DO_COMMENTAIRE label: "Search Text" notNull:"false"}
+	field QUERY {domain: DO_COMMENTAIRE label: "query" notNull:"false"}
 }
 
 create DtDefinition DT_SELECTED_FACET {

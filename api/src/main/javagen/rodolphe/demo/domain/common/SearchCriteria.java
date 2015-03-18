@@ -17,6 +17,7 @@ public final class SearchCriteria implements DtObject {
 
 	private String scope;
 	private String searchText;
+	private String query;
 
 	/**
 	 * Champ : DATA.
@@ -39,21 +40,40 @@ public final class SearchCriteria implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'Field 1'. 
+	 * Récupère la valeur de la propriété 'Search Text'. 
 	 * @return String searchText 
 	 */
-	@Field(domain = "DO_COMMENTAIRE", persistent = false, label = "Field 1")
+	@Field(domain = "DO_COMMENTAIRE", persistent = false, label = "Search Text")
 	public String getSearchText() {
 		return searchText;
 	}
 
 	/**
 	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'Field 1'.
+	 * Définit la valeur de la propriété 'Search Text'.
 	 * @param searchText String 
 	 */
 	public void setSearchText(final String searchText) {
 		this.searchText = searchText;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'query'. 
+	 * @return String query 
+	 */
+	@Field(domain = "DO_COMMENTAIRE", persistent = false, label = "query")
+	public String getQuery() {
+		return query;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'query'.
+	 * @param query String 
+	 */
+	public void setQuery(final String query) {
+		this.query = query;
 	}
 
 	//Aucune Association déclarée
