@@ -68,15 +68,7 @@ public final class WsMovie implements RestfulService {
 	 * @param movId moivie identifier
 	 * @return people list
 	 */
-
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	@GET("/actors/{id}")
+	@GET("/movies/{id}/actors")
 	@AnonymousAccessAllowed
 	public DtList<People> getActors(@PathParam("id")  final Long movId) {
 		return movieServices.getActors(movId);

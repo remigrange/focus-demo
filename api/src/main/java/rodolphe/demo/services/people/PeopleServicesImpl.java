@@ -25,7 +25,7 @@ import rodolphe.demo.services.search.SearchServices;
  * @author JDALMEIDA
  *
  */
-public final class PeopleServicesImpl implements PeopleServices {
+public class PeopleServicesImpl implements PeopleServices {
 
 	@Inject
 	private PeopleDAO peopleDAO;

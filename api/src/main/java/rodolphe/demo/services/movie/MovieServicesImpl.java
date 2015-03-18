@@ -30,7 +30,7 @@ import rodolphe.demo.services.search.SearchServices;
  * @author JDALMEIDA
  *
  */
-public final class MovieServicesImpl implements MovieServices {
+public  class MovieServicesImpl implements MovieServices {
 
 	@Inject
 	private MovieDAO movieDAO;

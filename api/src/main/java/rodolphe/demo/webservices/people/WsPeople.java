@@ -74,13 +74,7 @@ public final class WsPeople implements RestfulService{
 	 * @param peoId people identifier
 	 * @return movies list
 	 */
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
-	@GET("/moviesByPeo/{id}")
+	@GET("/people/{id}/movies")
 	@AnonymousAccessAllowed
 	public DtList<Movie> getMoviesByPeo(@PathParam("id") final Long peoId){
 		return peopleServices.getMoviesByPeo(peoId);
