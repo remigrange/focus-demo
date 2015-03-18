@@ -8029,7 +8029,7 @@ var SearchStore = (function (_CoreStore) {
       value: function update(newData) {
         var previousData = this.data.toJS();
         var processedData = assign({}, previousData, newData);
-        if (this._isConcatenation(previousData, newData)) {
+        if (this._isSameSearchContext(previousData, newData)) {
           processedData.list = previousData.list.concat(newData.list);
         }
         //add calculated fields on data
@@ -8044,14 +8044,21 @@ var SearchStore = (function (_CoreStore) {
         this.emit("search:change");
       }
     },
-    _isConcatenation: {
+    _isSameSearchContext: {
 
       /**
        * Check if the search need to concat the nexData with the previous data (infinite scrol case).
        */
 
-      value: function _isConcatenation(previousData, newData) {
-        return previousData.searchContext !== undefined && previousData.searchContext.scope === newData.searchContext.scope && previousData.searchContext.query === newData.searchContext.query && previousData.facet === newData.facet;
+      value: function _isSameSearchContext(previousData, newData) {
+        var isSameSearchContext = false;
+        if (previousData.searchContext) {
+          var isSameScope = previousData.searchContext.scope === newData.searchContext.scope;
+          var isSameQuery = previousData.searchContext.query === newData.searchContext.query;
+          isSameSearchContext = isSameScope && isSameQuery;
+        }
+
+        return isSameSearchContext && previousData.facet === newData.facet;
       }
     },
     addSearchChangeListener: {

@@ -5,6 +5,7 @@ package rodolphe.demo.webservices.common;
 
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.vega.rest.RestfulService;
+import io.vertigo.vega.rest.model.UiListState;
 import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.InnerBodyParam;
 import io.vertigo.vega.rest.stereotype.POST;
@@ -33,7 +34,7 @@ public class WsCommon implements RestfulService {
 	 */
 	@POST("searchByScope")
 	@AnonymousAccessAllowed
-	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria , @InnerBodyParam("facets") final DtList<SelectedFacet> selection) {
+	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria , @InnerBodyParam("facets") final DtList<SelectedFacet> selection, final UiListState uiListState) {
 		return commonServices.search(searchCriteria, selection);
 
 	}
