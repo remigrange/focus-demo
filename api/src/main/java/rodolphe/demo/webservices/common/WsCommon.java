@@ -9,6 +9,7 @@ import io.vertigo.vega.rest.model.UiListState;
 import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.InnerBodyParam;
 import io.vertigo.vega.rest.stereotype.POST;
+import io.vertigo.vega.rest.stereotype.QueryParam;
 
 import javax.inject.Inject;
 
@@ -34,7 +35,7 @@ public class WsCommon implements RestfulService {
 	 */
 	@POST("searchByScope")
 	@AnonymousAccessAllowed
-	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria , @InnerBodyParam("facets") final DtList<SelectedFacet> selection, final UiListState uiListState) {
+	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria , @InnerBodyParam("facets") final DtList<SelectedFacet> selection, @QueryParam("")final UiListState uiListState) {
 		return commonServices.search(searchCriteria, selection);
 
 	}

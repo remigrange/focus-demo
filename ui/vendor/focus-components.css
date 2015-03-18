@@ -209,6 +209,24 @@ ul.selection-list {
       position: absolute;
       right: 0px; }
 
+.icon {
+  float: left;
+  width: 40px;
+  height: 40px;
+  cursor: pointer; }
+
+.dots-three-vertical {
+  background: url("../img/dots-three-vertical.svg") no-repeat center; }
+
+.select-action li.selected a {
+  font-weight: bold; }
+
+.sticky-navigation li.active {
+  font-weight: bold; }
+
+.topic-displayer .topic {
+  background: url("../img/cross.svg") no-repeat right center; }
+
 .liveFilterContainer {
   padding-right: 10px; }
 

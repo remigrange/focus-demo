@@ -929,7 +929,7 @@ var selectActionMixin = {
             { className: "select-action btn-group" },
             React.createElement(
                 "a",
-                { href: "#", "data-target": "#", "class": "btn btn-primary dropdown-toggle", "data-toggle": "dropdown" },
+                { href: window.location.pathname, "data-target": "#", "class": "btn btn-primary dropdown-toggle", "data-toggle": "dropdown" },
                 React.createElement(Img, { src: this.props.style })
             ),
             React.createElement(

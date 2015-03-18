@@ -6,6 +6,7 @@ module.exports =  React.createClass({
 
         var action = {
             search: function(criteria) {
+                //TODO handle pageInfo
                 serviceCommon.common.searchByScope(criteria).then(
                     function success(data) {
 
@@ -84,8 +85,8 @@ module.exports =  React.createClass({
                 Genre: "text",
                 Country: "text"
             },
-            orderableColumnList:{title: "key.title", description: "key.genreIds"},
-            groupableColumnList:{title: "key.title"},
+            orderableColumnList:{col1: "title", col2: "key.genreIds"},
+            groupableColumnList:{title: "title"},
             operationList: [
                 {label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
                 {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
