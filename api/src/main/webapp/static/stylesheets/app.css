@@ -345,6 +345,15 @@ ul.selection-list {
   width: 32px;
   height: 32px;
 }
+.movieCartridge {
+  width: 30%;
+  float: right;
+}
+.movieCartridge .title {
+  background-color: #EEECE1;
+  height: 150px;
+}
+
 body {
   background-color: #EEEEEE;
   font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
@@ -406,6 +415,27 @@ body {
 .title-level-3 {
   font-size: 14px;
 }
+.movie-details {
+  padding: 10px 0 20px 0;
+}
+.movie-detail-line {
+  width: 100%;
+  display: inline-block;
+}
+.details-label-name {
+  float: left;
+  width: 150px;
+  text-align: right;
+  font-weight: bold;
+}
+.details-label-value {
+  float: left;
+  padding-left: 20px;
+}
+.clear {
+  clear: both;
+}
+
 .mov-logo {
   float: left;
   width: 40px;
@@ -455,25 +485,5 @@ body {
   font-size: 16px;
   text-transform: uppercase;
   color: #acacac;
-}
-.movie-details {
-  padding: 10px 0 20px 0;
-}
-.movie-detail-line {
-  width: 100%;
-  display: inline-block;
-}
-.details-label-name {
-  float: left;
-  width: 150px;
-  text-align: right;
-  font-weight: bold;
-}
-.details-label-value {
-  float: left;
-  padding-left: 20px;
-}
-.clear {
-  clear: both;
 }
 

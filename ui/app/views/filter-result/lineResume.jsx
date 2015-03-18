@@ -1,13 +1,8 @@
 //Get the form mixin.
-var formMixin = focus.components.common.form.mixin;
 var Block = focus.components.common.block.component;
 var Label = focus.components.common.label.component;
-var movieStore = require('../../stores/movie');
 module.exports =  React.createClass({
-    definitionPath: "movie",
-    mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
-    renderContent:function renderMovieResume(){
+    render:function renderMovieResume(){
         return(
             <Block>
                 <div className ="movie-lineResume">

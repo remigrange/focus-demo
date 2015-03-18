@@ -1505,15 +1505,10 @@ module.exports =  React.createClass({displayName: "exports",
 
 require.register("views/filter-result/lineResume", function(exports, require, module) {
 //Get the form mixin.
-var formMixin = focus.components.common.form.mixin;
 var Block = focus.components.common.block.component;
 var Label = focus.components.common.label.component;
-var movieStore = require('../../stores/movie');
 module.exports =  React.createClass({displayName: "exports",
-    definitionPath: "movie",
-    mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
-    renderContent:function renderMovieResume(){
+    render:function renderMovieResume(){
         return(
             React.createElement(Block, null, 
                 React.createElement("div", {className: "movie-lineResume"}, 
@@ -1581,7 +1576,7 @@ module.exports =  React.createClass({displayName: "exports",
 
 });
 
-require.register("views/movie/detail", function(exports, require, module) {
+require.register("views/movie/cartridge", function(exports, require, module) {
 //Get the form mixin.
 var formMixin = focus.components.common.form.mixin;
 var Block = focus.components.common.block.component;
@@ -1595,10 +1590,14 @@ module.exports =  React.createClass({displayName: "exports",
     action: movieActions,
     renderContent:function renderMovieDetail(){
         return(
-            React.createElement(Block, {title: "Fiche de d'un film"}, 
-                this.fieldFor("movId"), 
-                this.fieldFor("title")
-           )
+            React.createElement("div", null, 
+                React.createElement("div", {className: "title"}, 
+                    this.fieldFor("movId")
+                ), 
+                React.createElement("div", {className: "field"}, 
+                    this.fieldFor("title")
+                )
+            )
         );
     }
 });
@@ -1606,15 +1605,14 @@ module.exports =  React.createClass({displayName: "exports",
 });
 
 require.register("views/movie/index", function(exports, require, module) {
-var MovieDetail = require('./detail');
+var MovieCartridge = require('./cartridge');
 
 module.exports =  React.createClass({
-  displayName: "MovieView",
+  displayName: "MovieCartridge",
   render:function(){
     return (
-      React.createElement("div", {className: "movieView"}, 
-        React.createElement("h2", null, "Film"), 
-        React.createElement(MovieDetail, {id: this.props.id})
+      React.createElement("div", {className: "movieCartridge"}, 
+        React.createElement(MovieCartridge, {id: this.props.id})
       )
     );
   }
