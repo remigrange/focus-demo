@@ -26,7 +26,7 @@ module.exports = React.createClass({
                 <div className="field">
                     <div className="title">{"GENRES"}</div>
                     <div className="content">
-                        {this.state.genres}
+                        {this.state.genreIds}
                     </div>
                 </div>
                 <div className="field">
@@ -62,13 +62,13 @@ module.exports = React.createClass({
                 <div className="field">
                     <div className="title">{"COUNTRIES"}</div>
                     <div className="content">
-                        {this.state.countrys}
+                        {this.state.countryIds}
                     </div>
                 </div>
                 <div className="field">
                     <div className="title">{"LANGUAGES"}</div>
                     <div className="content">
-                        {this.state.languages}
+                        {this.state.languageIds}
                     </div>
                 </div>
             </div>

@@ -5,7 +5,6 @@ import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
-import io.vertigo.lang.Option;
 
 import javax.inject.Inject;
 
@@ -146,40 +145,9 @@ public  class MovieServicesImpl implements MovieServices {
 	@Transactional
 	public MovieView getMovieDetails(final Long movId) {
 		final MovieView MovieView = moviePao.getMovieViewByMovId(movId);
-		MovieView.setGenreIds(getGenresAggregatedByMovId(movId));
-		MovieView.setCountryIds(getCountrysAggregatedByMovId(movId));
-		MovieView.setLanguageIds(getLanguagesAggregatedByMovId(movId));
 		MovieView.setActors(getActors(movId));
 		MovieView.setProducers(getProducers(movId));
 		MovieView.setDirectors(getDirectors(movId));
 		return MovieView;
 	}
-
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public String getGenresAggregatedByMovId(final Long movId)
-	{
-		final Option<String> string = moviePao.getGenresAggregatedByMovId(movId);
-		return string.isDefined() ? string.get() : "";
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public String getCountrysAggregatedByMovId(final Long movId)
-	{
-		final Option<String> string = moviePao.getCountrysAggregatedByMovId(movId);
-		return string.isDefined() ? string.get() : "";
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public String getLanguagesAggregatedByMovId(final Long movId)
-	{
-		final Option<String> string = moviePao.getLanguagesAggregatedByMovId(movId);
-		return string.isDefined() ? string.get() : "";
-	}
-
 }

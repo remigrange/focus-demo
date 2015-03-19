@@ -426,6 +426,10 @@ module.exports = {
 			"searchText": {
 				"domain": "DO_COMMENTAIRE",
 				"required": false
+			},		
+			"query": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
 			}		
 	},
 	"searchRet": {
@@ -1011,10 +1015,11 @@ module.exports = {
 });
 
 require.register("config/server/common", function(exports, require, module) {
-var root = "./searchByScope";
+var root = ".";
 var url = focus.util.url.builder;
 module.exports = {
-    searchByScope: url(root, 'POST')
+    searchByScope: url(root+"/searchByScope", 'POST')/*,
+    filterResult: url(root+"/filterResult", 'POST')*/
 };
 
 });
@@ -1084,7 +1089,8 @@ module.exports = {
 module.exports = {
     "searchCriteria": {
         "scope" : "The Scope",
-        "searchText" : "Field 1"
+        "searchText" : "Search Text",
+        "query" : "query"
     },
     "searchRet": {
         "type" : "Type of the object",
@@ -1290,16 +1296,10 @@ require.register("initialize", function(exports, require, module) {
 console.log(focus);
 console.log(focusComponents);
 focus.components = focusComponents;
-var Hello = React.createClass({displayName: "Hello",
-    render: function() {
-        return React.createElement("div", null, "Hello ", this.props.name);
-    }
-});
 //Require dependencies.
 require('./initializer');
 require("router");
 Backbone.history.start();
-//setTimeout(focus.application.render(Hello, document.querySelector('#container')), 3000);
 //focus.application.render(Hello, '#page', {props: {name: "rodolphe ....."}});
 
 });
@@ -1385,7 +1385,10 @@ var fetch = focus.network.fetch;
 module.exports = {
     searchByScope: function searchByScope(criteria){
         return fetch(URL.common.searchByScope({data:criteria}));
-    }
+    }/*,
+    filterResult: function filterResult(criteria){
+        return fetch(URL.common.filterResult({data:criteria}));
+    }*/
 };
 });
 
@@ -1427,6 +1430,8 @@ module.exports = movieStore;
 require.register("views/filter-result/index", function(exports, require, module) {
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var serviceCommon = require('../../services');
+var lineResume = require('./lineResume');
+
 
 module.exports =  React.createClass({displayName: "exports",
     render:function(){
@@ -1440,8 +1445,15 @@ module.exports =  React.createClass({displayName: "exports",
                         var dataRet = {
                             facet: data.facet,
                             list: data.list,
-                            pageInfos:{},
-                            searchContext:{}
+                            pageInfos:{
+                                currentPage: 2,
+                                perPage: 50,
+                                totalRecords: 547
+                            },
+                            searchContext: {
+                                scope: criteria.scope,
+                                query: criteria.query
+                            }
                         };
                         focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
                     },
@@ -1455,39 +1467,7 @@ module.exports =  React.createClass({displayName: "exports",
         var Line = React.createClass({displayName: "Line",
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
-             /* if(data.movId !== undefined){
-                  return <div>
-                      <div className="mov-logo" >
-                          <img src="./static/img/logoMovie.png"/>
-                      </div>
-                      <div>
-                          <div className="title-level-1">
-                            {data.title}
-                          </div>
-                          <div className="title-level-2">
-                            {data.genreIds}
-                          </div>
-                          <div className="title-level-3">
-                            {data.released}
-                          </div>
-                      </div>
-                  </div>;
-               } else {
-                  return <div>
-                      <div className="user-logo" >
-                          <img src="./static/img/logoMovie.png"/>
-                      </div>
-                      <div>
-                          <div className="title-level-1">
-                            {data.title}
-                          </div>
-                          <div className="title-level-3">
-                            {data.released}
-                          </div>
-                      </div>
-                  </div>;
-               }*/
-               return React.createElement("div", null, 
+               return React.createElement("div", {className: "item"}, 
                         React.createElement("div", {className: "mov-logo"}, 
                             React.createElement("img", {src: "./static/img/logoMovie.png"})
                         ), 
@@ -1523,7 +1503,16 @@ module.exports =  React.createClass({displayName: "exports",
             action: action,
             lineComponent: Line,
             onLineClick : function onLineClick(line){
-                alert('click sur la ligne ' + line.title);
+                var data = line;
+                focus.application.render(lineResume, '#lineResume',
+                    {props: {
+                        title: data.title,
+                        description: data.description,
+                        released: data.released,
+                        countryIds: data.countryIds,
+                        languageIds : data.languageIds,
+                        runtime: this.runtime }});
+                //alert('click sur la ligne ' + line.title);
             },
             isSelection:true,
             lineOperationList:[
@@ -1545,7 +1534,7 @@ module.exports =  React.createClass({displayName: "exports",
                                     operationList: config.operationList, 
                                     action: config.action, 
                                     lineComponent: Line, 
-                                    onLineClick: function onLineClick(line){ alert('click sur la ligne ' + line.title); }, 
+                                    onLineClick: config.onLineClick, 
                                     isSelection: true, 
                                     lineOperationList: config.lineOperationList, 
                                     criteria: config.criteria}
@@ -1555,6 +1544,79 @@ module.exports =  React.createClass({displayName: "exports",
         //return <div> Rodolphe Search ROUTE </div>
     }
 });
+});
+
+require.register("views/filter-result/lineResume", function(exports, require, module) {
+//Get the form mixin.
+var Block = focus.components.common.block.component;
+var Label = focus.components.common.label.component;
+module.exports =  React.createClass({displayName: "exports",
+    render:function renderMovieResume(){
+        return(
+            React.createElement(Block, null, 
+                React.createElement("div", {className: "movie-lineResume"}, 
+                    React.createElement("div", {className: "movie-resume-logo"}, 
+                        React.createElement("img", {src: "./static/img/logoMovie.png"})
+                    ), 
+                    React.createElement("div", {className: "movie-info"}, 
+                        React.createElement("div", {className: "title-level-2"}, 
+                         React.createElement(Label, {name: "title", value: this.props.title})
+                        ), 
+                        React.createElement("div", {className: "title-level-3"}, 
+                            this.props.imdbId
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-link-detailed-sheet"}, 
+                        React.createElement("a", {href: "#"}, "Detailed sheet")
+                    )
+                ), 
+                React.createElement("div", {className: "movie-descrition"}, 
+                   React.createElement("div", {className: "container-title"}, "Storyline"), 
+                   React.createElement("div", null, this.props.description)
+                ), 
+
+                React.createElement("div", {className: "movie-details"}, 
+                    React.createElement("div", {className: "details-panel-title"}, "Details"), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Country")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.countryIds)
+                        )
+                    ), 
+
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Language")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.languageIds)
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Release date")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.released)
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Runtime")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.runtime)
+                        )
+                    )
+                )
+
+            )
+        );
+    }
+});
+
 });
 
 require.register("views/movie/cartridge", function(exports, require, module) {
@@ -1586,7 +1648,7 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "GENRES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.genres
+                        this.state.genreIds
                     )
                 ), 
                 React.createElement("div", {className: "field"}, 
@@ -1622,13 +1684,13 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "COUNTRIES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.countrys
+                        this.state.countryIds
                     )
                 ), 
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "LANGUAGES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.languages
+                        this.state.languageIds
                     )
                 )
             )
@@ -1659,78 +1721,75 @@ module.exports = React.createClass({
 });
 
 require.register("views/search-result/index", function(exports, require, module) {
-var SearchFilterResult = focusComponents.page.searchfilterResult
-
-
+var SearchResult = focusComponents.page.search.searchResult.component;
+var serviceCommon = require('../../services');
 module.exports =  React.createClass({displayName: "exports",
     render:function(){
 
-        var returnedData =  {
-            facet: {
-                FCT_PAYS: {
-                    "FRA": {label: "France", count: 5},
-                    "GER": {label: "Germany", count: 8}
-                },
-                FCT_STATUS: {
-                    "OPE": {label: "Open", count: 7},
-                    "CLO": {label: "Closed", count: 2},
-                    "ST1": {label: "Status 1", count: 2},
-                    "ST2": {label: "Status 2", count: 2},
-                    "ST3": {label: "Status 3", count: 2},
-                    "ST4": {label: "Status 4", count: 2},
-                    "ST5": {label: "Status 5", count: 2}
-                },
-                FCT_REGION: {
-                    "IDF": {label: "Ile de France", count: 11},
-                    "NPC": {label: "Nord - Pas de Calais", count: 6}
-                }
-            },
-            list: [{id:1, title : "toto", body:"ceci est un test"},{id:2, title:"tata",body:"deuxieme test"}, {id:3, title:"titi",body:"troisième test"}],
-            pageInfos: {},
-            searchContext: {}
-        };
-
         var action = {
             search: function(criteria) {
-                window.setTimeout(
-                    function() {
-                        var data = {
-                            facet: returnedData.facet,
-                            list: returnedData.list,
-                            pageInfos:returnedData.pageInfos,
-                            searchContext: returnedData.searchContext
-                        };
-
-                        focus.dispatcher.handleServerAction({
-                            data: data, type: "update"
-                        })
+                //TODO handle pageInfo
+                var critere = {
+                    criteria : {
+                        scope:"MOVIE",
+                        query:criteria.query
                     },
-                    1000);
+                    facets:[]
+                }
+                serviceCommon.common.searchByScope(critere).then(
+                    function success(data) {
+                        var list = data;
+                        if(data.list!==undefined){
+                            list= data.list;
+                        }
+                        var dataRet = {
+                            list: list,
+                            facet:{},
+                            pageInfos:{
+                                currentPage: 2,
+                                perPage: 50,
+                                totalRecords: 547
+                            },
+                            searchContext: {
+                                scope: criteria.scope,
+                                query: criteria.query
+                            }
+                        };
+                        focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
+                    },
+                    function error(error) {
+                        //TODO
+                        console.info("Errrors");
+                    }
+                );
             }
         };
+
         var Line = React.createClass({displayName: "Line",
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
-                var title = React.createElement('div',null,data.title);
-                var body = React.createElement('div',null,data.body);
-                var root = React.createElement('div',null,title,body);
-                return root;
+                return React.createElement("div", {className: "item"}, 
+                    React.createElement("div", {className: "mov-logo"}, 
+                        React.createElement("img", {src: "./static/img/logoMovie.png"})
+                    ), 
+                    React.createElement("div", null, 
+                        React.createElement("div", {className: "title-level-1"}, 
+                            data.title
+                        ), 
+                        React.createElement("div", {className: "title-level-2"}, 
+                            data.genreIds
+                        ), 
+                        React.createElement("div", {className: "title-level-3"}, 
+                            data.released
+                        )
+                    )
+                );
             }
         });
 
         var config = {
-            facetConfig: {
-                FCT_PAYS: "text",
-                FCT_STATUS: "text",
-                FCT_REGION: "text"
-            },
-            orderableColumnList:{col1: "Colonne 1", col2: "Colonne 2", col3: "Colonne 3"},
-            groupableColumnList:{col1: "Colonne 1", col2: "Colonne 2"},
+
             operationList: [
-                {label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
-                {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
-                {label: "Button2_a",action: function() {alert("Button2a");},style:undefined,priority: 2},
-                {label: "Button2_b",action: function() {alert("Button2b");},style: undefined,priority: 2},
             ],
             action: action,
             lineComponent: Line,
@@ -1739,26 +1798,27 @@ module.exports =  React.createClass({displayName: "exports",
             },
             isSelection:true,
             lineOperationList:[
-                {label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-                {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-                {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
-                {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}
-            ]
+            ],
+            criteria: {
+                scope: "MOVIE",
+                searchText : "Fantastic"
+            }
 
         }
 
-        return React.createElement(SearchFilterResult, {config: config.config, 
-                                    orderableColumnList: config.orderableColumnList, 
-                                    groupableColumnList: config.groupableColumnList, 
-                                    operationList: config.operationList, 
-                                    action: config.action, 
-                                    lineComponent: Line, 
-                                    onLineClick: function onLineClick(line){ alert('click sur la ligne ' + line.title); }, 
-                                    isSelection: true, 
-                                    lineOperationList: config.lineOperationList}
 
+        var searchResult =  React.createElement(React.createClass({mixins:[focusComponents.page.search.searchResult.mixin],actions: config.action}),
+            {
+                lineComponent: Line,
+                onLineClick : function onLineClick(line){
+                    alert('click sur la ligne ' + line.title);
+                },
+                operationList:config.operationList
 
+            }
         );
+        
+        return searchResult;
     }
 });
 });

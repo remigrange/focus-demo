@@ -2,7 +2,6 @@ package rodolphe.demo.dao.movies;
 
 import javax.inject.Inject;
 
-import io.vertigo.lang.Option;
 import io.vertigo.core.Home;
 import io.vertigo.lang.Assertion;
 import io.vertigo.dynamo.task.TaskManager;
@@ -18,35 +17,11 @@ import io.vertigo.dynamo.task.model.TaskResult;
 public final class MoviesPAO {
 	/** Liste des taches. */
 	private static enum Tasks {
-		/** Tache TK_GET_GENRES_AGGREGATED_BY_MOV_ID */
-		TK_GET_GENRES_AGGREGATED_BY_MOV_ID,
-		/** Tache TK_GET_COUNTRYS_AGGREGATED_BY_MOV_ID */
-		TK_GET_COUNTRYS_AGGREGATED_BY_MOV_ID,
-		/** Tache TK_GET_LANGUAGES_AGGREGATED_BY_MOV_ID */
-		TK_GET_LANGUAGES_AGGREGATED_BY_MOV_ID,
 		/** Tache TK_GET_MOVIE_VIEW */
 		TK_GET_MOVIE_VIEW,
 		/** Tache TK_GET_MOVIE_VIEW_BY_MOV_ID */
 		TK_GET_MOVIE_VIEW_BY_MOV_ID,
 	}
-
-	/** Constante de paramètre de la tache MOV_ID. */
-	private static final String ATTR_IN_TK_GET_GENRES_AGGREGATED_BY_MOV_ID_MOV_ID = "MOV_ID";
-
-	/** Constante de paramètre de la tache TEXTE. */
-	private static final String ATTR_OUT_TK_GET_GENRES_AGGREGATED_BY_MOV_ID_TEXTE = "TEXTE";
-
-	/** Constante de paramètre de la tache MOV_ID. */
-	private static final String ATTR_IN_TK_GET_COUNTRYS_AGGREGATED_BY_MOV_ID_MOV_ID = "MOV_ID";
-
-	/** Constante de paramètre de la tache TEXTE. */
-	private static final String ATTR_OUT_TK_GET_COUNTRYS_AGGREGATED_BY_MOV_ID_TEXTE = "TEXTE";
-
-	/** Constante de paramètre de la tache MOV_ID. */
-	private static final String ATTR_IN_TK_GET_LANGUAGES_AGGREGATED_BY_MOV_ID_MOV_ID = "MOV_ID";
-
-	/** Constante de paramètre de la tache TEXTE. */
-	private static final String ATTR_OUT_TK_GET_LANGUAGES_AGGREGATED_BY_MOV_ID_TEXTE = "TEXTE";
 
 	/** Constante de paramètre de la tache MIN_RANK. */
 	private static final String ATTR_IN_TK_GET_MOVIE_VIEW_MIN_RANK = "MIN_RANK";
@@ -84,45 +59,6 @@ public final class MoviesPAO {
 	private TaskBuilder createTaskBuilder(final Tasks task) {
 		final TaskDefinition taskDefinition = Home.getDefinitionSpace().resolve(task.toString(), TaskDefinition.class);
 		return new TaskBuilder(taskDefinition);
-	}
-
-	/**
-	 * Execute la tache TK_GET_GENRES_AGGREGATED_BY_MOV_ID.
-	 * @param movId Long 
-	 * @return Option de String texte
-	*/
-	public Option<String> getGenresAggregatedByMovId(final Long movId) {
-		final Task task = createTaskBuilder(Tasks.TK_GET_GENRES_AGGREGATED_BY_MOV_ID)
-				.withValue(ATTR_IN_TK_GET_GENRES_AGGREGATED_BY_MOV_ID_MOV_ID, movId)
-				.build();
-		final TaskResult taskResult = getTaskManager().execute(task);
-		return Option.option(taskResult.<String> getValue(ATTR_OUT_TK_GET_GENRES_AGGREGATED_BY_MOV_ID_TEXTE));
-	}
-
-	/**
-	 * Execute la tache TK_GET_COUNTRYS_AGGREGATED_BY_MOV_ID.
-	 * @param movId Long 
-	 * @return Option de String texte
-	*/
-	public Option<String> getCountrysAggregatedByMovId(final Long movId) {
-		final Task task = createTaskBuilder(Tasks.TK_GET_COUNTRYS_AGGREGATED_BY_MOV_ID)
-				.withValue(ATTR_IN_TK_GET_COUNTRYS_AGGREGATED_BY_MOV_ID_MOV_ID, movId)
-				.build();
-		final TaskResult taskResult = getTaskManager().execute(task);
-		return Option.option(taskResult.<String> getValue(ATTR_OUT_TK_GET_COUNTRYS_AGGREGATED_BY_MOV_ID_TEXTE));
-	}
-
-	/**
-	 * Execute la tache TK_GET_LANGUAGES_AGGREGATED_BY_MOV_ID.
-	 * @param movId Long 
-	 * @return Option de String texte
-	*/
-	public Option<String> getLanguagesAggregatedByMovId(final Long movId) {
-		final Task task = createTaskBuilder(Tasks.TK_GET_LANGUAGES_AGGREGATED_BY_MOV_ID)
-				.withValue(ATTR_IN_TK_GET_LANGUAGES_AGGREGATED_BY_MOV_ID_MOV_ID, movId)
-				.build();
-		final TaskResult taskResult = getTaskManager().execute(task);
-		return Option.option(taskResult.<String> getValue(ATTR_OUT_TK_GET_LANGUAGES_AGGREGATED_BY_MOV_ID_TEXTE));
 	}
 
 	/**

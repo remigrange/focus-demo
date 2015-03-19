@@ -72,35 +72,4 @@ public interface MovieServices  extends Component {
 	MovieView getMovieDetails(Long movId);
 
 
-
-	/**
-	 * Get aggregated genres for a movie.
-	 *
-	 * @param movId movie identifier
-	 * @return genres
-	 */
-	String getGenresAggregatedByMovId(Long movId);
-
-
-
-	/**
-	 * Get aggregated countrys for a movie.
-	 *
-	 * @param movId movie identifier
-	 * @return countrys
-	 */
-	String getCountrysAggregatedByMovId(Long movId);
-
-
-
-	/**
-	 * Get aggregated languages for a movie.
-	 *
-	 * @param movId movie identifier
-	 * @return languages
-	 */
-	String getLanguagesAggregatedByMovId(Long movId);
-
-
-
 }
