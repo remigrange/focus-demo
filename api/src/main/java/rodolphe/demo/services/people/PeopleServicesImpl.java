@@ -4,6 +4,7 @@ import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
+import io.vertigo.vega.rest.model.UiListState;
 
 import javax.inject.Inject;
 
@@ -38,7 +39,7 @@ public class PeopleServicesImpl implements PeopleServices {
 	/** {@inheritDoc} */
 	@Override
 	public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
-			final PeopleCriteria crit, final FacetSelection ...selection) {
+			final PeopleCriteria crit,final UiListState uiListState,  final FacetSelection ...selection) {
 		final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
 				FacetedSearchConst.QRY_PEOPLE_WO_FCT.getQuery());
 		criteria.setCriteria(crit);

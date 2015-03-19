@@ -3,10 +3,12 @@ package rodolphe.demo.webservices.movie;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.vega.rest.RestfulService;
+import io.vertigo.vega.rest.model.UiListState;
 import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.GET;
 import io.vertigo.vega.rest.stereotype.POST;
 import io.vertigo.vega.rest.stereotype.PathParam;
+import io.vertigo.vega.rest.stereotype.QueryParam;
 
 import javax.inject.Inject;
 
@@ -33,13 +35,14 @@ public final class WsMovie implements RestfulService {
 	 * Search movies
 	 *
 	 * @param movieCriteria search criteria
+	 * @param uiListState uiListState
 	 * @return search result.
 	 */
 	@POST("/movies")
 	@AnonymousAccessAllowed
 	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMovies(
-			final MovieCriteria movieCriteria) {
-		return movieServices.getMoviesByCriteria(movieCriteria);
+			final MovieCriteria movieCriteria, @QueryParam("") final UiListState uiListState) {
+		return movieServices.getMoviesByCriteria(movieCriteria, uiListState);
 	}
 
 	/**

@@ -3,6 +3,8 @@
  */
 package roldophe.demo.movie;
 
+import io.vertigo.vega.rest.model.UiListState;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -23,7 +25,8 @@ public class WsMovieTest extends AbstractRodolpheTestCase{
 	public void testGetMovies() {
 		final MovieCriteria movieCriteria = new MovieCriteria();
 		movieCriteria.setTitle("Fantastic");
-		wsMovie.getMovies(movieCriteria);
+		final UiListState uiListState = new UiListState(0, 0, null, false, null);
+		wsMovie.getMovies(movieCriteria, uiListState);
 	}
 
 }

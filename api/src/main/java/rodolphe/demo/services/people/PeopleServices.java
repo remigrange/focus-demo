@@ -3,6 +3,7 @@ package rodolphe.demo.services.people;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.lang.Component;
+import io.vertigo.vega.rest.model.UiListState;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
@@ -20,9 +21,10 @@ public interface PeopleServices  extends Component {
 	/**
 	 * search People by criteria.
 	 * @param crit criteria
+	 * @param uiListState uiListState
 	 * @return result
 	 */
-	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit, FacetSelection ...selection);
+	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit, UiListState uiListState,  FacetSelection ...selection);
 
 
 	/**

@@ -7,6 +7,7 @@ import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.transaction.Transactional;
+import io.vertigo.vega.rest.model.UiListState;
 
 import javax.inject.Inject;
 
@@ -42,7 +43,7 @@ public class CommonServicesImpl implements CommonServices {
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
-	public Object search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection) {
+	public Object search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection, final UiListState uiListState) {
 		final MovieCriteria movieCrit = new MovieCriteria();
 		final String searchText = searchCriteria.getQuery();
 		final String scope = searchCriteria.getScope();
@@ -70,12 +71,12 @@ public class CommonServicesImpl implements CommonServices {
 		}
 
 		if(CodeScope.MOVIE.name().equals(scope)){
-			return movieServices.getMoviesByCriteria(movieCrit,facetSel);
+			return movieServices.getMoviesByCriteria(movieCrit, uiListState , facetSel);
 		} else if (CodeScope.PEOPLE.name().equals(scope)) {
-			return peopleServices.getPeopleByCriteria(peopleCrit,facetSel);
+			return peopleServices.getPeopleByCriteria(peopleCrit, uiListState, facetSel);
 		} else {
-			final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(movieCrit, facetSel);
-			final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices.getPeopleByCriteria(peopleCrit, facetSel);
+			final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(movieCrit, uiListState, facetSel);
+			final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices.getPeopleByCriteria(peopleCrit, uiListState,  facetSel);
 			final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
 
 			final SearchRet searchRet = new SearchRet();

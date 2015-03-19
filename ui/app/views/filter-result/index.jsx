@@ -62,8 +62,8 @@ module.exports =  React.createClass({
                 Genre: "text",
                 Country: "text"
             },
-            orderableColumnList:{title: "Title", genreIds: "Genre"},
-            groupableColumnList:{genreIds: "Genre"},
+            orderableColumnList:{TITLE: "Title", GENRE_IDS: "Genre"},
+            groupableColumnList:{GENRE_IDS: "Genre"},
             operationList: [
                 /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
                 {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},

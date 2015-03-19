@@ -5,6 +5,7 @@ import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
+import io.vertigo.vega.rest.model.UiListState;
 
 import javax.inject.Inject;
 
@@ -49,13 +50,17 @@ public  class MovieServicesImpl implements MovieServices {
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
-	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(final MovieCriteria crit, final FacetSelection ...selection) {
+	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(final MovieCriteria crit, final UiListState uiListState, final FacetSelection ...selection) {
 		/*final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
 				FacetedSearchConst.QRY_MOVIE_WO_FCT.getQuery());*/
 		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
 		criteria.setCriteria(crit);
 		for (final FacetSelection sel : selection) {
 			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
+		}
+		if(uiListState.getSortFieldName()!=null) {
+			criteria.setSortAsc(uiListState.isSortDesc());
+			criteria.setSortFieldName(uiListState.getSortFieldName());
 		}
 		return searchServices.searchMovie(criteria);
 	}
