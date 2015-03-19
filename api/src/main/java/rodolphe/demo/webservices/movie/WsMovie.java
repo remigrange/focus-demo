@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
+import rodolphe.demo.domain.movies.MovieView;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.search.SearchCriterium;
@@ -65,7 +66,7 @@ public final class WsMovie implements RestfulService {
 
 	/**
 	 * Get movie's actors.
-	 * @param movId moivie identifier
+	 * @param movId movie identifier
 	 * @return people list
 	 */
 	@GET("/movies/{id}/actors")
@@ -74,5 +75,37 @@ public final class WsMovie implements RestfulService {
 		return movieServices.getActors(movId);
 	}
 
+	/**
+	 * Get movie's producers.
+	 * @param movId movie identifier
+	 * @return people list
+	 */
+	@GET("/movies/{id}/producers")
+	@AnonymousAccessAllowed
+	public DtList<People> getProducers(@PathParam("id")  final Long movId) {
+		return movieServices.getProducers(movId);
+	}
+
+	/**
+	 * Get movie's directors.
+	 * @param movId movie identifier
+	 * @return people list
+	 */
+	@GET("/movies/{id}/directors")
+	@AnonymousAccessAllowed
+	public DtList<People> getDirectors(@PathParam("id")  final Long movId) {
+		return movieServices.getDirectors(movId);
+	}
+
+	/**
+	 * Get movie by id.
+	 * @param movId movie id.
+	 * @return movie.
+	 */
+	@GET("/movies/{id}/movieView")
+	@AnonymousAccessAllowed
+	public MovieView getMovieDetails(@PathParam("id") final long movId){
+		return movieServices.getMovieDetails(movId);
+	}
 
 }

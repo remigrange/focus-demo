@@ -1,9 +1,52 @@
+.movieView {
+  background-color: white;
+  float: left;
+  width: 100%;
+  border: solid 1px;
+}
+
 .movieCartridge {
   width: 30%;
   float: right;
 }
 
-.movieCartridge .title {
+.movieCartridge .header {
   background-color: #EEECE1;
   height: 150px;
+  border: solid 1px;
+}
+
+.movieCartridge .header .picture {
+  float: left;
+  background-image: url("../img/logoMovie.png");
+  width: 100px;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin: 20px 20px;
+}
+
+.movieCartridge .header .title {
+  padding-top: 30px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.movieCartridge .field {
+  background-color: #F2F2F2;
+  float: left;
+  width: 100%;
+  padding: 10px;
+  border: solid 1px;
+  border-top: none;
+}
+
+.movieCartridge .field .title{
+  width: 30%;
+  float: left;
+}
+
+.movieCartridge .field .content{
+  width: 70%;
+  float: right;
 }

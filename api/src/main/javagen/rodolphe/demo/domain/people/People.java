@@ -20,6 +20,7 @@ public final class People implements DtObject {
 	private String firstName;
 	private String peoName;
 	private String imdbid;
+	private String comment;
 	private String titCd;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> fileInfo;
 	private rodolphe.demo.domain.masterdatas.Title title;
@@ -117,6 +118,25 @@ public final class People implements DtObject {
 	 */
 	public void setImdbid(final String imdbid) {
 		this.imdbid = imdbid;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Commentaire'. 
+	 * @return String comment 
+	 */
+	@Field(domain = "DO_TEXTE", persistent = false, label = "Commentaire")
+	public String getComment() {
+		return comment;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Commentaire'.
+	 * @param comment String 
+	 */
+	public void setComment(final String comment) {
+		this.comment = comment;
 	}
 
 	/**

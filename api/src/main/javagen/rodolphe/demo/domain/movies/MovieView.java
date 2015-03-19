@@ -26,6 +26,9 @@ public final class MovieView implements DtObject {
 	private String countryIds;
 	private String languageIds;
 	private Long rank;
+	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> actors;
+	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> producers;
+	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> directors;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -234,6 +237,63 @@ public final class MovieView implements DtObject {
 	 */
 	public void setRank(final Long rank) {
 		this.rank = rank;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Actors'. 
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> actors 
+	 */
+	@Field(domain = "DO_DT_PEOPLE_DTC", persistent = false, label = "Actors")
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> getActors() {
+		return actors;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Actors'.
+	 * @param actors io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> 
+	 */
+	public void setActors(final io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> actors) {
+		this.actors = actors;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Producers'. 
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> producers 
+	 */
+	@Field(domain = "DO_DT_PEOPLE_DTC", persistent = false, label = "Producers")
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> getProducers() {
+		return producers;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Producers'.
+	 * @param producers io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> 
+	 */
+	public void setProducers(final io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> producers) {
+		this.producers = producers;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Directors'. 
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> directors 
+	 */
+	@Field(domain = "DO_DT_PEOPLE_DTC", persistent = false, label = "Directors")
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> getDirectors() {
+		return directors;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Directors'.
+	 * @param directors io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> 
+	 */
+	public void setDirectors(final io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> directors) {
+		this.directors = directors;
 	}
 
 	//Aucune Association déclarée

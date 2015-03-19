@@ -331,6 +331,18 @@ module.exports = {
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
+			},		
+			"actors": {
+				"domain": "DO_DT_PEOPLE_DTC",
+				"required": false
+			},		
+			"producers": {
+				"domain": "DO_DT_PEOPLE_DTC",
+				"required": false
+			},		
+			"directors": {
+				"domain": "DO_DT_PEOPLE_DTC",
+				"required": false
 			}		
 	},
 	"casting": {
@@ -374,6 +386,10 @@ module.exports = {
 			},		
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"comment": {
+				"domain": "DO_TEXTE",
 				"required": false
 			},		
 			"titCd": {

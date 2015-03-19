@@ -41,3 +41,7 @@ create DtDefinition DT_PEOPLE_RESULT {
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
 	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
+
+alter DtDefinition DT_PEOPLE {
+	field COMMENT {domain: DO_TEXTE label: "Commentaire" notNull:"false" persistent : "false"}
+}

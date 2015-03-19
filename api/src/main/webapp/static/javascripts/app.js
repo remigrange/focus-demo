@@ -114,13 +114,14 @@ var AppDispatcher =  focus.dispatcher;
 var movieServices = require('../../services').movie;
 module.exports = {
     load: function(id){
-        movieServices.getMovieById(id).then(
+        movieServices.getMovieViewById(id).then(
             function(data){
                 focus.dispatcher.handleServerAction({
                     data: {movie: data},
                     type: "update"
                 });
-            });
+            }
+        );
     }
 };
 
@@ -745,6 +746,18 @@ module.exports = {
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
+			},		
+			"actors": {
+				"domain": "DO_DT_PEOPLE_DTC",
+				"required": false
+			},		
+			"producers": {
+				"domain": "DO_DT_PEOPLE_DTC",
+				"required": false
+			},		
+			"directors": {
+				"domain": "DO_DT_PEOPLE_DTC",
+				"required": false
 			}		
 	},
 	"casting": {
@@ -788,6 +801,10 @@ module.exports = {
 			},		
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"comment": {
+				"domain": "DO_TEXTE",
 				"required": false
 			},		
 			"titCd": {
@@ -1015,10 +1032,14 @@ require.register("config/server/movie", function(exports, require, module) {
 var root = "./movies/";
 var url = focus.util.url.builder;
 module.exports = {
-  getAll: url(root, 'GET'),
-  update: url(root + "${id}/",'PUT'),
-  create: url(root, 'POST'),
-  get: url(root + "${id}", 'GET')
+    getAll: url(root, 'GET'),
+    update: url(root + "${id}/",'PUT'),
+    create: url(root, 'POST'),
+    get: url(root + "${id}", 'GET'),
+    actors: url(root + "${id}/" + 'actors', 'GET'),
+    producers: url(root + "${id}/" + 'producers', 'GET'),
+    directors: url(root + "${id}/" + 'directors', 'GET'),
+    movieView: url(root + "${id}/" + 'movieView', 'GET')
 };
 
 });
@@ -1164,7 +1185,10 @@ module.exports = {
         "genreIds" : "Movie's genres identifiers",
         "countryIds" : "Movie's contries identifiers",
         "languageIds" : "Movie's languages identifiers",
-        "rank" : "rank"
+        "rank" : "rank",
+        "actors" : "Actors",
+        "producers" : "Producers",
+        "directors" : "Directors"
     },
     "casting": {
         "castId" : "Cast_id",
@@ -1179,6 +1203,7 @@ module.exports = {
         "firstName" : "First Name",
         "peoName" : "Peo Name",
         "imdbid" : "imdbID",
+        "comment" : "Commentaire",
         "titCd" : "Title"
     },
     "peopleCriteria": {
@@ -1377,6 +1402,9 @@ var fetch = focus.network.fetch;
 module.exports = {
     getMovieById: function getMovieById(id){
         return fetch(URL.movie.get({urlData:{id: id}}));
+    },
+    getMovieViewById: function getMovieViewById(id){
+        return fetch(URL.movie.movieView({urlData:{id: id}}));
     }
 };
 });
@@ -1389,9 +1417,8 @@ require.register("stores/movie", function(exports, require, module) {
  */
 var movieStore = new focus.store.CoreStore({
     definition : {
-      'movie': 'movie',
-      'people': 'people'
-      }
+        'movie': 'movie'
+    }
   });
 module.exports = movieStore;
 
@@ -1530,24 +1557,81 @@ module.exports =  React.createClass({displayName: "exports",
 });
 });
 
-require.register("views/movie/detail", function(exports, require, module) {
+require.register("views/movie/cartridge", function(exports, require, module) {
 //Get the form mixin.
 var formMixin = focus.components.common.form.mixin;
-var Block = focus.components.common.block.component;
-var fetch = focus.network.fetch;
+var Field = focus.components.common.field.component;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
-module.exports =  React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: "exports",
     definitionPath: "movie",
     mixins: [formMixin],
     stores: [{store: movieStore, properties: ["movie"]}],
     action: movieActions,
-    renderContent:function renderMovieDetail(){
-        return(
-            React.createElement(Block, {title: "Fiche de d'un film"}, 
-                this.fieldFor("movId"), 
-                this.fieldFor("title")
-           )
+    getInitialState: function () {
+        return {
+                actors: [],
+                producers: [],
+                directors: []
+                }
+    },
+    renderContent: function renderMovieDetail() {
+        return (
+            React.createElement("div", null, 
+                React.createElement("div", {className: "header"}, 
+                    React.createElement("div", {className: "picture"}), 
+                    React.createElement("div", {className: "title"}, this.state.title), 
+                    React.createElement("div", {className: "year"}, "2006")
+                ), 
+                React.createElement("div", {className: "field"}, 
+                    React.createElement("div", {className: "title"}, "GENRES"), 
+                    React.createElement("div", {className: "content"}, 
+                        this.state.genres
+                    )
+                ), 
+                React.createElement("div", {className: "field"}, 
+                    React.createElement("div", {className: "title"}, "DIRECTORS"), 
+                    React.createElement("div", {className: "content"}, 
+                        this.state.directors.map(function (people) {
+                            return (
+                                React.createElement("div", null, people.peoName)
+                            )
+                        })
+                    )
+                ), 
+                React.createElement("div", {className: "field"}, 
+                    React.createElement("div", {className: "title"}, "PRODUCERS"), 
+                    React.createElement("div", {className: "content"}, 
+                        this.state.producers.map(function (people) {
+                            return (
+                                React.createElement("div", null, people.peoName, " ", people.comment)
+                            )
+                        })
+                    )
+                ), 
+                React.createElement("div", {className: "field"}, 
+                    React.createElement("div", {className: "title"}, "MAIN ACTORS"), 
+                    React.createElement("div", {className: "content"}, 
+                        this.state.actors.map(function (people) {
+                            return (
+                                React.createElement("div", null, people.peoName)
+                            )
+                        })
+                    )
+                ), 
+                React.createElement("div", {className: "field"}, 
+                    React.createElement("div", {className: "title"}, "COUNTRIES"), 
+                    React.createElement("div", {className: "content"}, 
+                        this.state.countrys
+                    )
+                ), 
+                React.createElement("div", {className: "field"}, 
+                    React.createElement("div", {className: "title"}, "LANGUAGES"), 
+                    React.createElement("div", {className: "content"}, 
+                        this.state.languages
+                    )
+                )
+            )
         );
     }
 });
@@ -1555,18 +1639,21 @@ module.exports =  React.createClass({displayName: "exports",
 });
 
 require.register("views/movie/index", function(exports, require, module) {
-var MovieDetail = require('./detail');
+var MovieCartridge = require('./cartridge');
 
-module.exports =  React.createClass({
-  displayName: "MovieView",
-  render:function(){
-    return (
-      React.createElement("div", {className: "movieView"}, 
-        React.createElement("h2", null, "Film"), 
-        React.createElement(MovieDetail, {id: this.props.id})
-      )
-    );
-  }
+module.exports = React.createClass({
+    displayName: "MovieCartridge",
+    render: function () {
+        return (
+            React.createElement("div", {className: "movieView"}, 
+                React.createElement("div", {className: "slidingContent"}
+                ), 
+                React.createElement("div", {className: "movieCartridge"}, 
+                    React.createElement(MovieCartridge, {id: this.props.id})
+                )
+            )
+        );
+    }
 });
 
 });

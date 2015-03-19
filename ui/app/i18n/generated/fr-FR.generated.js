@@ -107,7 +107,10 @@ module.exports = {
         "genreIds" : "Movie's genres identifiers",
         "countryIds" : "Movie's contries identifiers",
         "languageIds" : "Movie's languages identifiers",
-        "rank" : "rank"
+        "rank" : "rank",
+        "actors" : "Actors",
+        "producers" : "Producers",
+        "directors" : "Directors"
     },
     "casting": {
         "castId" : "Cast_id",
@@ -122,6 +125,7 @@ module.exports = {
         "firstName" : "First Name",
         "peoName" : "Peo Name",
         "imdbid" : "imdbID",
+        "comment" : "Commentaire",
         "titCd" : "Title"
     },
     "peopleCriteria": {

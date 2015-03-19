@@ -5,8 +5,7 @@
  */
 var movieStore = new focus.store.CoreStore({
     definition : {
-      'movie': 'movie',
-      'people': 'people'
-      }
+        'movie': 'movie'
+    }
   });
 module.exports = movieStore;

@@ -6,6 +6,7 @@ import io.vertigo.lang.Component;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
+import rodolphe.demo.domain.movies.MovieView;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
@@ -59,6 +60,46 @@ public interface MovieServices  extends Component {
 	 * @return people list
 	 */
 	DtList<People> getDirectors(Long movId);
+
+
+
+	/**
+	 * Get all necessary movie details for MovieView.
+	 *
+	 * @param movId movie identifier
+	 * @return MovieDetail
+	 */
+	MovieView getMovieDetails(Long movId);
+
+
+
+	/**
+	 * Get aggregated genres for a movie.
+	 *
+	 * @param movId movie identifier
+	 * @return genres
+	 */
+	String getGenresAggregatedByMovId(Long movId);
+
+
+
+	/**
+	 * Get aggregated countrys for a movie.
+	 *
+	 * @param movId movie identifier
+	 * @return countrys
+	 */
+	String getCountrysAggregatedByMovId(Long movId);
+
+
+
+	/**
+	 * Get aggregated languages for a movie.
+	 *
+	 * @param movId movie identifier
+	 * @return languages
+	 */
+	String getLanguagesAggregatedByMovId(Long movId);
 
 
 

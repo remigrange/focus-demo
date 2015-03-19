@@ -319,6 +319,12 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		LANGUAGE_IDS,
 		/** Propriété 'rank'. */
 		RANK,
+		/** Propriété 'Actors'. */
+		ACTORS,
+		/** Propriété 'Producers'. */
+		PRODUCERS,
+		/** Propriété 'Directors'. */
+		DIRECTORS,
 	}
 
 	/**
@@ -351,6 +357,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		PEO_NAME,
 		/** Propriété 'imdbID'. */
 		IMDBID,
+		/** Propriété 'Commentaire'. */
+		COMMENT,
 		/** Propriété 'Title'. */
 		TIT_CD,
 	}

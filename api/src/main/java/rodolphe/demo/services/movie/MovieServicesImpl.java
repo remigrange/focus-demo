@@ -5,10 +5,12 @@ import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
+import io.vertigo.lang.Option;
 
 import javax.inject.Inject;
 
 import rodolphe.demo.dao.movies.MovieDAO;
+import rodolphe.demo.dao.movies.MoviesPAO;
 import rodolphe.demo.dao.people.CastingDAO;
 import rodolphe.demo.dao.people.RolePeopleDAO;
 import rodolphe.demo.domain.DtDefinitions.CastingFields;
@@ -17,6 +19,7 @@ import rodolphe.demo.domain.masterdata.CodeRoleMovie;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
+import rodolphe.demo.domain.movies.MovieView;
 import rodolphe.demo.domain.people.Casting;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.RolePeople;
@@ -40,6 +43,8 @@ public  class MovieServicesImpl implements MovieServices {
 	private CastingDAO castingDAO ;
 	@Inject
 	private RolePeopleDAO rolePeopleDAO;
+	@Inject
+	private MoviesPAO moviePao;
 
 
 	/** {@inheritDoc} */
@@ -64,7 +69,6 @@ public  class MovieServicesImpl implements MovieServices {
 	public Movie getMovie(final Long movId) {
 		return movieDAO.get(movId);
 	}
-
 
 	/** {@inheritDoc} */
 	@Override
@@ -110,8 +114,9 @@ public  class MovieServicesImpl implements MovieServices {
 				.build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(RolePeopleCriteria, Integer.MAX_VALUE);
 		for(final RolePeople  rolePeople : rolePeopleList){
-			ret.add(rolePeople.getPeople());
-
+			final People people = rolePeople.getPeople();
+			people.setComment(rolePeople.getComment());
+			ret.add(people);
 		}
 		return ret;
 	}
@@ -134,6 +139,47 @@ public  class MovieServicesImpl implements MovieServices {
 
 		}
 		return ret;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public MovieView getMovieDetails(final Long movId) {
+		final MovieView MovieView = moviePao.getMovieViewByMovId(movId);
+		MovieView.setGenreIds(getGenresAggregatedByMovId(movId));
+		MovieView.setCountryIds(getCountrysAggregatedByMovId(movId));
+		MovieView.setLanguageIds(getLanguagesAggregatedByMovId(movId));
+		MovieView.setActors(getActors(movId));
+		MovieView.setProducers(getProducers(movId));
+		MovieView.setDirectors(getDirectors(movId));
+		return MovieView;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public String getGenresAggregatedByMovId(final Long movId)
+	{
+		final Option<String> string = moviePao.getGenresAggregatedByMovId(movId);
+		return string.isDefined() ? string.get() : "";
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public String getCountrysAggregatedByMovId(final Long movId)
+	{
+		final Option<String> string = moviePao.getCountrysAggregatedByMovId(movId);
+		return string.isDefined() ? string.get() : "";
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public String getLanguagesAggregatedByMovId(final Long movId)
+	{
+		final Option<String> string = moviePao.getLanguagesAggregatedByMovId(movId);
+		return string.isDefined() ? string.get() : "";
 	}
 
 }
