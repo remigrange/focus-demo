@@ -59,7 +59,7 @@ public  class MovieServicesImpl implements MovieServices {
 			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
 		}
 		if(uiListState.getSortFieldName()!=null) {
-			criteria.setSortAsc(uiListState.isSortDesc());
+			criteria.setSortAsc(!uiListState.isSortDesc());
 			criteria.setSortFieldName(uiListState.getSortFieldName());
 		}
 		return searchServices.searchMovie(criteria);

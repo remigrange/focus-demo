@@ -1018,7 +1018,7 @@ require.register("config/server/common", function(exports, require, module) {
 var root = ".";
 var url = focus.util.url.builder;
 module.exports = {
-    searchByScope: url(root+"/searchByScope", 'POST')/*,
+    searchByScope: url(root+"/searchByScope?${sortedFieldName}&${sortDesc}", 'POST')/*,
     filterResult: url(root+"/filterResult", 'POST')*/
 };
 
@@ -1384,7 +1384,8 @@ var URL = require('../../config/server');
 var fetch = focus.network.fetch;
 module.exports = {
     searchByScope: function searchByScope(criteria){
-        return fetch(URL.common.searchByScope({data:criteria}));
+        //TODO CHECK AVEC PIERRE
+        return fetch(URL.common.searchByScope({urlData : criteria.pageInfos, data:criteria}));
     }/*,
     filterResult: function filterResult(criteria){
         return fetch(URL.common.filterResult({data:criteria}));
@@ -1439,6 +1440,13 @@ module.exports =  React.createClass({displayName: "exports",
         var action = {
             search: function(criteria) {
                 //TODO handle pageInfo
+                if(criteria.pageInfos.order !== undefined){
+                    criteria.pageInfos.sortedFieldName = "TITLE";
+                    criteria.pageInfos.sortDesc = criteria.pageInfos.order;
+                } else {
+                    criteria.pageInfos.sortedFieldName = undefined;
+                    criteria.pageInfos.sortDesc = undefined;
+                }
                 serviceCommon.common.searchByScope(criteria).then(
                     function success(data) {
 

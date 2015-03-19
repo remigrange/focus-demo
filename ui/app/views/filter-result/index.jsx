@@ -9,6 +9,13 @@ module.exports =  React.createClass({
         var action = {
             search: function(criteria) {
                 //TODO handle pageInfo
+                if(criteria.pageInfos.order !== undefined){
+                    criteria.pageInfos.sortedFieldName = "TITLE";
+                    criteria.pageInfos.sortDesc = criteria.pageInfos.order;
+                } else {
+                    criteria.pageInfos.sortedFieldName = undefined;
+                    criteria.pageInfos.sortDesc = undefined;
+                }
                 serviceCommon.common.searchByScope(criteria).then(
                     function success(data) {
 
