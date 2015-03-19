@@ -3,5 +3,8 @@ var fetch = focus.network.fetch;
 module.exports = {
     searchByScope: function searchByScope(criteria){
         return fetch(URL.common.searchByScope({data:criteria}));
-    }
+    }/*,
+    filterResult: function filterResult(criteria){
+        return fetch(URL.common.filterResult({data:criteria}));
+    }*/
 };

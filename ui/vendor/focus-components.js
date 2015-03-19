@@ -10,7 +10,7 @@ module.exports = {
 	page: require("./page")
 };
 
-},{"./common":9,"./list":19,"./page":85,"./search":88}],2:[function(require,module,exports){
+},{"./common":9,"./list":19,"./page":85,"./search":89}],2:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -120,6 +120,7 @@ module.exports = {
 "use strict";
 
 var builder = window.focus.component.builder;
+var type = window.focus.component.types;
 var React = window.React;
 var Input = require("../input/text").component;
 var Label = require("../label").component;
@@ -133,15 +134,32 @@ var FieldMixin = {
       labelSize: 3,
       type: "text",
       value: undefined,
-      name: undefined
+      name: undefined,
+      style: {},
+      FieldComponent: undefined,
+      InputLabelComponent: undefined,
+      InputComponent: Input
     };
   },
-  getInitialState: function getInitialState() {
+  /** @inheritdoc */
+  propTypes: {
+    hasLabel: type("bool"),
+    labelSize: type("number"),
+    type: type("string"),
+    name: type("string"),
+    value: type(["string", "number"])
+  },
+  /** @inheritdoc */
+  getInitialState: function getFieldInitialState() {
     return {
-      error: this.props.error
+      error: this.props.error,
+      value: this.props.value
     };
   },
-
+  /** @inheritdoc */
+  componentWillReceiveProps: function fieldWillReceiveProps(newProps) {
+    this.setState({ value: newProps.value });
+  },
   /**
   * Get the css class of the field component.
   */
@@ -149,7 +167,10 @@ var FieldMixin = {
     var stateClass = this.state.error ? "has-feedback has-error" : "";
     return "form-group " + stateClass;
   },
-  label: function label() {
+  label: function fieldLabel() {
+    if (this.props.FieldComponent || this.props.InputLabelComponent) {
+      return;
+    }
     if (this.props.hasLabel) {
       var labelClassName = "control-label col-sm-" + this.props.labelSize;
       return React.createElement(
@@ -163,12 +184,27 @@ var FieldMixin = {
       );
     }
   },
+
+  /**
+   * Validate the input.
+   * @return {object}
+   */
+  validateInput: function validateInputText() {
+    var value = this.getValue();
+    if (this.props.isRequired && (value === undefined || value === "")) {
+      return "Le champ " + this.props.name + " est requis";
+    }
+    if (this.props.validator) {
+      return this.props.validator(value);
+    }
+    return true;
+  },
   /**
   * Validate the field.
   * @return {object} - undefined if valid, {name: "errors"} if not valid.
   */
   validate: function validateField() {
-    var validationStatus = this.refs.input.validate();
+    var validationStatus = this.validateInput();
     if (validationStatus !== true) {
       this.setState({ error: validationStatus });
       return validationStatus;
@@ -181,28 +217,52 @@ var FieldMixin = {
   getValue: function getValue() {
     return this.refs.input.getValue();
   },
-  clearError: function clearError(e) {
-    this.setState({ error: undefined });
+  /**
+   * Handler called when the input Change its value.
+   * @param {event} event - The event to set.
+   */
+  onInputChange: function fieldOnInputChanges(event) {
+    this.setState({ error: undefined, value: this.getValue() });
   },
-  input: function input() {
+  renderFieldComponent: function renderFieldComponent() {
+    var Component = this.props.FieldComponent || this.props.InputLabelComponent;
+    return React.createElement(Component, {
+      id: this.props.name,
+      name: this.props.name,
+      label: this.props.name,
+      value: this.state.value,
+      type: this.props.type,
+      style: this.props.style.input,
+      error: this.state.error,
+      help: this.props.help,
+      onChange: this.onInputChange,
+      ref: "input"
+    });
+  },
+  input: function renderInput() {
+    if (this.props.FieldComponent || this.props.InputLabelComponent) {
+      return this.renderFieldComponent();
+    }
     var inputClassName = "form-control col-sm-" + (12 - this.props.labelSize);
     return React.createElement(
       "div",
       { className: "input-group" },
-      React.createElement(Input, {
+      React.createElement(this.props.InputComponent, {
         style: { "class": inputClassName },
         id: this.props.name,
         name: this.props.name,
-        value: this.props.value,
+        value: this.state.value,
         type: this.props.type,
-        validator: this.props.validator,
-        onChange: this.clearError,
+        onChange: this.onInputChange,
         ref: "input"
       })
     );
   },
-  error: function error() {
+  error: function renderError() {
     if (this.state.error) {
+      if (this.props.FieldComponent) {
+        return;
+      }
       return (
         /*<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>*/
         React.createElement(
@@ -215,6 +275,9 @@ var FieldMixin = {
   },
   help: function help() {
     if (this.props.help) {
+      if (this.props.FieldComponent) {
+        return;
+      }
       return React.createElement(
         "span",
         { className: "help-block" },
@@ -247,12 +310,16 @@ module.exports = { /**
                    * @param {string} name - property name.
                    */
   fieldFor: function fieldFor(name) {
+    var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    //Maybe allow to overrife fieldFor here such as def.fieldFor?.
     return React.createElement(Field, {
       name: name,
       ref: name,
       value: this.state[name],
       error: this.state.error ? this.state.error[name] : undefined,
-      validator: this.definition[name].validator ? this.definition[name].validator : undefined
+      validator: def.validator,
+      FieldComponent: def.FieldComponent,
+      InputLabelComponent: def.InputLabelComponent
     });
   },
   /**
@@ -552,62 +619,66 @@ var React = window.React;
 var type = window.focus.component.types;
 
 var checkBoxMixin = {
-	/**
-  * Get the checkbox default attributes.
-  */
-	getDefaultProps: function getInputDefaultProps() {
-		return {
-			value: undefined,
-			label: undefined,
-			style: {}
-		};
-	},
-	/**
-  * Properties validation.
-  * @type {Object}
-  */
-	propTypes: {
-		value: type("bool"),
-		label: type("string"),
-		style: type("object")
-	},
-	getInitialState: function getInitialState() {
-		return {
-			isChecked: this.props.value
-		};
-	},
-	_onChange: function onChange(event) {
-		this.setState({
-			isChecked: !this.state.isChecked
-		});
-		if (this.props.onChange) {
-			this.props.onChange(event);
-		}
-	},
-	/**
-  * Get the value from the input in  the DOM.
-  */
-	getValue: function getValue() {
-		return this.getDOMNode().value;
-	},
-	/**
-  * Render the Checkbox HTML.
-  * @return {VirtualDOM} - The virtual DOM of the checkbox.
-  */
-	render: function renderCheckBox() {
-		return React.createElement(
-			"div",
-			{ className: "checkbox" },
-			React.createElement(
-				"label",
-				null,
-				React.createElement("input", { ref: "checkbox", checked: this.state.isChecked, onChange: this._onChange, type: "checkbox" }),
-				React.createElement("span", { className: "ripple" }),
-				React.createElement("span", { className: "check" }),
-				this.props.label ? this.props.label : ""
-			)
-		);
-	}
+  /**
+   * Get the checkbox default attributes.
+   */
+  getDefaultProps: function getInputDefaultProps() {
+    return {
+      value: undefined,
+      label: undefined,
+      style: {}
+    };
+  },
+  /**
+   * Properties validation.
+   * @type {Object}
+   */
+  propTypes: {
+    value: type("bool"),
+    label: type("string"),
+    style: type("object")
+  },
+  getInitialState: function getInitialState() {
+    return {
+      isChecked: this.props.value
+    };
+  },
+  _onChange: function onChange(event) {
+    this.setState({
+      isChecked: !this.state.isChecked
+    });
+    if (this.props.onChange) {
+      this.props.onChange(event);
+    }
+  },
+  /**
+   * Get the value from the input in  the DOM.
+   */
+  getValue: function getValue() {
+    return this.getDOMNode().value;
+  },
+  /**
+   * Render the Checkbox HTML.
+   * @return {VirtualDOM} - The virtual DOM of the checkbox.
+   */
+  render: function renderCheckBox() {
+    return React.createElement(
+      "div",
+      { className: "checkbox" },
+      React.createElement(
+        "label",
+        null,
+        React.createElement("input", { ref: "checkbox", checked: this.state.isChecked, onChange: this._onChange, type: "checkbox" }),
+        this.props.label ? this.props.label : ""
+      )
+    );
+  },
+  /** @inheritedDoc*/
+  componentWillReceiveProps: function checkBoxWillreceiveProps(nextProps) {
+    if (nextProps.value !== undefined) {
+      this.setState({ isChecked: nextProps.value });
+    }
+  }
 };
 
 module.exports = builder(checkBoxMixin);
@@ -666,19 +737,6 @@ var inputTextMixin = {
     this.setState({ value: newProps.value });
   },
   /**
-   * Validate the input.
-   * @return {object}
-   */
-  validate: function validateInputText() {
-    var value = this.getValue();
-    if (this.props.isRequired && (value === undefined || value === "")) {
-      return "Le champ " + this.props.name + " est requis";
-    }
-    if (this.props.validator) {
-      return this.props.validator(value);
-    }
-  },
-  /**
    * Get the value from the input in the DOM.
    */
   getValue: function getInputTextValue() {
@@ -690,13 +748,12 @@ var inputTextMixin = {
    */
   _handleOnChange: function inputOnChange(event) {
     //On change handler.
-    function onChg() {
-      if (this.props.onChange) {
-        return this.props.onChange(event);
-      }
+    if (this.props.onChange) {
+      return this.props.onChange(event);
+    } else {
+      //Set the state then call the change handler.
+      this.setState({ value: event.target.value });
     }
-    //Set the state then call the change handler.
-    this.setState({ value: event.target.value }, onChg);
   },
   /**
    * Render an input.
@@ -1439,6 +1496,16 @@ var lineMixin = {
     },
 
     /**
+     * Update properties on component.
+     * @param nextProps next properties
+     */
+    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+        if (nextProps.isSelected !== undefined) {
+            this.setState({ isSelected: nextProps.isSelected });
+        }
+    },
+
+    /**
      * Get the line value.
      * @returns {{item: *, isSelected: (*|isSelected|boolean)}}
      */
@@ -1454,11 +1521,11 @@ var lineMixin = {
      * @param event
      */
     _handleSelectionClick: function handleSelectionClick(event) {
-        if (this.props.onSelection) {
-            this.props.onSelection(this.props.data);
-        }
         var select = !this.state.isSelected;
         this.setState({ isSelected: select });
+        if (this.props.onSelection) {
+            this.props.onSelection(this.props.data, select);
+        }
     },
 
     /**
@@ -1578,6 +1645,7 @@ var listMixin = {
         return {
             isSelection: true,
             isAllSelected: false,
+            selectionStatus: "partial",
             isLoading: false,
             hasMoreData: false,
             operationList: [],
@@ -1644,12 +1712,26 @@ var listMixin = {
         var lineCount = 1;
         var LineComponent = this.props.lineComponent || React.createClass(Line);
         return this.props.data.map(function (line) {
+            var isSelected;
+            switch (_this.props.selectionStatus) {
+                case "none":
+                    isSelected = false;
+                    break;
+                case "selected":
+                    isSelected = true;
+                    break;
+                case "partial":
+                    isSelected = undefined;
+                    break;
+                default:
+                    isSelected = false;
+            }
             return React.createElement(LineComponent, {
                 key: line.id || uuid.v4(),
                 data: line,
                 ref: "line" + lineCount++,
                 isSelection: _this.props.isSelection,
-                isSelected: _this.props.isAllSelected,
+                isSelected: isSelected,
                 onSelection: _this.props.onSelection,
                 onLineClick: _this.props.onLineClick,
                 operationList: _this.props.operationList
@@ -4172,6 +4254,7 @@ var LiveFilter = require("../../../search/live-filter/index").component;
 var ListActionBar = require("../../../list/action-bar/index").component;
 var ListSelection = require("../../../list/selection").list.component;
 var SearchStore = window.focus.store.SearchStore;
+var assign = require("object-assign");
 
 var searchFilterResultMixin = {
 
@@ -4179,7 +4262,25 @@ var searchFilterResultMixin = {
      * Display name.
      */
     displayName: "search-filter-result",
-    searchStore: new SearchStore(),
+    /**
+     * Search store.
+     */
+    store: new SearchStore(),
+
+    /**
+     * Component intialization
+     */
+    componentDidMount: function componentDidMount() {
+        this._registerListeners();
+        this._search();
+    },
+    /**
+     * Actions before component will unmount.
+     * @constructor
+     */
+    componentWillUnmount: function SearchComponentWillUnmount() {
+        this._unRegisterListeners();
+    },
 
     /**
      * Init default props.
@@ -4203,7 +4304,7 @@ var searchFilterResultMixin = {
      * Init default state.
      */
     getInitialState: function getInitialState() {
-        return {
+        return assign({
             facetList: {},
             selectedFacetList: {},
             openedFacetList: {},
@@ -4215,8 +4316,122 @@ var searchFilterResultMixin = {
             list: [],
 
             isAllSelected: true
-        };
+        }, this.getInfiniteScrollInitialState(), this._getStateFromStore());
     },
+
+    /**
+     * Get liste from current store.
+     * @returns {*}
+     */
+    _getStateFromStore: function getToUpdateState() {
+        if (this.store) {
+            var data = this.store.get();
+            return assign({
+                facetList: data.facet || {},
+                list: data.list || []
+            }, this.getInfiniteScrollStateFromStore());
+        }
+    },
+
+    /**
+     * Register a listener on the store.
+     * @private
+     */
+    _registerListeners: function registerListeners() {
+        if (this.store) {
+            this.store.addSearchChangeListener(this._onSearchChange);
+        }
+    },
+    /**
+     * Unregister a listener on the store.
+     * @private
+     */
+    _unRegisterListeners: function unRegisterSearchListeners() {
+        if (this.store) {
+            this.store.removeSearchChangeListener(this._onSearchChange);
+        }
+    },
+
+    /**
+     * Search function.
+     */
+    _search: function search() {
+        var facets = [];
+        for (var selectedFacet in this.state.selectedFacetList) {
+            facets.push({ key: selectedFacet, value: this.state.selectedFacetList[selectedFacet].key });
+        }
+
+        this.props.action.search(this.getSearchCriteria(this.props.criteria.scope, this.props.criteria.searchText, this.state.currentPage, this.state.orderSelected, this.state.groupSelectedKey, facets));
+    },
+
+    _getFacetListForBar: function _getFacetListForBar() {
+        var facetList = {};
+        for (var key in this.state.selectedFacetList) {
+            var facet = this.state.selectedFacetList[key];
+            facetList[key] = facet.data.label;
+        }
+        return facetList;
+    },
+
+    _facetBarClick: function _facetBarClick(key) {
+        var selectedFacetList = this.state.selectedFacetList;
+        delete selectedFacetList[key];
+
+        // TODO : do we do it now ?
+        this.setState({ selectedFacetList: selectedFacetList });
+        this._search();
+    },
+    _groupClick: function _groupClick(key) {
+        console.log("Group by : " + key);
+        // TODO : do we do it now ?
+        this.setState({
+            groupSelectedKey: key,
+            orderSelected: key != undefined ? undefined : this.state.orderSelected
+        });
+
+        this._search();
+    },
+
+    _orderClick: function _orderClick(key, order) {
+        console.log("Order : " + key + " - " + order);
+        // TODO : do we do it now ?
+        this.setState({ orderSelected: { key: key, order: order } });
+        this._search();
+    },
+
+    /**
+     * Selection action handler.
+     * @param selectionStatus (0 => nonde, 1= > all, 2=> some).
+     */
+    _selectionGroupLineClick: function _selectionGroupLineClick(selectionStatus) {
+        console.log("Selection status : " + selectionStatus);
+        console.warn("TODO : implement check/uncheck on the list rows (it shoudl be working like this, but need to be checked)");
+        this.setState({
+            selectionStatus: selectionStatus,
+            isAllSelected: selectionStatus == 1
+        });
+    },
+
+    /**
+     * Handler called when facet is selected.
+     * @param facetComponentData Data of facet.
+     */
+    _facetSelectionClick: function _facetSelectionClick(facetComponentData) {
+        var selectedFacetList = facetComponentData.selectedFacetList;
+        var openedFacetList = facetComponentData.openedFacetList;
+
+        console.warn("Facet selection ");
+        console.log(selectedFacetList);
+
+        // TODO : Do we do it now ?
+        this.setState({
+            selectedFacetList: selectedFacetList,
+            openedFacetList: openedFacetList
+        });
+
+        this._search();
+    },
+
     /**
      * render the component.
      * @returns Html code.
@@ -4256,130 +4471,265 @@ var searchFilterResultMixin = {
                     "div",
                     { className: "listResultContainer panel" },
                     React.createElement(ListSelection, { data: this.state.list,
-                        hasMoreData: true,
-                        lineComponent: this.props.lineComponent,
-                        onLineClick: this.props.onLineClick,
+                        ref: "list",
                         isSelection: this.props.isSelection,
+                        onSelection: this._selectItem,
+                        onLineClick: this.props.onLineClick,
+                        fetchNextPage: this.fetchNextPage,
                         operationList: this.props.lineOperationList,
-                        isAllSelected: this.state.isAllSelected })
+                        hasMoreData: this.state.hasMoreData,
+                        isLoading: this.state.isLoading,
+                        lineComponent: this.props.lineComponent })
                 )
             )
         );
     },
-    componentDidMount: function componentDidMount() {
-        this._registerEventList();
-        this._doSearch();
-    },
-    _registerEventList: function registerEventList() {
-        this.searchStore.addSearchChangeListener(this._searchSuccessEvent);
-    },
 
-    _doSearch: function doSearch() {
-        var facets = [];
-        for (var selectedFacet in this.state.selectedFacetList) {
-            facets.push({ key: selectedFacet, value: this.state.selectedFacetList[selectedFacet].key });
-            // facets[selectedFacet] = this.state.selectedFacetList[selectedFacet].key;
-        }
-
-        this.props.action.search({
-            facets: facets,
-            criteria: this.props.criteria,
-            groupKey: this.state.groupSelectedKey,
-            order: this.state.orderSelected
-        });
-    },
-    _searchSuccessEvent: function searchSuccessEvent() {
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // COMMON METHODS FOR INFINITE SCROLL
+    /**
+     * Handler when store emit a change event.
+     */
+    _onSearchChange: function onSearchChange() {
         console.log("Search success");
-        this.setState(this._getToUpdateState());
+        this.setState(assign({ isLoading: false }, this._getStateFromStore()));
     },
-    _getToUpdateState: function getToUpdateState() {
-        var data = this.searchStore.get("search");
+    getInfiniteScrollInitialState: function getInfiniteScrollInitialState() {
         return {
-            facetList: data.facet,
-            list: data.list
+            hasMoreData: false,
+            isLoading: false,
+            currentPage: 1
         };
     },
-
-    _getFacetListForBar: function _getFacetListForBar() {
-        var facetList = {};
-        for (var key in this.state.selectedFacetList) {
-            var facet = this.state.selectedFacetList[key];
-            facetList[key] = facet.data.label;
+    getInfiniteScrollStateFromStore: function getSearchStateFromStore() {
+        if (this.store) {
+            var data = this.store.get();
+            var hasMoreData = data.pageInfos && data.pageInfos.totalPages ? data.pageInfos.currentPage < data.pageInfos.totalPages : false;
+            return {
+                hasMoreData: hasMoreData
+            };
         }
-        return facetList;
+        return {};
     },
-
-    _facetBarClick: function _facetBarClick(key) {
-        var selectedFacetList = this.state.selectedFacetList;
-        delete selectedFacetList[key];
-
-        // TODO : do we do it now ?
-        this.setState({ selectedFacetList: selectedFacetList });
-        this._doSearch();
+    getSearchCriteria: function getSearchCriteria(scope, query, currentPage, order, group, facets) {
+        return {
+            criteria: {
+                scope: scope,
+                query: query
+            },
+            pageInfos: {
+                page: currentPage,
+                order: order,
+                group: group
+            },
+            facets: facets
+        };
     },
-    _groupClick: function _groupClick(key) {
-        console.log("Group by : " + key);
-        // TODO : do we do it now ?
+    fetchNextPage: function fetchNextPage() {
         this.setState({
-            groupSelectedKey: key,
-            orderSelected: key != undefined ? undefined : this.state.orderSelected
+            isLoading: true,
+            currentPage: this.state.currentPage + 1
         });
-
-        this._doSearch();
-    },
-
-    _orderClick: function _orderClick(key, order) {
-        console.log("Order : " + key + " - " + order);
-        // TODO : do we do it now ?
-        this.setState({ orderSelected: { key: key, order: order } });
-        this._doSearch();
-    },
-
-    /**
-     * Selection action handler.
-     * @param selectionStatus (0 => nonde, 1= > all, 2=> some).
-     */
-    _selectionGroupLineClick: function _selectionGroupLineClick(selectionStatus) {
-        console.log("Selection status : " + selectionStatus);
-        console.warn("TODO : implement check/uncheck on the list rows (it shoudl be working like this, but need to be checked)");
-        this.setState({
-            selectionStatus: selectionStatus,
-            isAllSelected: selectionStatus == 1
-        });
-    },
-
-    /**
-     * Handler called when facet is selected.
-     * @param facetComponentData Data of facet.
-     */
-    _facetSelectionClick: function _facetSelectionClick(facetComponentData) {
-        var selectedFacetList = facetComponentData.selectedFacetList;
-        var openedFacetList = facetComponentData.openedFacetList;
-
-        console.warn("Facet selection ");
-        console.log(selectedFacetList);
-
-        // TODO : Do we do it now ?
-        this.setState({
-            selectedFacetList: selectedFacetList,
-            openedFacetList: openedFacetList
-        });
-
-        this._doSearch();
+        this._search();
     }
 };
 
 module.exports = builder(searchFilterResultMixin);
 
-},{"../../../list/action-bar/index":17,"../../../list/selection":20,"../../../search/live-filter/index":89}],87:[function(require,module,exports){
+},{"../../../list/action-bar/index":17,"../../../list/selection":20,"../../../search/live-filter/index":90,"object-assign":82}],87:[function(require,module,exports){
 "use strict";
 
 module.exports = {
-    filterResult: require("./filter-result") };
+    filterResult: require("./filter-result"),
+    searchResult: require("./search-result")
+};
 
-// searchResult: require('./search-result')
+},{"./filter-result":86,"./search-result":88}],88:[function(require,module,exports){
+"use strict";
 
-},{"./filter-result":86}],88:[function(require,module,exports){
+var builder = window.focus.component.builder;
+var React = window.React;
+var QuickSearch = require("../../../search/quick-search").component;
+var List = require("../../../list/selection").list.component;
+var SearchStore = window.focus.store.SearchStore;
+var assign = require("object-assign");
+
+var searchMixin = {
+    /**
+     * Tag name.
+     */
+    displayName: "search-panel",
+
+    /**
+     * Search store.
+     */
+    store: new SearchStore(),
+
+    /**
+     * Component intialization
+     */
+    componentDidMount: function searchComponentDidMount() {
+        this._registerListeners();
+    },
+
+    /**
+     * Actions before component will unmount.
+     * @constructor
+     */
+    componentWillUnmount: function SearchComponentWillUnmount() {
+        this._unRegisterListeners();
+    },
+
+    getDefaultProps: function getDefaultProps() {
+        return {
+            lineComponent: undefined,
+            isSelection: false,
+            lineOperationList: {}
+        };
+    },
+
+    /**
+     * Initial state of the list component.
+     * @returns {{list: (*|Array)}}
+     */
+    getInitialState: function getInitialState() {
+        var data = this.store.get();
+
+        return assign({
+            isAllSelected: false,
+            selected: [],
+            hasMoreData: false,
+            isLoading: false,
+            currentPage: 1
+        }, this._getStateFromStore());
+    },
+
+    /**
+     * Get liste from current store.
+     * @returns {*}
+     */
+    _getStateFromStore: function getSearchStateFromStore() {
+        if (this.store) {
+            var data = this.store.get();
+            var hasMoreData = data.pageInfos && data.pageInfos.totalPages ? data.pageInfos.currentPage < data.pageInfos.totalPages : false;
+            return {
+                list: data.list || [],
+                hasMoreData: hasMoreData
+            };
+        }
+        return {};
+    },
+
+    /**
+     * Handler when store emit a change event.
+     */
+    _onSearchChange: function onSearchStoreChange() {
+        this.setState(assign({
+            isLoading: false
+        }, this._getStateFromStore()));
+    },
+
+    /**
+     * Register a listener on the store.
+     * @private
+     */
+    _registerListeners: function registerSearchListeners() {
+        if (this.store) {
+            this.store.addSearchChangeListener(this._onSearchChange);
+        }
+    },
+
+    /**
+     * Unregister a listener on the store.
+     * @private
+     */
+    _unRegisterListeners: function unRegisterSearchListeners() {
+        if (this.store) {
+            this.store.removeSearchChangeListener(this._onSearchChange);
+        }
+    },
+
+    /**
+     * Action on item selection.
+     * @param item
+     */
+    _selectItem: function selectItem(item) {
+        var index = this.state.selected.indexOf(item);
+        if (index) {
+            this.state.selected.splice(index, index);
+        } else {
+            this.state.selected.push(item);
+        }
+    },
+
+    /**
+     * Action on line click.
+     * @param item
+     */
+    _lineClick: function lineClick(item) {
+        if (this.props.onLineClick) {
+            this.props.onLineClick(item);
+        }
+    },
+
+    /**
+     * Run search action.
+     * @param event
+     */
+    _search: function search(event) {
+        event.preventDefault();
+        var searchValues = this.refs.quickSearch.getValue();
+        this.actions.search({
+            scope: searchValues.scope,
+            query: searchValues.query,
+            page: this.state.currentPage
+        });
+    },
+
+    /**
+     * Get the next page of the list.
+     * @param page
+     */
+    _fetchNextPage: function fetchNextPage() {
+        var currentPage = this.state.currentPage + 1;
+        this.setState({
+            isLoading: true,
+            currentPage: currentPage
+        });
+        var searchValues = this.refs.quickSearch.getValue();
+        this.actions.search({
+            scope: searchValues.scope,
+            query: searchValues.query,
+            page: currentPage
+        });
+    },
+
+    /**
+     * render the searchComponent.
+     */
+    render: function renderSearchComponent() {
+        return React.createElement(
+            "div",
+            { className: "search-panel" },
+            React.createElement(QuickSearch, { handleKeyUp: this._search, ref: "quickSearch" }),
+            React.createElement(List, { data: this.state.list,
+                ref: "list",
+                isSelection: this.props.isSelection,
+                onSelection: this._selectItem,
+                onLineClick: this._lineClick,
+                fetchNextPage: this._fetchNextPage,
+                hasMoreData: this.state.hasMoreData,
+                isLoading: this.state.isLoading,
+                operationList: this.props.operationList,
+                lineComponent: this.props.lineComponent
+            })
+        );
+    }
+};
+
+module.exports = builder(searchMixin);
+
+},{"../../../list/selection":20,"../../../search/quick-search":93,"object-assign":82}],89:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -4387,7 +4737,7 @@ module.exports = {
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":89,"./quick-search":92}],89:[function(require,module,exports){
+},{"./live-filter":90,"./quick-search":93}],90:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -4551,7 +4901,7 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/img":8,"./live-filter-facet":91,"lodash/object/omit":75,"object-assign":82}],90:[function(require,module,exports){
+},{"../../common/img":8,"./live-filter-facet":92,"lodash/object/omit":75,"object-assign":82}],91:[function(require,module,exports){
 /**@jsx*/
 "use strict";
 
@@ -4599,7 +4949,7 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 /**@jsx*/
 "use strict";
 
@@ -4753,12 +5103,12 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":90}],92:[function(require,module,exports){
+},{"./live-filter-data":91}],93:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":93}],93:[function(require,module,exports){
+},{"./input":94}],94:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -4847,7 +5197,7 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":94,"lodash/string/words":78}],94:[function(require,module,exports){
+},{"./scope":95,"lodash/string/words":78}],95:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;

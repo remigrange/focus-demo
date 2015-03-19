@@ -1,5 +1,7 @@
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var serviceCommon = require('../../services');
+var lineResume = require('./lineResume');
+
 
 module.exports =  React.createClass({
     render:function(){
@@ -13,8 +15,15 @@ module.exports =  React.createClass({
                         var dataRet = {
                             facet: data.facet,
                             list: data.list,
-                            pageInfos:{},
-                            searchContext:{}
+                            pageInfos:{
+                                currentPage: 2,
+                                perPage: 50,
+                                totalRecords: 547
+                            },
+                            searchContext: {
+                                scope: criteria.scope,
+                                query: criteria.query
+                            }
                         };
                         focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
                     },
@@ -28,39 +37,7 @@ module.exports =  React.createClass({
         var Line = React.createClass({
             mixins: [focusComponents.list.selection.line.mixin],
             renderLineContent: function(data){
-             /* if(data.movId !== undefined){
-                  return <div>
-                      <div className="mov-logo" >
-                          <img src="./static/img/logoMovie.png"/>
-                      </div>
-                      <div>
-                          <div className="title-level-1">
-                            {data.title}
-                          </div>
-                          <div className="title-level-2">
-                            {data.genreIds}
-                          </div>
-                          <div className="title-level-3">
-                            {data.released}
-                          </div>
-                      </div>
-                  </div>;
-               } else {
-                  return <div>
-                      <div className="user-logo" >
-                          <img src="./static/img/logoMovie.png"/>
-                      </div>
-                      <div>
-                          <div className="title-level-1">
-                            {data.title}
-                          </div>
-                          <div className="title-level-3">
-                            {data.released}
-                          </div>
-                      </div>
-                  </div>;
-               }*/
-               return <div>
+               return <div className="item">
                         <div className="mov-logo" >
                             <img src="./static/img/logoMovie.png"/>
                         </div>
@@ -96,7 +73,16 @@ module.exports =  React.createClass({
             action: action,
             lineComponent: Line,
             onLineClick : function onLineClick(line){
-                alert('click sur la ligne ' + line.title);
+                var data = line;
+                focus.application.render(lineResume, '#lineResume',
+                    {props: {
+                        title: data.title,
+                        description: data.description,
+                        released: data.released,
+                        countryIds: data.countryIds,
+                        languageIds : data.languageIds,
+                        runtime: this.runtime }});
+                //alert('click sur la ligne ' + line.title);
             },
             isSelection:true,
             lineOperationList:[
@@ -118,7 +104,7 @@ module.exports =  React.createClass({
                                     operationList={config.operationList}
                                     action={config.action}
                                     lineComponent={Line}
-                                    onLineClick={function onLineClick(line){ alert('click sur la ligne ' + line.title); }}
+                                    onLineClick={config.onLineClick}
                                     isSelection={true}
                                     lineOperationList={config.lineOperationList}
                                     criteria={config.criteria}
