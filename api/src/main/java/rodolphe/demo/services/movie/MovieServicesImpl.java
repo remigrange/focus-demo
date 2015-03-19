@@ -73,11 +73,7 @@ public  class MovieServicesImpl implements MovieServices {
 	@Override
 	@Transactional
 	public Movie saveMovie(final Movie movie) {
-		if (movie.getMovId() == null) {
-			movieDAO.create(movie);
-		} else {
-			movieDAO.update(movie);
-		}
+		movieDAO.save(movie);
 		searchServices.indexMovie(movie.getMovId());
 		return movie;
 	}

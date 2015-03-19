@@ -60,11 +60,7 @@ public class PeopleServicesImpl implements PeopleServices {
 	/** {@inheritDoc} */
 	@Override
 	public People savePeople(final People people) {
-		if (people.getPeoId() == null) {
-			peopleDAO.create(people);
-		} else {
-			peopleDAO.update(people);
-		}
+		peopleDAO.save(people);
 		searchServices.indexPeople(people.getPeoId());
 		return people;
 	}
