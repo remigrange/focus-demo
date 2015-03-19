@@ -1620,41 +1620,31 @@ module.exports =  React.createClass({displayName: "exports",
 });
 
 require.register("views/movie/cartridge", function(exports, require, module) {
-//Get the form mixin.
-var formMixin = focus.components.common.form.mixin;
-var Field = focus.components.common.field.component;
-var movieActions = require('../../action/movie');
-var movieStore = require('../../stores/movie');
 module.exports = React.createClass({displayName: "exports",
-    definitionPath: "movie",
-    mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
-    action: movieActions,
     getInitialState: function () {
-        return {
-                actors: [],
-                producers: [],
-                directors: []
-                }
+        this.props.movie = {actors: [],
+            producers: [],
+            directors: []};
+        return this.state;
     },
-    renderContent: function renderMovieDetail() {
+    render: function renderMovieDetail() {
         return (
             React.createElement("div", null, 
                 React.createElement("div", {className: "header"}, 
                     React.createElement("div", {className: "picture"}), 
-                    React.createElement("div", {className: "title"}, this.state.title), 
-                    React.createElement("div", {className: "year"}, "2006")
+                    React.createElement("div", {className: "title"}, this.props.movie.title), 
+                    React.createElement("div", {className: "year"}, this.props.movie.released)
                 ), 
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "GENRES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.genreIds
+                        this.props.movie.genreIds
                     )
                 ), 
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "DIRECTORS"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.directors.map(function (people) {
+                        this.props.movie.directors.map(function (people) {
                             return (
                                 React.createElement("div", null, people.peoName)
                             )
@@ -1664,7 +1654,7 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "PRODUCERS"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.producers.map(function (people) {
+                        this.props.movie.producers.map(function (people) {
                             return (
                                 React.createElement("div", null, people.peoName, " ", people.comment)
                             )
@@ -1674,7 +1664,7 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "MAIN ACTORS"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.actors.map(function (people) {
+                        this.props.movie.actors.map(function (people) {
                             return (
                                 React.createElement("div", null, people.peoName)
                             )
@@ -1684,13 +1674,13 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "COUNTRIES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.countryIds
+                        this.props.movie.countryIds
                     )
                 ), 
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "LANGUAGES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.state.languageIds
+                        this.props.movie.languageIds
                     )
                 )
             )
@@ -1701,19 +1691,44 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 require.register("views/movie/index", function(exports, require, module) {
+//Get the form mixin.
+var formMixin = focus.components.common.form.mixin;
 var MovieCartridge = require('./cartridge');
-
+var movieActions = require('../../action/movie');
+var movieStore = require('../../stores/movie');
 module.exports = React.createClass({
-    displayName: "MovieCartridge",
-    render: function () {
+    definitionPath: "movie",
+    displayName: "MovieView",
+    mixins: [formMixin],
+    stores: [{store: movieStore, properties: ["movie"]}],
+    action: movieActions,
+
+    renderContent: function () {
         return (
             React.createElement("div", {className: "movieView"}, 
                 React.createElement("div", {className: "slidingContent"}
                 ), 
                 React.createElement("div", {className: "movieCartridge"}, 
-                    React.createElement(MovieCartridge, {id: this.props.id})
+                    React.createElement(MovieCartridge, {movie: this.state})
                 )
             )
+        );
+    }
+});
+
+});
+
+require.register("views/movie/peopleCard", function(exports, require, module) {
+module.exports = React.createClass({displayName: "exports",
+    getInitialState: function () {
+        this.props.movie = {actors: [],
+            producers: [],
+            directors: []};
+        return this.state;
+    },
+    render: function renderMovieDetail() {
+        return (
+            React.createElement("div", null)
         );
     }
 });

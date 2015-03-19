@@ -1,38 +1,28 @@
-//Get the form mixin.
-var formMixin = focus.components.common.form.mixin;
-var Field = focus.components.common.field.component;
-var movieActions = require('../../action/movie');
-var movieStore = require('../../stores/movie');
 module.exports = React.createClass({
-    definitionPath: "movie",
-    mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
-    action: movieActions,
     getInitialState: function () {
-        return {
-                actors: [],
-                producers: [],
-                directors: []
-                }
+        this.props.movie = {actors: [],
+            producers: [],
+            directors: []};
+        return this.state;
     },
-    renderContent: function renderMovieDetail() {
+    render: function renderMovieDetail() {
         return (
             <div>
                 <div className="header">
                     <div className="picture"></div>
-                    <div className="title">{this.state.title}</div>
-                    <div className="year">2006</div>
+                    <div className="title">{this.props.movie.title}</div>
+                    <div className="year">{this.props.movie.released}</div>
                 </div>
                 <div className="field">
                     <div className="title">{"GENRES"}</div>
                     <div className="content">
-                        {this.state.genreIds}
+                        {this.props.movie.genreIds}
                     </div>
                 </div>
                 <div className="field">
                     <div className="title">{"DIRECTORS"}</div>
                     <div className="content">
-                        {this.state.directors.map(function (people) {
+                        {this.props.movie.directors.map(function (people) {
                             return (
                                 <div>{people.peoName}</div>
                             )
@@ -42,7 +32,7 @@ module.exports = React.createClass({
                 <div className="field">
                     <div className="title">{"PRODUCERS"}</div>
                     <div className="content">
-                        {this.state.producers.map(function (people) {
+                        {this.props.movie.producers.map(function (people) {
                             return (
                                 <div>{people.peoName} {people.comment}</div>
                             )
@@ -52,7 +42,7 @@ module.exports = React.createClass({
                 <div className="field">
                     <div className="title">{"MAIN ACTORS"}</div>
                     <div className="content">
-                        {this.state.actors.map(function (people) {
+                        {this.props.movie.actors.map(function (people) {
                             return (
                                 <div>{people.peoName}</div>
                             )
@@ -62,13 +52,13 @@ module.exports = React.createClass({
                 <div className="field">
                     <div className="title">{"COUNTRIES"}</div>
                     <div className="content">
-                        {this.state.countryIds}
+                        {this.props.movie.countryIds}
                     </div>
                 </div>
                 <div className="field">
                     <div className="title">{"LANGUAGES"}</div>
                     <div className="content">
-                        {this.state.languageIds}
+                        {this.props.movie.languageIds}
                     </div>
                 </div>
             </div>
