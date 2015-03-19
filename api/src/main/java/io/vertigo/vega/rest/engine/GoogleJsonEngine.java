@@ -452,6 +452,7 @@ public final class GoogleJsonEngine implements JsonEngine {
 					mapFacetList.put(facetName, jsonFacetValues);
 				}
 				jsonObject.add("facet", context.serialize(mapFacetList));
+				jsonObject.add("totalRecords", context.serialize(src.getCount()));
 				return jsonObject;
 			}
 		})

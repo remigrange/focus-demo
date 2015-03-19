@@ -35,5 +35,6 @@ ui/.npmrc
 *.oob
 ui/public/*
 api/src/main/webapp/static/img
+api/src/main/webapp/static/stylesheets/img
 api/src/main/webapp/static/javascripts/app.js
 api/src/main/webapp/static/javascripts/vendor.js

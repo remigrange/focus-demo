@@ -1446,9 +1446,9 @@ module.exports =  React.createClass({displayName: "exports",
                             facet: data.facet,
                             list: data.list,
                             pageInfos:{
-                                currentPage: 2,
+                                currentPage: criteria.pageInfos.page,
                                 perPage: 50,
-                                totalRecords: 547
+                                totalRecords:50
                             },
                             searchContext: {
                                 scope: criteria.scope,
@@ -1763,7 +1763,7 @@ module.exports =  React.createClass({displayName: "exports",
                             pageInfos:{
                                 currentPage: 2,
                                 perPage: 50,
-                                totalRecords: 547
+                                totalRecords: 10
                             },
                             searchContext: {
                                 scope: criteria.scope,

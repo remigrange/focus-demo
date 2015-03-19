@@ -1,36 +1,6 @@
 div[data-component] {
   color: red; }
 
-.live-filter.expanded {
-  width: 250px; }
-
-.live-filter {
-  min-height: 400px; }
-  .live-filter .icon {
-    float: right;
-    height: inherit; }
-  .live-filter .facet.selected .panel-heading {
-    background-image: url("../img/cross.svg");
-    background-repeat: no-repeat;
-    background-position: right center; }
-  .live-filter .facet.unselected .panel-heading {
-    background-repeat: no-repeat;
-    background-position: right center; }
-  .live-filter .facet .panel-heading {
-    cursor: pointer; }
-  .live-filter .facet ul {
-    list-style-type: none; }
-  .live-filter .facet li {
-    cursor: pointer; }
-  .live-filter .facet li:hover {
-    color: #E6E6E6; }
-
-.chevron-thin-left {
-  background: url("../img/chevron-thin-left.svg") no-repeat right center; }
-
-.chevron-thin-right {
-  background: url("../img/chevron-thin-right.svg") no-repeat right center; }
-
 /* Style for the quick-search-component*/
 /* Variables*/
 /* Style */
@@ -109,7 +79,7 @@ div.qs-quick-search {
     top: 0;
     left: 0; }
     div.qs-quick-search input[type=search].qs-searching {
-      background: #FFF url(../img/loading.gif) no-repeat right center; }
+      background: #FFF url(./img/loading.gif) no-repeat right center; }
   div.qs-quick-search div.qs-help {
     z-index: 2;
     position: relative;
@@ -129,6 +99,36 @@ div.qs-quick-search {
 
 .qs-scope-none {
   background: url('../img/qs-none.svg') no-repeat center center; }
+
+.live-filter.expanded {
+  width: 250px; }
+
+.live-filter {
+  min-height: 400px; }
+  .live-filter .icon {
+    float: right;
+    height: inherit; }
+  .live-filter .facet.selected .panel-heading {
+    background-image: url("../img/cross.svg");
+    background-repeat: no-repeat;
+    background-position: right center; }
+  .live-filter .facet.unselected .panel-heading {
+    background-repeat: no-repeat;
+    background-position: right center; }
+  .live-filter .facet .panel-heading {
+    cursor: pointer; }
+  .live-filter .facet ul {
+    list-style-type: none; }
+  .live-filter .facet li {
+    cursor: pointer; }
+  .live-filter .facet li:hover {
+    color: #E6E6E6; }
+
+.chevron-thin-left {
+  background: url("../img/chevron-thin-left.svg") no-repeat right center; }
+
+.chevron-thin-right {
+  background: url("../img/chevron-thin-right.svg") no-repeat right center; }
 
 .checkbox-unchecked {
   background: url("../img/checkbox-unchecked.svg") no-repeat center; }
