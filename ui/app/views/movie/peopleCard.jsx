@@ -1,13 +1,11 @@
 module.exports = React.createClass({
-    getInitialState: function () {
-        this.props.movie = {actors: [],
-            producers: [],
-            directors: []};
-        return this.state;
-    },
-    render: function renderMovieDetail() {
+    render: function renderPeopleCard() {
         return (
-            <div></div>
+            <div>
+                <div className='picture'></div>
+                <div className='name'>{this.props.name}</div>
+                <div className='subName'></div>
+            </div>
         );
     }
 });

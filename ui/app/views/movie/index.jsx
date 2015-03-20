@@ -1,22 +1,18 @@
 //Get the form mixin.
-var formMixin = focus.components.common.form.mixin;
 var MovieCartridge = require('./cartridge');
-var movieActions = require('../../action/movie');
-var movieStore = require('../../stores/movie');
-module.exports = React.createClass({
-    definitionPath: "movie",
-    displayName: "MovieView",
-    mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
-    action: movieActions,
+var SlidingContent = require('./slidingContent');
 
-    renderContent: function () {
+var StickyNavigation = focus.components.common.stickyNavigation.component;
+
+module.exports = React.createClass({
+    render: function renderMovieView() {
         return (
             <div className="movieView">
-                <div className="slidingContent">
-                </div>
-                <div className="movieCartridge">
-                    <MovieCartridge movie={this.state} />
+                <StickyNavigation contentId="slidingContent"/>
+                <div className="movieDetails">
+                    <SlidingContent id={this.props.id}/>
+
+                    <MovieCartridge id={this.props.id} />
                 </div>
             </div>
         );

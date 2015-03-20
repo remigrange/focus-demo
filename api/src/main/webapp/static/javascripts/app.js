@@ -1659,31 +1659,39 @@ module.exports =  React.createClass({displayName: "exports",
 });
 
 require.register("views/movie/cartridge", function(exports, require, module) {
-module.exports = React.createClass({displayName: "exports",
+var formMixin = focus.components.common.form.mixin;
+var movieActions = require('../../action/movie');
+var movieStore = require('../../stores/movie');
+module.exports = React.createClass({
+    definitionPath: "movie",
+    displayName: "movieCartridge",
     getInitialState: function () {
-        this.props.movie = {actors: [],
+        this.state = {actors: [],
             producers: [],
             directors: []};
         return this.state;
     },
-    render: function renderMovieDetail() {
+    mixins: [formMixin],
+    stores: [{store: movieStore, properties: ["movie"]}],
+    action: movieActions,
+    renderContent: function renderMovieCartridge() {
         return (
-            React.createElement("div", null, 
+            React.createElement("div", {className: "movieCartridge"}, 
                 React.createElement("div", {className: "header"}, 
                     React.createElement("div", {className: "picture"}), 
-                    React.createElement("div", {className: "title"}, this.props.movie.title), 
-                    React.createElement("div", {className: "year"}, this.props.movie.released)
+                    React.createElement("div", {className: "title"}, this.state.title), 
+                    React.createElement("div", {className: "year"}, this.state.released)
                 ), 
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "GENRES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.props.movie.genreIds
+                        this.state.genreIds
                     )
                 ), 
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "DIRECTORS"), 
                     React.createElement("div", {className: "content"}, 
-                        this.props.movie.directors.map(function (people) {
+                        this.state.directors.map(function (people) {
                             return (
                                 React.createElement("div", null, people.peoName)
                             )
@@ -1693,7 +1701,7 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "PRODUCERS"), 
                     React.createElement("div", {className: "content"}, 
-                        this.props.movie.producers.map(function (people) {
+                        this.state.producers.map(function (people) {
                             return (
                                 React.createElement("div", null, people.peoName, " ", people.comment)
                             )
@@ -1703,7 +1711,7 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "MAIN ACTORS"), 
                     React.createElement("div", {className: "content"}, 
-                        this.props.movie.actors.map(function (people) {
+                        this.state.actors.map(function (people) {
                             return (
                                 React.createElement("div", null, people.peoName)
                             )
@@ -1713,13 +1721,13 @@ module.exports = React.createClass({displayName: "exports",
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "COUNTRIES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.props.movie.countryIds
+                        this.state.countryIds
                     )
                 ), 
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "LANGUAGES"), 
                     React.createElement("div", {className: "content"}, 
-                        this.props.movie.languageIds
+                        this.state.languageIds
                     )
                 )
             )
@@ -1731,24 +1739,20 @@ module.exports = React.createClass({displayName: "exports",
 
 require.register("views/movie/index", function(exports, require, module) {
 //Get the form mixin.
-var formMixin = focus.components.common.form.mixin;
 var MovieCartridge = require('./cartridge');
-var movieActions = require('../../action/movie');
-var movieStore = require('../../stores/movie');
-module.exports = React.createClass({
-    definitionPath: "movie",
-    displayName: "MovieView",
-    mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
-    action: movieActions,
+var SlidingContent = require('./slidingContent');
 
-    renderContent: function () {
+var StickyNavigation = focus.components.common.stickyNavigation.component;
+
+module.exports = React.createClass({displayName: "exports",
+    render: function renderMovieView() {
         return (
             React.createElement("div", {className: "movieView"}, 
-                React.createElement("div", {className: "slidingContent"}
-                ), 
-                React.createElement("div", {className: "movieCartridge"}, 
-                    React.createElement(MovieCartridge, {movie: this.state})
+                React.createElement(StickyNavigation, {contentId: "slidingContent"}), 
+                React.createElement("div", {className: "movieDetails"}, 
+                    React.createElement(SlidingContent, {id: this.props.id}), 
+
+                    React.createElement(MovieCartridge, {id: this.props.id})
                 )
             )
         );
@@ -1759,15 +1763,78 @@ module.exports = React.createClass({
 
 require.register("views/movie/peopleCard", function(exports, require, module) {
 module.exports = React.createClass({displayName: "exports",
+    render: function renderPeopleCard() {
+        return (
+            React.createElement("div", null, 
+                React.createElement("div", {className: "picture"}), 
+                React.createElement("div", {className: "name"}, this.props.name), 
+                React.createElement("div", {className: "subName"})
+            )
+        );
+    }
+});
+
+});
+
+require.register("views/movie/slidingContent", function(exports, require, module) {
+var formMixin = focus.components.common.form.mixin;
+var movieActions = require('../../action/movie');
+var movieStore = require('../../stores/movie');
+var Title = focus.components.common.title.component;
+var PeopleCard = require('./peopleCard');
+module.exports = React.createClass({
+    definitionPath: "movie",
+    displayName: "slidingContent",
     getInitialState: function () {
-        this.props.movie = {actors: [],
+        this.state = {actors: [],
             producers: [],
             directors: []};
         return this.state;
     },
-    render: function renderMovieDetail() {
+    mixins: [formMixin],
+    stores: [{store: movieStore, properties: ["movie"]}],
+    action: movieActions,
+    renderContent: function renderSlidingContent() {
         return (
-            React.createElement("div", null)
+            React.createElement("div", {id: "slidingContent"}, 
+                React.createElement("div", {className: "slidingBloc"}, 
+                    React.createElement(Title, {id: "details", title: "DETAILS"}), 
+                    this.fieldFor("title"), 
+                    this.fieldFor("released"), 
+                    this.fieldFor("runtime"), 
+                    this.fieldFor("countryIds"), 
+                    this.fieldFor("languageIds"), 
+                    this.fieldFor("genreIds")
+                ), 
+                React.createElement("div", {className: "slidingBloc"}, 
+                    React.createElement(Title, {id: "cast", title: "CAST"}), 
+                    "qsdfsqfdq"
+                ), 
+                React.createElement("div", {className: "slidingBloc"}, 
+                    React.createElement(Title, {id: "storyline", title: "STORYLINE"}), 
+                    this.fieldFor("title")
+                ), 
+                React.createElement("div", {className: "slidingBloc"}, 
+                    React.createElement(Title, {id: "producers", title: "PRODUCERS"}), 
+                    this.state.producers.map(function (people) {
+                        return (
+                            React.createElement(PeopleCard, {picture: "", name: people.peoName, subName: ""})
+                        )
+                    })
+                ), 
+                React.createElement("div", {className: "slidingBloc"}, 
+                    React.createElement(Title, {id: "directors", title: "DIRECTORS"}), 
+                    this.state.directors.map(function (people) {
+                        return (
+                            React.createElement(PeopleCard, {picture: "", name: people.peoName, subName: ""})
+                        )
+                    })
+                ), 
+                React.createElement("div", {className: "slidingBloc"}, 
+                    React.createElement(Title, {id: "pictures", title: "PICTURES"}), 
+                    "qsdfsqdf"
+                )
+            )
         );
     }
 });
