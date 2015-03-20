@@ -1,7 +1,7 @@
 exports.config = {
   sourceMaps: false,
   paths: {
-    "public": '../api/src/main/webapp/static/'
+  //  "public": '../api/src/main/webapp/static/'
   },
   files: {
     javascripts: {
@@ -10,7 +10,7 @@ exports.config = {
         'javascripts/vendor.js': /^(bower_components|vendor)/
       },
       order: {
-        before: ['vendor/zepto.js', 'vendor/lodash.js', 'vendor/focus.js']
+        before: ['vendor/zepto.js', 'vendor/lodash.js', 'vendor/focus.js', 'vendor/focus-components.js']
       }
     },
     stylesheets: {
