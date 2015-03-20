@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 
+import rodolphe.demo.dao.movies.MoviesPAO;
 import rodolphe.demo.dao.people.CastingDAO;
 import rodolphe.demo.dao.people.RolePeopleDAO;
 import rodolphe.demo.domain.masterdata.CodeRoleMovie;
@@ -29,6 +30,8 @@ public class MovieTest extends AbstractRodolpheTestCase{
 	private RolePeopleDAO rolePeopleDAO;
 	@Inject
 	private CastingDAO castingDAO;
+	@Inject
+	private MoviesPAO moviePAO;
 
 	@Test
 	public void testGetMovie(){
@@ -94,6 +97,5 @@ public class MovieTest extends AbstractRodolpheTestCase{
 		peopleServices.savePeople(peo);
 		return peo;
 	}
-
 
 }

@@ -1304,9 +1304,10 @@ module.exports = {
 });
 
 require.register("index", function(exports, require, module) {
+/*global Backbone*/
 console.log('Application demo rodoplphe');
-var Backbone = require('backbone');
-//Require dependencies.
+focus.components = focusComponents;
+////Require dependencies.
 require('./initializer');
 //Start the application.
 require('./router');
@@ -1748,7 +1749,7 @@ module.exports = React.createClass({displayName: "exports",
     render: function renderMovieView() {
         return (
             React.createElement("div", {className: "movieView"}, 
-                React.createElement(StickyNavigation, {contentId: "slidingContent"}), 
+                React.createElement(StickyNavigation, {contentSelector: "#slidingContent"}), 
                 React.createElement("div", {className: "movieDetails"}, 
                     React.createElement(SlidingContent, {id: this.props.id}), 
 

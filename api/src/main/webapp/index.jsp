@@ -16,7 +16,9 @@
     <!--link rel="icon" type="image/png" href="static/images/favicon.png"/-->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   	<link rel="stylesheet" href="http://fezvrasta.github.io/bootstrap-material-design/bootstrap-elements.html" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script>
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script-->
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/react/0.13.1/react.js"></script>
+    
 
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
