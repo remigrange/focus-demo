@@ -21,6 +21,8 @@ public final class MoviesPAO {
 		TK_GET_MOVIE_VIEW,
 		/** Tache TK_GET_MOVIE_VIEW_BY_MOV_ID */
 		TK_GET_MOVIE_VIEW_BY_MOV_ID,
+		/** Tache TK_UPDATE_MOVIES_TITLES */
+		TK_UPDATE_MOVIES_TITLES,
 	}
 
 	/** Constante de paramètre de la tache MIN_RANK. */
@@ -37,6 +39,9 @@ public final class MoviesPAO {
 
 	/** Constante de paramètre de la tache DTO_MOVIE. */
 	private static final String ATTR_OUT_TK_GET_MOVIE_VIEW_BY_MOV_ID_DTO_MOVIE = "DTO_MOVIE";
+
+	/** Constante de paramètre de la tache DTC_MOVIES. */
+	private static final String ATTR_IN_TK_UPDATE_MOVIES_TITLES_DTC_MOVIES = "DTC_MOVIES";
 
 	private final TaskManager taskManager;
 
@@ -87,6 +92,17 @@ public final class MoviesPAO {
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_VIEW_BY_MOV_ID_DTO_MOVIE);
+	}
+
+	/**
+	 * Execute la tache TK_UPDATE_MOVIES_TITLES.
+	 * @param dtcMovies io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> 
+	*/
+	public void updateMoviesTitles(final io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> dtcMovies) {
+		final Task task = createTaskBuilder(Tasks.TK_UPDATE_MOVIES_TITLES)
+				.withValue(ATTR_IN_TK_UPDATE_MOVIES_TITLES_DTC_MOVIES, dtcMovies)
+				.build();
+		getTaskManager().execute(task);
 	}
 
     

@@ -5,6 +5,8 @@ import io.vertigo.tempo.job.JobManager;
 
 import javax.inject.Inject;
 
+import rodolphe.demo.services.batch.JobCleanData;
+
 /**
  * Initialisation du manager des jobs.
  *
@@ -23,6 +25,7 @@ public final class JobManagerInitializer implements ComponentInitializer<JobMana
 	/** {@inheritDoc} */
 	@Override
 	public void init(final JobManager manager) {
+		manager.scheduleNow(JobCleanData.getJobDefinition());
 		//manager.scheduleNow(JobIndexerMovie.getJobDefinition());
 		//manager.scheduleNow(JobIndexPeople.getJobDefinition());
 	}
