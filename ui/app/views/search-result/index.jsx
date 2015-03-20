@@ -11,6 +11,10 @@ module.exports =  React.createClass({
                         scope:"MOVIE",
                         query:criteria.query
                     },
+                    pageInfos : {
+                        sortFieldName: undefined,
+                        sortDesc:  undefined
+                    },
                     facets:[]
                 }
                 serviceCommon.common.searchByScope(critere).then(

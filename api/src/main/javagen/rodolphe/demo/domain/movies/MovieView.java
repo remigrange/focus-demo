@@ -18,6 +18,7 @@ public final class MovieView implements DtObject {
 	private Long movId;
 	private String title;
 	private java.util.Date released;
+	private Integer year;
 	private Integer runtime;
 	private String description;
 	private String metadasJson;
@@ -85,6 +86,25 @@ public final class MovieView implements DtObject {
 	 */
 	public void setReleased(final java.util.Date released) {
 		this.released = released;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Year'. 
+	 * @return Integer year 
+	 */
+	@Field(domain = "DO_ENTIER", persistent = false, label = "Year")
+	public Integer getYear() {
+		return year;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Year'.
+	 * @param year Integer 
+	 */
+	public void setYear(final Integer year) {
+		this.year = year;
 	}
 
 	/**
