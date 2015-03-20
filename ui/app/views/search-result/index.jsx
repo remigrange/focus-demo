@@ -25,7 +25,7 @@ module.exports =  React.createClass({
                             pageInfos:{
                                 currentPage: 2,
                                 perPage: 50,
-                                totalRecords: 547
+                                totalRecords: 10
                             },
                             searchContext: {
                                 scope: criteria.scope,

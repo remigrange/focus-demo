@@ -9,6 +9,19 @@ module.exports =  React.createClass({
         var action = {
             search: function(criteria) {
                 //TODO handle pageInfo
+                if(criteria.pageInfos.order !== undefined){
+                    criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
+                    if(criteria.pageInfos.order.order!==undefined && criteria.pageInfos.order.order!==null){
+                        if(criteria.pageInfos.order.order.toLowerCase() === "asc"){
+                            criteria.pageInfos.sortDesc = false;
+                        } else   if(criteria.pageInfos.order.order.toLowerCase() === "desc"){
+                            criteria.pageInfos.sortDesc = true;
+                        }
+                    }
+                } else {
+                    criteria.pageInfos.sortFieldName = undefined;
+                    criteria.pageInfos.sortDesc = undefined;
+                }
                 serviceCommon.common.searchByScope(criteria).then(
                     function success(data) {
 
@@ -16,9 +29,9 @@ module.exports =  React.createClass({
                             facet: data.facet,
                             list: data.list,
                             pageInfos:{
-                                currentPage: 2,
+                                currentPage: criteria.pageInfos.page,
                                 perPage: 50,
-                                totalRecords: 547
+                                totalRecords:50
                             },
                             searchContext: {
                                 scope: criteria.scope,
@@ -62,8 +75,8 @@ module.exports =  React.createClass({
                 Genre: "text",
                 Country: "text"
             },
-            orderableColumnList:{title: "Title", genreIds: "Genre"},
-            groupableColumnList:{genreIds: "Genre"},
+            orderableColumnList:{TITLE: "Title", GENRE_IDS: "Genre"},
+            groupableColumnList:{GENRE_IDS: "Genre"},
             operationList: [
                 /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
                 {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},

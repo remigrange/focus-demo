@@ -3,6 +3,7 @@ package rodolphe.demo.services.movie;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.lang.Component;
+import io.vertigo.vega.rest.model.UiListState;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
@@ -21,9 +22,10 @@ public interface MovieServices  extends Component {
 	/**
 	 * search movies by criteria.
 	 * @param crit criteria
+	 * @param uiListState uiListState
 	 * @return result
 	 */
-	FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(MovieCriteria crit, FacetSelection ...selection);
+	FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(MovieCriteria crit, UiListState uiListState, FacetSelection ...selection);
 
 
 

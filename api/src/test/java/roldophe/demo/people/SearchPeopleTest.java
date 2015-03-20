@@ -4,6 +4,7 @@
 package roldophe.demo.people;
 
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.vega.rest.model.UiListState;
 
 import javax.inject.Inject;
 
@@ -72,7 +73,8 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
 	/** {@inheritDoc} */
 	@Override
 	protected DtList<PeopleResult> getListByCritere(final PeopleCriteria critere) {
-		return peopleServices.getPeopleByCriteria(critere).getDtList();
+		final UiListState uiListState = new UiListState(0, 0, null, false, null);
+		return peopleServices.getPeopleByCriteria(critere, uiListState).getDtList();
 	}
 
 	/* (non-Javadoc)
