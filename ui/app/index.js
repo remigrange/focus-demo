@@ -1,6 +1,7 @@
+/*global Backbone*/
 console.log('Application demo rodoplphe');
-var Backbone = require('backbone');
-//Require dependencies.
+focus.components = focusComponents;
+////Require dependencies.
 require('./initializer');
 //Start the application.
 require('./router');
