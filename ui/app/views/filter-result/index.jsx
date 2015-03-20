@@ -10,10 +10,16 @@ module.exports =  React.createClass({
             search: function(criteria) {
                 //TODO handle pageInfo
                 if(criteria.pageInfos.order !== undefined){
-                    criteria.pageInfos.sortedFieldName = "TITLE";
-                    criteria.pageInfos.sortDesc = criteria.pageInfos.order;
+                    criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
+                    if(criteria.pageInfos.order.order!==undefined && criteria.pageInfos.order.order!==null){
+                        if(criteria.pageInfos.order.order.toLowerCase() === "asc"){
+                            criteria.pageInfos.sortDesc = false;
+                        } else   if(criteria.pageInfos.order.order.toLowerCase() === "desc"){
+                            criteria.pageInfos.sortDesc = true;
+                        }
+                    }
                 } else {
-                    criteria.pageInfos.sortedFieldName = undefined;
+                    criteria.pageInfos.sortFieldName = undefined;
                     criteria.pageInfos.sortDesc = undefined;
                 }
                 serviceCommon.common.searchByScope(criteria).then(

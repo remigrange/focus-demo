@@ -5,6 +5,7 @@ import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
+import io.vertigo.util.StringUtil;
 import io.vertigo.vega.rest.model.UiListState;
 
 import javax.inject.Inject;
@@ -58,7 +59,7 @@ public  class MovieServicesImpl implements MovieServices {
 		for (final FacetSelection sel : selection) {
 			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
 		}
-		if(uiListState.getSortFieldName()!=null) {
+		if(!StringUtil.isEmpty(uiListState.getSortFieldName())) {
 			criteria.setSortAsc(!uiListState.isSortDesc());
 			criteria.setSortFieldName(uiListState.getSortFieldName());
 		}

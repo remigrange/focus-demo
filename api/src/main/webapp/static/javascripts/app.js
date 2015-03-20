@@ -1018,7 +1018,7 @@ require.register("config/server/common", function(exports, require, module) {
 var root = ".";
 var url = focus.util.url.builder;
 module.exports = {
-    searchByScope: url(root+"/searchByScope?${sortedFieldName}&${sortDesc}", 'POST')/*,
+    searchByScope: url(root+"/searchByScope?sortFieldName=${sortFieldName}&sortDesc=${sortDesc}", 'POST')/*,
     filterResult: url(root+"/filterResult", 'POST')*/
 };
 
@@ -1441,10 +1441,16 @@ module.exports =  React.createClass({displayName: "exports",
             search: function(criteria) {
                 //TODO handle pageInfo
                 if(criteria.pageInfos.order !== undefined){
-                    criteria.pageInfos.sortedFieldName = "TITLE";
-                    criteria.pageInfos.sortDesc = criteria.pageInfos.order;
+                    criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
+                    if(criteria.pageInfos.order.order!==undefined && criteria.pageInfos.order.order!==null){
+                        if(criteria.pageInfos.order.order.toLowerCase() === "asc"){
+                            criteria.pageInfos.sortDesc = false;
+                        } else   if(criteria.pageInfos.order.order.toLowerCase() === "desc"){
+                            criteria.pageInfos.sortDesc = true;
+                        }
+                    }
                 } else {
-                    criteria.pageInfos.sortedFieldName = undefined;
+                    criteria.pageInfos.sortFieldName = undefined;
                     criteria.pageInfos.sortDesc = undefined;
                 }
                 serviceCommon.common.searchByScope(criteria).then(
