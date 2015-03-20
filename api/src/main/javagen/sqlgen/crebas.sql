@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  19 mars 2015  11:19:08                     
+--   Date de création :  20 mars 2015  10:31:09                     
 -- ============================================================
 
 
@@ -222,6 +222,7 @@ create table MOVIE
     MOV_ID      	 NUMERIC     	not null,
     TITLE       	 VARCHAR(3000)	,
     RELEASED    	 DATE        	,
+    YEAR        	 NUMERIC     	,
     RUNTIME     	 NUMERIC     	,
     DESCRIPTION 	 TEXT        	,
     METADAS_JSON	 VARCHAR(3000)	,
@@ -237,6 +238,9 @@ comment on column MOVIE.TITLE is
 
 comment on column MOVIE.RELEASED is
 'Released';
+
+comment on column MOVIE.YEAR is
+'Year';
 
 comment on column MOVIE.RUNTIME is
 'Runtime';

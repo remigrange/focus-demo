@@ -12,6 +12,7 @@ create DtDefinition DT_MOVIE_VIEW {
 	key MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
 	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
 	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}
+	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
 	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
 	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
 	field METADAS_JSON {domain: DO_COMMENTAIRE label: "Meta Data JSON" notNull:"false"}
@@ -30,6 +31,7 @@ create DtDefinition DT_MOVIE_CRITERIA {
 	field MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
 	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
 	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}
+	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
 	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
 	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
 }
@@ -39,6 +41,7 @@ create DtDefinition DT_MOVIE_INDEX {
 	field MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
 	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
 	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}
+	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
 	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
 	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
@@ -53,6 +56,7 @@ create DtDefinition DT_MOVIE_RESULT {
 	field MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
 	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
 	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}
+	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
 	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
 	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
 	field METADAS_JSON {domain: DO_COMMENTAIRE label: "Meta Data JSON" notNull:"false"}

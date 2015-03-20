@@ -571,6 +571,10 @@ module.exports = {
 				"domain": "DO_DATE",
 				"required": false
 			},		
+			"year": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
 			"runtime": {
 				"domain": "DO_ENTIER",
 				"required": false
@@ -613,6 +617,10 @@ module.exports = {
 				"domain": "DO_DATE",
 				"required": false
 			},		
+			"year": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
 			"runtime": {
 				"domain": "DO_ENTIER",
 				"required": false
@@ -633,6 +641,10 @@ module.exports = {
 			},		
 			"released": {
 				"domain": "DO_DATE",
+				"required": false
+			},		
+			"year": {
+				"domain": "DO_ENTIER",
 				"required": false
 			},		
 			"runtime": {
@@ -677,6 +689,10 @@ module.exports = {
 				"domain": "DO_DATE",
 				"required": false
 			},		
+			"year": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
 			"runtime": {
 				"domain": "DO_ENTIER",
 				"required": false
@@ -717,6 +733,10 @@ module.exports = {
 			},		
 			"released": {
 				"domain": "DO_DATE",
+				"required": false
+			},		
+			"year": {
+				"domain": "DO_ENTIER",
 				"required": false
 			},		
 			"runtime": {
@@ -1141,6 +1161,7 @@ module.exports = {
         "movId" : "MOV_ID",
         "title" : "TITLE",
         "released" : "Released",
+        "year" : "Year",
         "runtime" : "Runtime",
         "description" : "Description",
         "metadasJson" : "metadas Json",
@@ -1153,6 +1174,7 @@ module.exports = {
         "movId" : "primary key",
         "title" : "Title",
         "released" : "Released",
+        "year" : "Year",
         "runtime" : "Runtime",
         "description" : "Description"
     },
@@ -1160,6 +1182,7 @@ module.exports = {
         "movId" : "primary key",
         "title" : "Title",
         "released" : "Released",
+        "year" : "Year",
         "runtime" : "Runtime",
         "description" : "Description",
         "imdbid" : "Id imdb",
@@ -1172,6 +1195,7 @@ module.exports = {
         "movId" : "primary key",
         "title" : "Title",
         "released" : "Released",
+        "year" : "Year",
         "runtime" : "Runtime",
         "description" : "Description",
         "metadasJson" : "Meta Data JSON",
@@ -1184,6 +1208,7 @@ module.exports = {
         "movId" : "primary key",
         "title" : "Title",
         "released" : "Released",
+        "year" : "Year",
         "runtime" : "Runtime",
         "description" : "Description",
         "metadasJson" : "Meta Data JSON",
@@ -1829,6 +1854,10 @@ module.exports =  React.createClass({displayName: "exports",
                     criteria : {
                         scope:"MOVIE",
                         query:criteria.query
+                    },
+                    pageInfos : {
+                        sortFieldName: undefined,
+                        sortDesc:  undefined
                     },
                     facets:[]
                 }

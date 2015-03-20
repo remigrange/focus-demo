@@ -211,6 +211,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		TITLE,
 		/** Propriété 'Released'. */
 		RELEASED,
+		/** Propriété 'Year'. */
+		YEAR,
 		/** Propriété 'Runtime'. */
 		RUNTIME,
 		/** Propriété 'Description'. */
@@ -237,6 +239,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		TITLE,
 		/** Propriété 'Released'. */
 		RELEASED,
+		/** Propriété 'Year'. */
+		YEAR,
 		/** Propriété 'Runtime'. */
 		RUNTIME,
 		/** Propriété 'Description'. */
@@ -253,6 +257,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		TITLE,
 		/** Propriété 'Released'. */
 		RELEASED,
+		/** Propriété 'Year'. */
+		YEAR,
 		/** Propriété 'Runtime'. */
 		RUNTIME,
 		/** Propriété 'Description'. */
@@ -279,6 +285,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		TITLE,
 		/** Propriété 'Released'. */
 		RELEASED,
+		/** Propriété 'Year'. */
+		YEAR,
 		/** Propriété 'Runtime'. */
 		RUNTIME,
 		/** Propriété 'Description'. */
@@ -305,6 +313,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		TITLE,
 		/** Propriété 'Released'. */
 		RELEASED,
+		/** Propriété 'Year'. */
+		YEAR,
 		/** Propriété 'Runtime'. */
 		RUNTIME,
 		/** Propriété 'Description'. */

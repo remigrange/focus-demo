@@ -156,6 +156,10 @@ module.exports = {
 				"domain": "DO_DATE",
 				"required": false
 			},		
+			"year": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
 			"runtime": {
 				"domain": "DO_ENTIER",
 				"required": false
@@ -198,6 +202,10 @@ module.exports = {
 				"domain": "DO_DATE",
 				"required": false
 			},		
+			"year": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
 			"runtime": {
 				"domain": "DO_ENTIER",
 				"required": false
@@ -218,6 +226,10 @@ module.exports = {
 			},		
 			"released": {
 				"domain": "DO_DATE",
+				"required": false
+			},		
+			"year": {
+				"domain": "DO_ENTIER",
 				"required": false
 			},		
 			"runtime": {
@@ -262,6 +274,10 @@ module.exports = {
 				"domain": "DO_DATE",
 				"required": false
 			},		
+			"year": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
 			"runtime": {
 				"domain": "DO_ENTIER",
 				"required": false
@@ -302,6 +318,10 @@ module.exports = {
 			},		
 			"released": {
 				"domain": "DO_DATE",
+				"required": false
+			},		
+			"year": {
+				"domain": "DO_ENTIER",
 				"required": false
 			},		
 			"runtime": {

@@ -44,8 +44,6 @@
 		</div>
 		<div id="container">
 			<div id="header">
-				<div id="user"><img/></div>
-				<div id="notification"><img/></div>
 			</div>
 			<div id="page"></div>
 			<div id="lineResume"></div>
