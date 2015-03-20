@@ -23,7 +23,6 @@ public final class JobManagerInitializer implements ComponentInitializer<JobMana
 	/** {@inheritDoc} */
 	@Override
 	public void init(final JobManager manager) {
-
 		//manager.scheduleNow(JobIndexerMovie.getJobDefinition());
 		//manager.scheduleNow(JobIndexPeople.getJobDefinition());
 	}

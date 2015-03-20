@@ -76,7 +76,7 @@ create Task TK_UPDATE_MOVIES_TITLES {
    			SET title = #DTC_MOVIES.0.TITLE#, released= #DTC_MOVIES.0.RELEASED#, runtime= #DTC_MOVIES.0.RUNTIME#, 
    			description= #DTC_MOVIES.0.DESCRIPTION#, metadas_json=#DTC_MOVIES.0.METADAS_JSON#, imdbid= #DTC_MOVIES.0.IMDBID#,
    			year= #DTC_MOVIES.0.YEAR#
-       		WHERE mov_id in (#DTC_MOVIES.ROWNUM.MOV_ID#)
+       		WHERE mov_id = #DTC_MOVIES.0.MOV_ID#
 			"
 	attribute DTC_MOVIES	 	{domain : DO_DT_MOVIE_DTC 		notNull:"true" 	inOut :"in"}
 }

@@ -166,7 +166,10 @@ public  class MovieServicesImpl implements MovieServices {
 		final DtList<MovieView> movieViewList = moviePao.getMovieView(minRank, maxRows);
 		final DtList<Movie> movieList = new DtList<>(Movie.class);
 		for(final MovieView movieView : movieViewList){
-			movieList.add(CleanMovieData.parseMovieTitle(movieView));
+			//Pour ne pas remttre à jour les donnes deja mise à jour.
+			if(StringUtil.isEmpty(movieView.getMetadasJson())) {
+				movieList.add(CleanMovieData.parseMovieTitle(movieView));
+			}
 			if (maxRank < movieView.getRank()) {
 				maxRank = movieView.getRank();
 			}

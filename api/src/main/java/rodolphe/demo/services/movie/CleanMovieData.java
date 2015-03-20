@@ -58,8 +58,12 @@ public final  class CleanMovieData {
 	public static Integer parseYear(final String title) {
 		if(!StringUtil.isEmpty(title)){
 			final int firstOccurrence = title.indexOf("(");
-			final int lastOccurrence = title.indexOf(")");
-			if(firstOccurrence>=0 && lastOccurrence>=0 && lastOccurrence!=firstOccurrence){
+			int lastOccurrence  =-1;
+			if(firstOccurrence>=0){
+				final String titleTemp = title.substring(firstOccurrence);
+				lastOccurrence = titleTemp.indexOf(")");
+			}
+			if(lastOccurrence>=0 && lastOccurrence>firstOccurrence){
 				try{
 					return Integer.valueOf(title.substring(firstOccurrence+1, lastOccurrence));
 				}catch(final NumberFormatException e){

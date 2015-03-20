@@ -9,7 +9,7 @@ module.exports =  React.createClass({
                 var critere = {
                     criteria : {
                         scope:"MOVIE",
-                        query:criteria.query
+                        query:criteria.criteria.query
                     },
                     pageInfos : {
                         sortFieldName: undefined,
@@ -32,8 +32,8 @@ module.exports =  React.createClass({
                                 totalRecords: 10
                             },
                             searchContext: {
-                                scope: criteria.scope,
-                                query: criteria.query
+                                scope: criteria.criteria.scope,
+                                query: criteria.criteria.query
                             }
                         };
                         focus.dispatcher.handleServerAction({data: dataRet, type: "update"});

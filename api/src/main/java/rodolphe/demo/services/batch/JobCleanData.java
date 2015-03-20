@@ -26,7 +26,7 @@ public class JobCleanData extends AbstractRodolpheJob {
 	@Override
 	protected void doRun() {
 		int  minRow = 1;
-		final int maxRows = 100;
+		final int maxRows = 4000;
 		for (int maxRank =0; maxRank >= 0; ) {
 			maxRank = movieServices.cleanMovieTitle(minRow, maxRows);
 			minRow = maxRank + 1;
