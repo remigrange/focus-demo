@@ -21,6 +21,10 @@ public final class MoviesPAO {
 		TK_GET_MOVIE_VIEW,
 		/** Tache TK_GET_MOVIE_VIEW_BY_MOV_ID */
 		TK_GET_MOVIE_VIEW_BY_MOV_ID,
+		/** Tache TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID */
+		TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID,
+		/** Tache TK_GET_CASTING_BY_MOV_ID */
+		TK_GET_CASTING_BY_MOV_ID,
 	}
 
 	/** Constante de paramètre de la tache MIN_RANK. */
@@ -37,6 +41,18 @@ public final class MoviesPAO {
 
 	/** Constante de paramètre de la tache DTO_MOVIE. */
 	private static final String ATTR_OUT_TK_GET_MOVIE_VIEW_BY_MOV_ID_DTO_MOVIE = "DTO_MOVIE";
+
+	/** Constante de paramètre de la tache MOV_ID. */
+	private static final String ATTR_IN_TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID_MOV_ID = "MOV_ID";
+
+	/** Constante de paramètre de la tache DTO_MOVIE. */
+	private static final String ATTR_OUT_TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID_DTO_MOVIE = "DTO_MOVIE";
+
+	/** Constante de paramètre de la tache MOV_ID. */
+	private static final String ATTR_IN_TK_GET_CASTING_BY_MOV_ID_MOV_ID = "MOV_ID";
+
+	/** Constante de paramètre de la tache DTO_MOVIE_CASTING. */
+	private static final String ATTR_OUT_TK_GET_CASTING_BY_MOV_ID_DTO_MOVIE_CASTING = "DTO_MOVIE_CASTING";
 
 	private final TaskManager taskManager;
 
@@ -87,6 +103,32 @@ public final class MoviesPAO {
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_VIEW_BY_MOV_ID_DTO_MOVIE);
+	}
+
+	/**
+	 * Execute la tache TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID.
+	 * @param movId Long 
+	 * @return rodolphe.demo.domain.movies.MovieView dtoMovie
+	*/
+	public rodolphe.demo.domain.movies.MovieView getMovieViewForMovieDetailsByMovId(final Long movId) {
+		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID)
+				.withValue(ATTR_IN_TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID_MOV_ID, movId)
+				.build();
+		final TaskResult taskResult = getTaskManager().execute(task);
+		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID_DTO_MOVIE);
+	}
+
+	/**
+	 * Execute la tache TK_GET_CASTING_BY_MOV_ID.
+	 * @param movId Long 
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.MovieCasting> dtoMovieCasting
+	*/
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.MovieCasting> getCastingByMovId(final Long movId) {
+		final Task task = createTaskBuilder(Tasks.TK_GET_CASTING_BY_MOV_ID)
+				.withValue(ATTR_IN_TK_GET_CASTING_BY_MOV_ID_MOV_ID, movId)
+				.build();
+		final TaskResult taskResult = getTaskManager().execute(task);
+		return taskResult.getValue(ATTR_OUT_TK_GET_CASTING_BY_MOV_ID_DTO_MOVIE_CASTING);
 	}
 
     

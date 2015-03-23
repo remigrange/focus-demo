@@ -189,6 +189,36 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"movieCasting": {
+			"castId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"role": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"characterName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"fileName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"mimeType": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"filePath": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			}		
+	},
 	"movieCriteria": {
 			"movId": {
 				"domain": "DO_ID",
@@ -414,6 +444,18 @@ module.exports = {
 			},		
 			"comment": {
 				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"fileName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"mimeType": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"filePath": {
+				"domain": "DO_LIBELLE_250",
 				"required": false
 			},		
 			"titCd": {

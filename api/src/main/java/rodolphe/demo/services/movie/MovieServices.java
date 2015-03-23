@@ -5,6 +5,7 @@ import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.lang.Component;
 import io.vertigo.vega.rest.model.UiListState;
 import rodolphe.demo.domain.movies.Movie;
+import rodolphe.demo.domain.movies.MovieCasting;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
 import rodolphe.demo.domain.movies.MovieView;
@@ -72,6 +73,15 @@ public interface MovieServices  extends Component {
 	 * @return MovieDetail
 	 */
 	MovieView getMovieDetails(Long movId);
+
+
+
+	/**
+	 * Get movie castings by movie id.
+	 * @param movId movie id.
+	 * @return list of castings.
+	 */
+	DtList<MovieCasting> getMovieCastings(long movId);
 
 
 }

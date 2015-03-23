@@ -44,4 +44,7 @@ create DtDefinition DT_PEOPLE_RESULT {
 
 alter DtDefinition DT_PEOPLE {
 	field COMMENT {domain: DO_TEXTE label: "Commentaire" notNull:"false" persistent : "false"}
+	field FILE_NAME {domain: DO_LIBELLE_250 label: "File name" notNull:"false" persistent : "false"}
+	field MIME_TYPE {domain: DO_LIBELLE_250 label: "MIME type" notNull:"false" persistent : "false"}
+	field FILE_PATH {domain: DO_LIBELLE_250 label: "File path" notNull:"false" persistent : "false"}
 }

@@ -18,6 +18,7 @@ import rodolphe.demo.domain.DtDefinitions.CastingFields;
 import rodolphe.demo.domain.DtDefinitions.RolePeopleFields;
 import rodolphe.demo.domain.masterdata.CodeRoleMovie;
 import rodolphe.demo.domain.movies.Movie;
+import rodolphe.demo.domain.movies.MovieCasting;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
 import rodolphe.demo.domain.movies.MovieView;
@@ -146,10 +147,16 @@ public  class MovieServicesImpl implements MovieServices {
 	@Override
 	@Transactional
 	public MovieView getMovieDetails(final Long movId) {
-		final MovieView MovieView = moviePao.getMovieViewByMovId(movId);
+		final MovieView MovieView = moviePao.getMovieViewForMovieDetailsByMovId(movId);
 		MovieView.setActors(getActors(movId));
 		MovieView.setProducers(getProducers(movId));
 		MovieView.setDirectors(getDirectors(movId));
 		return MovieView;
+	}
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public DtList<MovieCasting> getMovieCastings(final long movId) {
+		return moviePao.getCastingByMovId(movId);
 	}
 }

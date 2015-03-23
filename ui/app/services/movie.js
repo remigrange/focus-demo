@@ -6,5 +6,8 @@ module.exports = {
     },
     getMovieViewById: function getMovieViewById(id){
         return fetch(URL.movie.movieView({urlData:{id: id}}));
+    },
+    getMovieCastingsById: function getMovieCastingsById(id){
+        return fetch(URL.movie.castings({urlData:{id: id}}));
     }
 };

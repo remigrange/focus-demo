@@ -21,9 +21,20 @@ create DtDefinition DT_MOVIE_VIEW {
 	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's contries identifiers" notNull:"false"}
 	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Movie's languages identifiers" notNull:"false"}
 	field RANK {domain: DO_ID label: "rank" notNull:"true" }
-	field ACTORS {persistent: "false" domain: DO_DT_PEOPLE_DTC label: "Actors" notNull: "false"}
-	field PRODUCERS {persistent: "false" domain: DO_DT_PEOPLE_DTC label: "Producers" notNull: "false"}
-	field DIRECTORS {persistent: "false" domain: DO_DT_PEOPLE_DTC label: "Directors" notNull: "false"}
+	field ACTORS {domain: DO_DT_PEOPLE_DTC label: "Actors" notNull: "false"}
+	field PRODUCERS {domain: DO_DT_PEOPLE_DTC label: "Producers" notNull: "false"}
+	field DIRECTORS {domain: DO_DT_PEOPLE_DTC label: "Directors" notNull: "false"}
+}
+
+create DtDefinition DT_MOVIE_CASTING {
+	persistent:"false"
+	key CAST_ID {domain: DO_ID label: "primary key" notNull:"true" }
+	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
+	field ROLE {domain: DO_LIBELLE_100 label: "Role" notNull:"false"}
+	field CHARACTER_NAME {domain: DO_LIBELLE_250 label: "Character name" notNull:"false"}
+	field FILE_NAME {domain: DO_LIBELLE_250 label: "File name" notNull:"false"}
+	field MIME_TYPE {domain: DO_LIBELLE_250 label: "MIME type" notNull:"false"}
+	field FILE_PATH {domain: DO_LIBELLE_250 label: "File path" notNull:"false"}
 }
 
 create DtDefinition DT_MOVIE_CRITERIA {

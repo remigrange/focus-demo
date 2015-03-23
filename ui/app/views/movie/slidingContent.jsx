@@ -7,14 +7,22 @@ module.exports = React.createClass({
     definitionPath: "movie",
     displayName: "slidingContent",
     getInitialState: function () {
-        this.state = {actors: [],
+        this.state = {
+            actors: [],
             producers: [],
-            directors: []};
+            directors: [],
+            castings: []
+        };
         return this.state;
     },
     mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
-    action: movieActions,
+    stores: [{store: movieStore, properties: ["movie", "castings"]}],
+    action: {
+        load: function (id) {
+            movieActions.load(id);
+            movieActions.loadCastings(id);
+        }
+    },
     renderContent: function renderSlidingContent() {
         return (
             <div id='slidingContent'>
@@ -29,11 +37,15 @@ module.exports = React.createClass({
                 </div>
                 <div className='slidingBloc'>
                     <Title id="cast" title="CAST"/>
-                    qsdfsqfdq
+                    {this.state.castings.map(function (people) {
+                        return (
+                            <PeopleCard picture="" name={people.peoName} subName={"As ("+people.role+") "+(people.characterName!==undefined?people.characterName:"")}/>
+                        )
+                    })}
                 </div>
                 <div className='slidingBloc'>
                     <Title id="storyline" title="STORYLINE"/>
-                    {this.fieldFor("title")}
+                    {this.state.description}
                 </div>
                 <div className='slidingBloc'>
                     <Title id="producers" title="PRODUCERS"/>
@@ -53,7 +65,6 @@ module.exports = React.createClass({
                 </div>
                 <div className='slidingBloc'>
                     <Title id="pictures" title="PICTURES"/>
-                    qsdfsqdf
                 </div>
             </div>
         );

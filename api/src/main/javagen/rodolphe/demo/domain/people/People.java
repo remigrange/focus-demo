@@ -21,6 +21,9 @@ public final class People implements DtObject {
 	private String peoName;
 	private String imdbid;
 	private String comment;
+	private String fileName;
+	private String mimeType;
+	private String filePath;
 	private String titCd;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> fileInfo;
 	private rodolphe.demo.domain.masterdatas.Title title;
@@ -137,6 +140,63 @@ public final class People implements DtObject {
 	 */
 	public void setComment(final String comment) {
 		this.comment = comment;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'File name'. 
+	 * @return String fileName 
+	 */
+	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "File name")
+	public String getFileName() {
+		return fileName;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'File name'.
+	 * @param fileName String 
+	 */
+	public void setFileName(final String fileName) {
+		this.fileName = fileName;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'MIME type'. 
+	 * @return String mimeType 
+	 */
+	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "MIME type")
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'MIME type'.
+	 * @param mimeType String 
+	 */
+	public void setMimeType(final String mimeType) {
+		this.mimeType = mimeType;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'File path'. 
+	 * @return String filePath 
+	 */
+	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "File path")
+	public String getFilePath() {
+		return filePath;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'File path'.
+	 * @param filePath String 
+	 */
+	public void setFilePath(final String filePath) {
+		this.filePath = filePath;
 	}
 
 	/**

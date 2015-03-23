@@ -10,5 +10,16 @@ module.exports = {
                 });
             }
         );
+    },
+
+    loadCastings: function(id){
+        movieServices.getMovieCastingsById(id).then(
+            function(data){
+                focus.dispatcher.handleServerAction({
+                    data: {castings: {castings: data}},
+                    type: "update"
+                });
+            }
+        );
     }
 };

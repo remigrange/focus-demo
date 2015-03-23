@@ -67,6 +67,15 @@ module.exports = {
         "countryIds" : "Movie's contries identifiers",
         "languageIds" : "Movie's languages identifiers"
     },
+    "movieCasting": {
+        "castId" : "primary key",
+        "peoName" : "Name",
+        "role" : "Role",
+        "characterName" : "Character name",
+        "fileName" : "File name",
+        "mimeType" : "MIME type",
+        "filePath" : "File path"
+    },
     "movieCriteria": {
         "movId" : "primary key",
         "title" : "Title",
@@ -132,6 +141,9 @@ module.exports = {
         "peoName" : "Peo Name",
         "imdbid" : "imdbID",
         "comment" : "Commentaire",
+        "fileName" : "File name",
+        "mimeType" : "MIME type",
+        "filePath" : "File path",
         "titCd" : "Title"
     },
     "peopleCriteria": {

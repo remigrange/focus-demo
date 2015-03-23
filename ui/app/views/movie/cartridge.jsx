@@ -17,7 +17,7 @@ module.exports = React.createClass({
         return (
             <div className="movieCartridge">
                 <div className="header">
-                    <div className="picture"></div>
+                    <div className="picture"><img src="./static/img/logoMovie.png" width="100%" height="100%"/></div>
                     <div className="title">{this.state.title}</div>
                     <div className="year">{this.state.released}</div>
                 </div>

@@ -122,6 +122,17 @@ module.exports = {
                 });
             }
         );
+    },
+
+    loadCastings: function(id){
+        movieServices.getMovieCastingsById(id).then(
+            function(data){
+                focus.dispatcher.handleServerAction({
+                    data: {castings: {castings: data}},
+                    type: "update"
+                });
+            }
+        );
     }
 };
 
@@ -604,6 +615,36 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"movieCasting": {
+			"castId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"peoName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"role": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"characterName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"fileName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"mimeType": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"filePath": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			}		
+	},
 	"movieCriteria": {
 			"movId": {
 				"domain": "DO_ID",
@@ -829,6 +870,18 @@ module.exports = {
 			},		
 			"comment": {
 				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"fileName": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"mimeType": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"filePath": {
+				"domain": "DO_LIBELLE_250",
 				"required": false
 			},		
 			"titCd": {
@@ -1064,7 +1117,8 @@ module.exports = {
     actors: url(root + "${id}/" + 'actors', 'GET'),
     producers: url(root + "${id}/" + 'producers', 'GET'),
     directors: url(root + "${id}/" + 'directors', 'GET'),
-    movieView: url(root + "${id}/" + 'movieView', 'GET')
+    movieView: url(root + "${id}/" + 'movieView', 'GET'),
+    castings: url(root + "${id}/" + 'castings', 'GET')
 };
 
 });
@@ -1170,6 +1224,15 @@ module.exports = {
         "countryIds" : "Movie's contries identifiers",
         "languageIds" : "Movie's languages identifiers"
     },
+    "movieCasting": {
+        "castId" : "primary key",
+        "peoName" : "Name",
+        "role" : "Role",
+        "characterName" : "Character name",
+        "fileName" : "File name",
+        "mimeType" : "MIME type",
+        "filePath" : "File path"
+    },
     "movieCriteria": {
         "movId" : "primary key",
         "title" : "Title",
@@ -1235,6 +1298,9 @@ module.exports = {
         "peoName" : "Peo Name",
         "imdbid" : "imdbID",
         "comment" : "Commentaire",
+        "fileName" : "File name",
+        "mimeType" : "MIME type",
+        "filePath" : "File path",
         "titCd" : "Title"
     },
     "peopleCriteria": {
@@ -1304,9 +1370,10 @@ module.exports = {
 });
 
 require.register("index", function(exports, require, module) {
+/*global Backbone*/
 console.log('Application demo rodoplphe');
-var Backbone = require('backbone');
-//Require dependencies.
+focus.components = focusComponents;
+////Require dependencies.
 require('./initializer');
 //Start the application.
 require('./router');
@@ -1434,6 +1501,9 @@ module.exports = {
     },
     getMovieViewById: function getMovieViewById(id){
         return fetch(URL.movie.movieView({urlData:{id: id}}));
+    },
+    getMovieCastingsById: function getMovieCastingsById(id){
+        return fetch(URL.movie.castings({urlData:{id: id}}));
     }
 };
 });
@@ -1446,7 +1516,8 @@ require.register("stores/movie", function(exports, require, module) {
  */
 var movieStore = new focus.store.CoreStore({
     definition : {
-        'movie': 'movie'
+        'movie': 'movie',
+        'castings': 'movieCasting'
     }
   });
 module.exports = movieStore;
@@ -1678,7 +1749,7 @@ module.exports = React.createClass({
         return (
             React.createElement("div", {className: "movieCartridge"}, 
                 React.createElement("div", {className: "header"}, 
-                    React.createElement("div", {className: "picture"}), 
+                    React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png", width: "100%", height: "100%"})), 
                     React.createElement("div", {className: "title"}, this.state.title), 
                     React.createElement("div", {className: "year"}, this.state.released)
                 ), 
@@ -1748,11 +1819,11 @@ module.exports = React.createClass({displayName: "exports",
     render: function renderMovieView() {
         return (
             React.createElement("div", {className: "movieView"}, 
-                React.createElement(StickyNavigation, {contentId: "slidingContent"}), 
+                React.createElement(StickyNavigation, {contentSelector: "#slidingContent"}), 
                 React.createElement("div", {className: "movieDetails"}, 
-                    React.createElement(SlidingContent, {id: this.props.id}), 
+                    React.createElement(SlidingContent, {id: this.props.id, style: {className:'slidingContentCss'}}), 
 
-                    React.createElement(MovieCartridge, {id: this.props.id})
+                    React.createElement(MovieCartridge, {id: this.props.id, style: {className:'movieCartridgeCss'}})
                 )
             )
         );
@@ -1765,10 +1836,10 @@ require.register("views/movie/peopleCard", function(exports, require, module) {
 module.exports = React.createClass({displayName: "exports",
     render: function renderPeopleCard() {
         return (
-            React.createElement("div", null, 
-                React.createElement("div", {className: "picture"}), 
+            React.createElement("div", {className: "peopleCard"}, 
+                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png", width: "100%", height: "100%"})), 
                 React.createElement("div", {className: "name"}, this.props.name), 
-                React.createElement("div", {className: "subName"})
+                React.createElement("div", {className: "subName"}, this.props.subName)
             )
         );
     }
@@ -1786,14 +1857,22 @@ module.exports = React.createClass({
     definitionPath: "movie",
     displayName: "slidingContent",
     getInitialState: function () {
-        this.state = {actors: [],
+        this.state = {
+            actors: [],
             producers: [],
-            directors: []};
+            directors: [],
+            castings: []
+        };
         return this.state;
     },
     mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
-    action: movieActions,
+    stores: [{store: movieStore, properties: ["movie", "castings"]}],
+    action: {
+        load: function (id) {
+            movieActions.load(id);
+            movieActions.loadCastings(id);
+        }
+    },
     renderContent: function renderSlidingContent() {
         return (
             React.createElement("div", {id: "slidingContent"}, 
@@ -1808,11 +1887,15 @@ module.exports = React.createClass({
                 ), 
                 React.createElement("div", {className: "slidingBloc"}, 
                     React.createElement(Title, {id: "cast", title: "CAST"}), 
-                    "qsdfsqfdq"
+                    this.state.castings.map(function (people) {
+                        return (
+                            React.createElement(PeopleCard, {picture: "", name: people.peoName, subName: "As ("+people.role+") "+(people.characterName!==undefined?people.characterName:"")})
+                        )
+                    })
                 ), 
                 React.createElement("div", {className: "slidingBloc"}, 
                     React.createElement(Title, {id: "storyline", title: "STORYLINE"}), 
-                    this.fieldFor("title")
+                    this.state.description
                 ), 
                 React.createElement("div", {className: "slidingBloc"}, 
                     React.createElement(Title, {id: "producers", title: "PRODUCERS"}), 
@@ -1831,8 +1914,7 @@ module.exports = React.createClass({
                     })
                 ), 
                 React.createElement("div", {className: "slidingBloc"}, 
-                    React.createElement(Title, {id: "pictures", title: "PICTURES"}), 
-                    "qsdfsqdf"
+                    React.createElement(Title, {id: "pictures", title: "PICTURES"})
                 )
             )
         );

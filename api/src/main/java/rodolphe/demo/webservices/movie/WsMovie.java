@@ -13,6 +13,7 @@ import io.vertigo.vega.rest.stereotype.QueryParam;
 import javax.inject.Inject;
 
 import rodolphe.demo.domain.movies.Movie;
+import rodolphe.demo.domain.movies.MovieCasting;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
 import rodolphe.demo.domain.movies.MovieView;
@@ -111,4 +112,14 @@ public final class WsMovie implements RestfulService {
 		return movieServices.getMovieDetails(movId);
 	}
 
+	/**
+	 * Get movie castings by movie id.
+	 * @param movId movie id.
+	 * @return list of castings.
+	 */
+	@GET("/movies/{id}/castings")
+	@AnonymousAccessAllowed
+	public DtList<MovieCasting> getMovieCastings(@PathParam("id") final long movId){
+		return movieServices.getMovieCastings(movId);
+	}
 }

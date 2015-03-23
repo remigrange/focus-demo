@@ -35,6 +35,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			Alias(rodolphe.demo.domain.movies.Alias.class),
 			/** Objet de données Movie. */
 			Movie(rodolphe.demo.domain.movies.Movie.class),
+			/** Objet de données MovieCasting. */
+			MovieCasting(rodolphe.demo.domain.movies.MovieCasting.class),
 			/** Objet de données MovieCriteria. */
 			MovieCriteria(rodolphe.demo.domain.movies.MovieCriteria.class),
 			/** Objet de données MovieIndex. */
@@ -230,6 +232,26 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	}
 
 	/**
+	 * Enumération des champs de MovieCasting.
+	 */
+	public enum MovieCastingFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		CAST_ID,
+		/** Propriété 'Name'. */
+		PEO_NAME,
+		/** Propriété 'Role'. */
+		ROLE,
+		/** Propriété 'Character name'. */
+		CHARACTER_NAME,
+		/** Propriété 'File name'. */
+		FILE_NAME,
+		/** Propriété 'MIME type'. */
+		MIME_TYPE,
+		/** Propriété 'File path'. */
+		FILE_PATH,
+	}
+
+	/**
 	 * Enumération des champs de MovieCriteria.
 	 */
 	public enum MovieCriteriaFields implements DtFieldName {
@@ -371,6 +393,12 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Commentaire'. */
 		COMMENT,
+		/** Propriété 'File name'. */
+		FILE_NAME,
+		/** Propriété 'MIME type'. */
+		MIME_TYPE,
+		/** Propriété 'File path'. */
+		FILE_PATH,
 		/** Propriété 'Title'. */
 		TIT_CD,
 	}
