@@ -608,7 +608,7 @@ var imgMixin = {
     displayName: "img",
     /**
      * Default props.
-     * @returns {{src: name of the picture, onClick: action handler on click.}}
+     * @returns {object} Initial props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -618,7 +618,7 @@ var imgMixin = {
     },
     /**
      * Render the img.
-     * @returns Html code.
+     * @returns {XML} Html code.
      */
     render: function renderImg() {
         var className = "icon " + this.props.src;
@@ -1074,8 +1074,7 @@ var selectActionMixin = {
     displayName: "select-action",
     /**
      * Default props.
-     * @returns {{ operationList: list of operations,
-     *              style: css class of the selector.}}
+     * @returns {object} Defauilt props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -1086,13 +1085,17 @@ var selectActionMixin = {
 
     /**
      * Handle action on selected item.
-     * @param key
-     * @returns {Function}
+     * @param {function} action Action to call
+     * @returns {function} Function called when item is selected.
+     * @private
      */
-    _handleAction: function handleSelectAction(action) {
+    _handleAction: function _handleAction(action) {
         var _this = this;
 
         return function (event) {
+            if (event) {
+                event.preventDefault();
+            }
             if (_this.props.operationParam) {
                 action(_this.props.operationParam);
             } else {
@@ -1101,6 +1104,12 @@ var selectActionMixin = {
         };
     },
 
+    /**
+     * Generate the list of actions.
+     * @param {object} operationList List of operations.
+     * @returns {Array} List of action in li component.
+     * @private
+     */
     _getList: function _getList(operationList) {
         var liList = [];
         for (var key in operationList) {
@@ -1132,14 +1141,13 @@ var selectActionMixin = {
 
     /**
      * Render the component.
-     * @returns Htm code.
+     * @returns  {XML} Htm code.
      */
     render: function renderSelectAcion() {
         if (this.props.operationList.length == 0) {
             return React.createElement("div", null);
         }
         var liList = this._getList(this.props.operationList);
-        var style = "btn btn-primary ";
         return React.createElement(
             "div",
             { className: "select-action btn-group" },
@@ -1274,8 +1282,10 @@ var type = window.focus.component.types;
  * @type {Object}
  */
 var stickyNavigationMixin = {
+
     /** @inheritedDoc */
     displayName: "sticky-navigation",
+
     /** @inheritedDoc */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -1387,7 +1397,7 @@ var titleMixin = {
 
     /**
      * Default propos.
-     * @returns {{id: i of the title, title: Title}}
+     * @returns {object} Default props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -1398,7 +1408,7 @@ var titleMixin = {
 
     /**
      * Render the component.
-     * @returns Htm code.
+     * @returns {JSX} Htm code.
      */
     render: function renderStickyNavigation() {
         return React.createElement(
@@ -1427,6 +1437,7 @@ var topicDisplayerMixin = {
 
     /**
      * Default props.
+     * @returns {object} Defautl props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -1438,7 +1449,7 @@ var topicDisplayerMixin = {
 
     /**
      * Render the component.
-     * @returns Htm code.
+     * @returns {JSX} Htm code.
      */
     render: function renderSelectAcion() {
         var topicList = [];
@@ -1468,6 +1479,9 @@ var topicDisplayerMixin = {
         var _this = this;
 
         return function (event) {
+            if (event) {
+                event.preventDefault();
+            }
             _this.props.topicClickAction(key);
         };
     }
@@ -4894,6 +4908,10 @@ var assign = require("object-assign");
  */
 var InfiniteScrollPageMixin = {
 
+    /**
+     * Default state.
+     * @returns {object} Default state values.
+     */
     getInfiniteScrollInitialState: function getInfiniteScrollInitialState() {
         return {
             hasMoreData: false,
@@ -4901,6 +4919,10 @@ var InfiniteScrollPageMixin = {
             currentPage: 1
         };
     },
+    /**
+     * Default state.
+     * @returns {object} Defautl state values.
+     */
     getInfiniteScrollStateFromStore: function getSearchStateFromStore() {
         if (this.store) {
             var data = this.store.get();
@@ -4919,6 +4941,9 @@ var InfiniteScrollPageMixin = {
         console.log("Search success on mixin change");
         this.setState(assign({ isLoading: false }, this._getStateFromStore()));
     },
+    /**
+     * Next page fetch action handler.
+     */
     fetchNextPage: function fetchNextPage() {
         this.setState({
             isLoading: true,
@@ -4926,7 +4951,13 @@ var InfiniteScrollPageMixin = {
         });
         this.search();
     },
-
+    /**
+     * Returns the search criteria sended to the store.
+     * @param {string} scope Current scope.
+     * @param {string} query Current query.
+     * @param {object} facets Selected facets.
+     * @returns {object} Formatted criteria {criteria:{}, pagesInfos:{}, facets:{}}.
+     */
     getSearchCriteria: function getSearchCriteria(scope, query, facets) {
         return {
             criteria: {
@@ -4941,8 +4972,8 @@ var InfiniteScrollPageMixin = {
             facets: facets
         };
     }
-
 };
+
 module.exports = { mixin: InfiniteScrollPageMixin };
 
 },{"object-assign":94}],99:[function(require,module,exports){
@@ -4950,10 +4981,10 @@ module.exports = { mixin: InfiniteScrollPageMixin };
 
 /**@jsx*/
 var builder = window.focus.component.builder;
-var dispatcher = window.focus.dispatcher;
 var React = window.React;
 var LiveFilter = require("../../../search/live-filter/index").component;
 var ListActionBar = require("../../../list/action-bar/index").component;
+var ListSummary = require("../../../list/summary/index").component;
 var ListSelection = require("../../../list/selection").list.component;
 var SearchStore = window.focus.store.SearchStore;
 var assign = require("object-assign");
@@ -4985,9 +5016,9 @@ var searchFilterResultMixin = {
     componentWillUnmount: function SearchComponentWillUnmount() {
         this._unRegisterListeners();
     },
-
     /**
      * Init default props.
+     * @returns {object} Default props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -5006,24 +5037,22 @@ var searchFilterResultMixin = {
     },
     /**
      * Init default state.
+     * @returns {object} Initialized state.
      */
     getInitialState: function getInitialState() {
         return assign({
             facetList: {},
             selectedFacetList: {},
             openedFacetList: {},
-
             selectionStatus: "none",
             orderSelected: undefined,
             groupSelectedKey: undefined,
-
             list: []
         }, this.getInfiniteScrollInitialState(), this._getStateFromStore());
     },
-
     /**
-     * Get liste from current store.
-     * @returns {*}
+     * Get the state from store.
+     * @returns {object} Dtat to update store.
      */
     _getStateFromStore: function getToUpdateState() {
         if (this.store) {
@@ -5064,7 +5093,11 @@ var searchFilterResultMixin = {
 
         this.props.action.search(this.getSearchCriteria(this.props.criteria.scope, this.props.criteria.searchText, facets));
     },
-
+    /**
+     * Get the list of facet to print into the top bar..
+     * @returns {{}} Facets object : [facet1: 'Label of facet1', facet2: 'Label of facet2'}.
+     * @private
+     */
     _getFacetListForBar: function _getFacetListForBar() {
         var facetList = {};
         for (var key in this.state.selectedFacetList) {
@@ -5073,37 +5106,50 @@ var searchFilterResultMixin = {
         }
         return facetList;
     },
-
+    /**
+     * Click on bar facet action handler.
+     * @param key [string}  Key of the clicked facet.
+     * @private
+     */
     _facetBarClick: function _facetBarClick(key) {
         var selectedFacetList = this.state.selectedFacetList;
         delete selectedFacetList[key];
 
         // TODO : do we do it now ?
-        this.setState({ selectedFacetList: selectedFacetList });
-        this.search();
+        this.state.selectedFacetList = selectedFacetList;
+        this.setState({ selectedFacetList: this.state.selectedFacetList }, this.search);
     },
+    /**
+     * Group action click handler.
+     * @param {string} key Name of the column to group (if null => ungroup action).
+     * @private
+     */
     _groupClick: function _groupClick(key) {
         console.log("Group by : " + key);
         // TODO : do we do it now ?
+        this.state.groupSelectedKey = key;
+        this.state.orderSelected = key != undefined ? undefined : this.state.orderSelected;
         this.setState({
-            groupSelectedKey: key,
-            orderSelected: key != undefined ? undefined : this.state.orderSelected
-        });
-
-        this.search();
+            groupSelectedKey: this.state.groupSelectedKey,
+            orderSelected: this.state.orderSelected
+        }, this.search);
     },
-
+    /**
+     * Order action click handler.
+     * @param {string} key Column to order.
+     * @param {string} order Order  asc/desc
+     * @private
+     */
     _orderClick: function _orderClick(key, order) {
         console.log("Order : " + key + " - " + order);
         // TODO : do we do it now ?
         this.state.orderSelected = { key: key, order: order };
-        this.setState({ orderSelected: this.state.orderSelected });
-        this.search();
+        this.setState({ orderSelected: this.state.orderSelected }, this.search);
     },
-
     /**
      * Selection action handler.
-     * @param selectionStatus (0 => nonde, 1= > all, 2=> some).
+     * @param selectionStatus Current selection status.
+     * @private
      */
     _selectionGroupLineClick: function _selectionGroupLineClick(selectionStatus) {
         console.log("Selection status : " + selectionStatus);
@@ -5111,7 +5157,6 @@ var searchFilterResultMixin = {
             selectionStatus: selectionStatus
         });
     },
-
     /**
      * Handler called when facet is selected.
      * @param facetComponentData Data of facet.
@@ -5124,30 +5169,47 @@ var searchFilterResultMixin = {
         console.log(selectedFacetList);
 
         // TODO : Do we do it now ?
+        this.state.selectedFacetList = selectedFacetList;
+        this.state.openedFacetList = openedFacetList;
         this.setState({
-            selectedFacetList: selectedFacetList,
-            openedFacetList: openedFacetList
-        });
-
-        this.search();
+            selectedFacetList: this.state.selectedFacetList,
+            openedFacetList: this.state.openedFacetList
+        }, this.search);
     },
-
+    /**
+     * Line selection handler.
+     * @param item Line checked/unchecked.
+     */
     _selectItem: function selectItem(item) {
         this.setState({ selectionStatus: "partial" });
     },
-
     /**
-     * render the component.
-     * @returns Html code.
+     * Export action handler.
+     */
+    _exportHandler: function exportHandler() {
+        console.log("EXPORT TODO");
+    },
+    /**
+     * Click on scope action handler.
+     */
+    _scopeClick: function scopeClick() {
+        console.log("TODO SCOPE CLICK REDIRECTION");
+    },
+    /**
+     * Render the component.
+     * @returns {XML} Html code.
      */
     render: function renderSearchResult() {
+        var nResult = 5;
+        var scopeList = { scope: this.props.criteria.scope };
         return React.createElement(
             "div",
             { className: "search-result" },
             React.createElement(
                 "div",
                 { className: "liveFilterContainer" },
-                React.createElement(LiveFilter, { ref: "liveFilter", facetList: this.state.facetList,
+                React.createElement(LiveFilter, { ref: "liveFilter",
+                    facetList: this.state.facetList,
                     selectedFacetList: this.state.selectedFacetList,
                     openedFacetList: this.state.openedFacetList,
                     config: this.props.facetConfig,
@@ -5156,6 +5218,17 @@ var searchFilterResultMixin = {
             React.createElement(
                 "div",
                 { className: "resultContainer" },
+                React.createElement(
+                    "div",
+                    { className: "listSummaryContainer panel" },
+                    React.createElement(ListSummary, {
+                        nb: nResult,
+                        queryText: this.props.criteria.searchText,
+                        scopeList: scopeList,
+                        scopeClickAction: this._scopeClick,
+                        exportAction: this._exportHandler
+                    })
+                ),
                 React.createElement(
                     "div",
                     { className: "listActionBarContainer panel" },
@@ -5193,7 +5266,7 @@ var searchFilterResultMixin = {
 
 module.exports = builder(searchFilterResultMixin);
 
-},{"../../../list/action-bar/index":25,"../../../list/selection":28,"../../../search/live-filter/index":103,"../common-mixin/infinite-scroll-page-mixin":98,"object-assign":94}],100:[function(require,module,exports){
+},{"../../../list/action-bar/index":25,"../../../list/selection":28,"../../../list/summary/index":32,"../../../search/live-filter/index":103,"../common-mixin/infinite-scroll-page-mixin":98,"object-assign":94}],100:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -5381,10 +5454,9 @@ var liveFilterMixin = {
      * Display name.
      */
     displayName: "live-filter",
-
     /**
      * Init the default properties
-     * @returns {{facetList: {}, selectedFacetList: {}, openedFacetList: {}, config: {}, dataSelectionHandler: undefined}}
+     * @returns {object} Initial properties.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -5395,7 +5467,6 @@ var liveFilterMixin = {
             dataSelectionHandler: undefined
         };
     },
-
     /**
      * List property validation.
      */
@@ -5406,13 +5477,9 @@ var liveFilterMixin = {
         config: type("object"),
         dataSelectionHandler: type("func")
     },
-
     /**
      * Init the state of the component.
-     * @returns {
-     *  {isExpanded: boolean True if the component is expanded, false if collapsed,
-     *   openedFacetList: Map (key : facetKey, value : true if facet expanded)}
-     *   }
+     * @returns {object} Iitial state.
      */
     getInitialState: function getInitialState() {
         var openedFacetList = this.props.openedFacetList;
@@ -5429,7 +5496,7 @@ var liveFilterMixin = {
     },
     /**
      * Render the component.
-     * @returns Html component code.
+     * @returns {XML} Html code.
      */
     render: function renderLiverFilter() {
         // var className = this.state.isExpanded ? "live-filter" : "live-filter collapsed";
@@ -5444,10 +5511,9 @@ var liveFilterMixin = {
             this.renderFilterFacetList()
         );
     },
-
     /**
      * Render the div title of the component.
-     * @Returns Html title code.
+     * @returns {XML} Hatml content.
      */
     renderLiveFacetTitle: function renderLiveFacetTitle() {
         var title = this.state.isExpanded ? "live.filter.title" : "";
@@ -5463,14 +5529,13 @@ var liveFilterMixin = {
             React.createElement(Img, { src: img, onClick: this.liveFilterTitleClick })
         );
     },
-
     /**
      * Render the list of the facets.
-     * @Returns Html facets code.
+     * @returns {XML} Html content.
      */
     renderFilterFacetList: function renderFilterFacetList() {
         if (!this.state.isExpanded) {
-            return;
+            return "";
         }
         var facets = [];
         for (var key in this.props.facetList) {
@@ -5499,7 +5564,10 @@ var liveFilterMixin = {
     },
 
     /**
-     * Action on facet selection.
+     * Facet selection action handler.
+     * @param {string} facetKey Key of the selected facet.
+     * @param {string} dataKey Key of the selceted data.
+     * @param {object} data Content of the selected data facet.
      */
     selectHandler: function selectLiverFilterHandler(facetKey, dataKey, data) {
         var result = { openedFacetList: this.state.openedFacetList };
@@ -5512,9 +5580,9 @@ var liveFilterMixin = {
     },
 
     /**
-     * Expand facet action.
-     * @param facetKey Key of the facet.
-     * @param isExpanded true if expand action, false if collapse action.
+     * Expand facet action handler.
+     * @param {string} facetKey Key of the facet.
+     * @param {string} isExpanded true if expand action, false if collapse action.
      */
     expandFacetHandler: function expandFacetHandler(facetKey, isExpanded) {
         var openedFacetList = this.state.openedFacetList;
@@ -5541,7 +5609,7 @@ var liveFilterDataMixin = {
 
     /**
      * Render the component.
-     * @returns Html code of the component.
+     * @returns {XML} Html code of the component.
      */
     render: function renderFacet() {
         return React.createElement(
@@ -5554,7 +5622,7 @@ var liveFilterDataMixin = {
 
     /**
      * Render the data.
-     * @returns Html generated code.
+     * @returns {string} Html generated code.
      */
     renderData: function renderData() {
         if (this.props.type == "text") {
@@ -5562,9 +5630,9 @@ var liveFilterDataMixin = {
         }
         throw new Error("Unknown property type : " + this.props.type);
     },
-
     /**
-     * Action of selection.
+     * Facet selection action handler.
+     * @returns {object} Fsfssd.
      */
     selectFacetData: function selectFacetDetail() {
         return this.props.selectHandler(this.props.dataKey, this.props.data);
@@ -5590,7 +5658,7 @@ var liveFilterFacetMixin = {
 
     /**
      * Init the component state.
-     * @returns {{isShowAll: true if all the facets must be displayed or just be limited to this.props.nbDefaultDataList }}
+     * @returns {object} Initial state.
      */
     getInitialState: function getInitialState() {
         return {
@@ -5600,7 +5668,7 @@ var liveFilterFacetMixin = {
 
     /**
      * Init the default props.
-     * @returns {{nbDefaultDataList: default number of data facets displayed.}}
+     * @returns {object} Initial state.
      */
     getDefaultProps: function getLiveFilterFacetDefaultProperties() {
         return {
@@ -5610,7 +5678,7 @@ var liveFilterFacetMixin = {
 
     /**
      * Render the component.
-     * @returns Html component code.
+     * @returns {XML} Html component code.
      */
     render: function renderLiverFilterFacet() {
         /*
@@ -5634,7 +5702,7 @@ var liveFilterFacetMixin = {
 
     /**
      * Render the component title.
-     * @returns Html component code.
+     * @returns {XML} Html component code.
      */
     renderLiveFilterFacetTitle: function renderLiveFilterFacetTitle() {
         var title = this.props.facetKey;
@@ -5664,11 +5732,11 @@ var liveFilterFacetMixin = {
 
     /**
      * Render the list of data of the facet.
-     * @returns Html component code.
+     * @returns {XML} Html component code.
      */
     renderLiveFilterDataList: function renderLiveFilterDataList() {
         if (!this.props.isExpanded || this.props.selectedDataKey) {
-            return;
+            return "";
         }
         var facetDetailList = [];
         var i = 0;
@@ -5698,6 +5766,8 @@ var liveFilterFacetMixin = {
 
     /**
      * Action on facet data selection.
+     * @param {string} dataKey Key of the selected data.
+     * @param {string} data Selected data.
      */
     selectHandler: function selectHandler(dataKey, data) {
         this.props.expandHandler(this.props.facetKey, false);
@@ -5706,13 +5776,13 @@ var liveFilterFacetMixin = {
 
     /**
      * Render all the data facets.
-     * @returns Html component code.
+     * @returns {XML} Html component code.
      */
     renderShowAllDataList: function renderShowAllDataList() {
         if (!this.state.isShowAll && Object.keys(this.props.facet).length > this.props.nbDefaultDataList) {
             return React.createElement(
                 "a",
-                { href: "javascript:void(0)", onClick: this.showAllHandler },
+                { href: "javascript:void(0);", onClick: this.showAllHandler },
                 " show.alls "
             );
         }
@@ -5723,7 +5793,8 @@ var liveFilterFacetMixin = {
      */
     showAllHandler: function showAllHandler() {
         this.setState({ isShowAll: !this.state.isShowAll });
-    } };
+    }
+};
 
 module.exports = builder(liveFilterFacetMixin);
 

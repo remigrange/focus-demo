@@ -31,7 +31,7 @@ module.exports =  React.createClass({
                             pageInfos:{
                                 currentPage: criteria.pageInfos.page,
                                 perPage: 50,
-                                totalRecords:50
+                                totalRecords: 50
                             },
                             searchContext: {
                                 scope: criteria.scope,

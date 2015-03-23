@@ -52,13 +52,12 @@ var mountedComponents = {};
  * @param {object} component - A react component.
  * @param {string} selector  - A selector on a DOM node.
  * @param {object} options   - Options for the component rendering.
- * @return {undefined} - Return nothing.
  */
 module.exports = function (component, selector, options) {
   options = options || {};
   //Unmount component if there is one mounted.
   if (mountedComponents[selector]) {
-    React.unmountComponentAtNode(document.getElementById(selector));
+    React.unmountComponentAtNode(document.querySelector(selector));
     console.log("component unmounted");
   }
   React.render(React.createElement(component, options.props, options.data), document.querySelector(selector));
