@@ -12,18 +12,18 @@ import javax.inject.Inject;
  */
 public final class JobManagerInitializer implements ComponentInitializer<JobManager> {
 
-	/**
-	 * Construit une instance de JobManagerInitializer.
-	 */
-	@Inject
-	public JobManagerInitializer() {
-		super();
-	}
+    /**
+     * Construit une instance de JobManagerInitializer.
+     */
+    @Inject
+    public JobManagerInitializer() {
+        super();
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public void init(final JobManager manager) {
-		// manager.scheduleNow(JobIndexerMovie.getJobDefinition());
-		// manager.scheduleNow(JobIndexPeople.getJobDefinition());
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void init(final JobManager manager) {
+        // manager.scheduleNow(JobIndexerMovie.getJobDefinition());
+        // manager.scheduleNow(JobIndexPeople.getJobDefinition());
+    }
 }
