@@ -20,12 +20,12 @@ import roldophe.demo.people.AllTestsPeople;
 @RunWith(Suite.class)
 @SuiteClasses(value = { //
 		ApplicationStartTest.class, //
-		DtoTest.class, //
-		AllTestsPeople.class, //
-		AllTestsMovies.class, //
-		MasterdataAllTest.class, //
-		AllTestCommon.class, //
-})
+				DtoTest.class, //
+				AllTestsPeople.class, //
+				AllTestsMovies.class, //
+				MasterdataAllTest.class, //
+				AllTestCommon.class, //
+		})
 public class AllTests {
 	// Les annotations sont suffisantes.
 }

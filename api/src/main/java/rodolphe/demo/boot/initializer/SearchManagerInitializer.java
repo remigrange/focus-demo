@@ -40,20 +40,21 @@ public class SearchManagerInitializer implements ComponentInitializer<SearchMana
 		}
 	}
 
-	private void initQueryWoFacet(final FacetedSearchConst search) {
+	private static void initQueryWoFacet(final FacetedSearchConst search) {
 		final List<FacetDefinition> facetDefinitionList = Collections.<FacetDefinition> emptyList();
 		final FacetedQueryDefinition queryDefinition = new FacetedQueryDefinition(search.name(), facetDefinitionList);
 		Home.getDefinitionSpace().put(queryDefinition, FacetedQueryDefinition.class);
 	}
 
-	private void initQueryWithFacet(final FacetedSearchConst search) {
+	private static void initQueryWithFacet(final FacetedSearchConst search) {
 		//
-		//On ajoute facette pour runtime
-		final List<FacetDefinition> facetDefinitionList = new ArrayList<FacetDefinition>();
+		// On ajoute facette pour runtime
+		final List<FacetDefinition> facetDefinitionList = new ArrayList<>();
 		final DtDefinition indexDef = DtObjectUtil.findDtDefinition(search.getIndexClassname());
 		for (final FacetConst facet : search.getFacetConstTab()) {
 			final DtField dispField = indexDef.getField(facet.getField());
-			final FacetDefinition facetDefinition = FacetDefinition.createFacetDefinitionByTerm(facet.name(), dispField, new MessageText(facet.getFacetName(), null));
+			final FacetDefinition facetDefinition = FacetDefinition.createFacetDefinitionByTerm(facet.name(),
+					dispField, new MessageText(facet.getFacetName(), null));
 			Home.getDefinitionSpace().put(facetDefinition, FacetDefinition.class);
 			facetDefinitionList.add(facetDefinition);
 		}

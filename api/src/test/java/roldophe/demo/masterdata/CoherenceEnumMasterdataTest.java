@@ -20,10 +20,8 @@ import rodolphe.demo.domain.masterdata.CodeTitle;
 import rodolphe.demo.util.MdlUtil;
 import roldophe.demo.tools.AbstractRodolpheTestCase;
 
-
 /**
  * @author JDALMEIDA
- *
  */
 public class CoherenceEnumMasterdataTest extends AbstractRodolpheTestCase {
 
@@ -36,7 +34,6 @@ public class CoherenceEnumMasterdataTest extends AbstractRodolpheTestCase {
 	public void checkCodeTitle() {
 		coherenceEnumeration(CodeTitle.class);
 	}
-
 
 	/**
 	 * test RoleMovie data.
@@ -89,6 +86,4 @@ public class CoherenceEnumMasterdataTest extends AbstractRodolpheTestCase {
 			throw new RuntimeException(e);
 		}
 	}
-
-
 }

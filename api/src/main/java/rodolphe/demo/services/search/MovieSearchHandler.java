@@ -20,14 +20,14 @@ import rodolphe.demo.domain.movies.MovieView;
 
 /**
  * @author jmforhan
- *
  */
 public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex, MovieResult, MovieView, MovieCriteria> {
 
 	@Inject
 	private MoviesPAO moviesPAO;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getIndexDefinitionName()
 	 */
 	/** {@inheritDoc} */
@@ -36,7 +36,8 @@ public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex,
 		return "IDX_MOVIE";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getVue(int, int)
 	 */
 	/** {@inheritDoc} */
@@ -45,7 +46,8 @@ public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex,
 		return moviesPAO.getMovieView(rangMin, maxRows);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getVueItem(java.lang.Object)
 	 */
 	/** {@inheritDoc} */
@@ -54,8 +56,11 @@ public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex,
 		return moviesPAO.getMovieViewByMovId((Long) key);
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getTranslatedCriteria(io.vertigo.dynamo.domain.model.DtObject)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * rodolphe.demo.services.search.AbstractElasticSearchHandler#getTranslatedCriteria(io.vertigo.dynamo.domain.model
+	 * .DtObject)
 	 */
 	/** {@inheritDoc} */
 	@Override
@@ -66,6 +71,4 @@ public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex,
 		addStartWithCriteria(lst, MovieIndexFields.TITLE, criterium, MovieCriteriaFields.TITLE);
 		return getRequestFromCriteriaList(lst);
 	}
-
-
 }

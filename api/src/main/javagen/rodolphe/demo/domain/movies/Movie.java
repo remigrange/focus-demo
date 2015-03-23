@@ -4,7 +4,6 @@ import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;
 import io.vertigo.dynamo.domain.model.DtObject;
 import io.vertigo.dynamo.domain.util.DtObjectUtil;
-
 /**
  * Attention cette classe est générée automatiquement !
  * Objet de données Movie
@@ -241,12 +240,16 @@ public final class Movie implements DtObject {
 		this.languageIds = languageIds;
 	}
 
+
+	// Association : Role people non navigable
+
+	// Association : Casting non navigable
 	/**
 	 * Association : File info.
 	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_FIL",
+    	name = "ANN_MOV_FIL",
     	tableName = "MOV_FIL",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_FILE_INFO",
@@ -263,7 +266,7 @@ public final class Movie implements DtObject {
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
 			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.files.FileInfo.class);
 		}
-		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getFileInfoDtListURI();
+		final io.vertigo.dynamo.domain.model.DtListURI fkDtListURI = getFileInfoDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
@@ -278,7 +281,7 @@ public final class Movie implements DtObject {
 	 * @return URI de l'association
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_FIL",
+    	name = "ANN_MOV_FIL",
     	tableName = "MOV_FIL",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_FILE_INFO",
@@ -289,19 +292,15 @@ public final class Movie implements DtObject {
     	labelA = "Movie",
     	labelB = "File info"
     )
-	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation getFileInfoDtListURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURI(this, "A_MOV_FIL", "FileInfo");
+	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForNNAssociation getFileInfoDtListURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURIForNNAssociation(this, "ANN_MOV_FIL", "FileInfo");
 	}
-
-	// Association : Role people non navigable
-
-	// Association : Casting non navigable
 	/**
 	 * Association : Alias.
 	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Alias>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_ALS",
+    	name = "ANN_MOV_ALS",
     	tableName = "MOV_ALS",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_ALIAS",
@@ -318,7 +317,7 @@ public final class Movie implements DtObject {
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
 			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.movies.Alias.class);
 		}
-		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getAliasDtListURI();
+		final io.vertigo.dynamo.domain.model.DtListURI fkDtListURI = getAliasDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
@@ -333,7 +332,7 @@ public final class Movie implements DtObject {
 	 * @return URI de l'association
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_ALS",
+    	name = "ANN_MOV_ALS",
     	tableName = "MOV_ALS",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_ALIAS",
@@ -344,15 +343,15 @@ public final class Movie implements DtObject {
     	labelA = "Movie",
     	labelB = "Alias"
     )
-	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation getAliasDtListURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURI(this, "A_MOV_ALS", "Alias");
+	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForNNAssociation getAliasDtListURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURIForNNAssociation(this, "ANN_MOV_ALS", "Alias");
 	}
 	/**
 	 * Association : Language.
 	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Language>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_LAN",
+    	name = "ANN_MOV_LAN",
     	tableName = "MOV_LAN",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_LANGUAGE",
@@ -369,7 +368,7 @@ public final class Movie implements DtObject {
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
 			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.masterdatas.Language.class);
 		}
-		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getLanguageDtListURI();
+		final io.vertigo.dynamo.domain.model.DtListURI fkDtListURI = getLanguageDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
@@ -384,7 +383,7 @@ public final class Movie implements DtObject {
 	 * @return URI de l'association
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_LAN",
+    	name = "ANN_MOV_LAN",
     	tableName = "MOV_LAN",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_LANGUAGE",
@@ -395,15 +394,15 @@ public final class Movie implements DtObject {
     	labelA = "Movie",
     	labelB = "Language"
     )
-	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation getLanguageDtListURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURI(this, "A_MOV_LAN", "Language");
+	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForNNAssociation getLanguageDtListURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURIForNNAssociation(this, "ANN_MOV_LAN", "Language");
 	}
 	/**
 	 * Association : Genre.
 	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Genre>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_GEN",
+    	name = "ANN_MOV_GEN",
     	tableName = "MOV_GEN",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_GENRE",
@@ -420,7 +419,7 @@ public final class Movie implements DtObject {
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
 			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.masterdatas.Genre.class);
 		}
-		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getGenreDtListURI();
+		final io.vertigo.dynamo.domain.model.DtListURI fkDtListURI = getGenreDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
@@ -435,7 +434,7 @@ public final class Movie implements DtObject {
 	 * @return URI de l'association
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_GEN",
+    	name = "ANN_MOV_GEN",
     	tableName = "MOV_GEN",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_GENRE",
@@ -446,15 +445,15 @@ public final class Movie implements DtObject {
     	labelA = "Movie",
     	labelB = "Genre"
     )
-	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation getGenreDtListURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURI(this, "A_MOV_GEN", "Genre");
+	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForNNAssociation getGenreDtListURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURIForNNAssociation(this, "ANN_MOV_GEN", "Genre");
 	}
 	/**
 	 * Association : Country.
 	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.masterdatas.Country>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_COU",
+    	name = "ANN_MOV_COU",
     	tableName = "MOV_COU",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_COUNTRY",
@@ -471,7 +470,7 @@ public final class Movie implements DtObject {
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
 			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.masterdatas.Country.class);
 		}
-		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getCountryDtListURI();
+		final io.vertigo.dynamo.domain.model.DtListURI fkDtListURI = getCountryDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
@@ -486,7 +485,7 @@ public final class Movie implements DtObject {
 	 * @return URI de l'association
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_MOV_COU",
+    	name = "ANN_MOV_COU",
     	tableName = "MOV_COU",
     	dtDefinitionA = "DT_MOVIE",
     	dtDefinitionB = "DT_COUNTRY",
@@ -497,8 +496,8 @@ public final class Movie implements DtObject {
     	labelA = "Movie",
     	labelB = "Country"
     )
-	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation getCountryDtListURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURI(this, "A_MOV_COU", "Country");
+	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForNNAssociation getCountryDtListURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURIForNNAssociation(this, "ANN_MOV_COU", "Country");
 	}
 
 	/** {@inheritDoc} */

@@ -1,7 +1,7 @@
 <?xml version =	'1.0' encoding = 'UTF-8'?>
 <config>
 	<module name="vertigo">
-	<component api="LocaleManager" class="io.vertigoimpl.commons.locale.LocaleManagerImpl" >
+	<component api="LocaleManager" class="io.vertigo.commons.impl.locale.LocaleManagerImpl" >
 			<param name="locales" value="fr_FR" />
 		</component>
 		<component api="ResourceManager" class="io.vertigo.commons.impl.resource.ResourceManagerImpl">
@@ -38,6 +38,7 @@
             <param name ="projectPackageName" value="rodolphe.demo"/>
 	    
 	        <plugin class="io.vertigo.studio.plugins.mda.domain.DomainGeneratorPlugin">
+		        <param name ="targetSubDir" value="."/>
 	            <param name="generateDtResources" value="false" /><!-- FALSE -->
 	            <param name="generateDtDefinitions" value="true" />
 	            <param name="generateDtObject" value="true" />
@@ -45,16 +46,22 @@
 	        </plugin>
 	         
 	        <plugin class="io.vertigo.studio.plugins.mda.domain.SqlGeneratorPlugin">
+		        <param name ="targetSubDir" value="sqlgen"/>
 	            <param name="baseCible" value="PostgreSql" />
 	            <param name="generateDrop" value="false" />
 	        </plugin>
 	        <plugin class="io.vertigo.studio.plugins.mda.domain.JSGeneratorPlugin">
+		        <param name ="targetSubDir" value="."/>
 	            <param name="generateDtResourcesJS" value="true" />
 	            <param name="generateJsDtDefinitions" value="true" />
 	        </plugin>
-	        <plugin class="io.vertigo.studio.plugins.mda.task.TaskGeneratorPlugin"/>
+	        <plugin class="io.vertigo.studio.plugins.mda.task.TaskGeneratorPlugin">
+		        <param name ="targetSubDir" value="."/>
+	        </plugin>
 	        <!-- plugin class="io.vertigo.studio.plugins.mda.search.SearchGeneratorPlugin"/  -->
-	        <plugin class="io.vertigo.studio.plugins.mda.file.FileInfoGeneratorPlugin"/>
+	        <plugin class="io.vertigo.studio.plugins.mda.file.FileInfoGeneratorPlugin">
+		        <param name ="targetSubDir" value="."/>
+	        </plugin>
 	        <!-- 
 	        <plugin class="io.vertigo.studio.plugins.mda.security.SecurityGeneratorPlugin"/>
 	         -->

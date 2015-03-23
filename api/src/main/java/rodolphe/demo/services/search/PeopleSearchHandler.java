@@ -20,14 +20,15 @@ import rodolphe.demo.domain.people.PeopleView;
 
 /**
  * @author JDALMEIDA
- *
  */
-public class PeopleSearchHandler extends AbstractElasticSearchHandler<PeopleIndex, PeopleResult, PeopleView, PeopleCriteria> {
+public class PeopleSearchHandler extends
+		AbstractElasticSearchHandler<PeopleIndex, PeopleResult, PeopleView, PeopleCriteria> {
 
 	@Inject
 	private PeoplePAO peoplePAO;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getIndexDefinitionName()
 	 */
 	/** {@inheritDoc} */
@@ -36,7 +37,8 @@ public class PeopleSearchHandler extends AbstractElasticSearchHandler<PeopleInde
 		return "IDX_PEOPLE";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getVue(int, int)
 	 */
 	/** {@inheritDoc} */
@@ -45,17 +47,21 @@ public class PeopleSearchHandler extends AbstractElasticSearchHandler<PeopleInde
 		return peoplePAO.getPeopleView(rangMin, maxRows);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getVueItem(java.lang.Object)
 	 */
 	/** {@inheritDoc} */
 	@Override
 	protected PeopleView getVueItem(final Object key) {
-		return peoplePAO.getPeopleViewByPeoId((Long)key);
+		return peoplePAO.getPeopleViewByPeoId((Long) key);
 	}
 
-	/* (non-Javadoc)
-	 * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getTranslatedCriteria(io.vertigo.dynamo.domain.model.DtObject)
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * rodolphe.demo.services.search.AbstractElasticSearchHandler#getTranslatedCriteria(io.vertigo.dynamo.domain.model
+	 * .DtObject)
 	 */
 	/** {@inheritDoc} */
 	@Override
@@ -66,5 +72,4 @@ public class PeopleSearchHandler extends AbstractElasticSearchHandler<PeopleInde
 		addStartWithCriteria(lst, PeopleIndexFields.TIT_CD, criterium, PeopleCriteriaFields.TIT_CD);
 		return getRequestFromCriteriaList(lst);
 	}
-
 }

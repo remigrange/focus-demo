@@ -4,8 +4,8 @@
 package rodolphe.demo.user;
 
 import io.vertigo.lang.Option;
-import io.vertigo.persona.security.KSecurityManager;
 import io.vertigo.persona.security.UserSession;
+import io.vertigo.persona.security.VSecurityManager;
 
 import javax.inject.Inject;
 
@@ -17,8 +17,7 @@ import javax.inject.Inject;
 public class SecurityHelper {
 
 	@Inject
-	private KSecurityManager kSecurityManager;
-
+	private VSecurityManager vSecurityManager;
 
 	/**
 	 * Récupère la session courante.
@@ -26,7 +25,7 @@ public class SecurityHelper {
 	 * @return une option sur la session courante
 	 */
 	public Option<UserSession> getCurrentSession() {
-		return kSecurityManager.getCurrentUserSession();
+		return vSecurityManager.getCurrentUserSession();
 	}
 
 	/**
@@ -40,9 +39,8 @@ public class SecurityHelper {
 		if (opt.isDefined()) {
 			session = (RodolpheUserSession) opt.get();
 		} else {
-			session = kSecurityManager.createUserSession();
+			session = vSecurityManager.createUserSession();
 		}
 		return session.isCanUserCommit();
 	}
-
 }

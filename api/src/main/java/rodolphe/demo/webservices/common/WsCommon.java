@@ -18,28 +18,28 @@ import rodolphe.demo.domain.common.SelectedFacet;
 import rodolphe.demo.services.common.CommonServices;
 
 /**
- *
  * Commons webservices.
+ * 
  * @author JDALMEIDA
- *
  */
 public class WsCommon implements RestfulService {
 
 	@Inject
 	private CommonServices commonServices;
+
 	/**
 	 * Search by scope.
+	 * 
 	 * @param scope scope
 	 * @param searchText search criteria.
 	 * @return
 	 */
 	@POST("/searchByScope")
 	@AnonymousAccessAllowed
-	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria , @InnerBodyParam("facets") final DtList<SelectedFacet> selection, @QueryParam("")final UiListState uiListState) {
-		//uiListState.get
+	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria,
+			@InnerBodyParam("facets") final DtList<SelectedFacet> selection,
+			@QueryParam("") final UiListState uiListState) {
+		// uiListState.get
 		return commonServices.search(searchCriteria, selection, uiListState);
-
 	}
-
-
 }

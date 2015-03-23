@@ -21,7 +21,7 @@
     <filter-class>spark.servlet.SparkFilter</filter-class>
     <init-param>
       <param-name>applicationClass</param-name>
-      <param-value>io.vertigo.vega.plugins.rest.routesregister.sparkjava.SparkJavaRoutesRegister</param-value>
+        <param-value>io.vertigo.vega.plugins.rest.routesregister.sparkjava.VegaSparkApplication</param-value>
     </init-param>
   </filter>
   <filter-mapping>

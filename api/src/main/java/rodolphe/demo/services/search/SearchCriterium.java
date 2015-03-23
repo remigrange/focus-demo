@@ -48,7 +48,7 @@ public class SearchCriterium<S extends DtObject> {
 		Assertion.checkNotNull(source);
 		final SearchCriterium<S> target = new SearchCriterium<>(source.getFacetsDefinition());
 		target.setCriteria(source.getCriteria());
-		//		target.setFacets(source.getFacets());
+		// target.setFacets(source.getFacets());
 		target.setMaxRows(source.getMaxRows());
 		target.setSortAsc(source.isSortAsc());
 		target.setSortFieldName(source.getSortFieldName());
@@ -139,7 +139,6 @@ public class SearchCriterium<S extends DtObject> {
 		this.maxRows = maxRows;
 	}
 
-
 	/**
 	 * Sélectionne une valeur de facette.
 	 *
@@ -150,8 +149,6 @@ public class SearchCriterium<S extends DtObject> {
 		Assertion.checkState(getFacetsDefinition().getFacetDefinition(facetName) != null, facetName + " inconnu");
 		selectedFacetsMap.put(facetName, new FacetSelection(facetName, facetValueKey, facetQuery));
 	}
-
-
 
 	/**
 	 * Désélectionne une facette.

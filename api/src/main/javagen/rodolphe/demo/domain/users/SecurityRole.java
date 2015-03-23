@@ -4,7 +4,6 @@ import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;
 import io.vertigo.dynamo.domain.model.DtObject;
 import io.vertigo.dynamo.domain.util.DtObjectUtil;
-
 /**
  * Attention cette classe est générée automatiquement !
  * Objet de données SecurityRole

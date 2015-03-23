@@ -18,11 +18,10 @@
  */
 package io.vertigo;
 
-import io.vertigo.boot.xml.XMLModulesBuilder;
+import io.vertigo.boot.xml.XMLAppConfigBuilder;
 import io.vertigo.core.Home;
 import io.vertigo.core.Home.App;
 import io.vertigo.core.config.AppConfig;
-import io.vertigo.core.config.AppConfigBuilder;
 import io.vertigo.core.di.injector.Injector;
 import io.vertigo.core.spaces.component.ComponentInfo;
 import io.vertigo.lang.Assertion;
@@ -141,7 +140,6 @@ public abstract class AbstractTestCaseJU4 {
 		doAfterTearDown();
 	}
 
-
 	/**
 	 * Initialisation du test pour implé spécifique.
 	 *
@@ -244,18 +242,16 @@ public abstract class AbstractTestCaseJU4 {
 		}
 	}
 
-
-	/**
-	 * Configuration des tests.
-	 */
 	protected AppConfig buildAppConfig() {
-		XMLModulesBuilder xmlBuilder = new XMLModulesBuilder();
-		xmlBuilder = xmlBuilder.withEnvParams(properties);
-		if (!properties.containsKey("boot.applicationConfiguration")) {
-			// Pas de fichier listant les composants à instancier. Il faut le rajouter
-			xmlBuilder = xmlBuilder.withXmlFileNames(getClass(), getManagersXmlFileName());
+		final Properties prop = new Properties();
+		prop.putAll(properties);
+		final String[] managersXml;
+		if (prop.containsKey("boot.applicationConfiguration")) {
+			managersXml = prop.getProperty("boot.applicationConfiguration").split(";");
+			prop.remove("boot.applicationConfiguration");
+		} else {
+			managersXml = getManagersXmlFileName();
 		}
-		final AppConfigBuilder appBuilder = new AppConfigBuilder().withModules(xmlBuilder.build()).withSilence(false);
-		return appBuilder.build();
+		return new XMLAppConfigBuilder().withSilence(true).withModules(getClass(), prop, managersXml).build();
 	}
 }

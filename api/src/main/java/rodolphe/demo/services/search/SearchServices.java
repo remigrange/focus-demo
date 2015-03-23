@@ -9,10 +9,10 @@ import rodolphe.demo.domain.people.PeopleResult;
 
 /**
  * Search services.
+ * 
  * @author JDALMEIDA
- *
  */
-public interface SearchServices   extends Component{
+public interface SearchServices extends Component {
 
 	/**
 	 * Index all movies.
@@ -21,17 +21,21 @@ public interface SearchServices   extends Component{
 
 	/**
 	 * Index a specific movie.
+	 * 
 	 * @param movId movie identifier
 	 */
 	void indexMovie(Long movId);
+
 	/**
 	 * Remove a movie from the index.
+	 * 
 	 * @param movId movie identifier
 	 */
 	void removeMovieFromIndex(Long movId);
 
 	/**
 	 * Search movies matching a given criteria.
+	 * 
 	 * @param criteria criteria
 	 * @return List of matched movies and associated facets
 	 */
@@ -44,14 +48,17 @@ public interface SearchServices   extends Component{
 
 	/**
 	 * index a specific people
+	 * 
 	 * @param peoId : people identifier
 	 */
 	void indexPeople(Long peoId);
 
 	/**
-	 *Search people matching a given criteria
+	 * Search people matching a given criteria
+	 * 
 	 * @param criteria criteria
 	 * @return List of matched people and associated facets
 	 */
-	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> searchPeople(SearchCriterium<PeopleCriteria> criteria);
+	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> searchPeople(
+			SearchCriterium<PeopleCriteria> criteria);
 }

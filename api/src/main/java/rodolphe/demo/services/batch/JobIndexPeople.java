@@ -11,16 +11,17 @@ import rodolphe.demo.services.search.SearchServices;
 
 /**
  * Job for People index.
+ * 
  * @author JDALMEIDA
- *
  */
-public class JobIndexPeople  extends AbstractRodolpheJob {
+public class JobIndexPeople extends AbstractRodolpheJob {
 
 	private static final String JOB_NAME = "indexPeople";
 	@Inject
 	private SearchServices searchServices;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.batch.AbstractRodolpheJob#doRun()
 	 */
 	/** {@inheritDoc} */
@@ -37,5 +38,4 @@ public class JobIndexPeople  extends AbstractRodolpheJob {
 	public static JobDefinition getJobDefinition() {
 		return new JobDefinition(JOB_NAME, JobIndexPeople.class);
 	}
-
 }

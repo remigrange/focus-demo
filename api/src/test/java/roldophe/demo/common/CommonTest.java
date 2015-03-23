@@ -31,66 +31,64 @@ import roldophe.demo.tools.AbstractRodolpheTestCase;
 
 /**
  * Test for common service.
+ * 
  * @author JDALMEIDA
- *
  */
-public class CommonTest extends AbstractRodolpheTestCase{
+public class CommonTest extends AbstractRodolpheTestCase {
 
 	@Inject
 	CommonServices commonServices;
 
 	@Test
-	public void testSearchMovie(){
-		//Test for movie
-		final SearchCriteria criteria = new  SearchCriteria();
+	public void testSearchMovie() {
+		// Test for movie
+		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.MOVIE.name());
 		criteria.setSearchText("Fantastic");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
-		FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies  = (FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>>)
-				commonServices.search(criteria, selection,  uiListState);
-		Logger.getLogger(getClass()).info("result : "+ movies.getCount());
+		FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = (FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>>) commonServices
+				.search(criteria, selection, uiListState);
+		Logger.getLogger(getClass()).info("result : " + movies.getCount());
 		for (final Facet facet : movies.getFacets()) {
 			getLogger().info(facet.getDefinition().getLabel().getDisplay());
-			for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+			for (final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
 				getLogger().info(entry.getKey().getLabel().getDisplay() + " : " + entry.getValue());
 				getLogger().info("filter " + entry.getKey().getListFilter().getFilterValue());
 			}
 		}
-		//Test with selected facet.
-		final SelectedFacet selected = new  SelectedFacet();
+		// Test with selected facet.
+		final SelectedFacet selected = new SelectedFacet();
 		selected.setKey(FacetConst.FCT_MOVIE_COUNTRY.getFacetName());
 		selected.setValue("USA");
 		selection.add(selected);
-		movies  = (FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>>)
-				commonServices.search(criteria, selection, uiListState);
-		Logger.getLogger(getClass()).info("result with facet : "+ movies.getCount());
-
+		movies = (FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>>) commonServices.search(criteria,
+				selection, uiListState);
+		Logger.getLogger(getClass()).info("result with facet : " + movies.getCount());
 	}
+
 	@Test
-	public void testSearchPeople(){
-		//Test for people
-		final SearchCriteria criteria = new  SearchCriteria();
+	public void testSearchPeople() {
+		// Test for people
+		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.PEOPLE.name());
 		criteria.setSearchText("Jen");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
-		final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = (FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>>)
-				commonServices.search(criteria, selection, uiListState);
-		Logger.getLogger(getClass()).info("result : "+ people.getCount());
-
+		final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = (FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>>) commonServices
+				.search(criteria, selection, uiListState);
+		Logger.getLogger(getClass()).info("result : " + people.getCount());
 	}
+
 	@Test
-	public void testSearchAll(){
-		//Test for all
-		final SearchCriteria criteria = new  SearchCriteria();
+	public void testSearchAll() {
+		// Test for all
+		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.ALL.name());
 		criteria.setSearchText("Jen");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
 		final DtList<SearchRet> ret = (DtList<SearchRet>) commonServices.search(criteria, selection, uiListState);
-		Logger.getLogger(getClass()).info("result : "+ ret.size());
-
+		Logger.getLogger(getClass()).info("result : " + ret.size());
 	}
-
 }

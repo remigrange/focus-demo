@@ -11,7 +11,6 @@ import rodolphe.demo.services.movie.MovieServices;
 
 /**
  * @author JDALMEIDA
- *
  */
 public class JobCleanData extends AbstractRodolpheJob {
 
@@ -20,18 +19,19 @@ public class JobCleanData extends AbstractRodolpheJob {
 	@Inject
 	private MovieServices movieServices;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.batch.AbstractRodolpheJob#doRun()
 	 */
 	/** {@inheritDoc} */
 	@Override
 	protected void doRun() {
-		int  minRow = 1;
-		for (int maxRank =0; maxRank >= 0; ) {
+		int minRow = 1;
+		int maxRank = 0;
+		while (maxRank >= 0) {
 			maxRank = movieServices.cleanMovieTitle(minRow, maxRows);
 			minRow = maxRank + 1;
 		}
-
 	}
 
 	/**
@@ -42,5 +42,4 @@ public class JobCleanData extends AbstractRodolpheJob {
 	public static JobDefinition getJobDefinition() {
 		return new JobDefinition(JOB_NAME, JobCleanData.class);
 	}
-
 }

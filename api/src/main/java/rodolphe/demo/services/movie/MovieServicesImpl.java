@@ -32,40 +32,39 @@ import rodolphe.demo.services.search.SearchServices;
 
 /**
  * Implementation of Movie Services.
+ * 
  * @author JDALMEIDA
- *
  */
-public  class MovieServicesImpl implements MovieServices {
+public class MovieServicesImpl implements MovieServices {
 
 	@Inject
 	private MovieDAO movieDAO;
 	@Inject
 	private SearchServices searchServices;
 	@Inject
-	private CastingDAO castingDAO ;
+	private CastingDAO castingDAO;
 	@Inject
 	private RolePeopleDAO rolePeopleDAO;
 	@Inject
 	private MoviesPAO moviePao;
 
-
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
-	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(final MovieCriteria crit, final UiListState uiListState, final FacetSelection ...selection) {
-		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
+	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(
+			final MovieCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
+		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
+				FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
 		criteria.setCriteria(crit);
 		for (final FacetSelection sel : selection) {
 			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
 		}
-		if(!StringUtil.isEmpty(uiListState.getSortFieldName())) {
+		if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
 			criteria.setSortAsc(!uiListState.isSortDesc());
 			criteria.setSortFieldName(uiListState.getSortFieldName());
 		}
 		return searchServices.searchMovie(criteria);
 	}
-
-
 
 	/** {@inheritDoc} */
 	@Override
@@ -83,45 +82,37 @@ public  class MovieServicesImpl implements MovieServices {
 		return movie;
 	}
 
-
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
 	public DtList<People> getActors(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteria<Casting> castingCriteria= new FilterCriteriaBuilder<Casting>()
+		final FilterCriteria<Casting> castingCriteria = new FilterCriteriaBuilder<Casting>()
 				.withFilter(CastingFields.MOV_ID.name(), movId)
-				.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.actor.name())
-				.build();
+				.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.actor.name()).build();
 		final DtList<Casting> castingList = castingDAO.getList(castingCriteria, Integer.MAX_VALUE);
-
-		for(final Casting  casting : castingList){
+		for (final Casting casting : castingList) {
 			ret.add(casting.getPeople());
 		}
 		return ret;
 	}
-
-
 
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
 	public DtList<People> getProducers(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteria<RolePeople> rolePeopleCriteria= new FilterCriteriaBuilder<RolePeople>()
+		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
 				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
-				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.producer.name())
-				.build();
+				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.producer.name()).build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
-		for(final RolePeople  rolePeople : rolePeopleList){
+		for (final RolePeople rolePeople : rolePeopleList) {
 			final People people = rolePeople.getPeople();
 			people.setComment(rolePeople.getComment());
 			ret.add(people);
 		}
 		return ret;
 	}
-
-
 
 	/** {@inheritDoc} */
 	@Override
@@ -130,13 +121,10 @@ public  class MovieServicesImpl implements MovieServices {
 		final DtList<People> ret = new DtList<>(People.class);
 		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
 				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
-				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.director.name())
-				.build();
-
+				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.director.name()).build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
-		for(final RolePeople  rolePeople : rolePeopleList){
+		for (final RolePeople rolePeople : rolePeopleList) {
 			ret.add(rolePeople.getPeople());
-
 		}
 		return ret;
 	}
@@ -159,7 +147,8 @@ public  class MovieServicesImpl implements MovieServices {
 		return moviePao.getCastingByMovId(movId);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.movie.MovieServices#cleanMovieTitle()
 	 */
 	/** {@inheritDoc} */
@@ -169,9 +158,9 @@ public  class MovieServicesImpl implements MovieServices {
 		Long maxRank = -1L;
 		final DtList<MovieView> movieViewList = moviePao.getMovieView(minRank, maxRows);
 		final DtList<Movie> movieList = new DtList<>(Movie.class);
-		for(final MovieView movieView : movieViewList){
-			//Pour ne pas remttre à jour les donnes deja mise à jour.
-			if(StringUtil.isEmpty(movieView.getMetadasJson())) {
+		for (final MovieView movieView : movieViewList) {
+			// Pour ne pas remttre à jour les donnes deja mise à jour.
+			if (StringUtil.isEmpty(movieView.getMetadasJson())) {
 				movieList.add(CleanMovieData.parseMovieTitle(movieView));
 			}
 			if (maxRank < movieView.getRank()) {

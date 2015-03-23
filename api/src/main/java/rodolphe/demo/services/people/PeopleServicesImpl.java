@@ -24,8 +24,8 @@ import rodolphe.demo.services.search.SearchServices;
 
 /**
  * Implementation of People Services.
+ * 
  * @author JDALMEIDA
- *
  */
 public class PeopleServicesImpl implements PeopleServices {
 
@@ -34,33 +34,30 @@ public class PeopleServicesImpl implements PeopleServices {
 	@Inject
 	private SearchServices searchServices;
 	@Inject
-	private RolePeopleDAO rolePeopleDAO ;
-
+	private RolePeopleDAO rolePeopleDAO;
 
 	/** {@inheritDoc} */
 	@Override
 	public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
-			final PeopleCriteria crit,final UiListState uiListState,  final FacetSelection ...selection) {
+			final PeopleCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
 		final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
 				FacetedSearchConst.QRY_PEOPLE_WO_FCT.getQuery());
 		criteria.setCriteria(crit);
 		for (final FacetSelection sel : selection) {
 			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
 		}
-		if(!StringUtil.isEmpty(uiListState.getSortFieldName())) {
+		if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
 			criteria.setSortAsc(!uiListState.isSortDesc());
 			criteria.setSortFieldName(uiListState.getSortFieldName());
 		}
-		return  searchServices.searchPeople(criteria);
+		return searchServices.searchPeople(criteria);
 	}
-
 
 	/** {@inheritDoc} */
 	@Override
 	public People getPeople(final Long peopId) {
-		return peopleDAO.get(peopId) ;
+		return peopleDAO.get(peopId);
 	}
-
 
 	/** {@inheritDoc} */
 	@Override
@@ -70,19 +67,16 @@ public class PeopleServicesImpl implements PeopleServices {
 		return people;
 	}
 
-
 	/** {@inheritDoc} */
 	@Override
 	public DtList<Movie> getMoviesByPeo(final Long peoId) {
 		final DtList<Movie> ret = new DtList<>(Movie.class);
-		final FilterCriteria<RolePeople> rolePeopleCriteria= new FilterCriteriaBuilder<RolePeople>()
-				.withFilter(RolePeopleFields.PEO_ID.name(), peoId)
-				.build();
+		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>().withFilter(
+				RolePeopleFields.PEO_ID.name(), peoId).build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
-		for(final RolePeople  rolePeople : rolePeopleList){
+		for (final RolePeople rolePeople : rolePeopleList) {
 			ret.add(rolePeople.getMovie());
 		}
 		return ret;
 	}
-
 }

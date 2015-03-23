@@ -9,10 +9,8 @@ import rodolphe.demo.util.MdlUtil;
 
 /**
  * @author JDALMEIDA
- *
  */
 public enum CodeRoleMovie implements CodeEnumWithDto<RoleMovie> {
-
 	/** actor */
 	actor,
 	/** composer */
@@ -39,6 +37,4 @@ public enum CodeRoleMovie implements CodeEnumWithDto<RoleMovie> {
 	public Class<RoleMovie> getDtoClass() {
 		return RoleMovie.class;
 	}
-
-
 }

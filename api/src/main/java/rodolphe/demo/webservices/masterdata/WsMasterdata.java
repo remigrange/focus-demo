@@ -15,12 +15,11 @@ import rodolphe.demo.util.ReferenceObject;
  * Webservices for master data.
  *
  * @author JDALMEIDA
- *
  */
-public final class WsMasterdata implements RestfulService{
+public final class WsMasterdata implements RestfulService {
 
-	@Inject private MasterdataServices masterdataServices;
-
+	@Inject
+	private MasterdataServices masterdataServices;
 
 	/**
 	 * Get Scope list

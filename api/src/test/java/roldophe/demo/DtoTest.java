@@ -44,8 +44,8 @@ public class DtoTest extends AbstractRodolpheTestCase {
 
 	private static Gson createGson() {
 		return new GsonBuilder()//
-		.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") //
-		.create();
+				.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") //
+				.create();
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class DtoTest extends AbstractRodolpheTestCase {
 					dtField.getDataAccessor().setValue(dto, null);
 				}
 				// On utilise les getters et setters typés
-				final String getter = "get" + StringUtil.constToCamelCase(field.name(), true);
+				final String getter = "get" + StringUtil.constToUpperCamelCase(field.name());
 				final Method gm = mMap.get(getter);
 				Assert.assertNotNull(getter, gm);
 				gm.invoke(dto);
