@@ -632,6 +632,7 @@ body {
 }
 .search-panel {
   width: 60% !important;
+  float: left;
 }
 #lineResume {
   margin-left: 10px;

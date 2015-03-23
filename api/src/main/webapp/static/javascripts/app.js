@@ -1577,120 +1577,122 @@ module.exports = referenceStore;
 });
 
 require.register("views/filter-result/index", function(exports, require, module) {
-/*global focusComponents */
+/*global focusComponents, React */
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var serviceCommon = require('../../services');
-var lineResume = require('./lineResume');
 
-
-module.exports =  React.createClass({displayName: "exports",
-    render:function(){
-
-        var action = {
-            search: function(criteria) {
-                //TODO handle pageInfo
-                if(criteria.pageInfos.order !== undefined){
-                    criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
-                    if(criteria.pageInfos.order.order!==undefined && criteria.pageInfos.order.order!==null){
-                        if(criteria.pageInfos.order.order.toLowerCase() === "asc"){
-                            criteria.pageInfos.sortDesc = false;
-                        } else   if(criteria.pageInfos.order.order.toLowerCase() === "desc"){
-                            criteria.pageInfos.sortDesc = true;
-                        }
-                    }
-                } else {
-                    criteria.pageInfos.sortFieldName = undefined;
-                    criteria.pageInfos.sortDesc = undefined;
-                }
-                serviceCommon.common.searchByScope(criteria).then(
-                    function success(data) {
-
-                        var dataRet = {
-                            facet: data.facet,
-                            list: data.list,
-                            pageInfos:{
-                                currentPage: criteria.pageInfos.page,
-                                perPage: 50,
-                                totalRecords: 50
-                            },
-                            searchContext: {
-                                scope: criteria.scope,
-                                query: criteria.query
-                            }
-                        };
-                        focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
-                    },
-                    function error(error) {
-                        //TODO
-                        console.info("Errrors");
-                    }
-                );
-            }
-        };
-        var Line = React.createClass({displayName: "Line",
-            mixins: [focusComponents.list.selection.line.mixin],
-            renderLineContent: function(data){
-               return React.createElement("div", {className: "item"}, 
-                        React.createElement("div", {className: "mov-logo"}, 
-                            React.createElement("img", {src: "./static/img/logoMovie.png"})
-                        ), 
-                        React.createElement("div", null, 
-                            React.createElement("div", {className: "title-level-1"}, 
-                            data.title
-                            ), 
-                            React.createElement("div", {className: "title-level-2"}, 
-                            data.genreIds
-                            ), 
-                            React.createElement("div", {className: "title-level-3"}, 
-                            data.released
-                            )
-                        )
-                     );
-            }
-        });
-
-        var config = {
-            facetConfig: {
-                Language: "text",
-                Genre: "text",
-                Country: "text"
-            },
-            orderableColumnList:{TITLE: "Title", GENRE_IDS: "Genre"},
-            groupableColumnList:{GENRE_IDS: "Genre"},
-            operationList: [
-                /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
-                {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
-                {label: "Button2_a",action: function() {alert("Button2a");},style:undefined,priority: 2},
-                {label: "Button2_b",action: function() {alert("Button2b");},style: undefined,priority: 2},*/
-            ],
-            action: action,
-            lineComponent: Line,
-            onLineClick : function onLineClick(line){
-                var data = line;
-                focus.application.render(lineResume, '#lineResume',
-                    {props: {
-                        title: data.title,
-                        description: data.description,
-                        released: data.released,
-                        countryIds: data.countryIds,
-                        languageIds : data.languageIds,
-                        runtime: this.runtime }});
-                //alert('click sur la ligne ' + line.title);
-            },
-            isSelection:true,
-            lineOperationList:[
-                /*{label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-                {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-                {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
-                {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}*/
-            ],
-            criteria: {
-                scope: "MOVIE",
-                searchText : "Fantastic"
-            }
+var action = {
+    search: function(criteria) {
+        var page = criteria.pageInfos.page;
+        if(page === undefined || page === null ){
+            page = 0;
         }
+        criteria.pageInfos.skip = page;
+        if(criteria.pageInfos.order !== undefined){
+            criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
+            if(criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null){
+                if(criteria.pageInfos.order.order.toLowerCase() === 'asc'){
+                    criteria.pageInfos.sortDesc = false;
+                }else if(criteria.pageInfos.order.order.toLowerCase() === 'desc'){
+                    criteria.pageInfos.sortDesc = true;
+                }
+            }
+        } else {
+            criteria.pageInfos.sortFieldName = undefined;
+            criteria.pageInfos.sortDesc = undefined;
+        }
+        serviceCommon.common.searchByScope(criteria).then(
+            function success(data) {
+
+                var dataRet = {
+                    facet: data.facet,
+                    list: data.list,
+                    pageInfos: {
+                        currentPage: criteria.pageInfos.page,
+                        perPage: 50,
+                        totalRecords: data.totalRecords
+                    },
+                    searchContext: {
+                        scope: criteria.scope,
+                        query: criteria.query
+                    }
+                };
+                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+            },
+            function error(error) {
+                //TODO
+                console.info("Errrors");
+            }
+        );
+    }
+};
+var Line = React.createClass({displayName: "Line",
+    mixins: [focusComponents.list.selection.line.mixin],
+    renderLineContent: function(data){
+        return React.createElement("div", {className: "item"}, 
+            React.createElement("div", {className: "mov-logo"}, 
+                React.createElement("img", {src: "./static/img/logoMovie.png"})
+            ), 
+            React.createElement("div", null, 
+                React.createElement("div", {className: "title-level-1"}, 
+                            data.title
+                ), 
+                React.createElement("div", {className: "title-level-2"}, 
+                            data.genreIds
+                ), 
+                React.createElement("div", {className: "title-level-3"}, 
+                            data.released
+                )
+            )
+        );
+    }
+});
+
+var config = {
+    facetConfig: {
+        Language: 'text',
+        Genre: 'text',
+        Country: 'text'
+    },
+    orderableColumnList: {TITLE: 'Title', GENRE_IDS: 'Genre'},
+    groupableColumnList: {GENRE_IDS: 'Genre'},
+    operationList: [
+        /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
+         {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
+         {label: "Button2_a",action: function() {alert("Button2a");},style:undefined,priority: 2},
+         {label: "Button2_b",action: function() {alert("Button2b");},style: undefined,priority: 2},*/
+    ],
+    action: action,
+    lineComponent: Line,
+    onLineClick: function onLineClick(line){
+        /*var data = line;
+        focus.application.render(lineResume, '#lineResume',
+            {props: {
+                title: data.title,
+                description: data.description,
+                released: data.released,
+                countryIds: data.countryIds,
+                languageIds: data.languageIds,
+                runtime: this.runtime }});*/
+        alert('click sur la ligne ' + line.title);
+    },
+    isSelection: true,
+    lineOperationList: [
+        /*{label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
+         {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
+         {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
+         {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}*/
+    ],
+    criteria: {
+        scope: 'MOVIE',
+        searchText: 'Fantastic'
+    }
+};
 
 
+
+module.exports = React.createClass({displayName: "exports",
+    render: function(){
         return React.createElement(SearchFilterResult, {facetConfig: config.facetConfig, 
                                     orderableColumnList: config.orderableColumnList, 
                                     groupableColumnList: config.groupableColumnList, 
@@ -1703,79 +1705,6 @@ module.exports =  React.createClass({displayName: "exports",
                                     criteria: config.criteria}
 
 
-        );
-        //return <div> Rodolphe Search ROUTE </div>
-    }
-});
-});
-
-require.register("views/filter-result/lineResume", function(exports, require, module) {
-//Get the form mixin.
-var Block = focus.components.common.block.component;
-var Label = focus.components.common.label.component;
-module.exports =  React.createClass({displayName: "exports",
-    render:function renderMovieResume(){
-        return(
-            React.createElement(Block, null, 
-                React.createElement("div", {className: "movie-lineResume"}, 
-                    React.createElement("div", {className: "movie-resume-logo"}, 
-                        React.createElement("img", {src: "./static/img/logoMovie.png"})
-                    ), 
-                    React.createElement("div", {className: "movie-info"}, 
-                        React.createElement("div", {className: "title-level-2"}, 
-                         React.createElement(Label, {name: "title", value: this.props.title})
-                        ), 
-                        React.createElement("div", {className: "title-level-3"}, 
-                            this.props.imdbId
-                        )
-                    ), 
-                    React.createElement("div", {className: "movie-link-detailed-sheet"}, 
-                        React.createElement("a", {href: "#"}, "Detailed sheet")
-                    )
-                ), 
-                React.createElement("div", {className: "movie-descrition"}, 
-                   React.createElement("div", {className: "container-title"}, "Storyline"), 
-                   React.createElement("div", null, this.props.description)
-                ), 
-
-                React.createElement("div", {className: "movie-details"}, 
-                    React.createElement("div", {className: "details-panel-title"}, "Details"), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Country")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.countryIds)
-                        )
-                    ), 
-
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Language")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.languageIds)
-                        )
-                    ), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Release date")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.released)
-                        )
-                    ), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Runtime")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.runtime)
-                        )
-                    )
-                )
-
-            )
         );
     }
 });
@@ -1980,6 +1909,7 @@ require.register("views/search-result/index", function(exports, require, module)
 /*global focusComponents, React*/
 var SearchResult = focusComponents.page.search.searchResult.component;
 var serviceCommon = require('../../services');
+var lineResume = require('./lineResume');
 //Actions de la page.
 var action = {
     search: function(criteria) {
@@ -2062,7 +1992,16 @@ var config = {
     lineComponent: Line,
     //Click sur une ligne
     onLineClick: function onLineClick(line){
-        alert('click sur la ligne ' + line.title);
+        var data = line;
+        focus.application.render(lineResume, '#lineResume',
+            {props: {
+                title: data.title,
+                description: data.description,
+                released: data.released,
+                countryIds: data.countryIds,
+                languageIds: data.languageIds,
+                runtime: this.runtime }});
+        //alert('click sur la ligne ' + line.title);
     },
     //Est ce qu'on peut sélectionner la ligne.
     //Todo: a enlever
@@ -2089,15 +2028,86 @@ module.exports= React.createClass({displayName: "exports",
     render: function(){
         var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),{
                 lineComponent: Line,
-                onLineClick: function onLineClick(line){
-                    alert('click sur la ligne ' + line.title);
-                },
+                onLineClick: config.onLineClick,
                 operationList: config.operationList,
                 scopeList: config.scopes,
                 scope: config.scope
             }
         );
         return searchResult;
+    }
+});
+
+});
+
+require.register("views/search-result/lineResume", function(exports, require, module) {
+//Get the form mixin.
+var Block = focus.components.common.block.component;
+var Label = focus.components.common.label.component;
+module.exports =  React.createClass({displayName: "exports",
+    render:function renderMovieResume(){
+        return(
+            React.createElement(Block, null, 
+                React.createElement("div", {className: "movie-lineResume"}, 
+                    React.createElement("div", {className: "movie-resume-logo"}, 
+                        React.createElement("img", {src: "./static/img/logoMovie.png"})
+                    ), 
+                    React.createElement("div", {className: "movie-info"}, 
+                        React.createElement("div", {className: "title-level-2"}, 
+                         React.createElement(Label, {name: "title", value: this.props.title})
+                        ), 
+                        React.createElement("div", {className: "title-level-3"}, 
+                            this.props.imdbId
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-link-detailed-sheet"}, 
+                        React.createElement("a", {href: "#"}, "Detailed sheet")
+                    )
+                ), 
+                React.createElement("div", {className: "movie-descrition"}, 
+                   React.createElement("div", {className: "container-title"}, "Storyline"), 
+                   React.createElement("div", null, this.props.description)
+                ), 
+
+                React.createElement("div", {className: "movie-details"}, 
+                    React.createElement("div", {className: "details-panel-title"}, "Details"), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Country")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.countryIds)
+                        )
+                    ), 
+
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Language")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.languageIds)
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Release date")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.released)
+                        )
+                    ), 
+                    React.createElement("div", {className: "movie-detail-line"}, 
+                        React.createElement("div", {className: "details-label-name"}, 
+                            React.createElement("div", null, "Runtime")
+                        ), 
+                        React.createElement("div", {className: "details-label-value"}, 
+                            React.createElement("div", null, this.props.runtime)
+                        )
+                    )
+                )
+
+            )
+        );
     }
 });
 

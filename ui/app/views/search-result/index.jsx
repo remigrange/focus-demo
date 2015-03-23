@@ -1,6 +1,7 @@
 /*global focusComponents, React*/
 var SearchResult = focusComponents.page.search.searchResult.component;
 var serviceCommon = require('../../services');
+var lineResume = require('./lineResume');
 //Actions de la page.
 var action = {
     search: function(criteria) {
@@ -83,7 +84,16 @@ var config = {
     lineComponent: Line,
     //Click sur une ligne
     onLineClick: function onLineClick(line){
-        alert('click sur la ligne ' + line.title);
+        var data = line;
+        focus.application.render(lineResume, '#lineResume',
+            {props: {
+                title: data.title,
+                description: data.description,
+                released: data.released,
+                countryIds: data.countryIds,
+                languageIds: data.languageIds,
+                runtime: this.runtime }});
+        //alert('click sur la ligne ' + line.title);
     },
     //Est ce qu'on peut sélectionner la ligne.
     //Todo: a enlever
@@ -110,9 +120,7 @@ module.exports= React.createClass({
     render: function(){
         var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),{
                 lineComponent: Line,
-                onLineClick: function onLineClick(line){
-                    alert('click sur la ligne ' + line.title);
-                },
+                onLineClick: config.onLineClick,
                 operationList: config.operationList,
                 scopeList: config.scopes,
                 scope: config.scope
