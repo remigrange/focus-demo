@@ -38,58 +38,58 @@ import rodolphe.demo.services.search.SearchServices;
  */
 public class MovieServicesImpl implements MovieServices {
 
-	@Inject
-	private MovieDAO movieDAO;
-	@Inject
-	private SearchServices searchServices;
-	@Inject
-	private CastingDAO castingDAO;
-	@Inject
-	private RolePeopleDAO rolePeopleDAO;
-	@Inject
-	private MoviesPAO moviePao;
+    @Inject
+    private MovieDAO movieDAO;
+    @Inject
+    private SearchServices searchServices;
+    @Inject
+    private CastingDAO castingDAO;
+    @Inject
+    private RolePeopleDAO rolePeopleDAO;
+    @Inject
+    private MoviesPAO moviePao;
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(
-			final MovieCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
-		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
-				FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
-		criteria.setCriteria(crit);
-		for (final FacetSelection sel : selection) {
-			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
-		}
-		final int maxRows = 50;
-		DtListState listState = new DtListState(maxRows, 0, null, null);
-		if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
-			criteria.setSortAsc(!uiListState.isSortDesc());
-			criteria.setSortFieldName(uiListState.getSortFieldName());
-			if (uiListState.getSkip() > 0) {
-				listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows,
-						uiListState.getSortFieldName(), !uiListState.isSortDesc());
-			} else {
-				listState = new DtListState(maxRows, 0, uiListState.getSortFieldName(), !uiListState.isSortDesc());
-			}
-		}
-		return searchServices.searchMovie(criteria, listState);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(
+            final MovieCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
+        final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
+                FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
+        criteria.setCriteria(crit);
+        for (final FacetSelection sel : selection) {
+            criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
+        }
+        final int maxRows = 50;
+        DtListState listState = new DtListState(maxRows, 0, null, null);
+        if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
+            criteria.setSortAsc(!uiListState.isSortDesc());
+            criteria.setSortFieldName(uiListState.getSortFieldName());
+            if (uiListState.getSkip() > 0) {
+                listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows,
+                        uiListState.getSortFieldName(), !uiListState.isSortDesc());
+            } else {
+                listState = new DtListState(maxRows, 0, uiListState.getSortFieldName(), !uiListState.isSortDesc());
+            }
+        }
+        return searchServices.searchMovie(criteria, listState);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public Movie getMovie(final Long movId) {
-		return movieDAO.get(movId);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public Movie getMovie(final Long movId) {
+        return movieDAO.get(movId);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public Movie saveMovie(final Movie movie) {
-		movieDAO.save(movie);
-		searchServices.indexMovie(movie.getMovId());
-		return movie;
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public Movie saveMovie(final Movie movie) {
+        movieDAO.save(movie);
+        searchServices.indexMovie(movie.getMovId());
+        return movie;
+    }
 
     /** {@inheritDoc} */
     @Override
