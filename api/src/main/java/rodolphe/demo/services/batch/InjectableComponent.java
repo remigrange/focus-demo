@@ -9,8 +9,8 @@ package rodolphe.demo.services.batch;
  */
 public interface InjectableComponent {
 
-	/**
-	 * Injecte les dependances.
-	 */
-	void injectMembers();
+    /**
+     * Injecte les dependances.
+     */
+    void injectMembers();
 }

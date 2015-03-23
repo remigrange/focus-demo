@@ -1577,6 +1577,7 @@ module.exports = referenceStore;
 });
 
 require.register("views/filter-result/index", function(exports, require, module) {
+/*global focusComponents */
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var serviceCommon = require('../../services');
 var lineResume = require('./lineResume');

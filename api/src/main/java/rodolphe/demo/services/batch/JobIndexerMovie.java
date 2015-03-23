@@ -16,22 +16,22 @@ import rodolphe.demo.services.search.SearchServices;
  */
 public class JobIndexerMovie extends AbstractRodolpheJob {
 
-	private static final String JOB_NAME = "indexMovie";
-	@Inject
-	private SearchServices searchServices;
+    private static final String JOB_NAME = "indexMovie";
+    @Inject
+    private SearchServices searchServices;
 
-	/** {@inheritDoc} */
-	@Override
-	protected void doRun() {
-		searchServices.indexMovies();
-	}
+    /** {@inheritDoc} */
+    @Override
+    protected void doRun() {
+        searchServices.indexMovies();
+    }
 
-	/**
-	 * Recuperation de la definition du job pour le job manager. On utilise un nom par defaut.
-	 *
-	 * @return JobDefinition
-	 */
-	public static JobDefinition getJobDefinition() {
-		return new JobDefinition(JOB_NAME, JobIndexerMovie.class);
-	}
+    /**
+     * Recuperation de la definition du job pour le job manager. On utilise un nom par defaut.
+     *
+     * @return JobDefinition
+     */
+    public static JobDefinition getJobDefinition() {
+        return new JobDefinition(JOB_NAME, JobIndexerMovie.class);
+    }
 }

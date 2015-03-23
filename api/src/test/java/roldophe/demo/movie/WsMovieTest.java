@@ -18,14 +18,14 @@ import roldophe.demo.tools.AbstractRodolpheTestCase;
  */
 public class WsMovieTest extends AbstractRodolpheTestCase {
 
-	@Inject
-	private WsMovie wsMovie;
+    @Inject
+    private WsMovie wsMovie;
 
-	@Test
-	public void testGetMovies() {
-		final MovieCriteria movieCriteria = new MovieCriteria();
-		movieCriteria.setTitle("Fantastic");
-		final UiListState uiListState = new UiListState(50, 0, null, false, null);
-		wsMovie.getMovies(movieCriteria, uiListState);
-	}
+    @Test
+    public void testGetMovies() {
+        final MovieCriteria movieCriteria = new MovieCriteria();
+        movieCriteria.setTitle("Fantastic");
+        final UiListState uiListState = new UiListState(50, 0, null, false, null);
+        wsMovie.getMovies(movieCriteria, uiListState);
+    }
 }

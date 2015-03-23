@@ -12,9 +12,9 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses(value = { //
-		EnumSimpleTest.class, //
-				CoherenceEnumMasterdataTest.class, //
-		})
+        EnumSimpleTest.class, //
+                CoherenceEnumMasterdataTest.class, //
+        })
 public class MasterdataAllTest {
-	// Just annotations
+    // Just annotations
 }

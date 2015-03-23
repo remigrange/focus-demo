@@ -18,37 +18,37 @@ import rodolphe.demo.services.search.SearchCriterium;
  */
 public interface PeopleServices extends Component {
 
-	/**
-	 * search People by criteria.
-	 * 
-	 * @param crit criteria
-	 * @param uiListState uiListState
-	 * @return result
-	 */
-	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit,
-			UiListState uiListState, FacetSelection... selection);
+    /**
+     * search People by criteria.
+     * 
+     * @param crit criteria
+     * @param uiListState uiListState
+     * @return result
+     */
+    FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit,
+            UiListState uiListState, FacetSelection... selection);
 
-	/**
-	 * Get People by id.
-	 * 
-	 * @param peopId people identifier
-	 * @return people
-	 */
-	People getPeople(Long peopId);
+    /**
+     * Get People by id.
+     * 
+     * @param peopId people identifier
+     * @return people
+     */
+    People getPeople(Long peopId);
 
-	/**
-	 * Save People
-	 * 
-	 * @param people people
-	 * @return peopel
-	 */
-	People savePeople(People people);
+    /**
+     * Save People
+     * 
+     * @param people people
+     * @return peopel
+     */
+    People savePeople(People people);
 
-	/**
-	 * Get movies in which the person acts.
-	 * 
-	 * @param peoId people identifier
-	 * @return movies list
-	 */
-	DtList<Movie> getMoviesByPeo(Long peoId);
+    /**
+     * Get movies in which the person acts.
+     * 
+     * @param peoId people identifier
+     * @return movies list
+     */
+    DtList<Movie> getMoviesByPeo(Long peoId);
 }

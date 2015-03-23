@@ -91,92 +91,92 @@ public class MovieServicesImpl implements MovieServices {
 		return movie;
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public DtList<People> getActors(final Long movId) {
-		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteria<Casting> castingCriteria = new FilterCriteriaBuilder<Casting>()
-				.withFilter(CastingFields.MOV_ID.name(), movId)
-				.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.actor.name()).build();
-		final DtList<Casting> castingList = castingDAO.getList(castingCriteria, Integer.MAX_VALUE);
-		for (final Casting casting : castingList) {
-			ret.add(casting.getPeople());
-		}
-		return ret;
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public DtList<People> getActors(final Long movId) {
+        final DtList<People> ret = new DtList<>(People.class);
+        final FilterCriteria<Casting> castingCriteria = new FilterCriteriaBuilder<Casting>()
+                .withFilter(CastingFields.MOV_ID.name(), movId)
+                .withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.ACTOR.dbValue()).build();
+        final DtList<Casting> castingList = castingDAO.getList(castingCriteria, Integer.MAX_VALUE);
+        for (final Casting casting : castingList) {
+            ret.add(casting.getPeople());
+        }
+        return ret;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public DtList<People> getProducers(final Long movId) {
-		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
-				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
-				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.producer.name()).build();
-		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
-		for (final RolePeople rolePeople : rolePeopleList) {
-			final People people = rolePeople.getPeople();
-			people.setComment(rolePeople.getComment());
-			ret.add(people);
-		}
-		return ret;
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public DtList<People> getProducers(final Long movId) {
+        final DtList<People> ret = new DtList<>(People.class);
+        final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
+                .withFilter(RolePeopleFields.MOV_ID.name(), movId)
+                .withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.PRODUCER.dbValue()).build();
+        final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
+        for (final RolePeople rolePeople : rolePeopleList) {
+            final People people = rolePeople.getPeople();
+            people.setComment(rolePeople.getComment());
+            ret.add(people);
+        }
+        return ret;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public DtList<People> getDirectors(final Long movId) {
-		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
-				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
-				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.director.name()).build();
-		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
-		for (final RolePeople rolePeople : rolePeopleList) {
-			ret.add(rolePeople.getPeople());
-		}
-		return ret;
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public DtList<People> getDirectors(final Long movId) {
+        final DtList<People> ret = new DtList<>(People.class);
+        final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
+                .withFilter(RolePeopleFields.MOV_ID.name(), movId)
+                .withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.DIRECTOR.dbValue()).build();
+        final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
+        for (final RolePeople rolePeople : rolePeopleList) {
+            ret.add(rolePeople.getPeople());
+        }
+        return ret;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public MovieView getMovieDetails(final Long movId) {
-		final MovieView MovieView = moviePao.getMovieViewForMovieDetailsByMovId(movId);
-		MovieView.setActors(getActors(movId));
-		MovieView.setProducers(getProducers(movId));
-		MovieView.setDirectors(getDirectors(movId));
-		return MovieView;
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public MovieView getMovieDetails(final Long movId) {
+        final MovieView MovieView = moviePao.getMovieViewForMovieDetailsByMovId(movId);
+        MovieView.setActors(getActors(movId));
+        MovieView.setProducers(getProducers(movId));
+        MovieView.setDirectors(getDirectors(movId));
+        return MovieView;
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public DtList<MovieCasting> getMovieCastings(final long movId) {
-		return moviePao.getCastingByMovId(movId);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public DtList<MovieCasting> getMovieCastings(final long movId) {
+        return moviePao.getCastingByMovId(movId);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see rodolphe.demo.services.movie.MovieServices#cleanMovieTitle()
-	 */
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public int cleanMovieTitle(final int minRank, final int maxRows) {
-		Long maxRank = -1L;
-		final DtList<MovieView> movieViewList = moviePao.getMovieView(minRank, maxRows);
-		final DtList<Movie> movieList = new DtList<>(Movie.class);
-		for (final MovieView movieView : movieViewList) {
-			// Pour ne pas remttre à jour les donnes deja mise à jour.
-			if (StringUtil.isEmpty(movieView.getMetadasJson())) {
-				movieList.add(CleanMovieData.parseMovieTitle(movieView));
-			}
-			if (maxRank < movieView.getRank()) {
-				maxRank = movieView.getRank();
-			}
-		}
-		moviePao.updateMoviesTitles(movieList);
-		return maxRank.intValue();
-	}
+    /*
+     * (non-Javadoc)
+     * @see rodolphe.demo.services.movie.MovieServices#cleanMovieTitle()
+     */
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public int cleanMovieTitle(final int minRank, final int maxRows) {
+        Long maxRank = -1L;
+        final DtList<MovieView> movieViewList = moviePao.getMovieView(minRank, maxRows);
+        final DtList<Movie> movieList = new DtList<>(Movie.class);
+        for (final MovieView movieView : movieViewList) {
+            // Pour ne pas remttre à jour les donnes deja mise à jour.
+            if (StringUtil.isEmpty(movieView.getMetadasJson())) {
+                movieList.add(CleanMovieData.parseMovieTitle(movieView));
+            }
+            if (maxRank < movieView.getRank()) {
+                maxRank = movieView.getRank();
+            }
+        }
+        moviePao.updateMoviesTitles(movieList);
+        return maxRank.intValue();
+    }
 }

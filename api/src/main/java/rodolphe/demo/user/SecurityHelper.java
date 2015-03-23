@@ -16,31 +16,31 @@ import javax.inject.Inject;
  */
 public class SecurityHelper {
 
-	@Inject
-	private VSecurityManager vSecurityManager;
+    @Inject
+    private VSecurityManager vSecurityManager;
 
-	/**
-	 * Récupère la session courante.
-	 *
-	 * @return une option sur la session courante
-	 */
-	public Option<UserSession> getCurrentSession() {
-		return vSecurityManager.getCurrentUserSession();
-	}
+    /**
+     * Récupère la session courante.
+     *
+     * @return une option sur la session courante
+     */
+    public Option<UserSession> getCurrentSession() {
+        return vSecurityManager.getCurrentUserSession();
+    }
 
-	/**
-	 * Est-on dans le cas des tests de non régressions, où il ne faut pas commiter?
-	 *
-	 * @return booléen.
-	 */
-	public boolean isTNR() {
-		final Option<UserSession> opt = getCurrentSession();
-		final RodolpheUserSession session;
-		if (opt.isDefined()) {
-			session = (RodolpheUserSession) opt.get();
-		} else {
-			session = vSecurityManager.createUserSession();
-		}
-		return session.isCanUserCommit();
-	}
+    /**
+     * Est-on dans le cas des tests de non régressions, où il ne faut pas commiter?
+     *
+     * @return booléen.
+     */
+    public boolean isTNR() {
+        final Option<UserSession> opt = getCurrentSession();
+        final RodolpheUserSession session;
+        if (opt.isDefined()) {
+            session = (RodolpheUserSession) opt.get();
+        } else {
+            session = vSecurityManager.createUserSession();
+        }
+        return session.isCanUserCommit();
+    }
 }

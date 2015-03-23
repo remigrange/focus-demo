@@ -80,16 +80,16 @@ public class PeopleServicesImpl implements PeopleServices {
 		return people;
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public DtList<Movie> getMoviesByPeo(final Long peoId) {
-		final DtList<Movie> ret = new DtList<>(Movie.class);
-		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>().withFilter(
-				RolePeopleFields.PEO_ID.name(), peoId).build();
-		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
-		for (final RolePeople rolePeople : rolePeopleList) {
-			ret.add(rolePeople.getMovie());
-		}
-		return ret;
-	}
+    /** {@inheritDoc} */
+    @Override
+    public DtList<Movie> getMoviesByPeo(final Long peoId) {
+        final DtList<Movie> ret = new DtList<>(Movie.class);
+        final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>().withFilter(
+                RolePeopleFields.PEO_ID.name(), peoId).build();
+        final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
+        for (final RolePeople rolePeople : rolePeopleList) {
+            ret.add(rolePeople.getMovie());
+        }
+        return ret;
+    }
 }

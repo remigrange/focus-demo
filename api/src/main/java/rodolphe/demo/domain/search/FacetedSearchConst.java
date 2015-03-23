@@ -9,54 +9,56 @@ import rodolphe.demo.domain.CodeEnum;
 import rodolphe.demo.domain.movies.MovieIndex;
 
 /**
- * Enumération des différentes recherches. Avec facettes et sans facettes.
+ * Enum of the various searches. With or Without facets.
  *
  * @author jmforhan
  */
 public enum FacetedSearchConst implements CodeEnum {
-	/** Recherche de movie sans facette. */
-	QRY_MOVIE_WO_FCT(),
-	/** Recherche de movie avec facettes. */
-	QRY_MOVIE_WITH_FCT(MovieIndex.class, FacetConst.FCT_MOVIE_GENRE, FacetConst.FCT_MOVIE_COUNTRY,
-			FacetConst.FCT_MOVIE_LANGUAGE),
-	/** Search People without facet. */
-	QRY_PEOPLE_WO_FCT();
+    /** Movie without facets. */
+    QRY_MOVIE_WO_FCT(),
+    /** Movie with facets. */
+    QRY_MOVIE_WITH_FCT(MovieIndex.class, FacetConst.FCT_MOVIE_GENRE, FacetConst.FCT_MOVIE_COUNTRY,
+            FacetConst.FCT_MOVIE_LANGUAGE),
+    /** People without facets. */
+    QRY_PEOPLE_WO_FCT();
 
-	private final FacetConst[] facetConstTab;
-	private final Class indexClassname;
+    private final FacetConst[] facetConstTab;
+    private final Class indexClassname;
 
-	private FacetedSearchConst(final Class indexClassname, final FacetConst... facetConstTab) {
-		this.facetConstTab = facetConstTab;
-		this.indexClassname = indexClassname;
-	}
+    private FacetedSearchConst(final Class indexClassname, final FacetConst... facetConstTab) {
+        this.facetConstTab = facetConstTab;
+        this.indexClassname = indexClassname;
+    }
 
-	private FacetedSearchConst() {
-		facetConstTab = null;
-		indexClassname = null;
-	}
+    private FacetedSearchConst() {
+        facetConstTab = null;
+        indexClassname = null;
+    }
 
-	/**
-	 * Donne la valeur de facetConstTab.
-	 *
-	 * @return la valeur de facetConstTab.
-	 */
-	public FacetConst[] getFacetConstTab() {
-		return facetConstTab;
-	}
+    /**
+     * Give the value of facetConstTab.
+     * 
+     * @return the value of facetConstTab.
+     */
+    public FacetConst[] getFacetConstTab() {
+        return facetConstTab;
+    }
 
-	/**
-	 * @return the indexClassname
-	 */
-	public Class getIndexClassname() {
-		return indexClassname;
-	}
+    /**
+     * Give the value of indexClassname.
+     * 
+     * @return the value of indexClassname.
+     */
+    public Class getIndexClassname() {
+        return indexClassname;
+    }
 
-	/**
-	 * Récupération de la définition vertigo associée à la recherche à facette.
-	 *
-	 * @return définition
-	 */
-	public FacetedQueryDefinition getQuery() {
-		return Home.getDefinitionSpace().resolve(name(), FacetedQueryDefinition.class);
-	}
+    /**
+     * Get the vertigo definition associated with the search.
+     *
+     * @return definition
+     */
+    public FacetedQueryDefinition getQuery() {
+        return Home.getDefinitionSpace().resolve(name(), FacetedQueryDefinition.class);
+    }
 }

@@ -7,65 +7,65 @@ package rodolphe.demo.util;
  */
 public class ReferenceIdObject {
 
-	private Long code;
-	private String label;
-	private final Boolean active;
+    private Long code;
+    private String label;
+    private final Boolean active;
 
-	/**
-	 * Create an instance of ReferenceObject.
-	 *
-	 * @param id id.
-	 * @param label Label.
-	 * @param active active.
-	 */
-	public ReferenceIdObject(final Long code, final String label, final Boolean active) {
-		this.code = code;
-		this.label = label;
-		this.active = active;
-	}
+    /**
+     * Create an instance of ReferenceObject.
+     *
+     * @param code code (Long).
+     * @param label Label.
+     * @param active active.
+     */
+    public ReferenceIdObject(final Long code, final String label, final Boolean active) {
+        this.code = code;
+        this.label = label;
+        this.active = active;
+    }
 
-	/**
-	 * get the code.
-	 *
-	 * @return id's value.
-	 */
-	public Long getCode() {
-		return code;
-	}
+    /**
+     * get the code.
+     *
+     * @return id's value.
+     */
+    public Long getCode() {
+        return code;
+    }
 
-	/**
-	 * Set id.
-	 *
-	 * @param idP new value.
-	 */
-	public void setCode(final Long code) {
-		this.code = code;
-	}
+    /**
+     * Set id.
+     *
+     * @param code new value.
+     */
+    public void setCode(final Long code) {
+        this.code = code;
+    }
 
-	/**
-	 * get the label.
-	 *
-	 * @return label.
-	 */
-	public String getLabel() {
-		return label;
-	}
+    /**
+     * get the label.
+     *
+     * @return label.
+     */
+    public String getLabel() {
+        return label;
+    }
 
-	/**
-	 * Set label.
-	 *
-	 * @param label new value
-	 */
-	public void setLabel(final String label) {
-		this.label = label;
-	}
+    /**
+     * Set label.
+     *
+     * @param label new value
+     */
+    public void setLabel(final String label) {
+        this.label = label;
+    }
 
-	/**
-	 * get active
-	 *
-	 * @return active.
-	 */
-	public Boolean getActive() {
-		return active;
-	}
+    /**
+     * get active.
+     *
+     * @return active.
+     */
+    public Boolean getActive() {
+        return active;
+    }
 }
