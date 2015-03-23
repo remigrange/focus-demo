@@ -6,5 +6,6 @@
 		<component class="rodolphe.demo.webservices.movie.WsMovie" />
 		<component class="rodolphe.demo.webservices.people.WsPeople" />
 		<component class="rodolphe.demo.webservices.common.WsCommon" />
+		<component class="rodolphe.demo.webservices.masterdata.WsMasterdata" />
 	</module>
 </config>

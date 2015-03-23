@@ -1101,7 +1101,8 @@ require.register("config/server/index", function(exports, require, module) {
 module.exports= {
     movie: require('./movie'),
     people: require('./people'),
-    common: require('./common')
+    common: require('./common'),
+    reference: require('./reference')
 };
 
 });
@@ -1131,6 +1132,15 @@ module.exports = {
   update: url(root + "${id}/",'PUT'),
   create: url(root, 'POST'),
   get: url(root + "${id}/", 'GET')
+};
+
+});
+
+require.register("config/server/reference", function(exports, require, module) {
+var root = ".";
+var url = focus.util.url.builder;
+module.exports = {
+    getScopes: url(root+"/scopes", 'GET')
 };
 
 });
@@ -1420,9 +1430,25 @@ Backbone.$ = $;*/
 //https://github.com/zilverline/react-tap-event-plugin
 //injectTapEventPlugin();
 
-require("./domain-initializer");
-require("./definition-initializer");
+require('./domain-initializer');
+require('./definition-initializer');
+require('./reference_list_initializer').initialize();
 
+
+});
+
+require.register("initializer/reference_list_initializer", function(exports, require, module) {
+//Path to the reference service.
+/*global focus */
+var serviceReference = require('../services');
+var reference = focus.reference;
+
+module.exports = {
+    initialize: function(options, context) {
+        reference.config.set({'scopes': serviceReference.refernce.getScopes});
+        reference.builder.loadListByName('scopes');
+    }
+};
 
 });
 
@@ -1488,7 +1514,8 @@ module.exports = {
 require.register("services/index", function(exports, require, module) {
 module.exports= {
     common: require('./common'),
-    movie: require('./movie')
+    movie: require('./movie'),
+    refernce : require('./reference')
 };
 });
 
@@ -1508,6 +1535,16 @@ module.exports = {
 };
 });
 
+require.register("services/reference", function(exports, require, module) {
+var URL = require('../../config/server');
+var fetch = focus.network.fetch;
+module.exports = {
+    getScopes: function getScopes(id){
+        return fetch(URL.reference.getScopes({}));
+    }
+};
+});
+
 require.register("stores/movie", function(exports, require, module) {
 /* global focus*/
 /**
@@ -1521,6 +1558,21 @@ var movieStore = new focus.store.CoreStore({
     }
   });
 module.exports = movieStore;
+
+});
+
+require.register("stores/reference", function(exports, require, module) {
+/* global focus*/
+/**
+ * Store dealing with the movie subject.
+ * @type {focus}
+ */
+var referenceStore = new focus.store.CoreStore({
+    definition : {
+        'reference': 'reference'
+    }
+});
+module.exports = referenceStore;
 
 });
 
@@ -1924,49 +1976,50 @@ module.exports = React.createClass({
 });
 
 require.register("views/search-result/index", function(exports, require, module) {
+/*global focusComponents, React*/
 var SearchResult = focusComponents.page.search.searchResult.component;
 var serviceCommon = require('../../services');
-module.exports =  React.createClass({displayName: "exports",
-    render:function(){
+module.exports= React.createClass({displayName: "exports",
+    render: function(){
 
         var action = {
             search: function(criteria) {
                 //TODO handle pageInfo
                 var critere = {
-                    criteria : {
-                        scope:"MOVIE",
-                        query:criteria.query
+                    criteria: {
+                        scope: 'MOVIE',
+                        query: criteria.criteria.query
                     },
-                    pageInfos : {
+                    pageInfos: {
                         sortFieldName: undefined,
-                        sortDesc:  undefined
+                        sortDesc: undefined
                     },
-                    facets:[]
+                    facets: []
                 }
                 serviceCommon.common.searchByScope(critere).then(
                     function success(data) {
                         var list = data;
-                        if(data.list!==undefined){
-                            list= data.list;
+                        if(data.list !== undefined){
+                            list = data.list;
                         }
                         var dataRet = {
                             list: list,
-                            facet:{},
-                            pageInfos:{
+                            facet: {},
+                            pageInfos: {
                                 currentPage: 2,
                                 perPage: 50,
                                 totalRecords: 10
                             },
                             searchContext: {
-                                scope: criteria.scope,
-                                query: criteria.query
+                                scope: criteria.criteria.scope,
+                                query: criteria.criteria.query
                             }
                         };
-                        focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
+                        focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
                     },
                     function error(error) {
                         //TODO
-                        console.info("Errrors");
+                        console.info('Errrors');
                     }
                 );
             }
@@ -2000,33 +2053,33 @@ module.exports =  React.createClass({displayName: "exports",
             ],
             action: action,
             lineComponent: Line,
-            onLineClick : function onLineClick(line){
+            onLineClick: function onLineClick(line){
                 alert('click sur la ligne ' + line.title);
             },
-            isSelection:true,
-            lineOperationList:[
+            isSelection: true,
+            lineOperationList: [
             ],
             criteria: {
-                scope: "MOVIE",
-                searchText : "Fantastic"
+                scope: 'MOVIE',
+                searchText: 'Fantastic'
             }
 
-        }
+        };
 
 
-        var searchResult =  React.createElement(React.createClass({mixins:[focusComponents.page.search.searchResult.mixin],actions: config.action}),
+        var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),
             {
                 lineComponent: Line,
-                onLineClick : function onLineClick(line){
+                onLineClick: function onLineClick(line){
                     alert('click sur la ligne ' + line.title);
                 },
-                operationList:config.operationList
+                operationList: config.operationList
 
             }
         );
-        
         return searchResult;
     }
 });
+
 });
 

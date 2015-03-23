@@ -153,10 +153,34 @@ public  class MovieServicesImpl implements MovieServices {
 		MovieView.setDirectors(getDirectors(movId));
 		return MovieView;
 	}
+
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
 	public DtList<MovieCasting> getMovieCastings(final long movId) {
 		return moviePao.getCastingByMovId(movId);
+	}
+
+	/* (non-Javadoc)
+	 * @see rodolphe.demo.services.movie.MovieServices#cleanMovieTitle()
+	 */
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public int cleanMovieTitle(final int minRank, final int maxRows) {
+		Long maxRank = -1L;
+		final DtList<MovieView> movieViewList = moviePao.getMovieView(minRank, maxRows);
+		final DtList<Movie> movieList = new DtList<>(Movie.class);
+		for(final MovieView movieView : movieViewList){
+			//Pour ne pas remttre à jour les donnes deja mise à jour.
+			if(StringUtil.isEmpty(movieView.getMetadasJson())) {
+				movieList.add(CleanMovieData.parseMovieTitle(movieView));
+			}
+			if (maxRank < movieView.getRank()) {
+				maxRank = movieView.getRank();
+			}
+		}
+		moviePao.updateMoviesTitles(movieList);
+		return maxRank.intValue();
 	}
 }

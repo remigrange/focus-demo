@@ -1,6 +1,7 @@
 package rodolphe.demo.webservices.masterdata;
 
 import io.vertigo.vega.rest.RestfulService;
+import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.GET;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public final class WsMasterdata implements RestfulService{
 	 * @return scope List
 	 */
 	@GET("/scopes")
+	@AnonymousAccessAllowed
 	public List<ReferenceObject> getScopes() {
 		return masterdataServices.getScopeList();
 	}

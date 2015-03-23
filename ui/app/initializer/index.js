@@ -10,6 +10,7 @@ Backbone.$ = $;*/
 //https://github.com/zilverline/react-tap-event-plugin
 //injectTapEventPlugin();
 
-require("./domain-initializer");
-require("./definition-initializer");
+require('./domain-initializer');
+require('./definition-initializer');
+require('./reference_list_initializer').initialize();
 

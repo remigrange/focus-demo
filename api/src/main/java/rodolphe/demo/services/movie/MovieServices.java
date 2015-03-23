@@ -74,6 +74,7 @@ public interface MovieServices  extends Component {
 	 */
 	MovieView getMovieDetails(Long movId);
 
+	int cleanMovieTitle(int minRow, int maxRows);
 
 
 	/**
