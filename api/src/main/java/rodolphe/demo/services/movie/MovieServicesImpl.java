@@ -32,7 +32,7 @@ import rodolphe.demo.services.search.SearchServices;
 
 /**
  * Implementation of Movie Services.
- * 
+ *
  * @author JDALMEIDA
  */
 public class MovieServicesImpl implements MovieServices {
@@ -89,7 +89,7 @@ public class MovieServicesImpl implements MovieServices {
 		final DtList<People> ret = new DtList<>(People.class);
 		final FilterCriteria<Casting> castingCriteria = new FilterCriteriaBuilder<Casting>()
 				.withFilter(CastingFields.MOV_ID.name(), movId)
-				.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.actor.name()).build();
+				.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.ACTOR.dbValue()).build();
 		final DtList<Casting> castingList = castingDAO.getList(castingCriteria, Integer.MAX_VALUE);
 		for (final Casting casting : castingList) {
 			ret.add(casting.getPeople());
@@ -104,7 +104,7 @@ public class MovieServicesImpl implements MovieServices {
 		final DtList<People> ret = new DtList<>(People.class);
 		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
 				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
-				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.producer.name()).build();
+				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.PRODUCER.dbValue()).build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
 		for (final RolePeople rolePeople : rolePeopleList) {
 			final People people = rolePeople.getPeople();
@@ -121,7 +121,7 @@ public class MovieServicesImpl implements MovieServices {
 		final DtList<People> ret = new DtList<>(People.class);
 		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
 				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
-				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.director.name()).build();
+				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.DIRECTOR.dbValue()).build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
 		for (final RolePeople rolePeople : rolePeopleList) {
 			ret.add(rolePeople.getPeople());

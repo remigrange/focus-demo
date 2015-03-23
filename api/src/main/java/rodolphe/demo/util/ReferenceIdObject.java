@@ -14,7 +14,7 @@ public class ReferenceIdObject {
 	/**
 	 * Create an instance of ReferenceObject.
 	 *
-	 * @param id id.
+	 * @param code code (Long).
 	 * @param label Label.
 	 * @param active active.
 	 */
@@ -36,7 +36,7 @@ public class ReferenceIdObject {
 	/**
 	 * Set id.
 	 *
-	 * @param idP new value.
+	 * @param code new value.
 	 */
 	public void setCode(final Long code) {
 		this.code = code;
@@ -61,7 +61,7 @@ public class ReferenceIdObject {
 	}
 
 	/**
-	 * get active
+	 * get active.
 	 *
 	 * @return active.
 	 */

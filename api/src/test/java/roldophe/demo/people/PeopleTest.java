@@ -17,6 +17,11 @@ import rodolphe.demo.services.people.PeopleServices;
 import roldophe.demo.movie.SearchMovieTest;
 import roldophe.demo.tools.AbstractRodolpheTestCase;
 
+/**
+ * Test some people related services.
+ *
+ * @author jmforhan
+ */
 public class PeopleTest extends AbstractRodolpheTestCase {
 
 	@Inject
@@ -26,6 +31,9 @@ public class PeopleTest extends AbstractRodolpheTestCase {
 	@Inject
 	private RolePeopleDAO rolePeopleDAO;
 
+	/**
+	 * Get a specific people.
+	 */
 	@Test
 	public void testGetPeople() {
 		final People peo = getNewPeople();
@@ -33,11 +41,17 @@ public class PeopleTest extends AbstractRodolpheTestCase {
 		Assert.assertEquals(peo.getPeoId(), ret.getPeoId());
 	}
 
+	/**
+	 * Save a people.
+	 */
 	@Test
 	public void testsavePeople() {
 		getNewPeople();
 	}
 
+	/**
+	 * Get a movie associated to a specific people.
+	 */
 	@Test
 	public void testGetMovie() {
 		final People peo = getNewPeople();
@@ -45,7 +59,7 @@ public class PeopleTest extends AbstractRodolpheTestCase {
 		final RolePeople rolePeople = new RolePeople();
 		rolePeople.setMovId(mov.getMovId());
 		rolePeople.setPeoId(peo.getPeoId());
-		rolePeople.setRlmCd(CodeRoleMovie.actor.name());
+		rolePeople.setRlmCd(CodeRoleMovie.ACTOR.dbValue());
 		rolePeopleDAO.create(rolePeople);
 		final DtList<Movie> movies = peopleServices.getMoviesByPeo(peo.getPeoId());
 		Assert.assertEquals(1, movies.size());

@@ -11,6 +11,8 @@ import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieView;
 
 /**
+ * Helper for cleaning movie data.
+ *
  * @author JDALMEIDA
  */
 public final class CleanMovieData {
@@ -19,6 +21,12 @@ public final class CleanMovieData {
 		super();
 	}
 
+	/**
+	 * Fill a movie with a correct title.
+	 *
+	 * @param movieView movie from database
+	 * @return corrected movie
+	 */
 	public static Movie parseMovieTitle(final MovieView movieView) {
 		final Movie movie = new Movie();
 		movie.setMovId(movieView.getMovId());
@@ -47,7 +55,7 @@ public final class CleanMovieData {
 		return movie;
 	}
 
-	public static String parseTitle(final String title) {
+	private static String parseTitle(final String title) {
 		if (!StringUtil.isEmpty(title)) {
 			final int firstOccurrence = title.indexOf("\"");
 			final int lastOccurrence = title.lastIndexOf("\"");
@@ -58,7 +66,7 @@ public final class CleanMovieData {
 		return null;
 	}
 
-	public static Integer parseYear(final String title) {
+	private static Integer parseYear(final String title) {
 		if (!StringUtil.isEmpty(title)) {
 			final int firstOccurrence = title.indexOf("(");
 			int lastOccurrence = -1;

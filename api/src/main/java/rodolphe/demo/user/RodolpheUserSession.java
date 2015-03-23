@@ -6,7 +6,7 @@ import java.util.Locale;
 
 /**
  * Session utilisateur.
- * 
+ *
  * @author jmforhan
  */
 public class RodolpheUserSession extends UserSession {
@@ -41,6 +41,8 @@ public class RodolpheUserSession extends UserSession {
 	}
 
 	/**
+	 * get default locale.
+	 * 
 	 * @return Default Locale.
 	 */
 	@Override

@@ -9,6 +9,7 @@ import io.vertigo.dynamo.domain.util.DtObjectUtil;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -63,7 +64,7 @@ public class CoherenceEnumMasterdataTest extends AbstractRodolpheTestCase {
 		if (checkMissingDbItems) {
 			for (final D dto : dtc) {
 				final String code = DtObjectUtil.getId(dto).toString();
-				Assert.assertTrue(DEBUT_MSG + code, codeSet.contains(code));
+				Assert.assertTrue(DEBUT_MSG + code, codeSet.contains(code.toUpperCase(Locale.FRENCH)));
 			}
 		}
 		// On vérifie que tous les éléments de l'énumération sont bien en base, en vérifiant nottament le getter

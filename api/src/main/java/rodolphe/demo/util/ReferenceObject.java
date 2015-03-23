@@ -14,7 +14,7 @@ public class ReferenceObject {
 	/**
 	 * Create an instance of ReferenceObject.
 	 *
-	 * @param id id.
+	 * @param code code (String).
 	 * @param label Label.
 	 * @param active active.
 	 */
@@ -34,7 +34,7 @@ public class ReferenceObject {
 	}
 
 	/**
-	 * Set id.
+	 * Set code.
 	 *
 	 * @param code new value.
 	 */
@@ -61,7 +61,7 @@ public class ReferenceObject {
 	}
 
 	/**
-	 * get active
+	 * get active.
 	 *
 	 * @return active.
 	 */

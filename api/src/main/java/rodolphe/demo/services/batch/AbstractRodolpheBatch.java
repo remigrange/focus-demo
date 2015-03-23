@@ -78,7 +78,7 @@ public abstract class AbstractRodolpheBatch implements InjectableComponent {
 	 *
 	 * @return Container de l'injection
 	 */
-	private Container getContainer() {
+	private static Container getContainer() {
 		return Home.getComponentSpace();
 	}
 }

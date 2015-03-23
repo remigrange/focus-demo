@@ -13,9 +13,9 @@ import rodolphe.demo.util.MdlUtil;
  * @author JDALMEIDA
  */
 public enum CodeTitle implements CodeEnumWithDto<Title> {
-	/** MS */
+	/** MS. */
 	F,
-	/** MR */
+	/** MR. */
 	M;
 
 	/** {@inheritDoc} */

@@ -1,6 +1,3 @@
-/**
- *
- */
 package rodolphe.demo.domain;
 
 import io.vertigo.dynamo.domain.model.DtObject;

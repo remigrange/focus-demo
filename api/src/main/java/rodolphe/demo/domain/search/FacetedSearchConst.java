@@ -9,18 +9,18 @@ import rodolphe.demo.domain.CodeEnum;
 import rodolphe.demo.domain.movies.MovieIndex;
 
 /**
- * Enumération des différentes recherches. Avec facettes et sans facettes.
+ * Enum of the various searches. With or Without facets.
  *
  * @author jmforhan
  */
 public enum FacetedSearchConst implements CodeEnum {
-	/** Recherche de movie sans facette. */
+	/** Movie without facets. */
 	QRY_MOVIE_WO_FCT(),
-	/** Recherche de movie avec facettes. */
+	/** Movie with facets. */
 	QRY_MOVIE_WITH_FCT(MovieIndex.class, FacetConst.FCT_MOVIE_GENRE, FacetConst.FCT_MOVIE_COUNTRY,
 			FacetConst.FCT_MOVIE_LANGUAGE),
-	/** Search People without facet. */
-	QRY_PEOPLE_WO_FCT();
+			/** People without facets. */
+			QRY_PEOPLE_WO_FCT();
 
 	private final FacetConst[] facetConstTab;
 	private final Class indexClassname;
@@ -36,25 +36,27 @@ public enum FacetedSearchConst implements CodeEnum {
 	}
 
 	/**
-	 * Donne la valeur de facetConstTab.
-	 *
-	 * @return la valeur de facetConstTab.
+	 * Give the value of facetConstTab.
+	 * 
+	 * @return the value of facetConstTab.
 	 */
 	public FacetConst[] getFacetConstTab() {
 		return facetConstTab;
 	}
 
 	/**
-	 * @return the indexClassname
+	 * Give the value of indexClassname.
+	 * 
+	 * @return the value of indexClassname.
 	 */
 	public Class getIndexClassname() {
 		return indexClassname;
 	}
 
 	/**
-	 * Récupération de la définition vertigo associée à la recherche à facette.
+	 * Get the vertigo definition associated with the search.
 	 *
-	 * @return définition
+	 * @return definition
 	 */
 	public FacetedQueryDefinition getQuery() {
 		return Home.getDefinitionSpace().resolve(name(), FacetedQueryDefinition.class);
