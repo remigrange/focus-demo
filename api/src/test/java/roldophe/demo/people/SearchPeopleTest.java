@@ -21,12 +21,14 @@ import rodolphe.demo.util.MemorizeTnrData;
 import roldophe.demo.tools.AbstractEsSearchTestCase;
 
 /**
+ * Test people service.
+ *
  * @author JDALMEIDA
  */
 public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, PeopleResult> {
 
     @Inject
-    PeopleServices peopleServices;
+    private PeopleServices peopleServices;
 
     /*
      * (non-Javadoc)
@@ -41,6 +43,11 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
         return crit;
     }
 
+    /**
+     * Get new person.
+     *
+     * @return people
+     */
     public static People getNewPeople() {
         final People peo = new People();
         peo.setPeoName("TNR_NOM TNR_PRENOM");

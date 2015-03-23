@@ -30,8 +30,8 @@ public final class WsPeople implements RestfulService {
     private PeopleServices peopleServices;
 
     /**
-     * Search people
-     * 
+     * Search people.
+     *
      * @param peopleCriteria search criteria
      * @param uiListState uiListState
      * @return search results
@@ -45,7 +45,7 @@ public final class WsPeople implements RestfulService {
 
     /**
      * Get people by identifier.
-     * 
+     *
      * @param peoId identifier
      * @return people
      */
@@ -57,11 +57,11 @@ public final class WsPeople implements RestfulService {
 
     /**
      * Save people.
-     * 
+     *
      * @param people people
      * @return people
      */
-    // TODO: change the ws name.
+    // TODO change the ws name.
     @POST("/people/new")
     @AnonymousAccessAllowed
     public People savePeople(final People people) {
@@ -70,7 +70,7 @@ public final class WsPeople implements RestfulService {
 
     /**
      * Get movies in which the person acts.
-     * 
+     *
      * @param peoId people identifier
      * @return movies list
      */

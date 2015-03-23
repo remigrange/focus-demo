@@ -13,16 +13,17 @@ import rodolphe.demo.services.search.SearchCriterium;
 
 /**
  * Services about People.
- * 
+ *
  * @author JDALMEIDA
  */
 public interface PeopleServices extends Component {
 
     /**
      * search People by criteria.
-     * 
+     *
      * @param crit criteria
      * @param uiListState uiListState
+     * @param selection selected facets.
      * @return result
      */
     FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit,
@@ -30,15 +31,15 @@ public interface PeopleServices extends Component {
 
     /**
      * Get People by id.
-     * 
+     *
      * @param peopId people identifier
      * @return people
      */
     People getPeople(Long peopId);
 
     /**
-     * Save People
-     * 
+     * Save People.
+     *
      * @param people people
      * @return peopel
      */
@@ -46,7 +47,7 @@ public interface PeopleServices extends Component {
 
     /**
      * Get movies in which the person acts.
-     * 
+     *
      * @param peoId people identifier
      * @return movies list
      */

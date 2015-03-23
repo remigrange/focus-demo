@@ -15,16 +15,17 @@ import rodolphe.demo.services.search.SearchCriterium;
 
 /**
  * Services about Movie.
- * 
+ *
  * @author JDALMEIDA
  */
 public interface MovieServices extends Component {
 
     /**
      * search movies by criteria.
-     * 
+     *
      * @param crit criteria
      * @param uiListState uiListState
+     * @param selection selected facets.
      * @return result
      */
     FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(MovieCriteria crit,
@@ -32,7 +33,7 @@ public interface MovieServices extends Component {
 
     /**
      * Get a movie by its primary key.
-     * 
+     *
      * @param movId primary key
      * @return movie
      */
@@ -40,7 +41,7 @@ public interface MovieServices extends Component {
 
     /**
      * Create/update a movie in a database.
-     * 
+     *
      * @param mov move to save in database
      * @return movie
      */
@@ -48,7 +49,7 @@ public interface MovieServices extends Component {
 
     /**
      * Get movie's actors.
-     * 
+     *
      * @param movId moivie identifier
      * @return people list
      */
@@ -56,7 +57,7 @@ public interface MovieServices extends Component {
 
     /**
      * Get movie's Producers.
-     * 
+     *
      * @param movId moivie identifier
      * @return people list
      */
@@ -64,7 +65,7 @@ public interface MovieServices extends Component {
 
     /**
      * Get movie's Directors.
-     * 
+     *
      * @param movId moivie identifier
      * @return people list
      */
@@ -78,11 +79,18 @@ public interface MovieServices extends Component {
      */
     MovieView getMovieDetails(Long movId);
 
+    /**
+     * Clean movie data.
+     *
+     * @param minRow min row
+     * @param maxRows max row
+     * @return rows
+     */
     int cleanMovieTitle(int minRow, int maxRows);
 
     /**
      * Get movie castings by movie id.
-     * 
+     *
      * @param movId movie id.
      * @return list of castings.
      */

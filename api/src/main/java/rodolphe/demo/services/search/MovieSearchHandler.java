@@ -19,6 +19,8 @@ import rodolphe.demo.domain.movies.MovieResult;
 import rodolphe.demo.domain.movies.MovieView;
 
 /**
+ * Movie search Handler.
+ * 
  * @author jmforhan
  */
 public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex, MovieResult, MovieView, MovieCriteria> {
