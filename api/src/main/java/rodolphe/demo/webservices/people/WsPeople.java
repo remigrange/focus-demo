@@ -59,7 +59,7 @@ public final class WsPeople implements RestfulService{
 	 * @param people people
 	 * @return people
 	 */
-	//TODO CHANGE THE NAME
+	//TODO: change the ws name.
 	@POST("/people/new")
 	@AnonymousAccessAllowed
 	public People savePeople(final People people){

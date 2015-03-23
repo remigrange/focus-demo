@@ -57,7 +57,7 @@ public final class WsMovie implements RestfulService {
 		return movieServices.getMovie(movId);
 	}
 
-	//TODO CHANGE THE NAME
+	//TODO: change the ws name.
 	@POST("/movies/new")
 	@AnonymousAccessAllowed
 	public Movie saveMovie(final Movie movie){

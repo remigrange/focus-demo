@@ -8767,17 +8767,6 @@ var CoreStore = (function (_EventEmitter) {
       value: function addListener(eventName, cb) {
         this.on(eventName, cb);
       }
-    },
-    removeListener: {
-      /**
-       * Remove a listener on a store event.
-       * @param {string}   eventName - Event name.
-       * @param {Function} cb - CallBack to call on the event change name.
-       */
-
-      value: function removeListener(eventName, cb) {
-        this.off(eventName, cb);
-      }
     }
   });
 

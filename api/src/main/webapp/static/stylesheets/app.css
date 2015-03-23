@@ -630,9 +630,6 @@ body {
 .resultContainer {
   width: 50% !important;
 }
-.item:hover {
-  background: #d8e5fa;
-}
 #lineResume {
   margin-left: 10px;
   display: inline-block;
@@ -670,5 +667,16 @@ body {
   font-size: 16px;
   text-transform: uppercase;
   color: #acacac;
+}
+ul.selection-list li.sl-line div.sl-selection {
+  background-color: #fff;
+  min-height: 60px;
+}
+ul.selection-list li.sl-line {
+  padding-left: 10px;
+  min-height: 60px;
+}
+ul.selection-list li.sl-line:hover {
+  background: #d8e5fa;
 }
 
