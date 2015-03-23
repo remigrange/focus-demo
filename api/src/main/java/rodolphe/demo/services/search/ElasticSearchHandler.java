@@ -4,6 +4,7 @@
 package rodolphe.demo.services.search;
 
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
+import io.vertigo.dynamo.domain.model.DtListState;
 import io.vertigo.dynamo.domain.model.DtObject;
 
 /**
@@ -38,7 +39,8 @@ public interface ElasticSearchHandler<S extends DtObject, R extends DtObject> {
 	 * Exécute la recherche.
 	 *
 	 * @param criterium Critère
+	 * @param dtListState liste state
 	 * @return Résultat.
 	 */
-	FacetedQueryResult<R, SearchCriterium<S>> rechercher(SearchCriterium<S> criterium);
+	FacetedQueryResult<R, SearchCriterium<S>> rechercher(SearchCriterium<S> criterium, DtListState dtListState);
 }

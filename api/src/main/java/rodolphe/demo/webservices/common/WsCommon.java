@@ -19,7 +19,7 @@ import rodolphe.demo.services.common.CommonServices;
 
 /**
  * Commons webservices.
- * 
+ *
  * @author JDALMEIDA
  */
 public class WsCommon implements RestfulService {
@@ -29,17 +29,17 @@ public class WsCommon implements RestfulService {
 
 	/**
 	 * Search by scope.
-	 * 
-	 * @param scope scope
-	 * @param searchText search criteria.
-	 * @return
+	 *
+	 * @param searchCriteria Criteria
+	 * @param selection selected facet
+	 * @param uiListState list state
+	 * @return results
 	 */
 	@POST("/searchByScope")
 	@AnonymousAccessAllowed
 	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria,
 			@InnerBodyParam("facets") final DtList<SelectedFacet> selection,
 			@QueryParam("") final UiListState uiListState) {
-		// uiListState.get
 		return commonServices.search(searchCriteria, selection, uiListState);
 	}
 }

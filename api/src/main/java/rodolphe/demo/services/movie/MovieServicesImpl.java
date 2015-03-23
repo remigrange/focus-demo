@@ -2,6 +2,7 @@ package rodolphe.demo.services.movie;
 
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.dynamo.domain.model.DtListState;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
@@ -32,7 +33,7 @@ import rodolphe.demo.services.search.SearchServices;
 
 /**
  * Implementation of Movie Services.
- * 
+ *
  * @author JDALMEIDA
  */
 public class MovieServicesImpl implements MovieServices {
@@ -59,11 +60,19 @@ public class MovieServicesImpl implements MovieServices {
 		for (final FacetSelection sel : selection) {
 			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
 		}
+		final int maxRows = 50;
+		DtListState listState = new DtListState(maxRows, 0, null, null);
 		if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
 			criteria.setSortAsc(!uiListState.isSortDesc());
 			criteria.setSortFieldName(uiListState.getSortFieldName());
+			if (uiListState.getSkip() > 0) {
+				listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows,
+						uiListState.getSortFieldName(), !uiListState.isSortDesc());
+			} else {
+				listState = new DtListState(maxRows, 0, uiListState.getSortFieldName(), !uiListState.isSortDesc());
+			}
 		}
-		return searchServices.searchMovie(criteria);
+		return searchServices.searchMovie(criteria, listState);
 	}
 
 	/** {@inheritDoc} */

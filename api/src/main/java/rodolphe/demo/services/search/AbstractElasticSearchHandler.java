@@ -344,7 +344,8 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
 
 	/** {@inheritDoc} */
 	@Override
-	public final FacetedQueryResult<R, SearchCriterium<S>> rechercher(final SearchCriterium<S> criterium) {
+	public final FacetedQueryResult<R, SearchCriterium<S>> rechercher(final SearchCriterium<S> criterium,
+			final DtListState listState) {
 		/* Surcharge du critère : on clone même par la clé primaire au cas où. */
 		final S criteriaClone = cloneObjectWithId(criterium.getCriteria());
 		treatCriteria(criteriaClone);
@@ -365,7 +366,7 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
 		}
 		final SearchQuery searchQuery = searchQueryBuilder.build();
 		logger.info("ES request " + searchQuery.getListFilter().getFilterValue());
-		final DtListState listState = new DtListState(100, 0, criterium.getSortFieldName(), !criterium.isSortAsc());
+		// final DtListState listState = new DtListState(100, 0, criterium.getSortFieldName(), !criterium.isSortAsc());
 		final FacetedQueryResult<R, SearchQuery> result = searchManager.loadList(indexDef, searchQuery, listState);
 		final SearchCriterium<S> retCrit = SearchCriterium.clone(criterium);
 		// On met à jour les facettes

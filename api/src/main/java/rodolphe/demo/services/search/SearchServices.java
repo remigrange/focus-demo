@@ -1,6 +1,7 @@
 package rodolphe.demo.services.search;
 
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
+import io.vertigo.dynamo.domain.model.DtListState;
 import io.vertigo.lang.Component;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieResult;
@@ -9,7 +10,7 @@ import rodolphe.demo.domain.people.PeopleResult;
 
 /**
  * Search services.
- * 
+ *
  * @author JDALMEIDA
  */
 public interface SearchServices extends Component {
@@ -21,25 +22,27 @@ public interface SearchServices extends Component {
 
 	/**
 	 * Index a specific movie.
-	 * 
+	 *
 	 * @param movId movie identifier
 	 */
 	void indexMovie(Long movId);
 
 	/**
 	 * Remove a movie from the index.
-	 * 
+	 *
 	 * @param movId movie identifier
 	 */
 	void removeMovieFromIndex(Long movId);
 
 	/**
 	 * Search movies matching a given criteria.
-	 * 
+	 *
 	 * @param criteria criteria
+	 * @param listState list state
 	 * @return List of matched movies and associated facets
 	 */
-	FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> searchMovie(SearchCriterium<MovieCriteria> criteria);
+	FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> searchMovie(
+			SearchCriterium<MovieCriteria> criteria, DtListState listState);
 
 	/**
 	 * index all people.
@@ -47,18 +50,19 @@ public interface SearchServices extends Component {
 	void indexPeople();
 
 	/**
-	 * index a specific people
-	 * 
+	 * index a specific people.
+	 *
 	 * @param peoId : people identifier
 	 */
 	void indexPeople(Long peoId);
 
 	/**
-	 * Search people matching a given criteria
-	 * 
+	 * Search people matching a given criteria.
+	 *
 	 * @param criteria criteria
+	 * @param listState list state
 	 * @return List of matched people and associated facets
 	 */
 	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> searchPeople(
-			SearchCriterium<PeopleCriteria> criteria);
+			SearchCriterium<PeopleCriteria> criteria, DtListState listState);
 }

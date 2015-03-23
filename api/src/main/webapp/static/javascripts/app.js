@@ -1091,7 +1091,7 @@ require.register("config/server/common", function(exports, require, module) {
 var root = ".";
 var url = focus.util.url.builder;
 module.exports = {
-    searchByScope: url(root+"/searchByScope?sortFieldName=${sortFieldName}&sortDesc=${sortDesc}", 'POST')/*,
+    searchByScope: url(root+"/searchByScope?sortFieldName=${sortFieldName}&sortDesc=${sortDesc}&skip=${skip}", 'POST')/*,
     filterResult: url(root+"/filterResult", 'POST')*/
 };
 
@@ -1983,6 +1983,10 @@ var serviceCommon = require('../../services');
 var action = {
     search: function(criteria) {
         //TODO handle pageInfo
+        var page=0;
+        if((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)){
+            page = criteria.pageInfos.page;
+        }
         var critere = {
             criteria: {
                 scope: 'MOVIE',
@@ -1990,7 +1994,8 @@ var action = {
             },
             pageInfos: {
                 sortFieldName: undefined,
-                sortDesc: undefined
+                sortDesc: undefined,
+                skip: page
             },
             facets: []
         }
@@ -2004,9 +2009,9 @@ var action = {
                     list: list,
                     facet: {},
                     pageInfos: {
-                        currentPage: 2,
+                        currentPage: 1,
                         perPage: 50,
-                        totalRecords: 10
+                        totalRecords: 100
                     },
                     searchContext: {
                         scope: criteria.criteria.scope,
