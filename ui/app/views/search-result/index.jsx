@@ -90,7 +90,8 @@ module.exports= React.createClass({
                 {id: 'MOVIE', label: 'MOVIE', active: true },
                 {id: 'PEOPLE', label: 'PEOPLE', active: true },
                 {id: 'ALL', label: 'ALL', active: true}
-            ]
+            ],
+            scope: {id: 'NONE', label: 'NONE', active: true }
 
 
         };
@@ -104,7 +105,8 @@ module.exports= React.createClass({
                     alert('click sur la ligne ' + line.title);
                 },
                 operationList: config.operationList,
-                scopeList: config.scopes
+                scopeList: config.scopes,
+                scope: scope
 
             }
         );

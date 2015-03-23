@@ -22189,9 +22189,9 @@ module.exports = function (url, data) {
 },{"lodash/string/template":74}]},{},[1])(1)
 });
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focusComponents = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
 "use strict";
 
+//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
 console.log("\n\t.########..#######...######..##.....##..######...........######...#######..##.....##.########...#######..##....##.########.##....##.########..######.\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.###...###.##.....##.##.....##.###...##.##.......###...##....##....##....##\n.##.......##.....##.##.......##.....##.##...............##.......##.....##.####.####.##.....##.##.....##.####..##.##.......####..##....##....##......\n.######...##.....##.##.......##.....##..######..#######.##.......##.....##.##.###.##.########..##.....##.##.##.##.######...##.##.##....##.....######.\n.##.......##.....##.##.......##.....##.......##.........##.......##.....##.##.....##.##........##.....##.##..####.##.......##..####....##..........##\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.##.....##.##........##.....##.##...###.##.......##...###....##....##....##\n.##........#######...######...#######...######...........######...#######..##.....##.##.........#######..##....##.########.##....##....##.....######.\n");
 module.exports = {
 	common: require("./common"),
@@ -22841,14 +22841,14 @@ module.exports = {
 };
 
 },{"./block":2,"./button":4,"./field":5,"./form":6,"./img":10,"./input":14,"./label":18,"./select":21,"./select-action":19,"./sticky-navigation":22,"./title":23,"./topic-displayer":24}],12:[function(require,module,exports){
+"use strict";
+
 //Target
 /*
 <label>
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
-"use strict";
-
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -22966,9 +22966,9 @@ module.exports = {
 };
 
 },{"./checkbox":12,"./date":13,"./text":15,"./textarea":16,"./toggle":17}],15:[function(require,module,exports){
-//Dependencies.
 "use strict";
 
+//Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -23045,6 +23045,8 @@ var inputTextMixin = {
 module.exports = builder(inputTextMixin);
 
 },{}],16:[function(require,module,exports){
+"use strict";
+
 //Target
 /*
 <div class="checkbox">
@@ -23053,8 +23055,6 @@ module.exports = builder(inputTextMixin);
   </label>
 </div>
  */
-"use strict";
-
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -23139,14 +23139,14 @@ var textAreaMixin = {
 module.exports = builder(textAreaMixin);
 
 },{}],17:[function(require,module,exports){
+"use strict";
+
 //Target
 /*
 <label>
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
-"use strict";
-
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -23351,9 +23351,9 @@ var selectActionMixin = {
 module.exports = builder(selectActionMixin);
 
 },{"../img":10}],20:[function(require,module,exports){
-//Dependencies.
 "use strict";
 
+//Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -23666,9 +23666,9 @@ var topicDisplayerMixin = {
 module.exports = builder(topicDisplayerMixin);
 
 },{}],25:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -23838,9 +23838,9 @@ var actionBarMixin = {
 module.exports = builder(actionBarMixin);
 
 },{"../../common/select-action":19,"../../common/topic-displayer":24,"../action-contextual":26}],26:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Button = require("../../common/button/action").component;
@@ -24054,9 +24054,9 @@ var InfiniteScrollMixin = {
 module.exports = { mixin: InfiniteScrollMixin };
 
 },{}],30:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var React = window.React;
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
@@ -24222,9 +24222,9 @@ var lineMixin = {
 module.exports = { mixin: lineMixin };
 
 },{"../../common/input/checkbox":12,"../action-contextual":26}],31:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Line = require("./line").mixin;
@@ -24386,9 +24386,9 @@ var listMixin = {
 module.exports = builder(listMixin);
 
 },{"../../common/button/action":3,"./infinite-scroll":29,"./line":30,"uuid":96}],32:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var TopicDisplayer = require("../../common/topic-displayer").component;
 var Button = require("../../common/button/action").component;
@@ -24455,9 +24455,9 @@ module.exports = {
 };
 
 },{"./line":34,"./list":35}],34:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var React = window.React;
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
@@ -24887,7 +24887,7 @@ function baseDifference(array, values) {
       }
       result.push(value);
     }
-    else if (indexOf(values, value, 0) < 0) {
+    else if (indexOf(values, value) < 0) {
       result.push(value);
     }
   }
@@ -24967,13 +24967,13 @@ var isArguments = require('../lang/isArguments'),
  *
  * @private
  * @param {Array} array The array to flatten.
- * @param {boolean} isDeep Specify a deep flatten.
- * @param {boolean} isStrict Restrict flattening to arrays and `arguments` objects.
- * @param {number} fromIndex The index to start from.
+ * @param {boolean} [isDeep] Specify a deep flatten.
+ * @param {boolean} [isStrict] Restrict flattening to arrays and `arguments` objects.
+ * @param {number} [fromIndex=0] The index to start from.
  * @returns {Array} Returns the new flattened array.
  */
 function baseFlatten(array, isDeep, isStrict, fromIndex) {
-  var index = fromIndex - 1,
+  var index = (fromIndex || 0) - 1,
       length = array.length,
       resIndex = -1,
       result = [];
@@ -24984,7 +24984,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
     if (isObjectLike(value) && isLength(value.length) && (isArray(value) || isArguments(value))) {
       if (isDeep) {
         // Recursively flatten arrays (susceptible to call stack limits).
-        value = baseFlatten(value, isDeep, isStrict, 0);
+        value = baseFlatten(value, isDeep, isStrict);
       }
       var valIndex = -1,
           valLength = value.length;
@@ -25081,14 +25081,14 @@ var indexOfNaN = require('./indexOfNaN');
  * @private
  * @param {Array} array The array to search.
  * @param {*} value The value to search for.
- * @param {number} fromIndex The index to search from.
+ * @param {number} [fromIndex=0] The index to search from.
  * @returns {number} Returns the index of the matched value, else `-1`.
  */
 function baseIndexOf(array, value, fromIndex) {
   if (value !== value) {
     return indexOfNaN(array, fromIndex);
   }
-  var index = fromIndex - 1,
+  var index = (fromIndex || 0) - 1,
       length = array.length;
 
   while (++index < length) {
@@ -25724,10 +25724,8 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
         othCtor = other.constructor;
 
     // Non `Object` object instances with different constructors are not equal.
-    if (objCtor != othCtor &&
-        ('constructor' in object && 'constructor' in other) &&
-        !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
-          typeof othCtor == 'function' && othCtor instanceof othCtor)) {
+    if (objCtor != othCtor && ('constructor' in object && 'constructor' in other) &&
+        !(typeof objCtor == 'function' && objCtor instanceof objCtor && typeof othCtor == 'function' && othCtor instanceof othCtor)) {
       return false;
     }
   }
@@ -25743,13 +25741,13 @@ module.exports = equalObjects;
  *
  * @private
  * @param {Array} array The array to search.
- * @param {number} fromIndex The index to search from.
+ * @param {number} [fromIndex] The index to search from.
  * @param {boolean} [fromRight] Specify iterating from right to left.
  * @returns {number} Returns the index of the matched `NaN`, else `-1`.
  */
 function indexOfNaN(array, fromIndex, fromRight) {
   var length = array.length,
-      index = fromIndex + (fromRight ? 0 : -1);
+      index = fromRight ? (fromIndex || length) : ((fromIndex || 0) - 1);
 
   while ((fromRight ? index-- : ++index < length)) {
     var other = array[index];
@@ -25853,7 +25851,7 @@ function isIterateeCall(value, index, object) {
   }
   if (prereq) {
     var other = object[index];
-    return value === value ? (value === other) : (other !== other);
+    return value === value ? value === other : other !== other;
   }
   return false;
 }
@@ -26136,7 +26134,7 @@ var isArguments = require('./isArguments'),
     keys = require('../object/keys');
 
 /**
- * Checks if `value` is empty. A value is considered empty unless it is an
+ * Checks if a value is empty. A value is considered empty unless it is an
  * `arguments` object, array, string, or jQuery-like collection with a length
  * greater than `0` or an object with own enumerable properties.
  *
@@ -26469,7 +26467,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
         length = object.length;
   }
   if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-      (typeof object != 'function' && (length && isLength(length)))) {
+     (typeof object != 'function' && (length && isLength(length)))) {
     return shimKeys(object);
   }
   return isObject(object) ? nativeKeys(object) : [];
@@ -26663,7 +26661,7 @@ var reWords = (function() {
   var upper = '[A-Z\\xc0-\\xd6\\xd8-\\xde]',
       lower = '[a-z\\xdf-\\xf6\\xf8-\\xff]+';
 
-  return RegExp(upper + '+(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
+  return RegExp(upper + '{2,}(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
 }());
 
 /**
@@ -27138,9 +27136,9 @@ var InfiniteScrollPageMixin = {
 module.exports = { mixin: InfiniteScrollPageMixin };
 
 },{"object-assign":94}],99:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var dispatcher = window.focus.dispatcher;
 var React = window.React;
@@ -27288,7 +27286,8 @@ var searchFilterResultMixin = {
     _orderClick: function _orderClick(key, order) {
         console.log("Order : " + key + " - " + order);
         // TODO : do we do it now ?
-        this.setState({ orderSelected: { key: key, order: order } });
+        this.state.orderSelected = { key: key, order: order };
+        this.setState({ orderSelected: this.state.orderSelected });
         this.search();
     },
 
@@ -27717,9 +27716,9 @@ var liveFilterMixin = {
 module.exports = builder(liveFilterMixin);
 
 },{"../../common/img":10,"./live-filter-facet":105,"lodash/object/omit":87,"object-assign":94}],104:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 
@@ -27765,9 +27764,9 @@ var liveFilterDataMixin = {
 module.exports = builder(liveFilterDataMixin);
 
 },{}],105:[function(require,module,exports){
-/**@jsx*/
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Data = require("./live-filter-data").component;
