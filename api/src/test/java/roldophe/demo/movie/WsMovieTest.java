@@ -15,9 +15,9 @@ import roldophe.demo.tools.AbstractRodolpheTestCase;
 
 /**
  * @author JDALMEIDA
- *
  */
-public class WsMovieTest extends AbstractRodolpheTestCase{
+public class WsMovieTest extends AbstractRodolpheTestCase {
+
 	@Inject
 	private WsMovie wsMovie;
 
@@ -28,5 +28,4 @@ public class WsMovieTest extends AbstractRodolpheTestCase{
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		wsMovie.getMovies(movieCriteria, uiListState);
 	}
-
 }

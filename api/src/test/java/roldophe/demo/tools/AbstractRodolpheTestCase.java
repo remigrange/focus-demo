@@ -2,13 +2,13 @@ package roldophe.demo.tools;
 
 import io.vertigo.AbstractTestCaseJU4;
 import io.vertigo.core.Home;
-import io.vertigo.dynamo.transaction.KTransactionManager;
-import io.vertigo.dynamo.transaction.KTransactionWritable;
+import io.vertigo.dynamo.transaction.VTransactionManager;
+import io.vertigo.dynamo.transaction.VTransactionWritable;
 import io.vertigo.lang.MessageKey;
 import io.vertigo.lang.MessageText;
 import io.vertigo.lang.Option;
 import io.vertigo.lang.VUserException;
-import io.vertigo.persona.security.KSecurityManager;
+import io.vertigo.persona.security.VSecurityManager;
 import io.vertigo.util.StringUtil;
 
 import java.io.Serializable;
@@ -31,18 +31,19 @@ import rodolphe.demo.util.MemorizeTnrData;
 
 /**
  * Parent class for all tests.
+ * 
  * @author jmforhan
- *
  */
 public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
+
 	private static final int MEM_TIMEOUT_MS = 1 * 1000;
 	private final Set<Class<? extends MemorizeTnrData>> memComponent = new HashSet<>();
 	@Inject
-	private KTransactionManager transactionManager;
+	private VTransactionManager transactionManager;
 	@Inject
-	private KSecurityManager securityManager;
+	private VSecurityManager securityManager;
 	// current transaction
-	private KTransactionWritable transaction;
+	private VTransactionWritable transaction;
 	private boolean memDataStarted;
 	// Session courante pour éviter de la perdre dans des WeakRef
 	private TnrUserSession session;
@@ -54,7 +55,6 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 		super();
 		memComponent.add(MovieSearchHandler.class);
 		memComponent.add(PeopleSearchHandler.class);
-
 	}
 
 	/**
@@ -65,6 +65,7 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	protected final Logger getLogger() {
 		return Logger.getLogger(getClass());
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -81,13 +82,13 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 		}
 		return ret;
 	}
+
 	/** {@inheritDoc} */
 	@Override
 	protected boolean cleanHomeForTest() {
 		// Avoid to reload every time
 		return false;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -107,6 +108,7 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 		}
 		startMemorizeTnrDataAll();
 	}
+
 	private void startMemorizeTnrDataAll() {
 		if (memDataStarted) {
 			// RAF
@@ -118,7 +120,6 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 		}
 		memDataStarted = true;
 	}
-
 
 	private void removeMemorizedTnrDataAll() {
 		for (final Class<? extends MemorizeTnrData> memClass : memComponent) {
@@ -153,6 +154,7 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 			}
 		}
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -174,7 +176,6 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 			}
 		}
 	}
-
 
 	/**
 	 * Récupération d'un message associé à une clé et à des paramètres. Si la clé est nulle, on renvoie null.
@@ -244,7 +245,6 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 			throw new RuntimeException(e);
 		}
 	}
-
 
 	/**
 	 * Message générique quand une méthode n'a pas levée d'exception alors qu'elle le devrait.
@@ -439,5 +439,4 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 		}
 		return ret;
 	}
-
 }

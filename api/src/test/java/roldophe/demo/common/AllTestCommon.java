@@ -9,12 +9,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * @author JDALMEIDA
- *
  */
 @RunWith(Suite.class)
 @SuiteClasses(value = { //
 		CommonTest.class, //
-})
+		})
 public class AllTestCommon {
-
 }

@@ -14,7 +14,7 @@ import io.vertigo.dynamo.domain.model.DtObject;
  * @version $Id: AbstractSearchTestCase.java 1326 2012-04-24 15:33:30Z npiedeloup $
  */
 public abstract class AbstractEsSearchTestCase<C extends DtObject, R extends DtObject> extends
-AbstractSearchTestCase<C, R> {
+		AbstractSearchTestCase<C, R> {
 
 	/** {@inheritDoc} */
 	@Override

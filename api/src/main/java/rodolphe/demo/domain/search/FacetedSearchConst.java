@@ -16,16 +16,16 @@ import rodolphe.demo.domain.movies.MovieIndex;
 public enum FacetedSearchConst implements CodeEnum {
 	/** Recherche de movie sans facette. */
 	QRY_MOVIE_WO_FCT(),
-	/** Recherche de movie avec facettes.*/
-	QRY_MOVIE_WITH_FCT(MovieIndex.class, FacetConst.FCT_MOVIE_GENRE, FacetConst.FCT_MOVIE_COUNTRY, FacetConst.FCT_MOVIE_LANGUAGE),
+	/** Recherche de movie avec facettes. */
+	QRY_MOVIE_WITH_FCT(MovieIndex.class, FacetConst.FCT_MOVIE_GENRE, FacetConst.FCT_MOVIE_COUNTRY,
+			FacetConst.FCT_MOVIE_LANGUAGE),
 	/** Search People without facet. */
 	QRY_PEOPLE_WO_FCT();
+
 	private final FacetConst[] facetConstTab;
 	private final Class indexClassname;
 
-
-
-	private FacetedSearchConst(final Class indexClassname, final FacetConst ...facetConstTab) {
+	private FacetedSearchConst(final Class indexClassname, final FacetConst... facetConstTab) {
 		this.facetConstTab = facetConstTab;
 		this.indexClassname = indexClassname;
 	}

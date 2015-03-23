@@ -5,8 +5,8 @@ import io.vertigo.core.di.injector.Injector;
 import io.vertigo.lang.Assertion;
 import io.vertigo.lang.Container;
 import io.vertigo.lang.Option;
-import io.vertigo.persona.security.KSecurityManager;
 import io.vertigo.persona.security.UserSession;
+import io.vertigo.persona.security.VSecurityManager;
 
 import javax.inject.Inject;
 
@@ -22,7 +22,7 @@ import rodolphe.demo.user.RodolpheUserSession;
 public abstract class AbstractRodolpheBatch implements InjectableComponent {
 
 	@Inject
-	private KSecurityManager kSecurityManager;
+	private VSecurityManager vSecurityManager;
 	private final Logger logger = Logger.getLogger(getClass());
 	private RodolpheUserSession session;
 
@@ -44,11 +44,11 @@ public abstract class AbstractRodolpheBatch implements InjectableComponent {
 
 	private RodolpheUserSession getBatchUserSession() {
 		final UserSession userSession;
-		final Option<UserSession> optSession = kSecurityManager.getCurrentUserSession();
+		final Option<UserSession> optSession = vSecurityManager.getCurrentUserSession();
 		if (optSession.isEmpty()) {
 			// On a besoin de definir une nouvelle session, qu'il faudra nettoyer
-			userSession = kSecurityManager.createUserSession();
-			kSecurityManager.startCurrentUserSession(userSession);
+			userSession = vSecurityManager.createUserSession();
+			vSecurityManager.startCurrentUserSession(userSession);
 		} else {
 			userSession = optSession.get();
 		}

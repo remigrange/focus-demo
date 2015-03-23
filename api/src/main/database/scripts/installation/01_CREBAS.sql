@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  23 mars 2015  11:17:39                     
+--   Date de création :  23 mars 2015  14:07:47                     
 -- ============================================================
 
 
@@ -408,6 +408,126 @@ comment on column USER_AUTHENTIFICATION.USR_ID is
 
 create index USER_AUTHENTIFICATION_USR_ID_FK on USER_AUTHENTIFICATION (USR_ID asc);
 
+create table MOV_ALS
+(
+	MOV_ID      	 NUMERIC     	 not null,
+	ALS_ID      	 NUMERIC     	 not null,
+	constraint PK_MOV_ALS primary key (MOV_ID, ALS_ID),
+	constraint FK_N_MOV_ALS_MOVIE 
+		foreign key(MOV_ID)
+		references MOVIE (MOV_ID),
+	constraint FK_N_MOV_ALS_ALIAS 
+		foreign key(ALS_ID)
+		references ALIAS (ALS_ID)
+);
+
+create index N_MOV_ALS_MOVIE_FK on MOV_ALS (MOV_ID asc);
+
+create index N_MOV_ALS_ALIAS_FK on MOV_ALS (ALS_ID asc);
+
+create table MOV_COU
+(
+	MOV_ID      	 NUMERIC     	 not null,
+	COU_CD      	 VARCHAR(100)	 not null,
+	constraint PK_MOV_COU primary key (MOV_ID, COU_CD),
+	constraint FK_N_MOV_COU_MOVIE 
+		foreign key(MOV_ID)
+		references MOVIE (MOV_ID),
+	constraint FK_N_MOV_COU_COUNTRY 
+		foreign key(COU_CD)
+		references COUNTRY (COU_CD)
+);
+
+create index N_MOV_COU_MOVIE_FK on MOV_COU (MOV_ID asc);
+
+create index N_MOV_COU_COUNTRY_FK on MOV_COU (COU_CD asc);
+
+create table MOV_FIL
+(
+	MOV_ID      	 NUMERIC     	 not null,
+	FIL_ID      	 NUMERIC     	 not null,
+	constraint PK_MOV_FIL primary key (MOV_ID, FIL_ID),
+	constraint FK_N_MOV_FIL_MOVIE 
+		foreign key(MOV_ID)
+		references MOVIE (MOV_ID),
+	constraint FK_N_MOV_FIL_FILE_INFO 
+		foreign key(FIL_ID)
+		references FILE_INFO (FIL_ID)
+);
+
+create index N_MOV_FIL_MOVIE_FK on MOV_FIL (MOV_ID asc);
+
+create index N_MOV_FIL_FILE_INFO_FK on MOV_FIL (FIL_ID asc);
+
+create table MOV_GEN
+(
+	MOV_ID      	 NUMERIC     	 not null,
+	GEN_CD      	 VARCHAR(100)	 not null,
+	constraint PK_MOV_GEN primary key (MOV_ID, GEN_CD),
+	constraint FK_N_MOV_GEN_MOVIE 
+		foreign key(MOV_ID)
+		references MOVIE (MOV_ID),
+	constraint FK_N_MOV_GEN_GENRE 
+		foreign key(GEN_CD)
+		references GENRE (GEN_CD)
+);
+
+create index N_MOV_GEN_MOVIE_FK on MOV_GEN (MOV_ID asc);
+
+create index N_MOV_GEN_GENRE_FK on MOV_GEN (GEN_CD asc);
+
+create table MOV_LAN
+(
+	MOV_ID      	 NUMERIC     	 not null,
+	LAN_CD      	 VARCHAR(100)	 not null,
+	constraint PK_MOV_LAN primary key (MOV_ID, LAN_CD),
+	constraint FK_N_MOV_LAN_MOVIE 
+		foreign key(MOV_ID)
+		references MOVIE (MOV_ID),
+	constraint FK_N_MOV_LAN_LANGUAGE 
+		foreign key(LAN_CD)
+		references LANGUAGE (LAN_CD)
+);
+
+create index N_MOV_LAN_MOVIE_FK on MOV_LAN (MOV_ID asc);
+
+create index N_MOV_LAN_LANGUAGE_FK on MOV_LAN (LAN_CD asc);
+
+create table PEO_FIL
+(
+	PEO_ID      	 NUMERIC     	 not null,
+	FIL_ID      	 NUMERIC     	 not null,
+	constraint PK_PEO_FIL primary key (PEO_ID, FIL_ID),
+	constraint FK_N_PEO_FIL_PEOPLE 
+		foreign key(PEO_ID)
+		references PEOPLE (PEO_ID),
+	constraint FK_N_PEO_FIL_FILE_INFO 
+		foreign key(FIL_ID)
+		references FILE_INFO (FIL_ID)
+);
+
+create index N_PEO_FIL_PEOPLE_FK on PEO_FIL (PEO_ID asc);
+
+create index N_PEO_FIL_FILE_INFO_FK on PEO_FIL (FIL_ID asc);
+
+create table PRO_SRO
+(
+	PRO_ID      	 NUMERIC     	 not null,
+	SRO_CD      	 VARCHAR(100)	 not null,
+	constraint PK_PRO_SRO primary key (PRO_ID, SRO_CD),
+	constraint FK_N_PRO_SRO_PROFIL 
+		foreign key(PRO_ID)
+		references PROFIL (PRO_ID),
+	constraint FK_N_PRO_SRO_SECURITY_ROLE 
+		foreign key(SRO_CD)
+		references SECURITY_ROLE (SRO_CD)
+);
+
+create index N_PRO_SRO_PROFIL_FK on PRO_SRO (PRO_ID asc);
+
+create index N_PRO_SRO_SECURITY_ROLE_FK on PRO_SRO (SRO_CD asc);
+
+
 alter table USER_AUTHENTIFICATION
 	add constraint FK_AUTH_USR foreign key (USR_ID)
 	references APPLICATION_USER (USR_ID);
@@ -424,128 +544,9 @@ alter table CASTING
 	add constraint FK_CAST_RLP foreign key (RLM_CD)
 	references ROLE_MOVIE (RLM_CD);
 
-create table MOV_ALS
-(
-	MOV_ID      	 NUMERIC     	 not null,
-	ALS_ID      	 NUMERIC     	 not null,
-	constraint PK_MOV_ALS primary key (MOV_ID, ALS_ID),
-	constraint FK_MOV_ALS_MOVIE 
-		foreign key(MOV_ID)
-		references MOVIE (MOV_ID),
-	constraint FK_MOV_ALS_ALIAS 
-		foreign key(ALS_ID)
-		references ALIAS (ALS_ID)
-);
-
-create index MOV_ALS_MOVIE_FK on MOV_ALS (MOV_ID asc);
-
-create index MOV_ALS_ALIAS_FK on MOV_ALS (ALS_ID asc);
-
-create table MOV_COU
-(
-	MOV_ID      	 NUMERIC     	 not null,
-	COU_CD      	 VARCHAR(100)	 not null,
-	constraint PK_MOV_COU primary key (MOV_ID, COU_CD),
-	constraint FK_MOV_COU_MOVIE 
-		foreign key(MOV_ID)
-		references MOVIE (MOV_ID),
-	constraint FK_MOV_COU_COUNTRY 
-		foreign key(COU_CD)
-		references COUNTRY (COU_CD)
-);
-
-create index MOV_COU_MOVIE_FK on MOV_COU (MOV_ID asc);
-
-create index MOV_COU_COUNTRY_FK on MOV_COU (COU_CD asc);
-
-create table MOV_FIL
-(
-	MOV_ID      	 NUMERIC     	 not null,
-	FIL_ID      	 NUMERIC     	 not null,
-	constraint PK_MOV_FIL primary key (MOV_ID, FIL_ID),
-	constraint FK_MOV_FIL_MOVIE 
-		foreign key(MOV_ID)
-		references MOVIE (MOV_ID),
-	constraint FK_MOV_FIL_FILE_INFO 
-		foreign key(FIL_ID)
-		references FILE_INFO (FIL_ID)
-);
-
-create index MOV_FIL_MOVIE_FK on MOV_FIL (MOV_ID asc);
-
-create index MOV_FIL_FILE_INFO_FK on MOV_FIL (FIL_ID asc);
-
-create table MOV_GEN
-(
-	MOV_ID      	 NUMERIC     	 not null,
-	GEN_CD      	 VARCHAR(100)	 not null,
-	constraint PK_MOV_GEN primary key (MOV_ID, GEN_CD),
-	constraint FK_MOV_GEN_MOVIE 
-		foreign key(MOV_ID)
-		references MOVIE (MOV_ID),
-	constraint FK_MOV_GEN_GENRE 
-		foreign key(GEN_CD)
-		references GENRE (GEN_CD)
-);
-
-create index MOV_GEN_MOVIE_FK on MOV_GEN (MOV_ID asc);
-
-create index MOV_GEN_GENRE_FK on MOV_GEN (GEN_CD asc);
-
-create table MOV_LAN
-(
-	MOV_ID      	 NUMERIC     	 not null,
-	LAN_CD      	 VARCHAR(100)	 not null,
-	constraint PK_MOV_LAN primary key (MOV_ID, LAN_CD),
-	constraint FK_MOV_LAN_MOVIE 
-		foreign key(MOV_ID)
-		references MOVIE (MOV_ID),
-	constraint FK_MOV_LAN_LANGUAGE 
-		foreign key(LAN_CD)
-		references LANGUAGE (LAN_CD)
-);
-
-create index MOV_LAN_MOVIE_FK on MOV_LAN (MOV_ID asc);
-
-create index MOV_LAN_LANGUAGE_FK on MOV_LAN (LAN_CD asc);
-
-create table PEO_FIL
-(
-	PEO_ID      	 NUMERIC     	 not null,
-	FIL_ID      	 NUMERIC     	 not null,
-	constraint PK_PEO_FIL primary key (PEO_ID, FIL_ID),
-	constraint FK_PEO_FIL_PEOPLE 
-		foreign key(PEO_ID)
-		references PEOPLE (PEO_ID),
-	constraint FK_PEO_FIL_FILE_INFO 
-		foreign key(FIL_ID)
-		references FILE_INFO (FIL_ID)
-);
-
-create index PEO_FIL_PEOPLE_FK on PEO_FIL (PEO_ID asc);
-
-create index PEO_FIL_FILE_INFO_FK on PEO_FIL (FIL_ID asc);
-
 alter table PEOPLE
 	add constraint FK_PEO_TIT foreign key (TIT_CD)
 	references TITLE (TIT_CD);
-
-create table PRO_SRO
-(
-	PRO_ID      	 NUMERIC     	 not null,
-	SRO_CD      	 VARCHAR(100)	 not null,
-	constraint PK_PRO_SRO primary key (PRO_ID, SRO_CD),
-	constraint FK_PRO_SRO_PROFIL 
-		foreign key(PRO_ID)
-		references PROFIL (PRO_ID),
-	constraint FK_PRO_SRO_SECURITY_ROLE 
-		foreign key(SRO_CD)
-		references SECURITY_ROLE (SRO_CD)
-);
-
-create index PRO_SRO_PROFIL_FK on PRO_SRO (PRO_ID asc);
-
-create index PRO_SRO_SECURITY_ROLE_FK on PRO_SRO (SRO_CD asc);
 
 alter table ROLE_PEOPLE
 	add constraint FK_RLP_MOV foreign key (MOV_ID)

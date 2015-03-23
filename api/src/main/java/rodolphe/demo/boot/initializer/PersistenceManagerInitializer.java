@@ -71,24 +71,24 @@ public class PersistenceManagerInitializer implements ComponentInitializer<Persi
 		} else {
 			cacheDuration = duration;
 		}
-		persistenceManager.getBrokerConfiguration().registerCacheable(dtDefinition, cacheDuration, reloadItemByList);
+		persistenceManager.getBrokerConfig().registerCacheable(dtDefinition, cacheDuration, reloadItemByList);
 		// on enregistre le filtre actif
 		final DtListURIForMasterData uriActif = new DtListURIForMasterData(dtDefinition, MdlUtil.ACTIF_DATA_CODE);
 		try {
 			// On teste si le champ actif est présent ou pas. si ce n'est pas le cas, une nullpointerexception est levée
 			dtDefinition.getField(SI_ACTIF);
 			// on enregistre la définition avec filtre sur actif
-			persistenceManager.getMasterDataConfiguration().register(uriActif, SI_ACTIF, Boolean.TRUE);
+			persistenceManager.getMasterDataConfig().register(uriActif, SI_ACTIF, Boolean.TRUE);
 		} catch (final NullPointerException e) {
 			// On est dans le cas ou le champ n'est pas présent
-			persistenceManager.getMasterDataConfiguration().register(uriActif);
+			persistenceManager.getMasterDataConfig().register(uriActif);
 		}
 		// On enregistre la liste globale
 		final DtListURIForMasterData uri = new DtListURIForMasterData(dtDefinition, MdlUtil.ALL_DATA_CODE);
-		persistenceManager.getMasterDataConfiguration().register(uri);
+		persistenceManager.getMasterDataConfig().register(uri);
 	}
 
-	private void memorizeMdl(final Class<? extends DtObject> dtObjectClass, final String cacheName) {
+	private static void memorizeMdl(final Class<? extends DtObject> dtObjectClass, final String cacheName) {
 		Set<String> set = MDL_MAP.get(dtObjectClass);
 		if (set == null) {
 			set = new HashSet<>();

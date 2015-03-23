@@ -24,7 +24,7 @@
 	</module>
 
 	<module name="RODOLPHE-ASPECT" inheritance="java.lang.Object" >
-		<aspect class="io.vertigo.dynamo.impl.transaction.KTransactionAspect"/>
+		<aspect class="io.vertigo.dynamo.impl.transaction.VTransactionAspect"/>
 	</module>
 		
 	<module name="RODOLPHE-SERVICES">

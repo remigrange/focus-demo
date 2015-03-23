@@ -1,8 +1,8 @@
 package rodolphe.demo.util;
 
 import io.vertigo.core.Home;
-import io.vertigo.dynamo.transaction.KTransactionManager;
-import io.vertigo.dynamo.transaction.KTransactionWritable;
+import io.vertigo.dynamo.transaction.VTransactionManager;
+import io.vertigo.dynamo.transaction.VTransactionWritable;
 
 import org.apache.log4j.Logger;
 
@@ -18,7 +18,7 @@ import rodolphe.demo.user.SecurityHelper;
 public class TransactionScope implements AutoCloseable {
 
 	private static final Logger LOGGER = Logger.getLogger(TransactionScope.class);
-	private final KTransactionWritable transaction;
+	private final VTransactionWritable transaction;
 
 	/**
 	 * Construit une instance de TransactionScope.
@@ -34,7 +34,7 @@ public class TransactionScope implements AutoCloseable {
 	 * @param canCommit l'utilisateur peut-il commit�?
 	 */
 	public TransactionScope(final boolean canCommit) {
-		final KTransactionManager kTransactionManager = Home.getComponentSpace().resolve(KTransactionManager.class);
+		final VTransactionManager kTransactionManager = Home.getComponentSpace().resolve(VTransactionManager.class);
 		if (canCommit) {
 			if (kTransactionManager.hasCurrentTransaction()) {
 				transaction = kTransactionManager.createAutonomousTransaction();

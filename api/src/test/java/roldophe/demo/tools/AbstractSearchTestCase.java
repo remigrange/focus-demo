@@ -29,7 +29,7 @@ import rodolphe.demo.util.MemorizeTnrData;
  * @author jmforhan
  * @version $Id: AbstractSearchTestCase.java 1326 2012-04-24 15:33:30Z npiedeloup $
  */
-public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObject> extends AbstractRodolpheTestCase{
+public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObject> extends AbstractRodolpheTestCase {
 
 	/**
 	 * Vérifie-t-on les droits du WS de recherche avec la façade de service?
@@ -50,7 +50,6 @@ public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObj
 		// null par défaut
 		return null;
 	}
-
 
 	/**
 	 * Vérifie que les données retournées par la recherche sont bien les données attendues.
@@ -128,7 +127,6 @@ public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObj
 		Assert.assertEquals(1, dtc.size());
 		Assert.assertEquals(id, getId(dtc.get(0)));
 	}
-
 
 	/**
 	 * Vérifie que la recherche donne bien une erreur utilisateur si on en attend une.
@@ -323,6 +321,7 @@ public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObj
 		verifierRechercheTexteBegin(critere, critFldName, data, dataFldName, facade, saveMethode, saveData, false,
 				false);
 	}
+
 	/**
 	 * Teste la recherche sur un critère donné pour s'assurer que la recherche est bien en commence par, insensible à la
 	 * casse mais pas aux accents.

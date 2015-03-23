@@ -27,8 +27,8 @@ import rodolphe.demo.services.search.SearchCriterium;
 
 /**
  * Implementation of common ws.
+ * 
  * @author JDALMEIDA
- *
  */
 public class CommonServicesImpl implements CommonServices {
 
@@ -37,13 +37,15 @@ public class CommonServicesImpl implements CommonServices {
 	@Inject
 	private PeopleServices peopleServices;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see rodolphe.demo.services.common.CommonServices#search(java.lang.String, java.lang.String)
 	 */
 	/** {@inheritDoc} */
 	@Override
 	@Transactional
-	public Object search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection, final UiListState uiListState) {
+	public Object search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection,
+			final UiListState uiListState) {
 		final MovieCriteria movieCrit = new MovieCriteria();
 		final String searchText = searchCriteria.getQuery();
 		final String scope = searchCriteria.getScope();
@@ -52,55 +54,54 @@ public class CommonServicesImpl implements CommonServices {
 		peopleCrit.setPeoName(searchText);
 		peopleCrit.setFirstName(searchText);
 		peopleCrit.setLastName(searchText);
-		final FacetSelection [] facetSel = new FacetSelection[selection.size()];
-		//facet selection list.
-		for(int i=0; i<selection.size(); i++){
+		final FacetSelection[] facetSel = new FacetSelection[selection.size()];
+		// facet selection list.
+		for (int i = 0; i < selection.size(); i++) {
 			final SelectedFacet selected = selection.get(i);
-			FacetConst selectedFacetConst =null;
+			FacetConst selectedFacetConst = null;
 			final FacetConst[] listFacets = FacetConst.values();
-			for(final FacetConst facetConst : listFacets){
-				if(facetConst.getFacetName().equalsIgnoreCase(selected.getKey())){
+			for (final FacetConst facetConst : listFacets) {
+				if (facetConst.getFacetName().equalsIgnoreCase(selected.getKey())) {
 					selectedFacetConst = facetConst;
 					break;
 				}
 			}
-			if(selectedFacetConst!=null){
-				final ListFilter filter = new ListFilter(selectedFacetConst.getField().name()+":\""+selected.getValue()+"\"");
-				facetSel[i]= new FacetSelection(selectedFacetConst.name(), selected.getValue(), filter);
+			if (selectedFacetConst != null) {
+				final ListFilter filter = new ListFilter(selectedFacetConst.getField().name() + ":\""
+						+ selected.getValue() + "\"");
+				facetSel[i] = new FacetSelection(selectedFacetConst.name(), selected.getValue(), filter);
 			}
 		}
-
-		if(CodeScope.MOVIE.name().equals(scope)){
-			return movieServices.getMoviesByCriteria(movieCrit, uiListState , facetSel);
+		if (CodeScope.MOVIE.name().equals(scope)) {
+			return movieServices.getMoviesByCriteria(movieCrit, uiListState, facetSel);
 		} else if (CodeScope.PEOPLE.name().equals(scope)) {
 			return peopleServices.getPeopleByCriteria(peopleCrit, uiListState, facetSel);
 		} else {
-			final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(movieCrit, uiListState, facetSel);
-			final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices.getPeopleByCriteria(peopleCrit, uiListState,  facetSel);
+			final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices
+					.getMoviesByCriteria(movieCrit, uiListState, facetSel);
+			final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices
+					.getPeopleByCriteria(peopleCrit, uiListState, facetSel);
 			final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
-
 			final SearchRet searchRet = new SearchRet();
 			searchRet.setType(CodeScope.MOVIE.name());
-			for(final MovieResult mov : movies.getDtList()){
+			for (final MovieResult mov : movies.getDtList()) {
 				searchRet.setField1(String.valueOf(mov.getMovId()));
 				searchRet.setField2(mov.getTitle());
-				if(mov.getReleased()!=null){
+				if (mov.getReleased() != null) {
 					searchRet.setField3(mov.getReleased().toString());
 				}
 				searchRet.setField4(mov.getGenreIds());
 				ret.add(searchRet);
 			}
 			searchRet.setType(CodeScope.PEOPLE.name());
-			for(final PeopleResult peo : people.getDtList()){
+			for (final PeopleResult peo : people.getDtList()) {
 				searchRet.setField1(String.valueOf(peo.getPeoId()));
 				searchRet.setField2(peo.getPeoName());
 				searchRet.setField3(peo.getTitCd());
 				searchRet.setField4(peo.getImdbid());
 				ret.add(searchRet);
 			}
-
 			return ret;
 		}
 	}
-
 }

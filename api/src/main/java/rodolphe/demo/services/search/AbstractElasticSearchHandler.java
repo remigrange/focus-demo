@@ -7,6 +7,7 @@ import io.vertigo.commons.config.ConfigManager;
 import io.vertigo.core.Home;
 import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.metamodel.FacetedQueryDefinition;
+import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQuery;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.metamodel.DataType;
@@ -15,13 +16,15 @@ import io.vertigo.dynamo.domain.metamodel.DtField;
 import io.vertigo.dynamo.domain.metamodel.DtField.FieldType;
 import io.vertigo.dynamo.domain.metamodel.DtFieldName;
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.dynamo.domain.model.DtListState;
 import io.vertigo.dynamo.domain.model.DtObject;
 import io.vertigo.dynamo.domain.model.URI;
 import io.vertigo.dynamo.domain.util.DtObjectUtil;
 import io.vertigo.dynamo.search.SearchManager;
-import io.vertigo.dynamo.search.metamodel.IndexDefinition;
-import io.vertigo.dynamo.search.model.Index;
+import io.vertigo.dynamo.search.metamodel.SearchIndexDefinition;
+import io.vertigo.dynamo.search.model.SearchIndex;
 import io.vertigo.dynamo.search.model.SearchQuery;
+import io.vertigo.dynamo.search.model.SearchQueryBuilder;
 import io.vertigo.lang.Option;
 import io.vertigo.persona.security.UserSession;
 import io.vertigo.util.StringUtil;
@@ -57,7 +60,7 @@ import rodolphe.demo.util.TransactionScope;
  * @param <S> Type du critère.
  */
 public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends DtObject, V extends DtObject, S extends DtObject>
-implements ElasticSearchHandler<S, R>, MemorizeTnrData {
+		implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 
 	private static final String RANK_FIELD_NAME = "RANK";
 	@Inject
@@ -66,7 +69,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 	private SecurityHelper securityHelper;
 	@Inject
 	private ConfigManager configManager;
-	private final Map<Object, Index<I, R>> tnrMap = new HashMap<>();
+	private final Map<Object, SearchIndex<I, R>> tnrMap = new HashMap<>();
 	private boolean sendDataInTnr;
 	private final Logger logger = Logger.getLogger("elasticHandler");
 
@@ -95,7 +98,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 			return;
 		}
 		try (final TransactionScope scope = new TransactionScope(true)) {
-			for (final Index<I, R> idx : tnrMap.values()) {
+			for (final SearchIndex<I, R> idx : tnrMap.values()) {
 				searchManager.put(getIndexDefinition(), idx);
 			}
 			scope.commit();
@@ -109,9 +112,9 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 			// RAF
 			return;
 		}
-		final IndexDefinition indexDef = getIndexDefinition();
+		final SearchIndexDefinition indexDef = getIndexDefinition();
 		try (final TransactionScope scope = new TransactionScope(true)) {
-			for (final Index<I, R> idx : tnrMap.values()) {
+			for (final SearchIndex<I, R> idx : tnrMap.values()) {
 				searchManager.remove(indexDef, idx.getURI());
 			}
 			scope.commit();
@@ -123,8 +126,8 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		tnrMap.clear();
 	}
 
-	private IndexDefinition getIndexDefinition() {
-		return Home.getDefinitionSpace().resolve(getIndexDefinitionName(), IndexDefinition.class);
+	private SearchIndexDefinition getIndexDefinition() {
+		return Home.getDefinitionSpace().resolve(getIndexDefinitionName(), SearchIndexDefinition.class);
 	}
 
 	/**
@@ -226,11 +229,11 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		return rsltItem;
 	}
 
-	private Index<I, R> createIndex(final IndexDefinition indexDefinition, final V vueItem) {
+	private SearchIndex<I, R> createIndex(final SearchIndexDefinition indexDefinition, final V vueItem) {
 		final I indexItem = createDtoIndexed(vueItem);
 		final R resultItem = createDtoResult(vueItem);
 		final URI<I> uri = new URI<>(indexDefinition.getIndexDtDefinition(), DtObjectUtil.getId(vueItem));
-		return Index.createIndex(indexDefinition, uri, indexItem, resultItem);
+		return SearchIndex.createIndex(indexDefinition, uri, indexItem, resultItem);
 	}
 
 	/**
@@ -244,16 +247,16 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		return ((Long) fieldRang.getDataAccessor().getValue(vueItem)).intValue();
 	}
 
-	private void clearIndex(final IndexDefinition indexDef, final int rangMin, final Integer rangMax) {
+	private void clearIndex(final SearchIndexDefinition indexDef, final int rangMin, final Integer rangMax) {
 		logger.debug("Vidage de l'index " + indexDef.getName() + "...");
 		final ListFilter filter = createClearFilter(rangMin, rangMax);
 		logger.debug("sur  " + filter.getFilterValue());
-		searchManager.remove(indexDef, filter);
+		searchManager.removeAll(indexDef, filter);
 		logger.info("Vidage de l'index  " + indexDef.getName() + " terminé.");
 	}
 
 	private ListFilter createClearFilter(final int rangMin, final Integer rangMax) {
-		final StringBuilder sb = new StringBuilder(RANK_FIELD_NAME+":[");
+		final StringBuilder sb = new StringBuilder(RANK_FIELD_NAME + ":[");
 		sb.append(rangMin);
 		sb.append(" TO ");
 		if (rangMax == null) {
@@ -270,10 +273,10 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 	public void indexer() {
 		// Lecture de la configuration.
 		final Integer clusterCard = configManager.getIntValue("search", "clusterCard");
-		final IndexDefinition indexDef = getIndexDefinition();
+		final SearchIndexDefinition indexDef = getIndexDefinition();
 		logger.debug("Indexation de l'index elastic search " + indexDef.getName() + "...");
 		// On charge et on indexe les données par cluster.
-		Collection<Index<I, R>> indexList;
+		Collection<SearchIndex<I, R>> indexList;
 		int rangMin = -10000;
 		boolean cont = true;
 		int compteur = 0;
@@ -315,7 +318,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 	@Override
 	public final void indexerItem(final Object key) {
 		logger.debug("Indexation unitaire ");
-		final IndexDefinition indexDef = getIndexDefinition();
+		final SearchIndexDefinition indexDef = getIndexDefinition();
 		final V vueItem = getVueItem(key);
 		if (vueItem == null) {
 			// Pas d'objet => Rien à indexer
@@ -323,7 +326,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 			logger.debug("Rien à indexer ");
 			return;
 		}
-		final Index<I, R> idx = createIndex(indexDef, vueItem);
+		final SearchIndex<I, R> idx = createIndex(indexDef, vueItem);
 		if (sendDataInTnr) {
 			tnrMap.put(key, idx);
 		}
@@ -334,7 +337,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 	/** {@inheritDoc} */
 	@Override
 	public final void supprimerItem(final Object key) {
-		final IndexDefinition indexDef = getIndexDefinition();
+		final SearchIndexDefinition indexDef = getIndexDefinition();
 		final URI<I> uri = new URI<>(indexDef.getIndexDtDefinition(), key);
 		searchManager.remove(indexDef, uri);
 	}
@@ -346,37 +349,33 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		final S criteriaClone = cloneObjectWithId(criterium.getCriteria());
 		treatCriteria(criteriaClone);
 		/* Chargement des définitions. */
-		final IndexDefinition indexDef = getIndexDefinition();
+		final SearchIndexDefinition indexDef = getIndexDefinition();
 		final FacetedQueryDefinition facetedQueryDefinition = criterium.getFacetsDefinition();
-		/* Chargement du tri. */
-		final String sortFieldName = criterium.getSortFieldName();
-		final DtField sortField = sortFieldName != null
-				? indexDef.getIndexDtDefinition().getField(sortFieldName)
-						: null;
-				final boolean sortAsc = criterium.isSortAsc();
-				// Construction de la query.
-				final SearchQuery searchQuery = SearchQuery.createSearchQuery(indexDef, getListFilter(criteriaClone),
-						sortField, sortAsc);
-				logger.info("ES request " + searchQuery.getListFilter().getFilterValue());
-				// Cas d'un appel avec facettes.
-				final List<ListFilter> facetFilter = new ArrayList<>();
-				if (criterium.getSelectedFacets() != null) {
-					// Restauration des facettes de la première recherche.
-					// TODO facetFilter.add(....)
-					for(final FacetSelection facetSel  : criterium.getSelectedFacets()) {
-						facetFilter.add(facetSel.getFacetQuery());
-					}
-				}
-				final FacetedQuery facetedQuery = new FacetedQuery(facetedQueryDefinition, facetFilter);
-				final FacetedQueryResult<R, SearchQuery> result = searchManager.loadList(searchQuery, facetedQuery);
-				final SearchCriterium<S> retCrit = SearchCriterium.clone(criterium);
-				// On met à jour les facettes retCrit setFacets(result.getFacets());
-				// On crée le bon objet de retour
-				// FIXME : problème des highlihts
-				final FacetedQueryResult<R, SearchCriterium<S>> res = new FacetedQueryResult<>(result.getFacetedQuery(),
-						result.getCount(), result.getDtList(), result.getFacets(), new HashMap<R, Map<DtField, String>>(),
-						retCrit);
-				return res;
+		// Construction de la query.
+		SearchQueryBuilder searchQueryBuilder = new SearchQueryBuilder(getListFilter(criteriaClone).getFilterValue());
+		if (criterium.getSelectedFacets() != null) {
+			// Restauration des facettes de la première recherche.
+			final List<ListFilter> facetFilter = new ArrayList<>();
+			for (final FacetSelection facetSel : criterium.getSelectedFacets()) {
+				facetFilter.add(facetSel.getFacetQuery());
+			}
+			// Cas d'un appel avec facettes.
+			final FacetedQuery facetedQuery = new FacetedQuery(facetedQueryDefinition, facetFilter);
+			searchQueryBuilder = searchQueryBuilder.withFacetStrategy(facetedQuery);
+		}
+		final SearchQuery searchQuery = searchQueryBuilder.build();
+		logger.info("ES request " + searchQuery.getListFilter().getFilterValue());
+		final DtListState listState = new DtListState(100, 0, criterium.getSortFieldName(), !criterium.isSortAsc());
+		final FacetedQueryResult<R, SearchQuery> result = searchManager.loadList(indexDef, searchQuery, listState);
+		final SearchCriterium<S> retCrit = SearchCriterium.clone(criterium);
+		// On met à jour les facettes
+		// retCrit.setFacets(result.getFacets());
+		// On crée le bon objet de retour
+		// FIXME : problème des highlihts
+		final FacetedQueryResult<R, SearchCriterium<S>> res = new FacetedQueryResult<>(result.getFacetedQuery(),
+				result.getCount(), result.getDtList(), result.getFacets(), new HashMap<FacetValue, DtList<R>>(),
+				new HashMap<R, Map<DtField, String>>(), retCrit);
+		return res;
 	}
 
 	/**
@@ -433,7 +432,6 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		return result;
 	}
 
-
 	/**
 	 * Ajoute un critere simple à la requete ElasticSearch.
 	 *
@@ -450,39 +448,39 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		final Object value = def.getField(criteriaFieldName).getDataAccessor().getValue(criterium);
 		if (value != null) {
 			switch (dataType) {
-			case Integer:
-				final Integer intValue = (Integer) value;
-				attribute = indexFieldName.name() + ":(" + intValue + ")";
-				break;
-			case Long:
-				final Long longValue = (Long) value;
-				attribute = indexFieldName.name() + ":(" + longValue + ")";
-				break;
-			case BigDecimal:
-				final BigDecimal decValue = (BigDecimal) value;
-				attribute = indexFieldName.name() + ":(" + decValue + ")";
-				break;
-			case Double:
-				final Double doubleValue = (Double) value;
-				attribute = indexFieldName.name() + ":(" + doubleValue + ")";
-				break;
-			case Date:
-				final Date dateValue = (Date) value;
-				attribute = indexFieldName.name() + ":(\"" + getDateXmlFormat(dateValue) + "\")";
-				break;
-			case String:
-				final String strValue = (String) value;
-				attribute = indexFieldName.name() + ":(" + escapeRegexpSpecialChar(strValue) + ")";
-				break;
-			case Boolean:
-				final Boolean booleanValue = (Boolean) value;
-				attribute = indexFieldName.name() + ":(" + booleanValue + ")";
-				break;
-			case DataStream:
-			case DtList:
-			case DtObject:
-			default:
-				throw new RuntimeException("Type de données non comparable : " + dataType.name());
+				case Integer:
+					final Integer intValue = (Integer) value;
+					attribute = indexFieldName.name() + ":(" + intValue + ")";
+					break;
+				case Long:
+					final Long longValue = (Long) value;
+					attribute = indexFieldName.name() + ":(" + longValue + ")";
+					break;
+				case BigDecimal:
+					final BigDecimal decValue = (BigDecimal) value;
+					attribute = indexFieldName.name() + ":(" + decValue + ")";
+					break;
+				case Double:
+					final Double doubleValue = (Double) value;
+					attribute = indexFieldName.name() + ":(" + doubleValue + ")";
+					break;
+				case Date:
+					final Date dateValue = (Date) value;
+					attribute = indexFieldName.name() + ":(\"" + getDateXmlFormat(dateValue) + "\")";
+					break;
+				case String:
+					final String strValue = (String) value;
+					attribute = indexFieldName.name() + ":(" + escapeRegexpSpecialChar(strValue) + ")";
+					break;
+				case Boolean:
+					final Boolean booleanValue = (Boolean) value;
+					attribute = indexFieldName.name() + ":(" + booleanValue + ")";
+					break;
+				case DataStream:
+				case DtList:
+				case DtObject:
+				default:
+					throw new RuntimeException("Type de données non comparable : " + dataType.name());
 			}
 			criteriaList.add(attribute);
 		}
@@ -500,7 +498,6 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		formatter.setTimeZone(tz);
 		return formatter.format(date);
 	}
-
 
 	/**
 	 * Ajoute un critere de recherche de type "commence par".
@@ -554,7 +551,6 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		}
 	}
 
-
 	/**
 	 * Construit la requete ES correspondant à l'ensemble des criteres de la liste (ET).
 	 *
@@ -575,5 +571,4 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 		}
 		return sb.toString();
 	}
-
 }

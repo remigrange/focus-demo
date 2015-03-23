@@ -13,8 +13,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author jmforhan
  */
 @RunWith(Suite.class)
-@SuiteClasses(value = {
-		PeopleTest.class, //
+@SuiteClasses(value = { PeopleTest.class, //
 		SearchPeopleTest.class, //
 })
 public class AllTestsPeople {

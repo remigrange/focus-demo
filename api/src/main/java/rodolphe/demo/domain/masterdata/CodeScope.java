@@ -9,5 +9,4 @@ public enum CodeScope implements CodeEnum {
 	PEOPLE,
 	/** All */
 	ALL;
-
 }

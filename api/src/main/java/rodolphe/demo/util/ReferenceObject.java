@@ -1,13 +1,10 @@
 package rodolphe.demo.util;
 
-
 /**
- *	Class for master datas.
+ * Class for master datas.
  *
  * @author JDALMEIDA
- *
  */
-
 public class ReferenceObject {
 
 	private String code;
@@ -19,7 +16,7 @@ public class ReferenceObject {
 	 *
 	 * @param id id.
 	 * @param label Label.
-	 * @param active  active.
+	 * @param active active.
 	 */
 	public ReferenceObject(final String code, final String label, final Boolean active) {
 		this.code = code;
@@ -39,7 +36,7 @@ public class ReferenceObject {
 	/**
 	 * Set id.
 	 *
-	 * @param code  new value.
+	 * @param code new value.
 	 */
 	public void setCode(final String code) {
 		this.code = code;

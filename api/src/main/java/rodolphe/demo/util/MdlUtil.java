@@ -291,6 +291,6 @@ public final class MdlUtil {
 	}
 
 	private static DtDefinition getRegistredMasterDataDefinition(final DtDefinition dtDef) {
-		return getPersistenceManager().getMasterDataConfiguration().containsMasterData(dtDef) ? dtDef : null;
+		return getPersistenceManager().getMasterDataConfig().containsMasterData(dtDef) ? dtDef : null;
 	}
 }

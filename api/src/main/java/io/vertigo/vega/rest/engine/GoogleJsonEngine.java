@@ -65,6 +65,7 @@ import com.google.gson.JsonSyntaxException;
  * @author pchretien, npiedeloup
  */
 public final class GoogleJsonEngine implements JsonEngine {
+
 	private final Gson gson = createGson();
 
 	/** {@inheritDoc} */
@@ -75,14 +76,13 @@ public final class GoogleJsonEngine implements JsonEngine {
 
 	/** {@inheritDoc} */
 	@Override
-	public String toJsonWithMeta(final Object data, final Map<String, Serializable> metaDatas, final Set<String> includedFields, final Set<String> excludedFields) {
+	public String toJsonWithMeta(final Object data, final Map<String, Serializable> metaDatas,
+			final Set<String> includedFields, final Set<String> excludedFields) {
 		final JsonElement jsonValue = gson.toJsonTree(data);
 		filterFields(jsonValue, includedFields, excludedFields);
-
 		if (metaDatas.isEmpty() && data instanceof List) {
-			return gson.toJson(jsonValue); //only case where result wasn't an object
+			return gson.toJson(jsonValue); // only case where result wasn't an object
 		}
-
 		final JsonObject jsonResult;
 		if (data instanceof List) {
 			jsonResult = new JsonObject();
@@ -97,7 +97,8 @@ public final class GoogleJsonEngine implements JsonEngine {
 		return gson.toJson(jsonResult);
 	}
 
-	private void filterFields(final JsonElement jsonElement, final Set<String> includedFields, final Set<String> excludedFields) {
+	private void filterFields(final JsonElement jsonElement, final Set<String> includedFields,
+			final Set<String> excludedFields) {
 		if (jsonElement.isJsonArray()) {
 			final JsonArray jsonArray = jsonElement.getAsJsonArray();
 			for (final JsonElement jsonSubElement : jsonArray) {
@@ -119,16 +120,16 @@ public final class GoogleJsonEngine implements JsonEngine {
 					jsonObject.remove(notIncludedField);
 				}
 			}
-
 		}
-		//else Primitive : no exclude
+		// else Primitive : no exclude
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public String toJsonError(final Throwable th) {
 		final String exceptionMessage = th.getMessage() != null ? th.getMessage() : th.getClass().getSimpleName();
-		return gson.toJson(Collections.singletonMap("globalErrors", Collections.singletonList(exceptionMessage)));//TODO +stack;
+		return gson.toJson(Collections.singletonMap("globalErrors", Collections.singletonList(exceptionMessage)));// TODO
+																													// +stack;
 	}
 
 	/** {@inheritDoc} */
@@ -145,16 +146,25 @@ public final class GoogleJsonEngine implements JsonEngine {
 	}
 
 	/** {@inheritDoc} */
-	/*@Override
-	public <D extends DtObject> UiObjectExtended<D> uiObjectExtendedFromJson(final String json, final Type paramType) {
-		final Type typeOfDest = createParameterizedType(UiObjectExtended.class, paramType);
-		return gson.fromJson(json, typeOfDest);
-	}*/
-
+	/*
+	 * @Override
+	 * public <D extends DtObject> UiObjectExtended<D> uiObjectExtendedFromJson(final String json, final Type paramType)
+	 * {
+	 * final Type typeOfDest = createParameterizedType(UiObjectExtended.class, paramType);
+	 * return gson.fromJson(json, typeOfDest);
+	 * }
+	 */
 	/** {@inheritDoc} */
 	@Override
 	public <D extends DtObject> UiListDelta<D> uiListDeltaFromJson(final String json, final Type paramType) {
-		final Class<DtObject> dtoClass = (Class<DtObject>) ((ParameterizedType) paramType).getActualTypeArguments()[0]; //we known that DtListDelta has one parameterized type
+		final Class<DtObject> dtoClass = (Class<DtObject>) ((ParameterizedType) paramType).getActualTypeArguments()[0]; // we
+																														// known
+																														// that
+																														// DtListDelta
+																														// has
+																														// one
+																														// parameterized
+																														// type
 		final Type typeOfDest = createParameterizedType(UiListDelta.class, dtoClass);
 		return gson.fromJson(json, typeOfDest);
 	}
@@ -162,7 +172,14 @@ public final class GoogleJsonEngine implements JsonEngine {
 	/** {@inheritDoc} */
 	@Override
 	public <D extends DtObject> UiList<D> uiListFromJson(final String json, final Type paramType) {
-		final Class<DtObject> dtoClass = (Class<DtObject>) ((ParameterizedType) paramType).getActualTypeArguments()[0]; //we known that DtList has one parameterized type
+		final Class<DtObject> dtoClass = (Class<DtObject>) ((ParameterizedType) paramType).getActualTypeArguments()[0]; // we
+																														// known
+																														// that
+																														// DtList
+																														// has
+																														// one
+																														// parameterized
+																														// type
 		final Type typeOfDest = createParameterizedType(UiList.class, dtoClass);
 		return gson.fromJson(json, typeOfDest);
 	}
@@ -178,17 +195,18 @@ public final class GoogleJsonEngine implements JsonEngine {
 				final String key = entry.getKey();
 				final Type paramType = entry.getValue();
 				final JsonElement jsonSubElement = jsonObject.get(key);
-
 				final Serializable value;
 				if (EndPointTypeUtil.isAssignableFrom(DtObject.class, paramType)) {
 					final Type typeOfDest = createParameterizedType(UiObject.class, paramType);
 					value = gson.fromJson(jsonSubElement, typeOfDest);
 				} else if (EndPointTypeUtil.isAssignableFrom(DtListDelta.class, paramType)) {
-					final Class<DtObject> dtoClass = (Class<DtObject>) ((ParameterizedType) paramType).getActualTypeArguments()[0]; //we known that DtListDelta has one parameterized type
+					final Class<DtObject> dtoClass = (Class<DtObject>) ((ParameterizedType) paramType)
+							.getActualTypeArguments()[0]; // we known that DtListDelta has one parameterized type
 					final Type typeOfDest = createParameterizedType(UiListDelta.class, dtoClass);
 					value = gson.fromJson(jsonSubElement, typeOfDest);
 				} else if (EndPointTypeUtil.isAssignableFrom(DtList.class, paramType)) {
-					final Class<DtObject> dtoClass = (Class<DtObject>) ((ParameterizedType) paramType).getActualTypeArguments()[0]; //we known that DtListDelta has one parameterized type
+					final Class<DtObject> dtoClass = (Class<DtObject>) ((ParameterizedType) paramType)
+							.getActualTypeArguments()[0]; // we known that DtListDelta has one parameterized type
 					final Type typeOfDest = createParameterizedType(UiList.class, dtoClass);
 					value = gson.fromJson(jsonSubElement, typeOfDest);
 				} else {
@@ -224,8 +242,10 @@ public final class GoogleJsonEngine implements JsonEngine {
 	}
 
 	private static class UiObjectDeserializer<D extends DtObject> implements JsonDeserializer<UiObject<D>> {
+
 		@Override
-		public UiObject<D> deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) {
+		public UiObject<D> deserialize(final JsonElement json, final Type typeOfT,
+				final JsonDeserializationContext context) {
 			final Type[] typeParameters = ((ParameterizedType) typeOfT).getActualTypeArguments();
 			final Class<D> dtoClass = (Class<D>) typeParameters[0]; // Id has only one parameterized type T
 			final JsonObject jsonObject = json.getAsJsonObject();
@@ -235,17 +255,18 @@ public final class GoogleJsonEngine implements JsonEngine {
 			final Set<String> modifiedFields = new HashSet<>();
 			for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 				final String fieldName = entry.getKey();
-				if (dtFields.contains(fieldName)) { //we only keep fields of this dtObject
+				if (dtFields.contains(fieldName)) { // we only keep fields of this dtObject
 					modifiedFields.add(fieldName);
 				}
 			}
-			//Send a alert if no fields match the DtObject ones : details may be a security issue ?
+			// Send a alert if no fields match the DtObject ones : details may be a security issue ?
 			if (modifiedFields.isEmpty()) {
 				final Set<String> jsonEntry = new HashSet<>();
 				for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 					jsonEntry.add(entry.getKey());
 				}
-				throw new JsonSyntaxException("Received Json's fields doesn't match " + dtoClass.getSimpleName() + " ones : " + jsonEntry);
+				throw new JsonSyntaxException("Received Json's fields doesn't match " + dtoClass.getSimpleName()
+						+ " ones : " + jsonEntry);
 			}
 			final UiObject<D> uiObject = new UiObject<>(inputDto, modifiedFields);
 			if (jsonObject.has(SERVER_SIDE_TOKEN_FIELDNAME)) {
@@ -255,54 +276,60 @@ public final class GoogleJsonEngine implements JsonEngine {
 		}
 	}
 
-	/*private static class UiObjectExtendedDeserializer<D extends DtObject> implements JsonDeserializer<UiObjectExtended<D>> {
-		@Override
-		public UiObjectExtended<D> deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
-			final Type[] typeParameters = ((ParameterizedType) typeOfT).getActualTypeArguments();
-			final Class<D> dtoClass = (Class<D>) typeParameters[0]; // Id has only one parameterized type T
-			final Type uiObjectType = createParameterizedType(UiObject.class, dtoClass);
-			final UiObject<D> uiObject = context.deserialize(json, uiObjectType);
-			final Set<String> uiObjectModifiedFields = uiObject.getModifiedFields();
-			final UiObjectExtended<D> uiObjectExtended = new UiObjectExtended(uiObject);
-
-			final JsonObject jsonObject = json.getAsJsonObject();
-			for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-				final String key = entry.getKey();
-				final JsonElement jsonSubElement = entry.getValue();
-				if (!uiObjectModifiedFields.contains(key)) {
-					//Can't type value : bad solution.
-					uiObjectExtended.put(key, jsonSubElement.getAsString());
-				}
-			}
-			return uiObjectExtended;
-		}
-	}*/
-
+	/*
+	 * private static class UiObjectExtendedDeserializer<D extends DtObject> implements
+	 * JsonDeserializer<UiObjectExtended<D>> {
+	 * @Override
+	 * public UiObjectExtended<D> deserialize(final JsonElement json, final Type typeOfT, final
+	 * JsonDeserializationContext context) throws JsonParseException {
+	 * final Type[] typeParameters = ((ParameterizedType) typeOfT).getActualTypeArguments();
+	 * final Class<D> dtoClass = (Class<D>) typeParameters[0]; // Id has only one parameterized type T
+	 * final Type uiObjectType = createParameterizedType(UiObject.class, dtoClass);
+	 * final UiObject<D> uiObject = context.deserialize(json, uiObjectType);
+	 * final Set<String> uiObjectModifiedFields = uiObject.getModifiedFields();
+	 * final UiObjectExtended<D> uiObjectExtended = new UiObjectExtended(uiObject);
+	 * final JsonObject jsonObject = json.getAsJsonObject();
+	 * for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+	 * final String key = entry.getKey();
+	 * final JsonElement jsonSubElement = entry.getValue();
+	 * if (!uiObjectModifiedFields.contains(key)) {
+	 * //Can't type value : bad solution.
+	 * uiObjectExtended.put(key, jsonSubElement.getAsString());
+	 * }
+	 * }
+	 * return uiObjectExtended;
+	 * }
+	 * }
+	 */
 	private static Set<String> getFieldNames(final DtDefinition dtDefinition) {
 		final Set<String> dtFieldNames = new HashSet<>();
 		for (final DtField dtField : dtDefinition.getFields()) {
-			dtFieldNames.add(StringUtil.constToCamelCase(dtField.getName(), false));
+			dtFieldNames.add(StringUtil.constToLowerCamelCase(dtField.getName()));
 		}
 		return dtFieldNames;
 	}
 
 	private static class UiListDeltaDeserializer<D extends DtObject> implements JsonDeserializer<UiListDelta<D>> {
+
 		@Override
-		public UiListDelta<D> deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) {
+		public UiListDelta<D> deserialize(final JsonElement json, final Type typeOfT,
+				final JsonDeserializationContext context) {
 			final Type[] typeParameters = ((ParameterizedType) typeOfT).getActualTypeArguments();
 			final Class<D> dtoClass = (Class<D>) typeParameters[0]; // Id has only one parameterized type T
 			final Type uiObjectType = createParameterizedType(UiObject.class, dtoClass);
 			final JsonObject jsonObject = json.getAsJsonObject();
-
-			final Map<String, UiObject<D>> collCreates = parseUiObjectMap(jsonObject, "collCreates", uiObjectType, context);
-			final Map<String, UiObject<D>> collUpdates = parseUiObjectMap(jsonObject, "collUpdates", uiObjectType, context);
-			final Map<String, UiObject<D>> collDeletes = parseUiObjectMap(jsonObject, "collDeletes", uiObjectType, context);
-
+			final Map<String, UiObject<D>> collCreates = parseUiObjectMap(jsonObject, "collCreates", uiObjectType,
+					context);
+			final Map<String, UiObject<D>> collUpdates = parseUiObjectMap(jsonObject, "collUpdates", uiObjectType,
+					context);
+			final Map<String, UiObject<D>> collDeletes = parseUiObjectMap(jsonObject, "collDeletes", uiObjectType,
+					context);
 			final UiListDelta<D> uiListDelta = new UiListDelta<>(dtoClass, collCreates, collUpdates, collDeletes);
 			return uiListDelta;
 		}
 
-		private Map<String, UiObject<D>> parseUiObjectMap(final JsonObject jsonObject, final String propertyName, final Type uiObjectType, final JsonDeserializationContext context) {
+		private Map<String, UiObject<D>> parseUiObjectMap(final JsonObject jsonObject, final String propertyName,
+				final Type uiObjectType, final JsonDeserializationContext context) {
 			final Map<String, UiObject<D>> uiObjectMap = new HashMap<>();
 			final JsonObject jsonUiObjectMap = jsonObject.getAsJsonObject(propertyName);
 			if (jsonUiObjectMap != null) {
@@ -317,13 +344,14 @@ public final class GoogleJsonEngine implements JsonEngine {
 	}
 
 	private static class UiListDeserializer<D extends DtObject> implements JsonDeserializer<UiList<D>> {
+
 		@Override
-		public UiList<D> deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+		public UiList<D> deserialize(final JsonElement json, final Type typeOfT,
+				final JsonDeserializationContext context) throws JsonParseException {
 			final Type[] typeParameters = ((ParameterizedType) typeOfT).getActualTypeArguments();
 			final Class<D> dtoClass = (Class<D>) typeParameters[0]; // Id has only one parameterized type T
 			final Type uiObjectType = createParameterizedType(UiObject.class, dtoClass);
 			final JsonArray jsonArray = json.getAsJsonArray();
-
 			final UiList<D> uiList = new UiList<>(dtoClass);
 			for (final JsonElement element : jsonArray) {
 				final UiObject<D> inputDto = context.deserialize(element, uiObjectType);
@@ -335,144 +363,148 @@ public final class GoogleJsonEngine implements JsonEngine {
 
 	private Gson createGson() {
 		return new GsonBuilder()
-		.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-		.setPrettyPrinting()
-		//TODO  registerTypeAdapter(String.class, new EmptyStringAsNull<>())// add "" <=> null
-		//.serializeNulls()//On veut voir les null
-		.registerTypeAdapter(UiObject.class, new UiObjectDeserializer<>())
-		.registerTypeAdapter(UiListDelta.class, new UiListDeltaDeserializer<>())
-		.registerTypeAdapter(UiList.class, new UiListDeserializer<>())
-		//.registerTypeAdapter(UiObjectExtended.class, new UiObjectExtendedDeserializer<>())
-		/*.registerTypeAdapter(DtObjectExtended.class, new JsonSerializer<DtObjectExtended<?>>() {
+				.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+				.setPrettyPrinting()
+				// TODO registerTypeAdapter(String.class, new EmptyStringAsNull<>())// add "" <=> null
+				// .serializeNulls()//On veut voir les null
+				.registerTypeAdapter(UiObject.class, new UiObjectDeserializer<>())
+				.registerTypeAdapter(UiListDelta.class, new UiListDeltaDeserializer<>())
+				.registerTypeAdapter(UiList.class, new UiListDeserializer<>())
+				// .registerTypeAdapter(UiObjectExtended.class, new UiObjectExtendedDeserializer<>())
+				/*
+				 * .registerTypeAdapter(DtObjectExtended.class, new JsonSerializer<DtObjectExtended<?>>() {
+				 * @Override
+				 * public JsonElement serialize(final DtObjectExtended<?> src, final Type typeOfSrc, final
+				 * JsonSerializationContext context) {
+				 * final JsonObject jsonObject = new JsonObject();
+				 * final JsonObject jsonInnerObject = (JsonObject) context.serialize(src.getInnerObject());
+				 * for (final Entry<String, JsonElement> entry : jsonInnerObject.entrySet()) {
+				 * jsonObject.add(entry.getKey(), entry.getValue());
+				 * }
+				 * for (final Entry<String, Serializable> entry : src.entrySet()) {
+				 * jsonObject.add(entry.getKey(), context.serialize(entry.getValue()));
+				 * }
+				 * return jsonObject;
+				 * }
+				 * })
+				 */
+				.registerTypeAdapter(ComponentInfo.class, new JsonSerializer<ComponentInfo>() {
+
 					@Override
-					public JsonElement serialize(final DtObjectExtended<?> src, final Type typeOfSrc, final JsonSerializationContext context) {
+					public JsonElement serialize(final ComponentInfo componentInfo, final Type typeOfSrc,
+							final JsonSerializationContext context) {
 						final JsonObject jsonObject = new JsonObject();
-						final JsonObject jsonInnerObject = (JsonObject) context.serialize(src.getInnerObject());
-						for (final Entry<String, JsonElement> entry : jsonInnerObject.entrySet()) {
-							jsonObject.add(entry.getKey(), entry.getValue());
-						}
-						for (final Entry<String, Serializable> entry : src.entrySet()) {
-							jsonObject.add(entry.getKey(), context.serialize(entry.getValue()));
-						}
+						jsonObject.add(componentInfo.getTitle(), context.serialize(componentInfo.getValue()));
 						return jsonObject;
 					}
-				})*/
-		.registerTypeAdapter(ComponentInfo.class, new JsonSerializer<ComponentInfo>() {
-			@Override
-			public JsonElement serialize(final ComponentInfo componentInfo, final Type typeOfSrc, final JsonSerializationContext context) {
-				final JsonObject jsonObject = new JsonObject();
-				jsonObject.add(componentInfo.getTitle(), context.serialize(componentInfo.getValue()));
-				return jsonObject;
-			}
-		})
-		.registerTypeAdapter(List.class, new JsonSerializer<List>() {
+				}).registerTypeAdapter(List.class, new JsonSerializer<List>() {
 
-			@Override
-			public JsonElement serialize(final List src, final Type typeOfSrc, final JsonSerializationContext context) {
-				if (src.isEmpty()) {
-					return null;
-				}
-				return context.serialize(src);
-			}
-		})
-		.registerTypeAdapter(Map.class, new JsonSerializer<Map>() {
+					@Override
+					public JsonElement serialize(final List src, final Type typeOfSrc,
+							final JsonSerializationContext context) {
+						if (src.isEmpty()) {
+							return null;
+						}
+						return context.serialize(src);
+					}
+				}).registerTypeAdapter(Map.class, new JsonSerializer<Map>() {
 
-			@Override
-			public JsonElement serialize(final Map src, final Type typeOfSrc, final JsonSerializationContext context) {
-				if (src.isEmpty()) {
-					return null;
-				}
-				return context.serialize(src);
-			}
-		})
-		.registerTypeAdapter(DefinitionReference.class, new JsonSerializer<DefinitionReference>() {
+					@Override
+					public JsonElement serialize(final Map src, final Type typeOfSrc,
+							final JsonSerializationContext context) {
+						if (src.isEmpty()) {
+							return null;
+						}
+						return context.serialize(src);
+					}
+				}).registerTypeAdapter(DefinitionReference.class, new JsonSerializer<DefinitionReference>() {
 
-			@Override
-			public JsonElement serialize(final DefinitionReference src, final Type typeOfSrc, final JsonSerializationContext context) {
-				return context.serialize(src.get().getName());
-			}
-		})
-		.registerTypeAdapter(Option.class, new JsonSerializer<Option>() {
+					@Override
+					public JsonElement serialize(final DefinitionReference src, final Type typeOfSrc,
+							final JsonSerializationContext context) {
+						return context.serialize(src.get().getName());
+					}
+				}).registerTypeAdapter(Option.class, new JsonSerializer<Option>() {
 
-			@Override
-			public JsonElement serialize(final Option src, final Type typeOfSrc, final JsonSerializationContext context) {
-				if (src.isDefined()) {
-					return context.serialize(src.get());
-				}
-				return null; //rien
-			}
-		})
-		.registerTypeAdapter(Class.class, new JsonSerializer<Class>() {
+					@Override
+					public JsonElement serialize(final Option src, final Type typeOfSrc,
+							final JsonSerializationContext context) {
+						if (src.isDefined()) {
+							return context.serialize(src.get());
+						}
+						return null; // rien
+					}
+				}).registerTypeAdapter(Class.class, new JsonSerializer<Class>() {
 
-			@Override
-			public JsonElement serialize(final Class src, final Type typeOfSrc, final JsonSerializationContext context) {
-				return new JsonPrimitive(src.getName());
-			}
-		})
-		.registerTypeAdapter(FacetedQueryResult.class, new JsonSerializer<FacetedQueryResult>() {
+					@Override
+					public JsonElement serialize(final Class src, final Type typeOfSrc,
+							final JsonSerializationContext context) {
+						return new JsonPrimitive(src.getName());
+					}
+				}).registerTypeAdapter(FacetedQueryResult.class, new JsonSerializer<FacetedQueryResult>() {
 
-			/*public JsonElement serialize(final DtObjectExtended<?> src, final Type typeOfSrc, final JsonSerializationContext context) {
-				final JsonObject jsonObject = new JsonObject();
-				final JsonObject jsonInnerObject = (JsonObject) context.serialize(src.getInnerObject());
-				for (final Entry<String, JsonElement> entry : jsonInnerObject.entrySet()) {
-					jsonObject.add(entry.getKey(), entry.getValue());
-				}
-				for (final Entry<String, Serializable> entry : src.entrySet()) {
-					jsonObject.add(entry.getKey(), context.serialize(entry.getValue()));
-				}
-				return jsonObject;
-			}*/
+					/*
+					 * public JsonElement serialize(final DtObjectExtended<?> src, final Type typeOfSrc, final
+					 * JsonSerializationContext context) {
+					 * final JsonObject jsonObject = new JsonObject();
+					 * final JsonObject jsonInnerObject = (JsonObject) context.serialize(src.getInnerObject());
+					 * for (final Entry<String, JsonElement> entry : jsonInnerObject.entrySet()) {
+					 * jsonObject.add(entry.getKey(), entry.getValue());
+					 * }
+					 * for (final Entry<String, Serializable> entry : src.entrySet()) {
+					 * jsonObject.add(entry.getKey(), context.serialize(entry.getValue()));
+					 * }
+					 * return jsonObject;
+					 * }
+					 */
+					@Override
+					public JsonElement serialize(final FacetedQueryResult src, final Type typeOfSrc,
+							final JsonSerializationContext context) {
+						// TODO Auto-generated method stub
+						final JsonObject jsonObject = new JsonObject();
+						final JsonArray jsonData = (JsonArray) context.serialize(src.getDtList());
+						jsonObject.add("list", jsonData);
+						final List<Facet> facets = src.getFacets();
+						// final List<JsonObject> facetList = new ArrayList<JsonObject>();
+						final Map<String, JsonObject> mapFacetList = new HashMap();
+						for (final Facet facet : facets) {
+							final JsonObject jsonFacet = new JsonObject();
+							final Map<String, FacetObject> maps = new HashMap();
+							for (final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+								final FacetObject facetObj = new FacetObject();
+								facetObj.setCount(entry.getValue());
+								facetObj.setLabel(entry.getKey().getLabel().getDisplay());
+								// maps.put(entry.getKey().getLabel().getDisplay() ,entry.getValue());
+								maps.put(entry.getKey().getLabel().getDisplay(), facetObj);
+							}
+							final JsonObject jsonFacetValues = (JsonObject) context.serialize(maps);
+							final String facetName = facet.getDefinition().getLabel().getDisplay();
+							jsonFacet.add(facetName, jsonFacetValues);
+							mapFacetList.put(facetName, jsonFacetValues);
+						}
+						jsonObject.add("facet", context.serialize(mapFacetList));
+						jsonObject.add("totalRecords", context.serialize(src.getCount()));
+						return jsonObject;
+					}
+				}).addSerializationExclusionStrategy(new ExclusionStrategy() {
 
-			@Override
-			public JsonElement serialize(final FacetedQueryResult src,
-					final Type typeOfSrc, final JsonSerializationContext context) {
-				// TODO Auto-generated method stub
-				final JsonObject jsonObject = new JsonObject();
-				final JsonArray jsonData = (JsonArray) context.serialize(src.getDtList());
-				jsonObject.add("list", jsonData);
-				final List<Facet> facets = src.getFacets();
-				//final List<JsonObject> facetList = new ArrayList<JsonObject>();
-				final Map<String,JsonObject> mapFacetList = new HashMap();
-				for(final Facet facet : facets){
-					final JsonObject jsonFacet= new JsonObject();
-					final Map<String, FacetObject> maps = new HashMap();
-					for(final Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
-						final FacetObject facetObj = new FacetObject();
-						facetObj.setCount(entry.getValue());
-						facetObj.setLabel(entry.getKey().getLabel().getDisplay());
-						//maps.put(entry.getKey().getLabel().getDisplay() ,entry.getValue());
-						maps.put(entry.getKey().getLabel().getDisplay(), facetObj);
+					@Override
+					public boolean shouldSkipField(final FieldAttributes arg0) {
+						if (arg0.getAnnotation(JsonExclude.class) != null) {
+							return true;
+						}
+						return false;
 					}
 
-
-					final JsonObject jsonFacetValues =  (JsonObject) context.serialize(maps);
-					final String facetName = facet.getDefinition().getLabel().getDisplay();
-					jsonFacet.add(facetName, jsonFacetValues);
-
-					mapFacetList.put(facetName, jsonFacetValues);
-				}
-				jsonObject.add("facet", context.serialize(mapFacetList));
-				jsonObject.add("totalRecords", context.serialize(src.getCount()));
-				return jsonObject;
-			}
-		})
-		.addSerializationExclusionStrategy(new ExclusionStrategy() {
-			@Override
-			public boolean shouldSkipField(final FieldAttributes arg0) {
-				if (arg0.getAnnotation(JsonExclude.class) != null) {
-					return true;
-				}
-				return false;
-			}
-
-			@Override
-			public boolean shouldSkipClass(final Class<?> arg0) {
-				return false;
-			}
-		}).create();
+					@Override
+					public boolean shouldSkipClass(final Class<?> arg0) {
+						return false;
+					}
+				}).create();
 	}
 
 	private class FacetObject {
+
 		private String label;
 		private Long count;
 
@@ -482,12 +514,12 @@ public final class GoogleJsonEngine implements JsonEngine {
 		public void setLabel(final String label) {
 			this.label = label;
 		}
+
 		/**
 		 * @param count the count to set
 		 */
 		public void setCount(final Long count) {
 			this.count = count;
 		}
-
 	}
 }

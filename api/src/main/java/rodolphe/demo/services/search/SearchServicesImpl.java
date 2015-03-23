@@ -22,7 +22,6 @@ public class SearchServicesImpl implements SearchServices {
 	@Transactional
 	public void indexMovies() {
 		movieSearchHandler.indexer();
-
 	}
 
 	/** {@inheritDoc} */
@@ -52,7 +51,6 @@ public class SearchServicesImpl implements SearchServices {
 	@Transactional
 	public void indexPeople() {
 		peopleSearchHandler.indexer();
-
 	}
 
 	/** {@inheritDoc} */
@@ -60,7 +58,6 @@ public class SearchServicesImpl implements SearchServices {
 	@Transactional
 	public void indexPeople(final Long peoId) {
 		peopleSearchHandler.indexerItem(peoId);
-
 	}
 
 	/** {@inheritDoc} */
@@ -70,6 +67,4 @@ public class SearchServicesImpl implements SearchServices {
 			final SearchCriterium<PeopleCriteria> criteria) {
 		return peopleSearchHandler.rechercher(criteria);
 	}
-
-
 }

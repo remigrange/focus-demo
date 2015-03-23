@@ -4,7 +4,6 @@ package rodolphe.demo.util;
  * Class for master datas.
  *
  * @author JDALMEIDA
- *
  */
 public class ReferenceIdObject {
 
@@ -17,7 +16,7 @@ public class ReferenceIdObject {
 	 *
 	 * @param id id.
 	 * @param label Label.
-	 * @param active  active.
+	 * @param active active.
 	 */
 	public ReferenceIdObject(final Long code, final String label, final Boolean active) {
 		this.code = code;

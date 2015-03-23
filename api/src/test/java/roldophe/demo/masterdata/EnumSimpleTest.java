@@ -13,9 +13,8 @@ import roldophe.demo.tools.AbstractRodolpheTestCase;
 
 /**
  * @author JDALMEIDA
- *
  */
-public class EnumSimpleTest   extends AbstractRodolpheTestCase{
+public class EnumSimpleTest extends AbstractRodolpheTestCase {
 
 	/**
 	 * check enum codeScope.
@@ -24,6 +23,7 @@ public class EnumSimpleTest   extends AbstractRodolpheTestCase{
 	public void checkCodeScope() {
 		coherenceEnum(CodeScope.class);
 	}
+
 	private <E extends CodeEnum> void coherenceEnum(final Class<E> enumClass) {
 		getLogger().info("analyse classe " + enumClass.getSimpleName());
 		// Chargement valeurs de l'énumération.

@@ -2,13 +2,13 @@
 <config>
 
 	<module name="ressources">
-		<component api="LocaleManager" class="io.vertigoimpl.commons.locale.LocaleManagerImpl">
+		<component api="LocaleManager" class="io.vertigo.commons.impl.locale.LocaleManagerImpl">
 			<param name="locales" value="fr_FR" />
 		</component>
 		<component api="ResourceManager" class="io.vertigo.commons.impl.resource.ResourceManagerImpl">
 			<plugin class="io.vertigo.commons.plugins.resource.java.ClassPathResourceResolverPlugin" />
 		</component>
-		<component api="KSecurityManager" class="io.vertigo.persona.impl.security.KSecurityManagerImpl">
+		<component api="VSecurityManager" class="io.vertigo.persona.impl.security.VSecurityManagerImpl">
 			<param name="userSessionClassName" value="roldophe.demo.tools.TnrUserSession" />
 			<plugin class="io.vertigo.persona.plugins.security.loaders.SecurityResourceLoaderPlugin" />
 		</component>

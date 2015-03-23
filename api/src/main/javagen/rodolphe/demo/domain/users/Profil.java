@@ -4,7 +4,6 @@ import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;
 import io.vertigo.dynamo.domain.model.DtObject;
 import io.vertigo.dynamo.domain.util.DtObjectUtil;
-
 /**
  * Attention cette classe est générée automatiquement !
  * Objet de données Profil
@@ -64,7 +63,7 @@ public final class Profil implements DtObject {
 	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.users.SecurityRole>
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_PRO_SRO",
+    	name = "ANN_PRO_SRO",
     	tableName = "PRO_SRO",
     	dtDefinitionA = "DT_PROFIL",
     	dtDefinitionB = "DT_SECURITY_ROLE",
@@ -81,7 +80,7 @@ public final class Profil implements DtObject {
 		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
 			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.users.SecurityRole.class);
 		}
-		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getSecurityRoleDtListURI();
+		final io.vertigo.dynamo.domain.model.DtListURI fkDtListURI = getSecurityRoleDtListURI();
 		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
@@ -96,7 +95,7 @@ public final class Profil implements DtObject {
 	 * @return URI de l'association
 	 */
     @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_PRO_SRO",
+    	name = "ANN_PRO_SRO",
     	tableName = "PRO_SRO",
     	dtDefinitionA = "DT_PROFIL",
     	dtDefinitionB = "DT_SECURITY_ROLE",
@@ -107,8 +106,8 @@ public final class Profil implements DtObject {
     	labelA = "Profil",
     	labelB = "Security role"
     )
-	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation getSecurityRoleDtListURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURI(this, "A_PRO_SRO", "SecurityRole");
+	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForNNAssociation getSecurityRoleDtListURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURIForNNAssociation(this, "ANN_PRO_SRO", "SecurityRole");
 	}
 
 	/** {@inheritDoc} */

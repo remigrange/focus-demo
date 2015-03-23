@@ -11,7 +11,6 @@ import rodolphe.demo.util.MdlUtil;
  * Enum for people title.
  *
  * @author JDALMEIDA
- *
  */
 public enum CodeTitle implements CodeEnumWithDto<Title> {
 	/** MS */
@@ -30,5 +29,4 @@ public enum CodeTitle implements CodeEnumWithDto<Title> {
 	public Class<Title> getDtoClass() {
 		return Title.class;
 	}
-
 }

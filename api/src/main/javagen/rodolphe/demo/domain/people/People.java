@@ -4,7 +4,6 @@ import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;
 import io.vertigo.dynamo.domain.model.DtObject;
 import io.vertigo.dynamo.domain.util.DtObjectUtil;
-
 /**
  * Attention cette classe est générée automatiquement !
  * Objet de données People
@@ -25,8 +24,8 @@ public final class People implements DtObject {
 	private String mimeType;
 	private String filePath;
 	private String titCd;
-	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> fileInfo;
 	private rodolphe.demo.domain.masterdatas.Title title;
+	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> fileInfo;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -218,57 +217,6 @@ public final class People implements DtObject {
 		this.titCd = titCd;
 	}
 
-	/**
-	 * Association : File info.
-	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo>
-	 */
-    @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_PEO_FIL",
-    	tableName = "PEO_FIL",
-    	dtDefinitionA = "DT_PEOPLE",
-    	dtDefinitionB = "DT_FILE_INFO",
-    	navigabilityA = false,
-    	navigabilityB = true,
-    	roleA = "People",
-    	roleB = "FileInfo",
-    	labelA = "People",
-    	labelB = "File info"
-    )
-	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> getFileInfoList() {
-//		return this.<rodolphe.demo.domain.files.FileInfo> getList(getFileInfoListURI());
-		// On doit avoir une clé primaire renseignée. Si ce n'est pas le cas, on renvoie une liste vide
-		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
-			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.files.FileInfo.class);
-		}
-		final io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation fkDtListURI = getFileInfoDtListURI();
-		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
-		//---------------------------------------------------------------------
-		//On est toujours dans un mode lazy.
-		if (fileInfo == null) {
-			fileInfo = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
-		}
-		return fileInfo;
-	}
-
-	/**
-	 * Association URI: File info.
-	 * @return URI de l'association
-	 */
-    @io.vertigo.dynamo.domain.stereotype.AssociationNN (
-    	name = "A_PEO_FIL",
-    	tableName = "PEO_FIL",
-    	dtDefinitionA = "DT_PEOPLE",
-    	dtDefinitionB = "DT_FILE_INFO",
-    	navigabilityA = false,
-    	navigabilityB = true,
-    	roleA = "People",
-    	roleB = "FileInfo",
-    	labelA = "People",
-    	labelB = "File info"
-    )
-	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForAssociation getFileInfoDtListURI() {
-		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURI(this, "A_PEO_FIL", "FileInfo");
-	}
 
 	// Association : Role people non navigable
 	/**
@@ -332,6 +280,57 @@ public final class People implements DtObject {
 	}
 
 	// Association : Casting non navigable
+	/**
+	 * Association : File info.
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo>
+	 */
+    @io.vertigo.dynamo.domain.stereotype.AssociationNN (
+    	name = "ANN_PEO_FIL",
+    	tableName = "PEO_FIL",
+    	dtDefinitionA = "DT_PEOPLE",
+    	dtDefinitionB = "DT_FILE_INFO",
+    	navigabilityA = false,
+    	navigabilityB = true,
+    	roleA = "People",
+    	roleB = "FileInfo",
+    	labelA = "People",
+    	labelB = "File info"
+    )
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.files.FileInfo> getFileInfoList() {
+//		return this.<rodolphe.demo.domain.files.FileInfo> getList(getFileInfoListURI());
+		// On doit avoir une clé primaire renseignée. Si ce n'est pas le cas, on renvoie une liste vide
+		if (io.vertigo.dynamo.domain.util.DtObjectUtil.getId(this) == null) {
+			return new io.vertigo.dynamo.domain.model.DtList<>(rodolphe.demo.domain.files.FileInfo.class);
+		}
+		final io.vertigo.dynamo.domain.model.DtListURI fkDtListURI = getFileInfoDtListURI();
+		io.vertigo.lang.Assertion.checkNotNull(fkDtListURI);
+		//---------------------------------------------------------------------
+		//On est toujours dans un mode lazy.
+		if (fileInfo == null) {
+			fileInfo = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
+		}
+		return fileInfo;
+	}
+
+	/**
+	 * Association URI: File info.
+	 * @return URI de l'association
+	 */
+    @io.vertigo.dynamo.domain.stereotype.AssociationNN (
+    	name = "ANN_PEO_FIL",
+    	tableName = "PEO_FIL",
+    	dtDefinitionA = "DT_PEOPLE",
+    	dtDefinitionB = "DT_FILE_INFO",
+    	navigabilityA = false,
+    	navigabilityB = true,
+    	roleA = "People",
+    	roleB = "FileInfo",
+    	labelA = "People",
+    	labelB = "File info"
+    )
+	public io.vertigo.dynamo.domain.metamodel.association.DtListURIForNNAssociation getFileInfoDtListURI() {
+		return io.vertigo.dynamo.domain.util.DtObjectUtil.createDtListURIForNNAssociation(this, "ANN_PEO_FIL", "FileInfo");
+	}
 
 	/** {@inheritDoc} */
 	@Override
