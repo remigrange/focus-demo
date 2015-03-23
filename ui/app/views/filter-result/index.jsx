@@ -1,10 +1,11 @@
+/*global focusComponents, React */
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var serviceCommon = require('../../services');
 var lineResume = require('./lineResume');
 
 
-module.exports =  React.createClass({
-    render:function(){
+module.exports = React.createClass({
+    render: function(){
 
         var action = {
             search: function(criteria) {
@@ -28,7 +29,7 @@ module.exports =  React.createClass({
                         var dataRet = {
                             facet: data.facet,
                             list: data.list,
-                            pageInfos:{
+                            pageInfos: {
                                 currentPage: criteria.pageInfos.page,
                                 perPage: 50,
                                 totalRecords: 50
