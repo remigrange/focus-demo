@@ -5,7 +5,7 @@ var SlidingContent = require('./slidingContent');
 var StickyNavigation = focus.components.common.stickyNavigation.component;
 
 module.exports = React.createClass({
-    render: function renderMovieView() {
+    render: function renderPeopleView() {
         return (
             <div className="movieView">
                 <StickyNavigation contentSelector="#slidingContent"/>

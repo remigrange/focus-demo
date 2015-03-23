@@ -3,7 +3,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 module.exports = React.createClass({
     definitionPath: "movie",
-    displayName: "movieCartridge",
+    displayName: "cartridge",
     getInitialState: function () {
         this.state = {actors: [],
             producers: [],
@@ -15,7 +15,7 @@ module.exports = React.createClass({
     action: movieActions,
     renderContent: function renderMovieCartridge() {
         return (
-            <div className="movieCartridge">
+            <div className="cartridge">
                 <div className="header">
                     <div className="picture"><img src="./static/img/logoMovie.png" width="100%" height="100%"/></div>
                     <div className="title">{this.state.title}</div>

@@ -1,36 +1,6 @@
 div[data-component] {
   color: red; }
 
-.live-filter.expanded {
-  width: 250px; }
-
-.live-filter {
-  min-height: 400px; }
-  .live-filter .icon {
-    float: right;
-    height: inherit; }
-  .live-filter .facet.selected .panel-heading {
-    background-image: url("../img/cross.svg");
-    background-repeat: no-repeat;
-    background-position: right center; }
-  .live-filter .facet.unselected .panel-heading {
-    background-repeat: no-repeat;
-    background-position: right center; }
-  .live-filter .facet .panel-heading {
-    cursor: pointer; }
-  .live-filter .facet ul {
-    list-style-type: none; }
-  .live-filter .facet li {
-    cursor: pointer; }
-  .live-filter .facet li:hover {
-    color: #E6E6E6; }
-
-.chevron-thin-left {
-  background: url("../img/chevron-thin-left.svg") no-repeat right center; }
-
-.chevron-thin-right {
-  background: url("../img/chevron-thin-right.svg") no-repeat right center; }
-
 /* Style for the quick-search-component*/
 /* Variables*/
 /* Style */
@@ -164,6 +134,7 @@ div.qs-quick-search {
 .action-bar .facet-container {
   width: 400px; }
 
+
 /* Style for the list component*/
 /*variables*/
 /*styles*/
@@ -207,7 +178,6 @@ ul.selection-list {
     ul.selection-list li.sl-button a, ul.selection-list li.sl-button button {
       position: absolute;
       right: 0px; }
-
 
 .print {
   background: url("../img/print.svg") no-repeat center; }
@@ -330,17 +300,47 @@ ul.selection-list {
   height: 40px;
   cursor: pointer; }
 
+.sticky-navigation li.active {
+  font-weight: bold; }
+
 .dots-three-vertical {
   background: url("../img/dots-three-vertical.svg") no-repeat center; }
 
 .select-action li.selected a {
   font-weight: bold; }
 
-.sticky-navigation li.active {
-  font-weight: bold; }
-
 .topic-displayer .topic {
   background: url("../img/cross.svg") no-repeat right center; }
+
+.live-filter.expanded {
+  width: 250px; }
+
+.live-filter {
+  min-height: 400px; }
+  .live-filter .icon {
+    float: right;
+    height: inherit; }
+  .live-filter .facet.selected .panel-heading {
+    background-image: url("../img/cross.svg");
+    background-repeat: no-repeat;
+    background-position: right center; }
+  .live-filter .facet.unselected .panel-heading {
+    background-repeat: no-repeat;
+    background-position: right center; }
+  .live-filter .facet .panel-heading {
+    cursor: pointer; }
+  .live-filter .facet ul {
+    list-style-type: none; }
+  .live-filter .facet li {
+    cursor: pointer; }
+  .live-filter .facet li:hover {
+    color: #E6E6E6; }
+
+.chevron-thin-left {
+  background: url("../img/chevron-thin-left.svg") no-repeat right center; }
+
+.chevron-thin-right {
+  background: url("../img/chevron-thin-right.svg") no-repeat right center; }
 
 .liveFilterContainer {
   padding-right: 10px; }
@@ -348,9 +348,6 @@ ul.selection-list {
 .search-result .liveFilterContainer, .search-result .resultContainer {
   vertical-align: top;
   float: left; }
-
-.listSummaryContainer {
-  height: 50px; }
 
 /*Spinner container*/
 .spinner{
@@ -463,46 +460,46 @@ ul.selection-list {
   width: 32px;
   height: 32px;
 }
-.movieDetails {
+.details {
   background-color: white;
   float: right;
   width: 85%;
   border: solid 1px;
 }
-.movieCartridgeCss {
+.cartridgeCss {
   width: 454px;
   float: right;
   border-left: solid 1px;
 }
-.movieCartridge .header {
+.cartridge .header {
   background-color: #EEECE1;
   height: 150px;
   border-bottom: solid 1px;
 }
-.movieCartridge .header .picture {
+.cartridge .header .picture {
   float: left;
   width: 100px;
   height: 100px;
   margin: 20px 20px;
 }
-.movieCartridge .header .title {
+.cartridge .header .title {
   padding-top: 30px;
   font-weight: bold;
   font-size: 18px;
 }
-.movieCartridge .field {
+.cartridge .field {
   background-color: #F2F2F2;
   float: left;
   width: 100%;
   padding: 10px;
   border-bottom: solid 1px;
 }
-.movieCartridge .field .title {
+.cartridge .field .title {
   width: 30%;
   float: left;
   font-weight: bold;
 }
-.movieCartridge .field .content {
+.cartridge .field .content {
   width: 70%;
   float: right;
 }
@@ -529,19 +526,20 @@ ul.selection-list {
 .sticky-navigation a:focus {
   color: purple;
 }
-.peopleCard {
+.slidingContentCss .card {
   background-color: #E0E0E0;
   height: 70px;
-  margin: 20px;
+  margin: 10px 20px;
   padding: 10px;
+  width: 900px;
 }
-.peopleCard .picture {
+.slidingContentCss .card .picture {
   float: left;
   width: 50px;
   height: 50px;
   margin-right: 20px;
 }
-.peopleCard .name {
+.slidingContentCss .card .name {
   font-weight: bold;
   font-size: 20px;
 }
