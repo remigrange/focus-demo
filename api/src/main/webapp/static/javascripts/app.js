@@ -2062,9 +2062,17 @@ module.exports= React.createClass({displayName: "exports",
             criteria: {
                 scope: 'MOVIE',
                 searchText: 'Fantastic'
-            }
+            },
+            //TODO USE REFERENCE
+            scopes: [
+                {id: 'MOVIE', label: 'MOVIE', active: true },
+                {id: 'PEOPLE', label: 'PEOPLE', active: true },
+                {id: 'ALL', label: 'ALL', active: true}
+            ]
+
 
         };
+
 
 
         var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),
