@@ -1364,24 +1364,26 @@ Backbone.$ = $;*/
 //https://github.com/zilverline/react-tap-event-plugin
 //injectTapEventPlugin();
 
-require("./domain-initializer");
-require("./definition-initializer");
-require("./reference_list_initializer").initialize();
+require('./domain-initializer');
+require('./definition-initializer');
+require('./reference_list_initializer').initialize();
 
 
 });
 
 require.register("initializer/reference_list_initializer", function(exports, require, module) {
 //Path to the reference service.
+/*global focus */
 var serviceReference = require('../services');
 var reference = focus.reference;
 
 module.exports = {
     initialize: function(options, context) {
-        reference.config.set({'scopes' : serviceReference.refernce.getScopes});
+        reference.config.set({'scopes': serviceReference.refernce.getScopes});
         reference.builder.loadListByName('scopes');
     }
 };
+
 });
 
 require.register("router/index", function(exports, require, module) {
@@ -1893,35 +1895,36 @@ module.exports = React.createClass({
 });
 
 require.register("views/search-result/index", function(exports, require, module) {
+/*global focusComponents, React*/
 var SearchResult = focusComponents.page.search.searchResult.component;
 var serviceCommon = require('../../services');
-module.exports =  React.createClass({displayName: "exports",
-    render:function(){
+module.exports= React.createClass({displayName: "exports",
+    render: function(){
 
         var action = {
             search: function(criteria) {
                 //TODO handle pageInfo
                 var critere = {
-                    criteria : {
-                        scope:"MOVIE",
-                        query:criteria.criteria.query
+                    criteria: {
+                        scope: 'MOVIE',
+                        query: criteria.criteria.query
                     },
-                    pageInfos : {
+                    pageInfos: {
                         sortFieldName: undefined,
-                        sortDesc:  undefined
+                        sortDesc: undefined
                     },
-                    facets:[]
+                    facets: []
                 }
                 serviceCommon.common.searchByScope(critere).then(
                     function success(data) {
                         var list = data;
-                        if(data.list!==undefined){
-                            list= data.list;
+                        if(data.list !== undefined){
+                            list = data.list;
                         }
                         var dataRet = {
                             list: list,
-                            facet:{},
-                            pageInfos:{
+                            facet: {},
+                            pageInfos: {
                                 currentPage: 2,
                                 perPage: 50,
                                 totalRecords: 10
@@ -1931,11 +1934,11 @@ module.exports =  React.createClass({displayName: "exports",
                                 query: criteria.criteria.query
                             }
                         };
-                        focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
+                        focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
                     },
                     function error(error) {
                         //TODO
-                        console.info("Errrors");
+                        console.info('Errrors');
                     }
                 );
             }
@@ -1969,33 +1972,33 @@ module.exports =  React.createClass({displayName: "exports",
             ],
             action: action,
             lineComponent: Line,
-            onLineClick : function onLineClick(line){
+            onLineClick: function onLineClick(line){
                 alert('click sur la ligne ' + line.title);
             },
-            isSelection:true,
-            lineOperationList:[
+            isSelection: true,
+            lineOperationList: [
             ],
             criteria: {
-                scope: "MOVIE",
-                searchText : "Fantastic"
+                scope: 'MOVIE',
+                searchText: 'Fantastic'
             }
 
-        }
+        };
 
 
-        var searchResult =  React.createElement(React.createClass({mixins:[focusComponents.page.search.searchResult.mixin],actions: config.action}),
+        var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),
             {
                 lineComponent: Line,
-                onLineClick : function onLineClick(line){
+                onLineClick: function onLineClick(line){
                     alert('click sur la ligne ' + line.title);
                 },
-                operationList:config.operationList
+                operationList: config.operationList
 
             }
         );
-        
         return searchResult;
     }
 });
+
 });
 

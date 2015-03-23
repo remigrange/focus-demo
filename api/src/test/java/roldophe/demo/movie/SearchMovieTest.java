@@ -91,7 +91,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 	/** {@inheritDoc} */
 	@Override
 	protected DtList<MovieResult> getListByCritere(final MovieCriteria critere) {
-		final UiListState uiListState = new UiListState(0, 0, null, false, null);
+		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		return movieServices.getMoviesByCriteria(critere, uiListState).getDtList();
 	}
 
@@ -149,7 +149,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		final String titleToSearch = "Fantastic";
 		final String titleOther= "TITLE_TNR_OTHER";
 		crit.setTitle(titleToSearch);
-		final UiListState uiListState = new UiListState(0, 0, null, false, null);
+		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		// Create new movies to seach
 		/*createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 1);
 		createMoviesForSearchByTitleWithFacetRuntime(titleToSearch, 1);
@@ -202,7 +202,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		final MovieCriteria crit = new MovieCriteria();
 		final String titleToSearch = "Fantastic";
 		crit.setTitle(titleToSearch);
-		final UiListState uiListState = new UiListState(0, 0, null, false, null);
+		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		// Create new movies to seach
 		createMoviesForSearchByTitleWithFacetGenre(titleToSearch, "Action");
 		createMoviesForSearchByTitleWithFacetGenre(titleToSearch, "Action");

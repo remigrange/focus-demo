@@ -21621,7 +21621,7 @@ function loadList(listDesc) {
  * @param {object} args     - Argument to provide to the function.
  */
 function loadListByName(listName, args) {
-  checkIsString(listName);
+  checkIsString("listName", listName);
   var configurationElement = getConfigurationElement(listName);
   if (typeof configurationElement !== "function") {
     throw new Error("You are trying to load the reference list: " + listName + " which does not have a list configure.");

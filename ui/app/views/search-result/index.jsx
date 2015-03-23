@@ -1,32 +1,33 @@
+/*global focusComponents, React*/
 var SearchResult = focusComponents.page.search.searchResult.component;
 var serviceCommon = require('../../services');
-module.exports =  React.createClass({
-    render:function(){
+module.exports= React.createClass({
+    render: function(){
 
         var action = {
             search: function(criteria) {
                 //TODO handle pageInfo
                 var critere = {
-                    criteria : {
-                        scope:"MOVIE",
-                        query:criteria.criteria.query
+                    criteria: {
+                        scope: 'MOVIE',
+                        query: criteria.criteria.query
                     },
-                    pageInfos : {
+                    pageInfos: {
                         sortFieldName: undefined,
-                        sortDesc:  undefined
+                        sortDesc: undefined
                     },
-                    facets:[]
+                    facets: []
                 }
                 serviceCommon.common.searchByScope(critere).then(
                     function success(data) {
                         var list = data;
-                        if(data.list!==undefined){
-                            list= data.list;
+                        if(data.list !== undefined){
+                            list = data.list;
                         }
                         var dataRet = {
                             list: list,
-                            facet:{},
-                            pageInfos:{
+                            facet: {},
+                            pageInfos: {
                                 currentPage: 2,
                                 perPage: 50,
                                 totalRecords: 10
@@ -36,11 +37,11 @@ module.exports =  React.createClass({
                                 query: criteria.criteria.query
                             }
                         };
-                        focus.dispatcher.handleServerAction({data: dataRet, type: "update"});
+                        focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
                     },
                     function error(error) {
                         //TODO
-                        console.info("Errrors");
+                        console.info('Errrors');
                     }
                 );
             }
@@ -74,31 +75,30 @@ module.exports =  React.createClass({
             ],
             action: action,
             lineComponent: Line,
-            onLineClick : function onLineClick(line){
+            onLineClick: function onLineClick(line){
                 alert('click sur la ligne ' + line.title);
             },
-            isSelection:true,
-            lineOperationList:[
+            isSelection: true,
+            lineOperationList: [
             ],
             criteria: {
-                scope: "MOVIE",
-                searchText : "Fantastic"
+                scope: 'MOVIE',
+                searchText: 'Fantastic'
             }
 
-        }
+        };
 
 
-        var searchResult =  React.createElement(React.createClass({mixins:[focusComponents.page.search.searchResult.mixin],actions: config.action}),
+        var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),
             {
                 lineComponent: Line,
-                onLineClick : function onLineClick(line){
+                onLineClick: function onLineClick(line){
                     alert('click sur la ligne ' + line.title);
                 },
-                operationList:config.operationList
+                operationList: config.operationList
 
             }
         );
-        
         return searchResult;
     }
 });
