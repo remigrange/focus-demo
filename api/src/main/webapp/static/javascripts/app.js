@@ -1048,7 +1048,8 @@ require.register("config/server/index", function(exports, require, module) {
 module.exports= {
     movie: require('./movie'),
     people: require('./people'),
-    common: require('./common')
+    common: require('./common'),
+    reference: require('./reference')
 };
 
 });
@@ -1077,6 +1078,15 @@ module.exports = {
   update: url(root + "${id}/",'PUT'),
   create: url(root, 'POST'),
   get: url(root + "${id}/", 'GET')
+};
+
+});
+
+require.register("config/server/reference", function(exports, require, module) {
+var root = ".";
+var url = focus.util.url.builder;
+module.exports = {
+    getScopes: url(root+"/scopes", 'GET')
 };
 
 });
@@ -1356,8 +1366,22 @@ Backbone.$ = $;*/
 
 require("./domain-initializer");
 require("./definition-initializer");
+require("./reference_list_initializer").initialize();
 
 
+});
+
+require.register("initializer/reference_list_initializer", function(exports, require, module) {
+//Path to the reference service.
+var serviceReference = require('../services');
+var reference = focus.reference;
+
+module.exports = {
+    initialize: function(options, context) {
+        reference.config.set({'scopes' : serviceReference.refernce.getScopes});
+        reference.builder.loadListByName('scopes');
+    }
+};
 });
 
 require.register("router/index", function(exports, require, module) {
@@ -1422,7 +1446,8 @@ module.exports = {
 require.register("services/index", function(exports, require, module) {
 module.exports= {
     common: require('./common'),
-    movie: require('./movie')
+    movie: require('./movie'),
+    refernce : require('./reference')
 };
 });
 
@@ -1439,6 +1464,16 @@ module.exports = {
 };
 });
 
+require.register("services/reference", function(exports, require, module) {
+var URL = require('../../config/server');
+var fetch = focus.network.fetch;
+module.exports = {
+    getScopes: function getScopes(id){
+        return fetch(URL.reference.getScopes({}));
+    }
+};
+});
+
 require.register("stores/movie", function(exports, require, module) {
 /* global focus*/
 /**
@@ -1451,6 +1486,21 @@ var movieStore = new focus.store.CoreStore({
     }
   });
 module.exports = movieStore;
+
+});
+
+require.register("stores/reference", function(exports, require, module) {
+/* global focus*/
+/**
+ * Store dealing with the movie subject.
+ * @type {focus}
+ */
+var referenceStore = new focus.store.CoreStore({
+    definition : {
+        'reference': 'reference'
+    }
+});
+module.exports = referenceStore;
 
 });
 

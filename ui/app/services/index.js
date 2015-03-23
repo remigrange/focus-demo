@@ -1,4 +1,5 @@
 module.exports= {
     common: require('./common'),
-    movie: require('./movie')
+    movie: require('./movie'),
+    refernce : require('./reference')
 };
