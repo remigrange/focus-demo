@@ -16,6 +16,7 @@ import rodolphe.demo.services.movie.MovieServices;
 public class JobCleanData extends AbstractRodolpheJob {
 
 	private static final String JOB_NAME = "cleanData";
+	private static final int maxRows = 4000;
 	@Inject
 	private MovieServices movieServices;
 
@@ -26,7 +27,6 @@ public class JobCleanData extends AbstractRodolpheJob {
 	@Override
 	protected void doRun() {
 		int  minRow = 1;
-		final int maxRows = 4000;
 		for (int maxRank =0; maxRank >= 0; ) {
 			maxRank = movieServices.cleanMovieTitle(minRow, maxRows);
 			minRow = maxRank + 1;

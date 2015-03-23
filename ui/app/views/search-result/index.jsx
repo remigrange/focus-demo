@@ -103,7 +103,8 @@ module.exports= React.createClass({
                 onLineClick: function onLineClick(line){
                     alert('click sur la ligne ' + line.title);
                 },
-                operationList: config.operationList
+                operationList: config.operationList,
+                scopeList: config.scopes
 
             }
         );

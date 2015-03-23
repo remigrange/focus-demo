@@ -8,7 +8,7 @@ package rodolphe.demo.util;
  */
 public class ReferenceIdObject {
 
-	private Long id;
+	private Long code;
 	private String label;
 	private final Boolean active;
 
@@ -19,8 +19,8 @@ public class ReferenceIdObject {
 	 * @param label Label.
 	 * @param active  active.
 	 */
-	public ReferenceIdObject(final Long id, final String label, final Boolean active) {
-		this.id = id;
+	public ReferenceIdObject(final Long code, final String label, final Boolean active) {
+		this.code = code;
 		this.label = label;
 		this.active = active;
 	}
@@ -30,8 +30,8 @@ public class ReferenceIdObject {
 	 *
 	 * @return id's value.
 	 */
-	public Long getId() {
-		return id;
+	public Long getCode() {
+		return code;
 	}
 
 	/**
@@ -39,8 +39,8 @@ public class ReferenceIdObject {
 	 *
 	 * @param idP new value.
 	 */
-	public void setId(final Long idP) {
-		id = idP;
+	public void setCode(final Long code) {
+		this.code = code;
 	}
 
 	/**

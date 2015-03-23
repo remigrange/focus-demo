@@ -51,7 +51,6 @@ public class PeopleServicesImpl implements PeopleServices {
 			criteria.setSortAsc(!uiListState.isSortDesc());
 			criteria.setSortFieldName(uiListState.getSortFieldName());
 		}
-		//final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> res = searchServices.searchPeople(criteria);
 		return  searchServices.searchPeople(criteria);
 	}
 

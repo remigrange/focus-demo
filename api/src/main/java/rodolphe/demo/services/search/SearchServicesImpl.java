@@ -29,7 +29,8 @@ public class SearchServicesImpl implements SearchServices {
 	@Override
 	@Transactional
 	public void indexMovie(final Long movId) {
-		movieSearchHandler.indexerItem(movId);	}
+		movieSearchHandler.indexerItem(movId);
+	}
 
 	/** {@inheritDoc} */
 	@Override

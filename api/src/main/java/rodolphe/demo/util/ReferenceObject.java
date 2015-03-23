@@ -10,7 +10,7 @@ package rodolphe.demo.util;
 
 public class ReferenceObject {
 
-	private String id;
+	private String code;
 	private String label;
 	private Boolean active;
 
@@ -21,8 +21,8 @@ public class ReferenceObject {
 	 * @param label Label.
 	 * @param active  active.
 	 */
-	public ReferenceObject(final String id, final String label, final Boolean active) {
-		this.id = id;
+	public ReferenceObject(final String code, final String label, final Boolean active) {
+		this.code = code;
 		this.label = label;
 		this.active = active;
 	}
@@ -32,8 +32,8 @@ public class ReferenceObject {
 	 *
 	 * @return id's value.
 	 */
-	public String getId() {
-		return id;
+	public String getCode() {
+		return code;
 	}
 
 	/**
@@ -41,8 +41,8 @@ public class ReferenceObject {
 	 *
 	 * @param code  new value.
 	 */
-	public void setId(final String code) {
-		id = code;
+	public void setCode(final String code) {
+		this.code = code;
 	}
 
 	/**

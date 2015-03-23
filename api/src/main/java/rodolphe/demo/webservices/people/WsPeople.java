@@ -43,8 +43,6 @@ public final class WsPeople implements RestfulService{
 
 	}
 
-
-
 	/**
 	 * Get people by identifier.
 	 * @param peoId identifier
@@ -61,11 +59,7 @@ public final class WsPeople implements RestfulService{
 	 * @param people people
 	 * @return people
 	 */
-	//TODO !!!!!
-	//TODO !!!!! NON
-	//TODO !!!!!
-	//TODO !!!!!
-	//TODO !!!!!
+	//TODO CHANGE THE NAME
 	@POST("/people/new")
 	@AnonymousAccessAllowed
 	public People savePeople(final People people){

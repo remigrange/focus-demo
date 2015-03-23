@@ -362,8 +362,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 				final List<ListFilter> facetFilter = new ArrayList<>();
 				if (criterium.getSelectedFacets() != null) {
 					// Restauration des facettes de la première recherche.
-					// TODO
-					// facetFilter.add(....)
+					// TODO facetFilter.add(....)
 					for(final FacetSelection facetSel  : criterium.getSelectedFacets()) {
 						facetFilter.add(facetSel.getFacetQuery());
 					}
@@ -371,8 +370,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 				final FacetedQuery facetedQuery = new FacetedQuery(facetedQueryDefinition, facetFilter);
 				final FacetedQueryResult<R, SearchQuery> result = searchManager.loadList(searchQuery, facetedQuery);
 				final SearchCriterium<S> retCrit = SearchCriterium.clone(criterium);
-				// On met à jour les facettes
-				//				retCrit.setFacets(result.getFacets());
+				// On met à jour les facettes retCrit setFacets(result.getFacets());
 				// On crée le bon objet de retour
 				// FIXME : problème des highlihts
 				final FacetedQueryResult<R, SearchCriterium<S>> res = new FacetedQueryResult<>(result.getFacetedQuery(),

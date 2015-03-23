@@ -53,8 +53,6 @@ public  class MovieServicesImpl implements MovieServices {
 	@Override
 	@Transactional
 	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(final MovieCriteria crit, final UiListState uiListState, final FacetSelection ...selection) {
-		/*final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
-				FacetedSearchConst.QRY_MOVIE_WO_FCT.getQuery());*/
 		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
 		criteria.setCriteria(crit);
 		for (final FacetSelection sel : selection) {
@@ -110,11 +108,11 @@ public  class MovieServicesImpl implements MovieServices {
 	@Transactional
 	public DtList<People> getProducers(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteria<RolePeople> RolePeopleCriteria= new FilterCriteriaBuilder<RolePeople>()
+		final FilterCriteria<RolePeople> rolePeopleCriteria= new FilterCriteriaBuilder<RolePeople>()
 				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
 				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.producer.name())
 				.build();
-		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(RolePeopleCriteria, Integer.MAX_VALUE);
+		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
 		for(final RolePeople  rolePeople : rolePeopleList){
 			final People people = rolePeople.getPeople();
 			people.setComment(rolePeople.getComment());
@@ -130,12 +128,12 @@ public  class MovieServicesImpl implements MovieServices {
 	@Transactional
 	public DtList<People> getDirectors(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
-		final FilterCriteria<RolePeople> RolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
+		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
 				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
 				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.director.name())
 				.build();
 
-		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(RolePeopleCriteria, Integer.MAX_VALUE);
+		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
 		for(final RolePeople  rolePeople : rolePeopleList){
 			ret.add(rolePeople.getPeople());
 

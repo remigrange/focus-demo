@@ -21,7 +21,8 @@ public class SearchCriterium<S extends DtObject> {
 	private S criteria;
 	private final Map<String, FacetSelection> selectedFacetsMap;
 	private Integer maxRows;
-	private String sortFieldName; // Soit un champ indexé
+	// Soit un champ indexé
+	private String sortFieldName;
 	private boolean sortAsc;
 	private final FacetedQueryDefinition facetsDefinition;
 

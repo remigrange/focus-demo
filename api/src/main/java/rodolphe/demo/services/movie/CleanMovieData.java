@@ -16,6 +16,10 @@ import rodolphe.demo.domain.movies.MovieView;
  */
 public final  class CleanMovieData {
 
+	private CleanMovieData() {
+		super();
+	}
+
 	public static Movie parseMovieTitle(final MovieView movieView){
 		final Movie movie = new  Movie();
 		movie.setMovId(movieView.getMovId());
