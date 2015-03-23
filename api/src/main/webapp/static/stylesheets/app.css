@@ -630,6 +630,9 @@ body {
 .resultContainer {
   width: 50% !important;
 }
+.search-panel {
+  width: 60% !important;
+}
 #lineResume {
   margin-left: 10px;
   display: inline-block;
