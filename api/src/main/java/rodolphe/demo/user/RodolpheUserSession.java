@@ -11,42 +11,42 @@ import java.util.Locale;
  */
 public class RodolpheUserSession extends UserSession {
 
-	private static final long serialVersionUID = 3522402730076977461L;
-	private final boolean canUserCommit;
+    private static final long serialVersionUID = 3522402730076977461L;
+    private final boolean canUserCommit;
 
-	/**
-	 * Construit une instance de IdNotUserSession.
-	 */
-	public RodolpheUserSession() {
-		this(true);
-	}
+    /**
+     * Construit une instance de IdNotUserSession.
+     */
+    public RodolpheUserSession() {
+        this(true);
+    }
 
-	/**
-	 * Construit une instance de IdNotUserSession.
-	 *
-	 * @param canUserCommit l'utilisateur peut-il commité? Oui dans cas normal, non dans le cas des TNR.
-	 */
-	protected RodolpheUserSession(final boolean canUserCommit) {
-		super();
-		this.canUserCommit = canUserCommit;
-	}
+    /**
+     * Construit une instance de IdNotUserSession.
+     *
+     * @param canUserCommit l'utilisateur peut-il commité? Oui dans cas normal, non dans le cas des TNR.
+     */
+    protected RodolpheUserSession(final boolean canUserCommit) {
+        super();
+        this.canUserCommit = canUserCommit;
+    }
 
-	/**
-	 * L'utilisateur peut-il commité?
-	 *
-	 * @return booléen.
-	 */
-	public boolean isCanUserCommit() {
-		return canUserCommit;
-	}
+    /**
+     * L'utilisateur peut-il commité?
+     *
+     * @return booléen.
+     */
+    public boolean isCanUserCommit() {
+        return canUserCommit;
+    }
 
-	/**
-	 * get default locale.
-	 * 
-	 * @return Default Locale.
-	 */
-	@Override
-	public Locale getLocale() {
-		return Locale.FRANCE;
-	}
+    /**
+     * get default locale.
+     * 
+     * @return Default Locale.
+     */
+    @Override
+    public Locale getLocale() {
+        return Locale.FRANCE;
+    }
 }

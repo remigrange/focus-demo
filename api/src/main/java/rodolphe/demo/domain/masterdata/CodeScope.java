@@ -8,10 +8,10 @@ import rodolphe.demo.domain.CodeEnum;
  * @author jmforhan
  */
 public enum CodeScope implements CodeEnum {
-	/** Movie. */
-	MOVIE,
-	/** People. */
-	PEOPLE,
-	/** All. */
-	ALL;
+    /** Movie. */
+    MOVIE,
+    /** People. */
+    PEOPLE,
+    /** All. */
+    ALL;
 }

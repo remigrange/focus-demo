@@ -18,17 +18,17 @@ import rodolphe.demo.util.ReferenceObject;
  */
 public final class WsMasterdata implements RestfulService {
 
-	@Inject
-	private MasterdataServices masterdataServices;
+    @Inject
+    private MasterdataServices masterdataServices;
 
-	/**
-	 * Get Scope list
-	 *
-	 * @return scope List
-	 */
-	@GET("/scopes")
-	@AnonymousAccessAllowed
-	public List<ReferenceObject> getScopes() {
-		return masterdataServices.getScopeList();
-	}
+    /**
+     * Get Scope list
+     *
+     * @return scope List
+     */
+    @GET("/scopes")
+    @AnonymousAccessAllowed
+    public List<ReferenceObject> getScopes() {
+        return masterdataServices.getScopeList();
+    }
 }

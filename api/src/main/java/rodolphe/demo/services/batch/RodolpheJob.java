@@ -6,5 +6,5 @@ package rodolphe.demo.services.batch;
  * @author jmforhan
  */
 public interface RodolpheJob extends Runnable, InjectableComponent {
-	// rien de specifique
+    // rien de specifique
 }

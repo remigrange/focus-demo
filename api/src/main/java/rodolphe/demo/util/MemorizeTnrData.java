@@ -10,19 +10,19 @@ package rodolphe.demo.util;
  */
 public interface MemorizeTnrData {
 
-	/**
-	 * Démarre la mémorisation des données à envoyer au système tiers dans le cadre des TNRs.
-	 */
-	void startMemorizeTnrData();
+    /**
+     * Démarre la mémorisation des données à envoyer au système tiers dans le cadre des TNRs.
+     */
+    void startMemorizeTnrData();
 
-	/**
-	 * Envoieau système tiers les données mémorisées. Il est important que le code appelant est un finally qui fera un
-	 * removeMemorizedTnrData.
-	 */
-	void sendMemorizedTnrData();
+    /**
+     * Envoieau système tiers les données mémorisées. Il est important que le code appelant est un finally qui fera un
+     * removeMemorizedTnrData.
+     */
+    void sendMemorizedTnrData();
 
-	/**
-	 * Supprime les données des TNR envoyés au système. Doit être fait dans un finally.
-	 */
-	void removeMemorizedTnrData();
+    /**
+     * Supprime les données des TNR envoyés au système. Doit être fait dans un finally.
+     */
+    void removeMemorizedTnrData();
 }

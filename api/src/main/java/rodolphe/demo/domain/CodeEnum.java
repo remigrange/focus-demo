@@ -10,10 +10,10 @@ package rodolphe.demo.domain;
  */
 public interface CodeEnum {
 
-	/**
-	 * enum's name method.
-	 *
-	 * @return String
-	 */
-	String name();
+    /**
+     * enum's name method.
+     *
+     * @return String
+     */
+    String name();
 }

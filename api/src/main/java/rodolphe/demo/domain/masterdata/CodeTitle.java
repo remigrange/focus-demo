@@ -13,20 +13,20 @@ import rodolphe.demo.util.MdlUtil;
  * @author JDALMEIDA
  */
 public enum CodeTitle implements CodeEnumWithDto<Title> {
-	/** MS. */
-	F,
-	/** MR. */
-	M;
+    /** MS. */
+    F,
+    /** MR. */
+    M;
 
-	/** {@inheritDoc} */
-	@Override
-	public Title getDto() {
-		return MdlUtil.getObject(getDtoClass(), name());
-	}
+    /** {@inheritDoc} */
+    @Override
+    public Title getDto() {
+        return MdlUtil.getObject(getDtoClass(), name());
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public Class<Title> getDtoClass() {
-		return Title.class;
-	}
+    /** {@inheritDoc} */
+    @Override
+    public Class<Title> getDtoClass() {
+        return Title.class;
+    }
 }

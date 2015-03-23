@@ -10,17 +10,17 @@ import io.vertigo.dynamo.domain.model.DtObject;
  */
 public interface CodeEnumWithDto<D extends DtObject> extends CodeEnum {
 
-	/**
-	 * Récupération du dto associé.
-	 *
-	 * @return dto
-	 */
-	D getDto();
+    /**
+     * Récupération du dto associé.
+     *
+     * @return dto
+     */
+    D getDto();
 
-	/**
-	 * Classe du dto.
-	 *
-	 * @return classe
-	 */
-	Class<D> getDtoClass();
+    /**
+     * Classe du dto.
+     *
+     * @return classe
+     */
+    Class<D> getDtoClass();
 }

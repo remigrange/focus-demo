@@ -14,10 +14,10 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses(value = { //
-		MovieTest.class, //
-				SearchMovieTest.class, //
-				WsMovieTest.class, //
-		})
+        MovieTest.class, //
+                SearchMovieTest.class, //
+                WsMovieTest.class, //
+        })
 public class AllTestsMovies {
-	// Les annotations sont suffisantes.
+    // Les annotations sont suffisantes.
 }

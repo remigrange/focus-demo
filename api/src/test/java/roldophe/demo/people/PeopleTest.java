@@ -24,56 +24,56 @@ import roldophe.demo.tools.AbstractRodolpheTestCase;
  */
 public class PeopleTest extends AbstractRodolpheTestCase {
 
-	@Inject
-	private MovieServices movieServices;
-	@Inject
-	private PeopleServices peopleServices;
-	@Inject
-	private RolePeopleDAO rolePeopleDAO;
+    @Inject
+    private MovieServices movieServices;
+    @Inject
+    private PeopleServices peopleServices;
+    @Inject
+    private RolePeopleDAO rolePeopleDAO;
 
-	/**
-	 * Get a specific people.
-	 */
-	@Test
-	public void testGetPeople() {
-		final People peo = getNewPeople();
-		final People ret = peopleServices.getPeople(peo.getPeoId());
-		Assert.assertEquals(peo.getPeoId(), ret.getPeoId());
-	}
+    /**
+     * Get a specific people.
+     */
+    @Test
+    public void testGetPeople() {
+        final People peo = getNewPeople();
+        final People ret = peopleServices.getPeople(peo.getPeoId());
+        Assert.assertEquals(peo.getPeoId(), ret.getPeoId());
+    }
 
-	/**
-	 * Save a people.
-	 */
-	@Test
-	public void testsavePeople() {
-		getNewPeople();
-	}
+    /**
+     * Save a people.
+     */
+    @Test
+    public void testsavePeople() {
+        getNewPeople();
+    }
 
-	/**
-	 * Get a movie associated to a specific people.
-	 */
-	@Test
-	public void testGetMovie() {
-		final People peo = getNewPeople();
-		final Movie mov = getNewMovie();
-		final RolePeople rolePeople = new RolePeople();
-		rolePeople.setMovId(mov.getMovId());
-		rolePeople.setPeoId(peo.getPeoId());
-		rolePeople.setRlmCd(CodeRoleMovie.ACTOR.dbValue());
-		rolePeopleDAO.create(rolePeople);
-		final DtList<Movie> movies = peopleServices.getMoviesByPeo(peo.getPeoId());
-		Assert.assertEquals(1, movies.size());
-	}
+    /**
+     * Get a movie associated to a specific people.
+     */
+    @Test
+    public void testGetMovie() {
+        final People peo = getNewPeople();
+        final Movie mov = getNewMovie();
+        final RolePeople rolePeople = new RolePeople();
+        rolePeople.setMovId(mov.getMovId());
+        rolePeople.setPeoId(peo.getPeoId());
+        rolePeople.setRlmCd(CodeRoleMovie.ACTOR.dbValue());
+        rolePeopleDAO.create(rolePeople);
+        final DtList<Movie> movies = peopleServices.getMoviesByPeo(peo.getPeoId());
+        Assert.assertEquals(1, movies.size());
+    }
 
-	private Movie getNewMovie() {
-		final Movie mov = SearchMovieTest.getNewMovie();
-		movieServices.saveMovie(mov);
-		return mov;
-	}
+    private Movie getNewMovie() {
+        final Movie mov = SearchMovieTest.getNewMovie();
+        movieServices.saveMovie(mov);
+        return mov;
+    }
 
-	private People getNewPeople() {
-		final People peo = SearchPeopleTest.getNewPeople();
-		peopleServices.savePeople(peo);
-		return peo;
-	}
+    private People getNewPeople() {
+        final People peo = SearchPeopleTest.getNewPeople();
+        peopleServices.savePeople(peo);
+        return peo;
+    }
 }

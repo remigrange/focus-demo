@@ -42,158 +42,158 @@ import io.vertigo.util.StringUtil;
  */
 public final class DtObjectUtil {
 
-	private static final String DT_DEFINITION_PREFIX = DefinitionUtil.getPrefix(DtDefinition.class);
-	private static final char SEPARATOR = Definition.SEPARATOR;
+    private static final String DT_DEFINITION_PREFIX = DefinitionUtil.getPrefix(DtDefinition.class);
+    private static final char SEPARATOR = Definition.SEPARATOR;
 
-	private DtObjectUtil() {
-		// constructeur privé.
-	}
+    private DtObjectUtil() {
+        // constructeur privé.
+    }
 
-	/**
-	 * Crée une nouvelle instance de DtObject à partir du type spécifié.
-	 *
-	 * @return Nouveau DtObject
-	 */
-	public static DtObject createDtObject(final DtDefinition dtDefinition) {
-		Assertion.checkNotNull(dtDefinition);
-		// -----
-		if (dtDefinition.isDynamic()) {
-			return new DynaDtObject(dtDefinition);
-		}
-		// La création des DtObject n'est pas sécurisée
-		return ClassUtil.newInstance(dtDefinition.getClassCanonicalName(), DtObject.class);
-	}
+    /**
+     * Crée une nouvelle instance de DtObject à partir du type spécifié.
+     *
+     * @return Nouveau DtObject
+     */
+    public static DtObject createDtObject(final DtDefinition dtDefinition) {
+        Assertion.checkNotNull(dtDefinition);
+        // -----
+        if (dtDefinition.isDynamic()) {
+            return new DynaDtObject(dtDefinition);
+        }
+        // La création des DtObject n'est pas sécurisée
+        return ClassUtil.newInstance(dtDefinition.getClassCanonicalName(), DtObject.class);
+    }
 
-	/**
-	 * @return Valeur de la PK
-	 */
-	public static Object getId(final DtObject dto) {
-		Assertion.checkNotNull(dto);
-		// -----
-		final DtDefinition dtDefinition = findDtDefinition(dto);
-		final DtField pkField = dtDefinition.getIdField().get();
-		return pkField.getDataAccessor().getValue(dto);
-	}
+    /**
+     * @return Valeur de la PK
+     */
+    public static Object getId(final DtObject dto) {
+        Assertion.checkNotNull(dto);
+        // -----
+        final DtDefinition dtDefinition = findDtDefinition(dto);
+        final DtField pkField = dtDefinition.getIdField().get();
+        return pkField.getDataAccessor().getValue(dto);
+    }
 
-	/**
-	 * Récupération d'une URI de DTO.
-	 * On récupère l'URI d'un DTO référencé par une association.
-	 * Il est nécessaire que l'association soit simple.
-	 * Si l'association est multiple on ne récupère pas une URI mais une DtListURI, c'est à dire le pointeur vers une
-	 * liste.
-	 * On recherche une URI correspondant à une association.
-	 * Exemple : Une Commande possède un bénéficiaire.
-	 * Dans cetexemple on recherche l'URI du bénéficiaire à partir de l'objet commande.
-	 *
-	 * @param associationDefinitionName Nom de la définition d'une association
-	 * @param dto DtObject
-	 * @return URI du DTO relié via l'association au dto passé en paramètre (Nullable)
-	 */
-	public static <D extends DtObject> URI createURI(final DtObject dto, final String associationDefinitionName,
-			final Class<D> dtoTargetClass) {
-		Assertion.checkNotNull(associationDefinitionName);
-		Assertion.checkNotNull(dto);
-		Assertion.checkNotNull(dtoTargetClass);
-		// -----
-		final AssociationSimpleDefinition associationSimpleDefinition = Home.getDefinitionSpace().resolve(
-				associationDefinitionName, AssociationSimpleDefinition.class);
-		// 1. On recherche le nom du champ portant l'objet référencé (Exemple : personne)
-		final DtDefinition dtDefinition = associationSimpleDefinition.getPrimaryAssociationNode().getDtDefinition();
-		// 2. On calcule le nom de la fk.
-		final DtField fkField = associationSimpleDefinition.getFKField();
-		// 3. On calcule l'URI de la clé étrangère
-		final Object id = fkField.getDataAccessor().getValue(dto);
-		if (id == null) {
-			return null;
-		}
-		return new URI(dtDefinition, id);
-	}
+    /**
+     * Récupération d'une URI de DTO.
+     * On récupère l'URI d'un DTO référencé par une association.
+     * Il est nécessaire que l'association soit simple.
+     * Si l'association est multiple on ne récupère pas une URI mais une DtListURI, c'est à dire le pointeur vers une
+     * liste.
+     * On recherche une URI correspondant à une association.
+     * Exemple : Une Commande possède un bénéficiaire.
+     * Dans cetexemple on recherche l'URI du bénéficiaire à partir de l'objet commande.
+     *
+     * @param associationDefinitionName Nom de la définition d'une association
+     * @param dto DtObject
+     * @return URI du DTO relié via l'association au dto passé en paramètre (Nullable)
+     */
+    public static <D extends DtObject> URI createURI(final DtObject dto, final String associationDefinitionName,
+            final Class<D> dtoTargetClass) {
+        Assertion.checkNotNull(associationDefinitionName);
+        Assertion.checkNotNull(dto);
+        Assertion.checkNotNull(dtoTargetClass);
+        // -----
+        final AssociationSimpleDefinition associationSimpleDefinition = Home.getDefinitionSpace().resolve(
+                associationDefinitionName, AssociationSimpleDefinition.class);
+        // 1. On recherche le nom du champ portant l'objet référencé (Exemple : personne)
+        final DtDefinition dtDefinition = associationSimpleDefinition.getPrimaryAssociationNode().getDtDefinition();
+        // 2. On calcule le nom de la fk.
+        final DtField fkField = associationSimpleDefinition.getFKField();
+        // 3. On calcule l'URI de la clé étrangère
+        final Object id = fkField.getDataAccessor().getValue(dto);
+        if (id == null) {
+            return null;
+        }
+        return new URI(dtDefinition, id);
+    }
 
-	/**
-	 * Récupération d'une URI de Collection à partir d'un dto
-	 *
-	 * @param dto DtObject
-	 * @param associationDefinitionName Nom de l'association
-	 * @param roleName Nom du role
-	 * @return URI de la collection référencée.
-	 */
-	public static DtListURIForSimpleAssociation createDtListURIForSimpleAssociation(final DtObject dto,
-			final String associationDefinitionName, final String roleName) {
-		Assertion.checkNotNull(associationDefinitionName);
-		Assertion.checkNotNull(roleName);
-		Assertion.checkNotNull(dto);
-		// -----
-		final AssociationSimpleDefinition associationDefinition = Home.getDefinitionSpace().resolve(
-				associationDefinitionName, AssociationSimpleDefinition.class);
-		return new DtListURIForSimpleAssociation(associationDefinition, createURI(dto), roleName);
-	}
+    /**
+     * Récupération d'une URI de Collection à partir d'un dto
+     *
+     * @param dto DtObject
+     * @param associationDefinitionName Nom de l'association
+     * @param roleName Nom du role
+     * @return URI de la collection référencée.
+     */
+    public static DtListURIForSimpleAssociation createDtListURIForSimpleAssociation(final DtObject dto,
+            final String associationDefinitionName, final String roleName) {
+        Assertion.checkNotNull(associationDefinitionName);
+        Assertion.checkNotNull(roleName);
+        Assertion.checkNotNull(dto);
+        // -----
+        final AssociationSimpleDefinition associationDefinition = Home.getDefinitionSpace().resolve(
+                associationDefinitionName, AssociationSimpleDefinition.class);
+        return new DtListURIForSimpleAssociation(associationDefinition, createURI(dto), roleName);
+    }
 
-	/**
-	 * Récupération d'une URI de Collection à partir d'un dto
-	 *
-	 * @param dto DtObject
-	 * @param associationDefinitionName Nom de l'association
-	 * @param roleName Nom du role
-	 * @return URI de la collection référencée.
-	 */
-	public static DtListURIForNNAssociation createDtListURIForNNAssociation(final DtObject dto,
-			final String associationDefinitionName, final String roleName) {
-		Assertion.checkNotNull(associationDefinitionName);
-		Assertion.checkNotNull(roleName);
-		Assertion.checkNotNull(dto);
-		// -----
-		final AssociationNNDefinition associationDefinition = Home.getDefinitionSpace().resolve(
-				associationDefinitionName, AssociationNNDefinition.class);
-		return new DtListURIForNNAssociation(associationDefinition, createURI(dto), roleName);
-	}
+    /**
+     * Récupération d'une URI de Collection à partir d'un dto
+     *
+     * @param dto DtObject
+     * @param associationDefinitionName Nom de l'association
+     * @param roleName Nom du role
+     * @return URI de la collection référencée.
+     */
+    public static DtListURIForNNAssociation createDtListURIForNNAssociation(final DtObject dto,
+            final String associationDefinitionName, final String roleName) {
+        Assertion.checkNotNull(associationDefinitionName);
+        Assertion.checkNotNull(roleName);
+        Assertion.checkNotNull(dto);
+        // -----
+        final AssociationNNDefinition associationDefinition = Home.getDefinitionSpace().resolve(
+                associationDefinitionName, AssociationNNDefinition.class);
+        return new DtListURIForNNAssociation(associationDefinition, createURI(dto), roleName);
+    }
 
-	private static URI createURI(final DtObject dto) {
-		Assertion.checkNotNull(dto);
-		// -----
-		final DtDefinition dtDefinition = findDtDefinition(dto);
-		return new URI(dtDefinition, DtObjectUtil.getId(dto));
-	}
+    private static URI createURI(final DtObject dto) {
+        Assertion.checkNotNull(dto);
+        // -----
+        final DtDefinition dtDefinition = findDtDefinition(dto);
+        return new URI(dtDefinition, DtObjectUtil.getId(dto));
+    }
 
-	/**
-	 * Représentation sous forme text d'un dtObject.
-	 *
-	 * @param dto dtObject
-	 * @return Représentation sous forme text du dtObject.
-	 */
-	public static String toString(final DtObject dto) {
-		Assertion.checkNotNull(dto);
-		// -----
-		final StringBuilder stringBuilder = new StringBuilder().append(findDtDefinition(dto).getName()).append('(');
-		boolean first = true;
-		for (final DtField dtField : findDtDefinition(dto).getFields()) {
-			if (!first) {
-				stringBuilder.append(", ");
-			}
-			stringBuilder.append(dtField.getName()).append('=');
-			stringBuilder.append(dtField.getDataAccessor().getValue(dto));
-			first = false;
-		}
-		stringBuilder.append(')');
-		return stringBuilder.toString();
-	}
+    /**
+     * Représentation sous forme text d'un dtObject.
+     *
+     * @param dto dtObject
+     * @return Représentation sous forme text du dtObject.
+     */
+    public static String toString(final DtObject dto) {
+        Assertion.checkNotNull(dto);
+        // -----
+        final StringBuilder stringBuilder = new StringBuilder().append(findDtDefinition(dto).getName()).append('(');
+        boolean first = true;
+        for (final DtField dtField : findDtDefinition(dto).getFields()) {
+            if (!first) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(dtField.getName()).append('=');
+            stringBuilder.append(dtField.getDataAccessor().getValue(dto));
+            first = false;
+        }
+        stringBuilder.append(')');
+        return stringBuilder.toString();
+    }
 
-	// =========================================================================
-	// ===========================STATIC========================================
-	// =========================================================================
-	public static DtDefinition findDtDefinition(final DtObject dto) {
-		Assertion.checkNotNull(dto);
-		// -----
-		if (dto instanceof Dynamic) {
-			return Dynamic.class.cast(dto).getDefinition();
-		}
-		return findDtDefinition(dto.getClass());
-	}
+    // =========================================================================
+    // ===========================STATIC========================================
+    // =========================================================================
+    public static DtDefinition findDtDefinition(final DtObject dto) {
+        Assertion.checkNotNull(dto);
+        // -----
+        if (dto instanceof Dynamic) {
+            return Dynamic.class.cast(dto).getDefinition();
+        }
+        return findDtDefinition(dto.getClass());
+    }
 
-	public static DtDefinition findDtDefinition(final Class<? extends DtObject> dtObjectClass) {
-		Assertion.checkNotNull(dtObjectClass);
-		// -----
-		final String name = DT_DEFINITION_PREFIX + SEPARATOR
-				+ StringUtil.camelToConstCase(dtObjectClass.getSimpleName());
-		return Home.getDefinitionSpace().resolve(name, DtDefinition.class);
-	}
+    public static DtDefinition findDtDefinition(final Class<? extends DtObject> dtObjectClass) {
+        Assertion.checkNotNull(dtObjectClass);
+        // -----
+        final String name = DT_DEFINITION_PREFIX + SEPARATOR
+                + StringUtil.camelToConstCase(dtObjectClass.getSimpleName());
+        return Home.getDefinitionSpace().resolve(name, DtDefinition.class);
+    }
 }

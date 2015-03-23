@@ -12,59 +12,59 @@ import rodolphe.demo.domain.people.PeopleResult;
 
 public class SearchServicesImpl implements SearchServices {
 
-	@Inject
-	private MovieSearchHandler movieSearchHandler;
-	@Inject
-	private PeopleSearchHandler peopleSearchHandler;
+    @Inject
+    private MovieSearchHandler movieSearchHandler;
+    @Inject
+    private PeopleSearchHandler peopleSearchHandler;
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public void indexMovies() {
-		movieSearchHandler.indexer();
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public void indexMovies() {
+        movieSearchHandler.indexer();
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public void indexMovie(final Long movId) {
-		movieSearchHandler.indexerItem(movId);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public void indexMovie(final Long movId) {
+        movieSearchHandler.indexerItem(movId);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public void removeMovieFromIndex(final Long movId) {
-		movieSearchHandler.supprimerItem(movId);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public void removeMovieFromIndex(final Long movId) {
+        movieSearchHandler.supprimerItem(movId);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> searchMovie(
-			final SearchCriterium<MovieCriteria> criteria) {
-		return movieSearchHandler.rechercher(criteria);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> searchMovie(
+            final SearchCriterium<MovieCriteria> criteria) {
+        return movieSearchHandler.rechercher(criteria);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public void indexPeople() {
-		peopleSearchHandler.indexer();
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public void indexPeople() {
+        peopleSearchHandler.indexer();
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public void indexPeople(final Long peoId) {
-		peopleSearchHandler.indexerItem(peoId);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public void indexPeople(final Long peoId) {
+        peopleSearchHandler.indexerItem(peoId);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> searchPeople(
-			final SearchCriterium<PeopleCriteria> criteria) {
-		return peopleSearchHandler.rechercher(criteria);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> searchPeople(
+            final SearchCriterium<PeopleCriteria> criteria) {
+        return peopleSearchHandler.rechercher(criteria);
+    }
 }

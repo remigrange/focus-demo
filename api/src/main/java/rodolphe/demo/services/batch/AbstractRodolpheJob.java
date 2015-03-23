@@ -8,27 +8,27 @@ package rodolphe.demo.services.batch;
  */
 abstract class AbstractRodolpheJob extends AbstractRodolpheBatch implements RodolpheJob {
 
-	/**
-	 * Construit une instance de AbstractFicenJob.
-	 */
-	public AbstractRodolpheJob() {
-		super();
-	}
+    /**
+     * Construit une instance de AbstractFicenJob.
+     */
+    public AbstractRodolpheJob() {
+        super();
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public final void run() {
-		process();
-	}
+    /** {@inheritDoc} */
+    @Override
+    public final void run() {
+        process();
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	protected final void doProcess() {
-		doRun();
-	}
+    /** {@inheritDoc} */
+    @Override
+    protected final void doProcess() {
+        doRun();
+    }
 
-	/**
-	 * Traitement specifique du job.
-	 */
-	protected abstract void doRun();
+    /**
+     * Traitement specifique du job.
+     */
+    protected abstract void doRun();
 }

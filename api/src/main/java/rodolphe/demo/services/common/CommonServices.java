@@ -16,13 +16,13 @@ import rodolphe.demo.domain.common.SelectedFacet;
  */
 public interface CommonServices extends Component {
 
-	/**
-	 * Search by scope.
-	 *
-	 * @param searchCriteria criteria
-	 * @param selection facets.
-	 * @param uiListState uiListState
-	 * @return Object
-	 */
-	Object search(SearchCriteria searchCriteria, final DtList<SelectedFacet> selection, final UiListState uiListState);
+    /**
+     * Search by scope.
+     *
+     * @param searchCriteria criteria
+     * @param selection facets.
+     * @param uiListState uiListState
+     * @return Object
+     */
+    Object search(SearchCriteria searchCriteria, final DtList<SelectedFacet> selection, final UiListState uiListState);
 }

@@ -14,51 +14,51 @@ import rodolphe.demo.domain.people.PeopleResult;
  */
 public interface SearchServices extends Component {
 
-	/**
-	 * Index all movies.
-	 */
-	void indexMovies();
+    /**
+     * Index all movies.
+     */
+    void indexMovies();
 
-	/**
-	 * Index a specific movie.
-	 * 
-	 * @param movId movie identifier
-	 */
-	void indexMovie(Long movId);
+    /**
+     * Index a specific movie.
+     * 
+     * @param movId movie identifier
+     */
+    void indexMovie(Long movId);
 
-	/**
-	 * Remove a movie from the index.
-	 * 
-	 * @param movId movie identifier
-	 */
-	void removeMovieFromIndex(Long movId);
+    /**
+     * Remove a movie from the index.
+     * 
+     * @param movId movie identifier
+     */
+    void removeMovieFromIndex(Long movId);
 
-	/**
-	 * Search movies matching a given criteria.
-	 * 
-	 * @param criteria criteria
-	 * @return List of matched movies and associated facets
-	 */
-	FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> searchMovie(SearchCriterium<MovieCriteria> criteria);
+    /**
+     * Search movies matching a given criteria.
+     * 
+     * @param criteria criteria
+     * @return List of matched movies and associated facets
+     */
+    FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> searchMovie(SearchCriterium<MovieCriteria> criteria);
 
-	/**
-	 * index all people.
-	 */
-	void indexPeople();
+    /**
+     * index all people.
+     */
+    void indexPeople();
 
-	/**
-	 * index a specific people
-	 * 
-	 * @param peoId : people identifier
-	 */
-	void indexPeople(Long peoId);
+    /**
+     * index a specific people
+     * 
+     * @param peoId : people identifier
+     */
+    void indexPeople(Long peoId);
 
-	/**
-	 * Search people matching a given criteria
-	 * 
-	 * @param criteria criteria
-	 * @return List of matched people and associated facets
-	 */
-	FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> searchPeople(
-			SearchCriterium<PeopleCriteria> criteria);
+    /**
+     * Search people matching a given criteria
+     * 
+     * @param criteria criteria
+     * @return List of matched people and associated facets
+     */
+    FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> searchPeople(
+            SearchCriterium<PeopleCriteria> criteria);
 }

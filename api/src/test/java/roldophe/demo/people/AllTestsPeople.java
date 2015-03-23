@@ -14,8 +14,8 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses(value = { PeopleTest.class, //
-		SearchPeopleTest.class, //
+        SearchPeopleTest.class, //
 })
 public class AllTestsPeople {
-	// Les annotations sont suffisantes.
+    // Les annotations sont suffisantes.
 }

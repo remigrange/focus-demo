@@ -8,16 +8,16 @@ package rodolphe.demo.util;
  */
 public final class SampleUtil {
 
-	private SampleUtil() {
-		// only static methods are allowed
-	}
+    private SampleUtil() {
+        // only static methods are allowed
+    }
 
-	/**
-	 * Get hello.
-	 * 
-	 * @return hello
-	 */
-	public static String hello() {
-		return "hello";
-	}
+    /**
+     * Get hello.
+     * 
+     * @return hello
+     */
+    public static String hello() {
+        return "hello";
+    }
 }

@@ -13,10 +13,10 @@ import rodolphe.demo.util.ReferenceObject;
  */
 public interface MasterdataServices extends Component {
 
-	/**
-	 * Get Scope list
-	 *
-	 * @return scope List
-	 */
-	List<ReferenceObject> getScopeList();
+    /**
+     * Get Scope list
+     *
+     * @return scope List
+     */
+    List<ReferenceObject> getScopeList();
 }
