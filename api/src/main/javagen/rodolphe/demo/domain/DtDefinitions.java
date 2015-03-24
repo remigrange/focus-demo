@@ -477,6 +477,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'rank'. */
 		RANK,
+		/** Propriété 'People's professions'. */
+		PROFESSIONS,
 	}
 
 	/**

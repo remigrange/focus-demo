@@ -178,7 +178,8 @@ module.exports = {
         "titCd" : "Title",
         "peoName" : "Name",
         "imdbid" : "Id imdb",
-        "rank" : "rank"
+        "rank" : "rank",
+        "professions" : "People's professions"
     },
     "rolePeople": {
         "rlpId" : "RLP_ID",

@@ -8,19 +8,20 @@ import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.people.PeopleView;
 import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
 
 /**
  * Services about People.
- * 
+ *
  * @author JDALMEIDA
  */
 public interface PeopleServices extends Component {
 
     /**
      * search People by criteria.
-     * 
+     *
      * @param crit criteria
      * @param uiListState uiListState
      * @return result
@@ -30,7 +31,7 @@ public interface PeopleServices extends Component {
 
     /**
      * Get People by id.
-     * 
+     *
      * @param peopId people identifier
      * @return people
      */
@@ -38,7 +39,7 @@ public interface PeopleServices extends Component {
 
     /**
      * Save People
-     * 
+     *
      * @param people people
      * @return peopel
      */
@@ -46,9 +47,17 @@ public interface PeopleServices extends Component {
 
     /**
      * Get movies in which the person acts.
-     * 
+     *
      * @param peoId people identifier
      * @return movies list
      */
     DtList<Movie> getMoviesByPeo(Long peoId);
+
+    /**
+     * Get People by id.
+     *
+     * @param peopId people identifier
+     * @return people
+     */
+    PeopleView getPeopleDetails(long peoId);
 }

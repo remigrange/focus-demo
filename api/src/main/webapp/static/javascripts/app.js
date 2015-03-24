@@ -1028,6 +1028,10 @@ module.exports = {
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
+			},		
+			"professions": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
 			}		
 	},
 	"rolePeople": {
@@ -1120,7 +1124,7 @@ require.register("config/server/common", function(exports, require, module) {
 var root = ".";
 var url = focus.util.url.builder;
 module.exports = {
-    searchByScope: url(root+"/searchByScope?sortFieldName=${sortFieldName}&sortDesc=${sortDesc}", 'POST')/*,
+    searchByScope: url(root+"/searchByScope?sortFieldName=${sortFieldName}&sortDesc=${sortDesc}&skip=${skip}", 'POST')/*,
     filterResult: url(root+"/filterResult", 'POST')*/
 };
 
@@ -1376,7 +1380,8 @@ module.exports = {
         "titCd" : "Title",
         "peoName" : "Name",
         "imdbid" : "Id imdb",
-        "rank" : "rank"
+        "rank" : "rank",
+        "professions" : "People's professions"
     },
     "rolePeople": {
         "rlpId" : "RLP_ID",
@@ -1645,13 +1650,14 @@ module.exports = referenceStore;
 });
 
 require.register("views/filter-result/index", function(exports, require, module) {
+/*global focusComponents, React */
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var serviceCommon = require('../../services');
 var lineResume = require('./lineResume');
 
 
-module.exports =  React.createClass({displayName: "exports",
-    render:function(){
+module.exports = React.createClass({displayName: "exports",
+    render: function(){
 
         var action = {
             search: function(criteria) {
@@ -1675,7 +1681,7 @@ module.exports =  React.createClass({displayName: "exports",
                         var dataRet = {
                             facet: data.facet,
                             list: data.list,
-                            pageInfos:{
+                            pageInfos: {
                                 currentPage: criteria.pageInfos.page,
                                 perPage: 50,
                                 totalRecords: 50
@@ -1871,7 +1877,7 @@ module.exports = React.createClass({
                 React.createElement("div", {className: "header"}, 
                     React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png", width: "100%", height: "100%"})), 
                     React.createElement("div", {className: "title"}, this.state.title), 
-                    React.createElement("div", {className: "year"}, this.state.released)
+                    React.createElement("div", {className: "year"}, this.state.year)
                 ), 
                 React.createElement("div", {className: "field"}, 
                     React.createElement("div", {className: "title"}, "GENRES"), 
@@ -2151,6 +2157,10 @@ var serviceCommon = require('../../services');
 var action = {
     search: function(criteria) {
         //TODO handle pageInfo
+        var page=0;
+        if((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)){
+            page = criteria.pageInfos.page;
+        }
         var critere = {
             criteria: {
                 scope: 'MOVIE',
@@ -2158,7 +2168,8 @@ var action = {
             },
             pageInfos: {
                 sortFieldName: undefined,
-                sortDesc: undefined
+                sortDesc: undefined,
+                skip: page
             },
             facets: []
         }
@@ -2172,9 +2183,9 @@ var action = {
                     list: list,
                     facet: {},
                     pageInfos: {
-                        currentPage: 2,
+                        currentPage: 1,
                         perPage: 50,
-                        totalRecords: 10
+                        totalRecords: 100
                     },
                     searchContext: {
                         scope: criteria.criteria.scope,

@@ -16,6 +16,7 @@ import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.people.PeopleView;
 import rodolphe.demo.services.people.PeopleServices;
 import rodolphe.demo.services.search.SearchCriterium;
 
@@ -31,7 +32,7 @@ public final class WsPeople implements RestfulService {
 
     /**
      * Search people
-     * 
+     *
      * @param peopleCriteria search criteria
      * @param uiListState uiListState
      * @return search results
@@ -45,7 +46,7 @@ public final class WsPeople implements RestfulService {
 
     /**
      * Get people by identifier.
-     * 
+     *
      * @param peoId identifier
      * @return people
      */
@@ -57,7 +58,7 @@ public final class WsPeople implements RestfulService {
 
     /**
      * Save people.
-     * 
+     *
      * @param people people
      * @return people
      */
@@ -70,7 +71,7 @@ public final class WsPeople implements RestfulService {
 
     /**
      * Get movies in which the person acts.
-     * 
+     *
      * @param peoId people identifier
      * @return movies list
      */
@@ -78,5 +79,17 @@ public final class WsPeople implements RestfulService {
     @AnonymousAccessAllowed
     public DtList<Movie> getMoviesByPeo(@PathParam("id") final Long peoId) {
         return peopleServices.getMoviesByPeo(peoId);
+    }
+
+    /**
+     * Get people by id.
+     *
+     * @param peoId people id.
+     * @return people.
+     */
+    @GET("/people/{id}/peopleView")
+    @AnonymousAccessAllowed
+    public PeopleView getPeopleDetails(@PathParam("id") final long peoId) {
+        return peopleServices.getPeopleDetails(peoId);
     }
 }

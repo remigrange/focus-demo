@@ -48,3 +48,16 @@ create Task TK_GET_PEOPLE_VIEW_BY_PEO_ID {
     attribute PEOP_ID {domain : DO_ID notNull:"true" inOut :"in"}
     attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}
 }
+
+create Task TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID {
+	className : "io.vertigo.dynamox.task.TaskEngineSelect"
+    request : " Select 
+    				peo_id, last_name, first_name, imdbid, tit_cd, peo_name, peo_id as rank
+    			From
+    				people
+    			Where
+    				peo_id = #PEO_ID#
+     "
+    attribute PEO_ID {domain : DO_ID notNull:"true" inOut :"in"}
+    attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}
+}

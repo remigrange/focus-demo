@@ -19,7 +19,7 @@ module.exports = React.createClass({
                 <div className="header">
                     <div className="picture"><img src="./static/img/logoMovie.png" width="100%" height="100%"/></div>
                     <div className="title">{this.state.title}</div>
-                    <div className="year">{this.state.released}</div>
+                    <div className="year">{this.state.year}</div>
                 </div>
                 <div className="field">
                     <div className="title">{"GENRES"}</div>
