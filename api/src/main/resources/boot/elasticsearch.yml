@@ -13,6 +13,9 @@ index :
                     sep_pipe :
                            tokenizer : sep_pipe
                            filter : [standard]
+                    sort_only :
+                           tokenizer : keyword
+                           filter : [standard, lowercase]
              tokenizer :
                     keyword :
                            type : keyword

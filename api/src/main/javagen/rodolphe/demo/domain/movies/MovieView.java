@@ -16,6 +16,7 @@ public final class MovieView implements DtObject {
 
 	private Long movId;
 	private String title;
+	private String titleNotAnalyzed;
 	private java.util.Date released;
 	private Integer year;
 	private Integer runtime;
@@ -66,6 +67,25 @@ public final class MovieView implements DtObject {
 	 */
 	public void setTitle(final String title) {
 		this.title = title;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Title'. 
+	 * @return String titleNotAnalyzed 
+	 */
+	@Field(domain = "DO_COMMENTAIRE_NOT_ANALYZED", persistent = false, label = "Title")
+	public String getTitleNotAnalyzed() {
+		return titleNotAnalyzed;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Title'.
+	 * @param titleNotAnalyzed String 
+	 */
+	public void setTitleNotAnalyzed(final String titleNotAnalyzed) {
+		this.titleNotAnalyzed = titleNotAnalyzed;
 	}
 
 	/**

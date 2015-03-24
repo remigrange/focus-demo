@@ -277,6 +277,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		MOV_ID,
 		/** Propriété 'Title'. */
 		TITLE,
+		/** Propriété 'Title'. */
+		TITLE_NOT_ANALYZED,
 		/** Propriété 'Released'. */
 		RELEASED,
 		/** Propriété 'Year'. */
@@ -333,6 +335,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		MOV_ID,
 		/** Propriété 'Title'. */
 		TITLE,
+		/** Propriété 'Title'. */
+		TITLE_NOT_ANALYZED,
 		/** Propriété 'Released'. */
 		RELEASED,
 		/** Propriété 'Year'. */
