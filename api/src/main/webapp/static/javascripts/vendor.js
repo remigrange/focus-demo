@@ -22243,6 +22243,8 @@ var SearchStore = (function (_CoreStore) {
         var processedData = assign({}, previousData, newData);
         if (this._isSameSearchContext(previousData, newData)) {
           processedData.list = previousData.list.concat(newData.list);
+        } else {
+          processedData.pageInfos.currentPage = 1;
         }
         //add calculated fields on data
         if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
@@ -22274,7 +22276,17 @@ var SearchStore = (function (_CoreStore) {
           isSameFacetContext = isEqual(previousData.facet, newData.facet);
         }
 
-        return isSameSearchContext && isSameFacetContext;
+        var isSameOrderContext = false;
+        if (previousData.pageInfos) {
+          isSameOrderContext = isEqual(previousData.pageInfos.order, newData.pageInfos.order);
+        }
+
+        var isSameGroupContext = false;
+        if (previousData.pageInfos) {
+          isSameGroupContext = isEqual(previousData.pageInfos.group, newData.pageInfos.group);
+        }
+
+        return isSameSearchContext && isSameFacetContext && isSameOrderContext && isSameGroupContext;
       }
     },
     addSearchChangeListener: {
@@ -22578,7 +22590,8 @@ module.exports = {
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
 var React = window.React;
-var Input = require("../input/text").component;
+var InputText = require("../input/text").component;
+var SelectClassic = require("../select/classic").component;
 var Label = require("../label").component;
 var FieldMixin = {
   /**
@@ -22594,7 +22607,8 @@ var FieldMixin = {
       style: {},
       FieldComponent: undefined,
       InputLabelComponent: undefined,
-      InputComponent: Input
+      InputComponent: InputText,
+      SelectComponent: SelectClassic
     };
   },
   /** @inheritdoc */
@@ -22714,6 +22728,29 @@ var FieldMixin = {
       })
     );
   },
+  /**
+   * [select description]
+   * @return {[type]} [description]
+   */
+  select: function renderSelect() {
+    if (this.props.FieldComponent || this.props.InputLabelComponent) {
+      return this.renderFieldComponent();
+    }
+    var selectClassName = "form-control col-sm-" + (12 - this.props.labelSize);
+    return React.createElement(
+      "div",
+      { className: "input-group" },
+      React.createElement(this.props.SelectComponent, {
+        style: { "class": selectClassName },
+        id: this.props.name,
+        name: this.props.name,
+        value: this.state.value,
+        type: this.props.type,
+        onChange: this.onInputChange,
+        ref: "input"
+      })
+    );
+  },
   error: function renderError() {
     if (this.state.error) {
       if (this.props.FieldComponent) {
@@ -22754,7 +22791,7 @@ var FieldMixin = {
 };
 module.exports = builder(FieldMixin);
 
-},{"../input/text":16,"../label":19}],6:[function(require,module,exports){
+},{"../input/text":16,"../label":19,"../select/classic":21}],6:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -22939,16 +22976,17 @@ module.exports = actionMixin;
 
 var React = window.React;
 var Field = require("../../field").component;
-var Field = require("../../field").component;
 var Button = require("../../button/action").component;
 module.exports = {
   /**
    * Create a field for the given property metadata.
    * @param {string} name - property name.
+   * @param {object} options - An object which contains all options for the built of the field.
    * @returns {object} - A React Field.
    */
-  fieldFor: function fieldFor(name) {
+  fieldFor: function fieldFor(name, options) {
     var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    options = options || {};
     //Maybe allow to overrife fieldFor here such as def.fieldFor?.
     return React.createElement(Field, {
       name: name,
@@ -22956,6 +22994,30 @@ module.exports = {
       value: this.state[name],
       error: this.state.error ? this.state.error[name] : undefined,
       validator: def.validator,
+      FieldComponent: def.FieldComponent,
+      InputLabelComponent: def.InputLabelComponent
+    });
+  },
+  /**
+   * Select component for the component.
+   * @param {string} name - property name.
+   * @param {string} listName - list name.
+   * @param {object} options - options object.
+   * @returns {object} - A React Field.
+   */
+  selectFor: function selectFor(name, listName, options) {
+    options = options || {};
+    var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    listName = listName || def.listName;
+    //Check listName
+
+    return React.createElement(Field, {
+      name: name,
+      ref: name,
+      value: this.state[name],
+      error: this.state.error ? this.state.error[name] : undefined,
+      validator: def.validator,
+      values: this.state[listName], //Options to be rendered.
       FieldComponent: def.FieldComponent,
       InputLabelComponent: def.InputLabelComponent
     });
@@ -24568,7 +24630,6 @@ var builder = window.focus.component.builder;
 var React = window.React;
 var Line = require("./line").mixin;
 var Button = require("../../common/button/action").component;
-var uuid = require("uuid");
 var type = window.focus.component.types;
 var InfiniteScrollMixin = require("./infinite-scroll").mixin;
 
@@ -24591,7 +24652,8 @@ var listMixin = {
             isLoading: false,
             hasMoreData: false,
             operationList: [],
-            isManualFetch: false
+            isManualFetch: false,
+            idField: "id"
         };
     },
 
@@ -24609,7 +24671,8 @@ var listMixin = {
         loader: type("func"),
         FetchNextPage: type("func"),
         operationList: type("array"),
-        isManualFetch: type("bool")
+        isManualFetch: type("bool"),
+        idField: type("bool")
     },
 
     /**
@@ -24669,7 +24732,7 @@ var listMixin = {
                     isSelected = false;
             }
             return React.createElement(LineComponent, {
-                key: line.id || uuid.v4(),
+                key: line[_this.props.idField],
                 data: line,
                 ref: "line" + lineCount++,
                 isSelection: _this.props.isSelection,
@@ -24724,7 +24787,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"../../common/button/action":3,"./infinite-scroll":30,"./line":31,"uuid":97}],33:[function(require,module,exports){
+},{"../../common/button/action":3,"./infinite-scroll":30,"./line":31}],33:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -27902,6 +27965,7 @@ var QuickSearch = require("../../../search/quick-search").component;
 var List = require("../../../list/selection").list.component;
 var SearchStore = window.focus.store.SearchStore;
 var assign = require("object-assign");
+var type = window.focus.component.types;
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
 
 var searchMixin = {
@@ -27936,8 +28000,19 @@ var searchMixin = {
         return {
             lineComponent: undefined,
             isSelection: false,
-            lineOperationList: {}
+            lineOperationList: {},
+            idField: "id"
         };
+    },
+
+    /**
+     * properties validation
+     */
+    propTypes: {
+        lineComponent: type("object"),
+        isSelection: type("bool"),
+        lineOperationList: type("array"),
+        idField: type("string")
     },
 
     /**
@@ -28030,6 +28105,7 @@ var searchMixin = {
             }),
             React.createElement(List, { data: this.state.list,
                 ref: "list",
+                idField: this.props.idField,
                 isSelection: this.props.isSelection,
                 onSelection: this._selectItem,
                 onLineClick: this._lineClick,

@@ -31,7 +31,9 @@ var action = {
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,
                         perPage: 50,
-                        totalRecords: data.totalRecords
+                        totalRecords: data.totalRecords,
+                        order: criteria.pageInfos.order,
+                        group: criteria.pageInfos.group
                     },
                     searchContext: {
                         scope: criteria.scope,
@@ -75,7 +77,7 @@ var config = {
         Genre: 'text',
         Country: 'text'
     },
-    orderableColumnList: {TITLE: 'Title', GENRE_IDS: 'Genre'},
+    orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
     groupableColumnList: {GENRE_IDS: 'Genre'},
     operationList: [
         /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
