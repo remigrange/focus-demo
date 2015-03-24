@@ -506,6 +506,11 @@ ul.selection-list {
   width: 70%;
   float: right;
 }
+.cartridge .header .link {
+  float: left;
+  margin-top: 120px;
+  margin-left: -85px;
+}
 .slidingContentCss {
   width: 70%;
   float: left;
@@ -514,7 +519,7 @@ ul.selection-list {
   color: grey;
   margin-left: 20px;
 }
-#slidingContent .slidingBloc {
+.slidingContentCss .slidingBloc {
   border-bottom: solid 1px;
 }
 .sticky-navigation {
@@ -545,6 +550,9 @@ ul.selection-list {
 .slidingContentCss .card .name {
   font-weight: bold;
   font-size: 20px;
+}
+.slidingContentCss .noBorderBottom {
+  border-bottom: none;
 }
 
 body {

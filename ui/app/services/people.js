@@ -5,6 +5,6 @@ module.exports = {
         return fetch(URL.people.peopleView({urlData: {id: id}}));
     },
     getPeopleFilmographyById: function getPeopleFilmographyById(id){
-        return fetch(URL.people.filmography({urlData: {id: id}}));
+        return fetch(URL.people.movies({urlData: {id: id}}));
     }
 };

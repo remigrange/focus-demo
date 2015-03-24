@@ -1,5 +1,5 @@
 var AppDispatcher = focus.dispatcher;
-var peopleServices = require('../../services').movie;
+var peopleServices = require('../../services').people;
 module.exports = {
     load: function(id){
         peopleServices.getPeopleViewById(id).then(
