@@ -30,6 +30,7 @@ import rodolphe.demo.services.search.SearchServices;
  */
 public class PeopleServicesImpl implements PeopleServices {
 
+    private static final int MAX_ROWS = 50;
     @Inject
     private PeopleDAO peopleDAO;
     @Inject
@@ -51,18 +52,17 @@ public class PeopleServicesImpl implements PeopleServices {
             criteria.setSortAsc(!uiListState.isSortDesc());
             criteria.setSortFieldName(uiListState.getSortFieldName());
         }
-        final int maxRows = 50;
         String sortFieldName = null;
         boolean isSortDesc = false;
-        DtListState listState = new DtListState(maxRows, 0, null, null);
+        DtListState listState = new DtListState(MAX_ROWS, 0, null, null);
         if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
             sortFieldName = uiListState.getSortFieldName();
             isSortDesc = uiListState.isSortDesc();
         }
         if (uiListState.getSkip() > 0) {
-            listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows, sortFieldName, isSortDesc);
+            listState = new DtListState(MAX_ROWS, (uiListState.getSkip() - 1) * MAX_ROWS, sortFieldName, isSortDesc);
         } else {
-            listState = new DtListState(maxRows, 0, sortFieldName, isSortDesc);
+            listState = new DtListState(MAX_ROWS, 0, sortFieldName, isSortDesc);
         }
         return searchServices.searchPeople(criteria, listState);
     }

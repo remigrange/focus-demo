@@ -13310,7 +13310,7 @@ module.exports = {
   DOCUMENTATION: infos.documentation
 };
 
-},{"./application":2,"./component":5,"./definition":12,"./dispatcher":14,"./exception":20,"./helper":21,"./network":24,"./reference":88,"./router":89,"./store":91,"./util":98}],2:[function(require,module,exports){
+},{"./application":2,"./component":5,"./definition":12,"./dispatcher":14,"./exception":20,"./helper":21,"./network":24,"./reference":89,"./router":90,"./store":92,"./util":99}],2:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -13485,7 +13485,7 @@ module.exports = {
   get: getDomain
 };
 
-},{"../../util/object/check":99,"../../util/string/check":102,"immutable":30,"lodash/lang/isObject":70,"lodash/lang/isString":71}],8:[function(require,module,exports){
+},{"../../util/object/check":100,"../../util/string/check":103,"immutable":30,"lodash/lang/isObject":70,"lodash/lang/isString":71}],8:[function(require,module,exports){
 /**
  * Application domain gestion.
  * @type {Object}
@@ -13582,7 +13582,7 @@ module.exports = {
   getFieldInformations: getFieldInformations
 };
 
-},{"../../util/object/check":99,"../../util/object/checkIsNotNull":100,"../../util/string/check":102,"../domain/container":7,"./container":10,"immutable":30}],10:[function(require,module,exports){
+},{"../../util/object/check":100,"../../util/object/checkIsNotNull":101,"../../util/string/check":103,"../domain/container":7,"./container":10,"immutable":30}],10:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -13660,7 +13660,7 @@ module.exports = {
   getFieldConfiguration: getFieldConfiguration
 };
 
-},{"../../store/search/definition":95,"../../util/object/check":99,"../../util/string/check":102,"immutable":30}],11:[function(require,module,exports){
+},{"../../store/search/definition":96,"../../util/object/check":100,"../../util/string/check":103,"immutable":30}],11:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21831,7 +21831,22 @@ module.exports = {
   getAutoCompleteServiceQuery: getAutoCompleteServiceQuery
 };
 
-},{"../network/fetch":23,"../util/string/check":102,"./config":87}],86:[function(require,module,exports){
+},{"../network/fetch":23,"../util/string/check":103,"./config":88}],86:[function(require,module,exports){
+"use strict";
+
+var loadManyReferenceList = require("./builder").loadMany;
+var dispatcher = require("../dispatcher");
+module.exports = function (referenceNames) {
+  return function () {
+    return Promise.all(loadManyReferenceList(referenceNames)).then(function successReferenceLoading(data) {
+      dispatcher.handleViewAction({ data: data, type: "update" });
+    }, function errorReferenceLoading(err) {
+      dispatcher.handleViewAction({ data: err, type: "error" });
+    });
+  };
+};
+
+},{"../dispatcher":14,"./builder":85}],87:[function(require,module,exports){
 "use strict";
 
 var ReferenceStore = require("../store/reference");
@@ -21847,7 +21862,7 @@ module.exports = function builtInStore() {
   return instanciatedRefStore;
 };
 
-},{"../store/reference":93}],87:[function(require,module,exports){
+},{"../store/reference":94}],88:[function(require,module,exports){
 "use strict";
 
 var Immutable = require("Immutable");
@@ -21891,21 +21906,22 @@ module.exports = {
   set: setConfig
 };
 
-},{"../util/object/check":99,"../util/string/check":102,"Immutable":25}],88:[function(require,module,exports){
+},{"../util/object/check":100,"../util/string/check":103,"Immutable":25}],89:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   config: require("./config"),
   builder: require("./builder"),
-  builtInStore: require("./built-in-store")
+  builtInStore: require("./built-in-store"),
+  builtInAction: require("./built-in-action")
 };
 
-},{"./builder":85,"./built-in-store":86,"./config":87}],89:[function(require,module,exports){
+},{"./builder":85,"./built-in-action":86,"./built-in-store":87,"./config":88}],90:[function(require,module,exports){
 "use strict";
 
 module.exports = {};
 
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -22055,7 +22071,7 @@ var CoreStore = (function (_EventEmitter) {
 
 module.exports = CoreStore;
 
-},{"../definition/entity/builder":9,"../dispatcher":14,"events":26,"immutable":30,"lodash/lang/isArray":63,"lodash/string/capitalize":75,"object-assign":84}],91:[function(require,module,exports){
+},{"../definition/entity/builder":9,"../dispatcher":14,"events":26,"immutable":30,"lodash/lang/isArray":63,"lodash/string/capitalize":75,"object-assign":84}],92:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -22064,7 +22080,7 @@ module.exports = {
 	ReferenceStore: require("./reference")
 };
 
-},{"./CoreStore":90,"./reference":93,"./search":96}],92:[function(require,module,exports){
+},{"./CoreStore":91,"./reference":94,"./search":97}],93:[function(require,module,exports){
 "use strict";
 
 var refConfigAccessor = require("../../reference/config");
@@ -22088,12 +22104,12 @@ function buildReferenceDefinition() {
 
 module.exports = buildReferenceDefinition;
 
-},{"../../reference/config":87,"keymirror":31,"lodash/lang/isEmpty":64}],93:[function(require,module,exports){
+},{"../../reference/config":88,"keymirror":31,"lodash/lang/isEmpty":64}],94:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":94}],94:[function(require,module,exports){
+},{"./store":95}],95:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -22125,7 +22141,7 @@ var ReferenceStore = (function (_CoreStore) {
 
 module.exports = ReferenceStore;
 
-},{"../CoreStore":90,"./definition":92}],95:[function(require,module,exports){
+},{"../CoreStore":91,"./definition":93}],96:[function(require,module,exports){
 "use strict";
 
 var Immutable = require("immutable");
@@ -22150,12 +22166,12 @@ module.exports = {
   }
 };
 
-},{"immutable":30}],96:[function(require,module,exports){
+},{"immutable":30}],97:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":97}],97:[function(require,module,exports){
+},{"./store":98}],98:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -22293,7 +22309,7 @@ var SearchStore = (function (_CoreStore) {
 
 module.exports = SearchStore;
 
-},{"../../dispatcher":14,"../CoreStore":90,"immutable":30,"lodash/array/intersection":32,"lodash/lang/isArray":63,"lodash/lang/isEqual":65,"lodash/object/keys":73,"object-assign":84}],98:[function(require,module,exports){
+},{"../../dispatcher":14,"../CoreStore":91,"immutable":30,"lodash/array/intersection":32,"lodash/lang/isArray":63,"lodash/lang/isEqual":65,"lodash/object/keys":73,"object-assign":84}],99:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -22302,7 +22318,7 @@ module.exports = {
 	url: require("./url")
 };
 
-},{"./object":101,"./string":103,"./url":105}],99:[function(require,module,exports){
+},{"./object":102,"./string":104,"./url":106}],100:[function(require,module,exports){
 "use strict";
 
 var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
@@ -22320,7 +22336,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":15,"lodash/lang/isObject":70}],100:[function(require,module,exports){
+},{"../../exception/ArgumentInvalidException":15,"lodash/lang/isObject":70}],101:[function(require,module,exports){
 "use strict";
 
 var ArgumentNullException = require("../../exception/ArgumentNullException");
@@ -22338,7 +22354,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentNullException":16,"lodash/lang/isNull":69}],101:[function(require,module,exports){
+},{"../../exception/ArgumentNullException":16,"lodash/lang/isNull":69}],102:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -22346,7 +22362,7 @@ module.exports = {
 	checkIsNotNull: require("./checkIsNotNull")
 };
 
-},{"./check":99,"./checkIsNotNull":100}],102:[function(require,module,exports){
+},{"./check":100,"./checkIsNotNull":101}],103:[function(require,module,exports){
 "use strict";
 
 var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
@@ -22364,14 +22380,14 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":15,"lodash/lang/isString":71}],103:[function(require,module,exports){
+},{"../../exception/ArgumentInvalidException":15,"lodash/lang/isString":71}],104:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	check: require("./check")
 };
 
-},{"./check":102}],104:[function(require,module,exports){
+},{"./check":103}],105:[function(require,module,exports){
 "use strict";
 
 var urlProcessor = require("./processor");
@@ -22396,7 +22412,7 @@ module.exports = function (url, method) {
   };
 };
 
-},{"./processor":106}],105:[function(require,module,exports){
+},{"./processor":107}],106:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -22404,7 +22420,7 @@ module.exports = {
   preprocessor: require("./processor")
 };
 
-},{"./builder":104,"./processor":106}],106:[function(require,module,exports){
+},{"./builder":105,"./processor":107}],107:[function(require,module,exports){
 "use strict";
 
 var compile = require("lodash/string/template");
