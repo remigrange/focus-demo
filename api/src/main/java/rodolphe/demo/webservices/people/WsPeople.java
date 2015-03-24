@@ -92,4 +92,16 @@ public final class WsPeople implements RestfulService {
     public PeopleView getPeopleDetails(@PathParam("id") final long peoId) {
         return peopleServices.getPeopleDetails(peoId);
     }
+
+    /**
+     * Get movies in which the person acts.
+     *
+     * @param peoId people identifier
+     * @return movies list
+     */
+    @GET("/people/{id}/filmography")
+    @AnonymousAccessAllowed
+    public DtList<Movie> getFilmographyByPeo(@PathParam("id") final Long peoId) {
+        return peopleServices.getFilmographyByPeo(peoId);
+    }
 }
