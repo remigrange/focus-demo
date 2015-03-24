@@ -30,55 +30,55 @@ import rodolphe.demo.services.search.SearchServices;
  */
 public class PeopleServicesImpl implements PeopleServices {
 
-	@Inject
-	private PeopleDAO peopleDAO;
-	@Inject
-	private SearchServices searchServices;
-	@Inject
-	private RolePeopleDAO rolePeopleDAO;
+    @Inject
+    private PeopleDAO peopleDAO;
+    @Inject
+    private SearchServices searchServices;
+    @Inject
+    private RolePeopleDAO rolePeopleDAO;
 
-	/** {@inheritDoc} */
-	@Override
-	public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
-			final PeopleCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
-		final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
-				FacetedSearchConst.QRY_PEOPLE_WO_FCT.getQuery());
-		criteria.setCriteria(crit);
-		for (final FacetSelection sel : selection) {
-			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
-		}
-		if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
-			criteria.setSortAsc(!uiListState.isSortDesc());
-			criteria.setSortFieldName(uiListState.getSortFieldName());
-		}
-		final int maxRows = 50;
-		DtListState listState = new DtListState(maxRows, 0, null, null);
-		if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
-			criteria.setSortAsc(!uiListState.isSortDesc());
-			criteria.setSortFieldName(uiListState.getSortFieldName());
-			if (uiListState.getSkip() > 0) {
-				listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows,
-						uiListState.getSortFieldName(), !uiListState.isSortDesc());
-			} else {
-				listState = new DtListState(maxRows, 0, uiListState.getSortFieldName(), !uiListState.isSortDesc());
-			}
-		}
-		return searchServices.searchPeople(criteria, listState);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
+            final PeopleCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
+        final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
+                FacetedSearchConst.QRY_PEOPLE_WO_FCT.getQuery());
+        criteria.setCriteria(crit);
+        for (final FacetSelection sel : selection) {
+            criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
+        }
+        if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
+            criteria.setSortAsc(!uiListState.isSortDesc());
+            criteria.setSortFieldName(uiListState.getSortFieldName());
+        }
+        final int maxRows = 50;
+        DtListState listState = new DtListState(maxRows, 0, null, null);
+        if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
+            criteria.setSortAsc(!uiListState.isSortDesc());
+            criteria.setSortFieldName(uiListState.getSortFieldName());
+            if (uiListState.getSkip() > 0) {
+                listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows,
+                        uiListState.getSortFieldName(), !uiListState.isSortDesc());
+            } else {
+                listState = new DtListState(maxRows, 0, uiListState.getSortFieldName(), !uiListState.isSortDesc());
+            }
+        }
+        return searchServices.searchPeople(criteria, listState);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public People getPeople(final Long peopId) {
-		return peopleDAO.get(peopId);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public People getPeople(final Long peopId) {
+        return peopleDAO.get(peopId);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public People savePeople(final People people) {
-		peopleDAO.save(people);
-		searchServices.indexPeople(people.getPeoId());
-		return people;
-	}
+    /** {@inheritDoc} */
+    @Override
+    public People savePeople(final People people) {
+        peopleDAO.save(people);
+        searchServices.indexPeople(people.getPeoId());
+        return people;
+    }
 
     /** {@inheritDoc} */
     @Override
