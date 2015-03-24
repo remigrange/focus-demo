@@ -254,7 +254,7 @@ module.exports = {
 				"domain": "DO_COMMENTAIRE",
 				"required": false
 			},		
-			"titleNotAnalyzed": {
+			"titleSortOnly": {
 				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
 				"required": false
 			},		
@@ -350,7 +350,7 @@ module.exports = {
 				"domain": "DO_COMMENTAIRE",
 				"required": false
 			},		
-			"titleNotAnalyzed": {
+			"titleSortOnly": {
 				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
 				"required": false
 			},		

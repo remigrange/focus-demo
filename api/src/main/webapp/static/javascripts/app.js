@@ -709,6 +709,10 @@ module.exports = {
 				"domain": "DO_COMMENTAIRE",
 				"required": false
 			},		
+			"titleSortOnly": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"required": false
+			},		
 			"released": {
 				"domain": "DO_DATE",
 				"required": false
@@ -799,6 +803,10 @@ module.exports = {
 			},		
 			"title": {
 				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"titleSortOnly": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
 				"required": false
 			},		
 			"released": {
@@ -1285,6 +1293,7 @@ module.exports = {
     "movieIndex": {
         "movId" : "primary key",
         "title" : "Title",
+        "titleSortOnly" : "Title",
         "released" : "Released",
         "year" : "Year",
         "runtime" : "Runtime",
@@ -1311,6 +1320,7 @@ module.exports = {
     "movieView": {
         "movId" : "primary key",
         "title" : "Title",
+        "titleSortOnly" : "Title",
         "released" : "Released",
         "year" : "Year",
         "runtime" : "Runtime",

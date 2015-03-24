@@ -54,7 +54,7 @@ public class PeopleServicesImpl implements PeopleServices {
         }
         String sortFieldName = null;
         boolean isSortDesc = false;
-        DtListState listState = new DtListState(MAX_ROWS, 0, null, null);
+        final DtListState listState;
         if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
             sortFieldName = uiListState.getSortFieldName();
             isSortDesc = uiListState.isSortDesc();

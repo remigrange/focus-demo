@@ -278,7 +278,7 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		/** Propriété 'Title'. */
 		TITLE,
 		/** Propriété 'Title'. */
-		TITLE_NOT_ANALYZED,
+		TITLE_SORT_ONLY,
 		/** Propriété 'Released'. */
 		RELEASED,
 		/** Propriété 'Year'. */
@@ -336,7 +336,7 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		/** Propriété 'Title'. */
 		TITLE,
 		/** Propriété 'Title'. */
-		TITLE_NOT_ANALYZED,
+		TITLE_SORT_ONLY,
 		/** Propriété 'Released'. */
 		RELEASED,
 		/** Propriété 'Year'. */

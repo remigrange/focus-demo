@@ -22,7 +22,7 @@ create Task TK_GET_MOVIE_VIEW {
     			From
     				(
     				Select 
-    					mov.mov_id, mov.title, mov.title as title_not_analyzed, mov.released, mov.year, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, 
+    					mov.mov_id, mov.title, mov.title as title_sort_only, mov.released, mov.year, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, 
     					string_agg( distinct movCou.cou_cd, '|') as country_ids, string_agg( distinct movLan.lan_cd, '|') as language_ids,  mov.mov_id as rank 
     				From
     					movie mov
@@ -50,7 +50,7 @@ create Task TK_GET_MOVIE_VIEW {
 create Task TK_GET_MOVIE_VIEW_BY_MOV_ID {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
     request : " Select 
-    					mov.mov_id, mov.title, mov.title as title_not_analyzed, mov.released, mov.year, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, 
+    					mov.mov_id, mov.title, mov.title as title_sort_only, mov.released, mov.year, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, string_agg( distinct movGen.gen_cd, '|') as genre_ids, 
     					string_agg( distinct movCou.cou_cd, '|') as country_ids, string_agg( distinct movLan.lan_cd, '|') as language_ids,  mov.mov_id as rank 
     			From
     				movie mov

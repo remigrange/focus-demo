@@ -21836,15 +21836,29 @@ module.exports = {
 
 var loadManyReferenceList = require("./builder").loadMany;
 var dispatcher = require("../dispatcher");
-module.exports = function (referenceNames) {
+
+/**
+ * Focus reference action.
+ * @param {array} referenceNames - An array which contains the name of all the references to load.
+ * @returns {Promise} - The promise of loading all the references.
+ */
+function builtInReferenceAction(referenceNames) {
   return function () {
     return Promise.all(loadManyReferenceList(referenceNames)).then(function successReferenceLoading(data) {
-      dispatcher.handleViewAction({ data: data, type: "update" });
+      //Rebuilt a constructed information from the map.
+      var reconstructedData = {};
+      referenceNames.map(function (name, index) {
+        reconstructedData[name] = data[index];
+      });
+      //
+      dispatcher.handleViewAction({ data: reconstructedData, type: "update", subject: "reference" });
     }, function errorReferenceLoading(err) {
       dispatcher.handleViewAction({ data: err, type: "error" });
     });
   };
-};
+}
+
+module.exports = builtInReferenceAction;
 
 },{"../dispatcher":14,"./builder":85}],87:[function(require,module,exports){
 "use strict";
@@ -22445,7 +22459,7 @@ module.exports = {
 	page: require("./page")
 };
 
-},{"./common":12,"./list":28,"./page":98,"./search":103}],2:[function(require,module,exports){
+},{"./common":12,"./list":28,"./page":98,"./search":104}],2:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -24795,6 +24809,8 @@ var lineMixin = {
      */
     propTypes: {
         data: type("object"),
+        dateField: type("string"),
+        dateComponent: type("object"),
         onLineClick: type("func")
     },
 
@@ -24862,6 +24878,11 @@ var lineMixin = {
             return React.createElement(
                 "li",
                 null,
+                React.createElement(
+                    "div",
+                    { className: "timeline-date" },
+                    "02/06/1982"
+                ),
                 React.createElement("div", { className: "timeline-badge" }),
                 React.createElement(
                     "div",
@@ -24894,7 +24915,10 @@ var listMixin = {
      * Default properties for the list.
      */
     getDefaultProps: function getDefaultProps() {
-        idField: "id";
+        return {
+            idField: "id",
+            dateField: "date"
+        };
     },
 
     /**
@@ -24902,6 +24926,9 @@ var listMixin = {
      */
     propTypes: {
         date: type("array"),
+        idField: type("string"),
+        dateField: type("string"),
+        dateComponent: type("object"),
         lineComponent: type("object")
     },
 
@@ -24919,6 +24946,7 @@ var listMixin = {
                 key: line[_this.props.idField] || uuid.v4(),
                 data: line,
                 ref: "line" + lineCount++,
+                dateField: _this.props.dateField,
                 onLineClick: _this.props.onLineClick
             });
         });
@@ -27395,10 +27423,98 @@ module.exports = uuid;
 "use strict";
 
 module.exports = {
-  search: require("./search")
+  search: require("./search"),
+  popin: require("./popin")
 };
 
-},{"./search":101}],99:[function(require,module,exports){
+},{"./popin":99,"./search":102}],99:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+
+/**
+ * Popin mixin
+ * @type {object}
+ */
+var popinMixin = {
+
+    /**
+     * Display name.
+     */
+    displayName: "popin",
+
+    /**
+     * Default propos.
+     * @returns {object} Default props.
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            animation: "right", // right, left, up, down
+            displaySelector: undefined, // Html selector of the element wich open/close the modal when click on it.
+            contentLoadingFunction: undefined // Function wich returns the content of the modal.
+        };
+    },
+
+    /**
+     * Initial state.
+     * @returns {object} Initial state values
+     */
+    getInitialState: function getInitialState() {
+        return {
+            isDisplayed: false // True if modal is displayed
+        };
+    },
+
+    _getModalCss: function _getModalCss() {
+        var cssClass = "popin animated";
+        switch (this.props.animation) {
+            case "right":
+                cssClass += " bounceInRight";
+                break;
+            case "left":
+                cssClass += " bounceInLeft";
+                break;
+            case "down":
+                cssClass += " bounceInDown";
+                break;
+            case "up":
+                cssClass += " bounceInUp";
+                break;
+        }
+        return cssClass;
+    },
+
+    /**
+     * Render the component.
+     * @returns {JSX} Htm code.
+     */
+    render: function renderPopin() {
+        var source = document.querySelector(this.props.displaySelector);
+        var currentView = this;
+        source.onclick = function () {
+            currentView.setState({ isDisplayed: !currentView.state.isDisplayed });
+        };
+
+        if (!this.state.isDisplayed) {
+            return React.createElement("div", null);
+        }
+
+        return React.createElement(
+            "span",
+            { className: this._getModalCss() },
+            React.createElement(
+                "div",
+                { className: "modal-content" },
+                this.props.contentLoadingFunction()
+            )
+        );
+    }
+
+};
+
+module.exports = builder(popinMixin);
+
+},{}],100:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -27480,7 +27596,7 @@ var InfiniteScrollPageMixin = {
 
 module.exports = { mixin: InfiniteScrollPageMixin };
 
-},{"object-assign":95}],100:[function(require,module,exports){
+},{"object-assign":95}],101:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -27769,7 +27885,7 @@ var searchFilterResultMixin = {
 
 module.exports = builder(searchFilterResultMixin);
 
-},{"../../../list/action-bar/index":26,"../../../list/selection":29,"../../../list/summary/index":33,"../../../search/live-filter/index":104,"../common-mixin/infinite-scroll-page-mixin":99,"object-assign":95}],101:[function(require,module,exports){
+},{"../../../list/action-bar/index":26,"../../../list/selection":29,"../../../list/summary/index":33,"../../../search/live-filter/index":105,"../common-mixin/infinite-scroll-page-mixin":100,"object-assign":95}],102:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -27777,7 +27893,7 @@ module.exports = {
     searchResult: require("./search-result")
 };
 
-},{"./filter-result":100,"./search-result":102}],102:[function(require,module,exports){
+},{"./filter-result":101,"./search-result":103}],103:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -27929,7 +28045,7 @@ var searchMixin = {
 
 module.exports = builder(searchMixin);
 
-},{"../../../list/selection":29,"../../../search/quick-search":107,"../common-mixin/infinite-scroll-page-mixin":99,"object-assign":95}],103:[function(require,module,exports){
+},{"../../../list/selection":29,"../../../search/quick-search":108,"../common-mixin/infinite-scroll-page-mixin":100,"object-assign":95}],104:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -27937,7 +28053,7 @@ module.exports = {
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":104,"./quick-search":107}],104:[function(require,module,exports){
+},{"./live-filter":105,"./quick-search":108}],105:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -28096,7 +28212,7 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/img":11,"./live-filter-facet":106,"lodash/object/omit":88,"object-assign":95}],105:[function(require,module,exports){
+},{"../../common/img":11,"./live-filter-facet":107,"lodash/object/omit":88,"object-assign":95}],106:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -28144,7 +28260,7 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],106:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -28301,12 +28417,12 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":105}],107:[function(require,module,exports){
+},{"./live-filter-data":106}],108:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":108}],108:[function(require,module,exports){
+},{"./input":109}],109:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -28395,7 +28511,7 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":109,"lodash/string/words":91}],109:[function(require,module,exports){
+},{"./scope":110,"lodash/string/words":91}],110:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
