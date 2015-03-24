@@ -63,6 +63,7 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
         implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 
     private static final String RANK_FIELD_NAME = "RANK";
+    private static final String MSG_INDEXATION = "Indexation de l'index elastic search ";
     @Inject
     private SearchManager searchManager;
     @Inject
@@ -274,7 +275,7 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
         // Lecture de la configuration.
         final Integer clusterCard = configManager.getIntValue("search", "clusterCard");
         final SearchIndexDefinition indexDef = getIndexDefinition();
-        logger.debug("Indexation de l'index elastic search " + indexDef.getName() + "...");
+        logger.debug(MSG_INDEXATION + indexDef.getName() + "...");
         // On charge et on indexe les données par cluster.
         Collection<SearchIndex<I, R>> indexList;
         int rangMin = -10000;
@@ -302,8 +303,8 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
                 scope.commit();
             }
             compteur += dbList.size();
-            logger.debug("Indexation de l'index elastic search " + indexDef.getName() + " : " + dbList.size()
-                    + " éléments indexés (Total : " + compteur + ").");
+            logger.debug(MSG_INDEXATION + indexDef.getName() + " : " + dbList.size() + " éléments indexés (Total : "
+                    + compteur + ").");
             // Condition de sortie : cluster inférieur à la taille de cluster
             if (rangMax == null) {
                 break;
@@ -311,7 +312,7 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
             // Le prochain rang est le dernier rang ramené + 1.
             rangMin = rangMax + 1;
         }
-        logger.info("Indexation de l'index elastic search " + indexDef.getName() + " terminée.");
+        logger.info(MSG_INDEXATION + indexDef.getName() + " terminée.");
     }
 
     /** {@inheritDoc} */
@@ -373,10 +374,9 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
         // retCrit.setFacets(result.getFacets());
         // On crée le bon objet de retour
         // FIXME : problème des highlihts
-        final FacetedQueryResult<R, SearchCriterium<S>> res = new FacetedQueryResult<>(result.getFacetedQuery(),
-                result.getCount(), result.getDtList(), result.getFacets(), new HashMap<FacetValue, DtList<R>>(),
-                new HashMap<R, Map<DtField, String>>(), retCrit);
-        return res;
+        return new FacetedQueryResult<>(result.getFacetedQuery(), result.getCount(), result.getDtList(),
+                result.getFacets(), new HashMap<FacetValue, DtList<R>>(), new HashMap<R, Map<DtField, String>>(),
+                retCrit);
     }
 
     /**
