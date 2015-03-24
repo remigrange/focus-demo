@@ -142,11 +142,11 @@ public class MovieServicesImpl implements MovieServices {
     @Override
     @Transactional
     public MovieView getMovieDetails(final Long movId) {
-        final MovieView MovieView = moviePao.getMovieViewForMovieDetailsByMovId(movId);
-        MovieView.setActors(getActors(movId));
-        MovieView.setProducers(getProducers(movId));
-        MovieView.setDirectors(getDirectors(movId));
-        return MovieView;
+        final MovieView movieView = moviePao.getMovieViewForMovieDetailsByMovId(movId);
+        movieView.setActors(getActors(movId));
+        movieView.setProducers(getProducers(movId));
+        movieView.setDirectors(getDirectors(movId));
+        return movieView;
     }
 
     /** {@inheritDoc} */
