@@ -110,13 +110,13 @@ module.exports = {
 });
 
 require.register("action/movie/index", function(exports, require, module) {
-var AppDispatcher =  focus.dispatcher;
+var AppDispatcher = focus.dispatcher;
 var movieServices = require('../../services').movie;
 module.exports = {
     load: function(id){
         movieServices.getMovieViewById(id).then(
             function(data){
-                focus.dispatcher.handleServerAction({
+              AppDispatcher.handleServerAction({
                     data: {movie: data},
                     type: "update"
                 });
@@ -127,9 +127,38 @@ module.exports = {
     loadCastings: function(id){
         movieServices.getMovieCastingsById(id).then(
             function(data){
-                focus.dispatcher.handleServerAction({
+              AppDispatcher.handleServerAction({
                     data: {castings: {castings: data}},
                     type: "update"
+                });
+            }
+        );
+    }
+};
+
+});
+
+require.register("action/people/index", function(exports, require, module) {
+var AppDispatcher = focus.dispatcher;
+var peopleServices = require('../../services').movie;
+module.exports = {
+    load: function(id){
+        peopleServices.getPeopleViewById(id).then(
+            function(data){
+              AppDispatcher.handleServerAction({
+                    data: {people: data},
+                    type: 'update'
+                });
+            }
+        );
+    },
+
+    loadFilmography: function(id){
+        peopleServices.getPeopleFilmographyById(id).then(
+            function(data){
+              AppDispatcher.handleServerAction({
+                    data: {filmography: {filmography: data}},
+                    type: 'update'
                 });
             }
         );
@@ -1131,7 +1160,9 @@ module.exports = {
   getAll: url(root, 'GET'),
   update: url(root + "${id}/",'PUT'),
   create: url(root, 'POST'),
-  get: url(root + "${id}/", 'GET')
+  get: url(root + "${id}/", 'GET'),
+  peopleView: url(root + "${id}/" + 'peopleView', 'GET'),
+  filmography: url(root + "${id}/" + 'filmography', 'GET')
 };
 
 });
@@ -1466,32 +1497,39 @@ var AppRouter = Router.extend({
     '': 'home',
     'filterResult': 'filterResult',
     'searchResult': 'searchResult',
-    'movie/:id': 'movie'
+    'movie/:id': 'movie',
+    'people/:id': 'people'
   },
-  home: function handleHomeRoute(){
-      console.log('ROUTE: HOME');
+  home: function handleHomeRoute() {
+    console.log('ROUTE: HOME');
     //Require the applications modules
   },
-    movie: function handleMovieRoute(id) {
-        console.log('ROUTE: MOVIE');
-        //Require the applications modules
-        var MovieDetailView = require('../views/movie');
-        render(MovieDetailView, '#page', {props: {id: id}});
-    },
-  filterResult: function handleFilterResult(){
-      console.log('ROUTE: FILTER RESULT');
-      //Require the applications modules
-       var FilterResultView  = require('../views/filter-result');
-      //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
-      render(FilterResultView, '#page');
+  movie: function handleMovieRoute(id) {
+    console.log('ROUTE: MOVIE');
+    //Require the applications modules
+    var MovieDetailView = require('../views/movie');
+    render(MovieDetailView, '#page', {props: {id: id}});
   },
-  searchResult: function handleSearchResult(){
-      console.log('ROUTE: SEARCH RESULT');
-      //Require the applications modules
-      var SearchResultView  = require('../views/search-result');
-      //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
-      render(SearchResultView, '#page');
-    }
+  people: function handlePeopleRoute(id) {
+    console.log('ROUTE: PEOPLE');
+    //Require the applications modules
+    var PeopleDetailView = require('../views/people');
+    render(PeopleDetailView, '#page', {props: {id: id}});
+  },
+  filterResult: function handleFilterResult() {
+    console.log('ROUTE: FILTER RESULT');
+    //Require the applications modules
+    var FilterResultView = require('../views/filter-result');
+    //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
+    render(FilterResultView, '#page');
+  },
+  searchResult: function handleSearchResult() {
+    console.log('ROUTE: SEARCH RESULT');
+    //Require the applications modules
+    var SearchResultView = require('../views/search-result');
+    //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
+    render(SearchResultView, '#page');
+  }
 });
 module.exports = new AppRouter();
 
@@ -1515,6 +1553,7 @@ require.register("services/index", function(exports, require, module) {
 module.exports= {
     common: require('./common'),
     movie: require('./movie'),
+    people: require('./people'),
     refernce : require('./reference')
 };
 });
@@ -1531,6 +1570,19 @@ module.exports = {
     },
     getMovieCastingsById: function getMovieCastingsById(id){
         return fetch(URL.movie.castings({urlData:{id: id}}));
+    }
+};
+});
+
+require.register("services/people", function(exports, require, module) {
+var URL = require('../../config/server');
+var fetch = focus.network.fetch;
+module.exports = {
+    getPeopleViewById: function getPeopleViewById(id){
+        return fetch(URL.people.peopleView({urlData: {id: id}}));
+    },
+    getPeopleFilmographyById: function getPeopleFilmographyById(id){
+        return fetch(URL.people.filmography({urlData: {id: id}}));
     }
 };
 });
@@ -1558,6 +1610,22 @@ var movieStore = new focus.store.CoreStore({
     }
   });
 module.exports = movieStore;
+
+});
+
+require.register("stores/people", function(exports, require, module) {
+/* global focus*/
+/**
+ * Store dealing with the movie subject.
+ * @type {focus}
+ */
+var peopleStore = new focus.store.CoreStore({
+    definition : {
+        'people': 'people',
+        'filmography': 'filmography'
+    }
+  });
+module.exports = peopleStore;
 
 });
 
@@ -1717,7 +1785,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 module.exports = React.createClass({
     definitionPath: "movie",
-    displayName: "movieCartridge",
+    displayName: "cartridge",
     getInitialState: function () {
         this.state = {actors: [],
             producers: [],
@@ -1729,7 +1797,7 @@ module.exports = React.createClass({
     action: movieActions,
     renderContent: function renderMovieCartridge() {
         return (
-            React.createElement("div", {className: "movieCartridge"}, 
+            React.createElement("div", {className: "cartridge"}, 
                 React.createElement("div", {className: "header"}, 
                     React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png", width: "100%", height: "100%"})), 
                     React.createElement("div", {className: "title"}, this.state.title), 
@@ -1802,10 +1870,10 @@ module.exports = React.createClass({displayName: "exports",
         return (
             React.createElement("div", {className: "movieView"}, 
                 React.createElement(StickyNavigation, {contentSelector: "#slidingContent"}), 
-                React.createElement("div", {className: "movieDetails"}, 
+                React.createElement("div", {className: "details"}, 
                     React.createElement(SlidingContent, {id: this.props.id, style: {className:'slidingContentCss'}}), 
 
-                    React.createElement(MovieCartridge, {id: this.props.id, style: {className:'movieCartridgeCss'}})
+                    React.createElement(MovieCartridge, {id: this.props.id, style: {className:'cartridgeCss'}})
                 )
             )
         );
@@ -1818,8 +1886,8 @@ require.register("views/movie/peopleCard", function(exports, require, module) {
 module.exports = React.createClass({displayName: "exports",
     render: function renderPeopleCard() {
         return (
-            React.createElement("div", {className: "peopleCard"}, 
-                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png", width: "100%", height: "100%"})), 
+            React.createElement("div", {className: "card"}, 
+                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/peopleLogo.png", width: "100%", height: "100%"})), 
                 React.createElement("div", {className: "name"}, this.props.name), 
                 React.createElement("div", {className: "subName"}, this.props.subName)
             )
@@ -1897,6 +1965,106 @@ module.exports = React.createClass({
                 ), 
                 React.createElement("div", {className: "slidingBloc"}, 
                     React.createElement(Title, {id: "pictures", title: "PICTURES"})
+                )
+            )
+        );
+    }
+});
+
+});
+
+require.register("views/people/cartridge", function(exports, require, module) {
+var formMixin = focus.components.common.form.mixin;
+var peopleActions = require('../../action/movie');
+var peopleStore = require('../../stores/movie');
+module.exports = React.createClass({
+    definitionPath: "people",
+    displayName: "cartridge",
+    mixins: [formMixin],
+    stores: [{store: peopleStore, properties: ['people']}],
+    action: peopleActions,
+    renderContent: function renderMovieCartridge() {
+        return (
+            React.createElement("div", {className: "cartridge"}, 
+                React.createElement("div", {className: "header"}, 
+                    React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/peopleLogo.png", width: "100%", height: "100%"})), 
+                    React.createElement("div", {className: "title"}, this.state.peoName), 
+                    React.createElement("div", {className: "year"}, this.state.year)
+                )
+            )
+        );
+    }
+});
+
+});
+
+require.register("views/people/index", function(exports, require, module) {
+//Get the form mixin.
+var MovieCartridge = require('./cartridge');
+var SlidingContent = require('./slidingContent');
+
+var StickyNavigation = focus.components.common.stickyNavigation.component;
+
+module.exports = React.createClass({displayName: "exports",
+    render: function renderPeopleView() {
+        return (
+            React.createElement("div", {className: "movieView"}, 
+                React.createElement(StickyNavigation, {contentSelector: "#slidingContent"}), 
+                React.createElement("div", {className: "details"}, 
+                    React.createElement(SlidingContent, {id: this.props.id, style: {className:'slidingContentCss'}}), 
+
+                    React.createElement(MovieCartridge, {id: this.props.id, style: {className:'cartridgeCss'}})
+                )
+            )
+        );
+    }
+});
+
+});
+
+require.register("views/people/movieCard", function(exports, require, module) {
+module.exports = React.createClass({displayName: "exports",
+    render: function renderMovieCard() {
+        return (
+            React.createElement("div", {className: "card"}, 
+                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png", width: "100%", height: "100%"})), 
+                React.createElement("div", {className: "name"}, this.props.name), 
+                React.createElement("div", {className: "subName"}, this.props.subName)
+            )
+        );
+    }
+});
+
+});
+
+require.register("views/people/slidingContent", function(exports, require, module) {
+var formMixin = focus.components.common.form.mixin;
+var peopleActions = require('../../action/movie');
+var peopleStore = require('../../stores/movie');
+var Title = focus.components.common.title.component;
+var MovieCard = require('./peopleCard');
+module.exports = React.createClass({
+    definitionPath: "people",
+    displayName: "slidingContent",
+    getInitialState: function () {
+        this.state = {
+            filmography: []
+        };
+        return this.state;
+    },
+    mixins: [formMixin],
+    stores: [{store: peopleStore, properties: ["people", "filmography"]}],
+    action: {
+        load: function (id) {
+            peopleActions.load(id);
+            peopleActions.loadFilmography(id);
+        }
+    },
+    renderContent: function renderSlidingContent() {
+        return (
+            React.createElement("div", {id: "slidingContent"}, 
+                React.createElement("div", {className: "slidingBloc"}, 
+                    React.createElement(Title, {id: "details", title: "DETAILS"})
                 )
             )
         );
