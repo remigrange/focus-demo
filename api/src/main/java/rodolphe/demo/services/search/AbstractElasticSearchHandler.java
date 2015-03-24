@@ -60,7 +60,7 @@ import rodolphe.demo.util.TransactionScope;
  * @param <S> Type du critère.
  */
 public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends DtObject, V extends DtObject, S extends DtObject>
-        implements ElasticSearchHandler<S, R>, MemorizeTnrData {
+implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 
     private static final String RANK_FIELD_NAME = "RANK";
     private static final String MSG_INDEXATION = "Indexation de l'index elastic search ";

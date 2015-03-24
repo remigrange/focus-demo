@@ -197,3 +197,11 @@ create Domain DO_TEXTE {
 	storeType : "TEXT"
     indexType : "text_fr"
 }
+
+create Domain DO_COMMENTAIRE_NOT_ANALYZED {
+	dataType : String
+	formatter : FMT_DEFAULT
+	constraint : [CK_MAX_LENGTH_3000]
+	storeType : "VARCHAR(3000)"
+    indexType : "sort_only"
+}

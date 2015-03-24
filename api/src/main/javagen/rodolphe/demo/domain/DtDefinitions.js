@@ -254,6 +254,10 @@ module.exports = {
 				"domain": "DO_COMMENTAIRE",
 				"required": false
 			},		
+			"titleNotAnalyzed": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"required": false
+			},		
 			"released": {
 				"domain": "DO_DATE",
 				"required": false
@@ -344,6 +348,10 @@ module.exports = {
 			},		
 			"title": {
 				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"titleNotAnalyzed": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
 				"required": false
 			},		
 			"released": {

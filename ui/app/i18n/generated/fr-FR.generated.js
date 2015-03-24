@@ -87,6 +87,7 @@ module.exports = {
     "movieIndex": {
         "movId" : "primary key",
         "title" : "Title",
+        "titleNotAnalyzed" : "Title",
         "released" : "Released",
         "year" : "Year",
         "runtime" : "Runtime",
@@ -113,6 +114,7 @@ module.exports = {
     "movieView": {
         "movId" : "primary key",
         "title" : "Title",
+        "titleNotAnalyzed" : "Title",
         "released" : "Released",
         "year" : "Year",
         "runtime" : "Runtime",
