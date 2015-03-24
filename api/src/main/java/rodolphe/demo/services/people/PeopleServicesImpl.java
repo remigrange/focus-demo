@@ -11,6 +11,7 @@ import io.vertigo.vega.rest.model.UiListState;
 
 import javax.inject.Inject;
 
+import rodolphe.demo.dao.movies.MovieDAO;
 import rodolphe.demo.dao.people.PeopleDAO;
 import rodolphe.demo.dao.people.PeoplePAO;
 import rodolphe.demo.dao.people.RolePeopleDAO;
@@ -42,6 +43,8 @@ public class PeopleServicesImpl implements PeopleServices {
     private RolePeopleDAO rolePeopleDAO;
     @Inject
     private PeoplePAO peoplePAO;
+    @Inject
+    private MovieDAO movieDAO;
 
     /** {@inheritDoc} */
     @Override
@@ -105,5 +108,12 @@ public class PeopleServicesImpl implements PeopleServices {
     @Transactional
     public PeopleView getPeopleDetails(final long peoId) {
         return peoplePAO.getPeopleViewForPeopleDetailsByPeoId(peoId);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public DtList<Movie> getFilmographyByPeo(final Long peoId) {
+        return movieDAO.getFilmographyByPeoId(peoId);
     }
 }

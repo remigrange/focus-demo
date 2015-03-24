@@ -20,6 +20,8 @@ public final class MovieDAO extends DAOBroker<rodolphe.demo.domain.movies.Movie,
 	private static enum Tasks {
 		/** Tache TK_GET_MOVIES_BY_CRITERIA */
 		TK_GET_MOVIES_BY_CRITERIA,
+		/** Tache TK_GET_FILMOGRAPHY_BY_PEO_ID */
+		TK_GET_FILMOGRAPHY_BY_PEO_ID,
 	}
 
 	/** Constante de paramètre de la tache SEARCH_TEXT. */
@@ -27,6 +29,12 @@ public final class MovieDAO extends DAOBroker<rodolphe.demo.domain.movies.Movie,
 
 	/** Constante de paramètre de la tache DTC_MOVIE. */
 	private static final String ATTR_OUT_TK_GET_MOVIES_BY_CRITERIA_DTC_MOVIE = "DTC_MOVIE";
+
+	/** Constante de paramètre de la tache PEO_ID. */
+	private static final String ATTR_IN_TK_GET_FILMOGRAPHY_BY_PEO_ID_PEO_ID = "PEO_ID";
+
+	/** Constante de paramètre de la tache DTC_MOVIE. */
+	private static final String ATTR_OUT_TK_GET_FILMOGRAPHY_BY_PEO_ID_DTC_MOVIE = "DTC_MOVIE";
 
 	 
 	/**
@@ -60,6 +68,19 @@ public final class MovieDAO extends DAOBroker<rodolphe.demo.domain.movies.Movie,
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIES_BY_CRITERIA_DTC_MOVIE);
+	}
+
+	/**
+	 * Execute la tache TK_GET_FILMOGRAPHY_BY_PEO_ID.
+	 * @param peoId Long 
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> dtcMovie
+	*/
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> getFilmographyByPeoId(final Long peoId) {
+		final Task task = createTaskBuilder(Tasks.TK_GET_FILMOGRAPHY_BY_PEO_ID)
+				.withValue(ATTR_IN_TK_GET_FILMOGRAPHY_BY_PEO_ID_PEO_ID, peoId)
+				.build();
+		final TaskResult taskResult = getTaskManager().execute(task);
+		return taskResult.getValue(ATTR_OUT_TK_GET_FILMOGRAPHY_BY_PEO_ID_DTC_MOVIE);
 	}
 
 }
