@@ -40,7 +40,7 @@ module.exports = React.createClass({
                     {this.state.castings.map(function (people) {
                         return (
                             <PeopleCard picture="" name={people.peoName} subName={"As ("+people.role+") "+(people.characterName!==undefined?people.characterName:"")}/>
-                        )
+                        );
                     })}
                 </div>
                 <div className='slidingBloc'>
@@ -52,7 +52,7 @@ module.exports = React.createClass({
                     {this.state.producers.map(function (people) {
                         return (
                             <PeopleCard picture="" name={people.peoName} subName=""/>
-                        )
+                        );
                     })}
                 </div>
                 <div className='slidingBloc'>
@@ -60,10 +60,10 @@ module.exports = React.createClass({
                     {this.state.directors.map(function (people) {
                         return (
                             <PeopleCard picture="" name={people.peoName} subName=""/>
-                        )
+                        );
                     })}
                 </div>
-                <div className='slidingBloc'>
+                <div className='slidingBloc noBorderBottom'>
                     <Title id="pictures" title="PICTURES"/>
                 </div>
             </div>

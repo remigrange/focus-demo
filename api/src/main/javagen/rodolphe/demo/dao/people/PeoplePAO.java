@@ -21,6 +21,8 @@ public final class PeoplePAO {
 		TK_GET_PEOPLE_VIEW,
 		/** Tache TK_GET_PEOPLE_VIEW_BY_PEO_ID */
 		TK_GET_PEOPLE_VIEW_BY_PEO_ID,
+		/** Tache TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID */
+		TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID,
 	}
 
 	/** Constante de paramètre de la tache MIN_RANK. */
@@ -37,6 +39,12 @@ public final class PeoplePAO {
 
 	/** Constante de paramètre de la tache DTO_PEOPLE. */
 	private static final String ATTR_OUT_TK_GET_PEOPLE_VIEW_BY_PEO_ID_DTO_PEOPLE = "DTO_PEOPLE";
+
+	/** Constante de paramètre de la tache PEO_ID. */
+	private static final String ATTR_IN_TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID_PEO_ID = "PEO_ID";
+
+	/** Constante de paramètre de la tache DTO_PEOPLE. */
+	private static final String ATTR_OUT_TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID_DTO_PEOPLE = "DTO_PEOPLE";
 
 	private final TaskManager taskManager;
 
@@ -87,6 +95,19 @@ public final class PeoplePAO {
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_VIEW_BY_PEO_ID_DTO_PEOPLE);
+	}
+
+	/**
+	 * Execute la tache TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID.
+	 * @param peoId Long 
+	 * @return rodolphe.demo.domain.people.PeopleView dtoPeople
+	*/
+	public rodolphe.demo.domain.people.PeopleView getPeopleViewForPeopleDetailsByPeoId(final Long peoId) {
+		final Task task = createTaskBuilder(Tasks.TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID)
+				.withValue(ATTR_IN_TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID_PEO_ID, peoId)
+				.build();
+		final TaskResult taskResult = getTaskManager().execute(task);
+		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID_DTO_PEOPLE);
 	}
 
     

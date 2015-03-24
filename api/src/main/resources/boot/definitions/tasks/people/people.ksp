@@ -48,3 +48,19 @@ create Task TK_GET_PEOPLE_VIEW_BY_PEO_ID {
     attribute PEOP_ID {domain : DO_ID notNull:"true" inOut :"in"}
     attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}
 }
+
+create Task TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID {
+	className : "io.vertigo.dynamox.task.TaskEngineSelect"
+    request : " Select 
+    				peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name, peo.peo_id as rank, string_agg(DISTINCT rolem.label, ', ') as PROFESSIONS
+    			From
+    				people peo
+    				left join role_people rolep on rolep.peo_id = peo.peo_id
+    				left join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd
+    			Where
+    				peo.peo_id = #PEO_ID#
+    			group by peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name
+     "
+    attribute PEO_ID {domain : DO_ID notNull:"true" inOut :"in"}
+    attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}
+}

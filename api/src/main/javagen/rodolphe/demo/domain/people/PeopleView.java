@@ -21,6 +21,7 @@ public final class PeopleView implements DtObject {
 	private String peoName;
 	private String imdbid;
 	private Long rank;
+	private String professions;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -153,6 +154,25 @@ public final class PeopleView implements DtObject {
 	 */
 	public void setRank(final Long rank) {
 		this.rank = rank;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'People's professions'. 
+	 * @return String professions 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "People's professions")
+	public String getProfessions() {
+		return professions;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'People's professions'.
+	 * @param professions String 
+	 */
+	public void setProfessions(final String professions) {
+		this.professions = professions;
 	}
 
 	//Aucune Association déclarée

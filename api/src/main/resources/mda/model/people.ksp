@@ -9,6 +9,7 @@ create DtDefinition DT_PEOPLE_VIEW {
 	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
 	field RANK {domain: DO_ID label: "rank" notNull:"true" }
+	field PROFESSIONS {domain: DO_MULTI_VALUES_FIELD label: "People's professions" notNull:"false"}
 }
 
 create DtDefinition DT_PEOPLE_CRITERIA {

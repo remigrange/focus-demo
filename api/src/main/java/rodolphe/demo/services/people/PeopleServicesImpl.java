@@ -5,18 +5,21 @@ import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.domain.model.DtListState;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
+import io.vertigo.dynamo.transaction.Transactional;
 import io.vertigo.util.StringUtil;
 import io.vertigo.vega.rest.model.UiListState;
 
 import javax.inject.Inject;
 
 import rodolphe.demo.dao.people.PeopleDAO;
+import rodolphe.demo.dao.people.PeoplePAO;
 import rodolphe.demo.dao.people.RolePeopleDAO;
 import rodolphe.demo.domain.DtDefinitions.RolePeopleFields;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.people.PeopleView;
 import rodolphe.demo.domain.people.RolePeople;
 import rodolphe.demo.domain.search.FacetedSearchConst;
 import rodolphe.demo.services.search.FacetSelection;
@@ -37,6 +40,8 @@ public class PeopleServicesImpl implements PeopleServices {
     private SearchServices searchServices;
     @Inject
     private RolePeopleDAO rolePeopleDAO;
+    @Inject
+    private PeoplePAO peoplePAO;
 
     /** {@inheritDoc} */
     @Override
@@ -83,6 +88,7 @@ public class PeopleServicesImpl implements PeopleServices {
 
     /** {@inheritDoc} */
     @Override
+    @Transactional
     public DtList<Movie> getMoviesByPeo(final Long peoId) {
         final DtList<Movie> ret = new DtList<>(Movie.class);
         final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>().withFilter(
@@ -92,5 +98,12 @@ public class PeopleServicesImpl implements PeopleServices {
             ret.add(rolePeople.getMovie());
         }
         return ret;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public PeopleView getPeopleDetails(final long peoId) {
+        return peoplePAO.getPeopleViewForPeopleDetailsByPeoId(peoId);
     }
 }

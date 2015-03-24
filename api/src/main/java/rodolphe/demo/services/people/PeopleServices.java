@@ -8,6 +8,7 @@ import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.people.PeopleView;
 import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
 
@@ -52,4 +53,12 @@ public interface PeopleServices extends Component {
      * @return movies list
      */
     DtList<Movie> getMoviesByPeo(Long peoId);
+
+    /**
+     * Get People by id.
+     *
+     * @param peopId people identifier
+     * @return people
+     */
+    PeopleView getPeopleDetails(long peoId);
 }

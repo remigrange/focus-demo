@@ -581,6 +581,10 @@ module.exports = {
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
+			},		
+			"professions": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
 			}		
 	},
 	"rolePeople": {
