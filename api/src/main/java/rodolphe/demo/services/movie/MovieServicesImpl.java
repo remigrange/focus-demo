@@ -61,16 +61,17 @@ public class MovieServicesImpl implements MovieServices {
             criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
         }
         final int maxRows = 50;
+        String sortFieldName = null;
+        boolean isSortDesc = false;
         DtListState listState = new DtListState(maxRows, 0, null, null);
         if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
-            criteria.setSortAsc(!uiListState.isSortDesc());
-            criteria.setSortFieldName(uiListState.getSortFieldName());
-            if (uiListState.getSkip() > 0) {
-                listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows,
-                        uiListState.getSortFieldName(), !uiListState.isSortDesc());
-            } else {
-                listState = new DtListState(maxRows, 0, uiListState.getSortFieldName(), !uiListState.isSortDesc());
-            }
+            sortFieldName = uiListState.getSortFieldName();
+            isSortDesc = uiListState.isSortDesc();
+        }
+        if (uiListState.getSkip() > 0) {
+            listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows, sortFieldName, isSortDesc);
+        } else {
+            listState = new DtListState(maxRows, 0, sortFieldName, isSortDesc);
         }
         return searchServices.searchMovie(criteria, listState);
     }
