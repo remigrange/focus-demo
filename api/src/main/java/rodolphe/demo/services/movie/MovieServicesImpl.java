@@ -38,58 +38,59 @@ import rodolphe.demo.services.search.SearchServices;
  */
 public class MovieServicesImpl implements MovieServices {
 
-	@Inject
-	private MovieDAO movieDAO;
-	@Inject
-	private SearchServices searchServices;
-	@Inject
-	private CastingDAO castingDAO;
-	@Inject
-	private RolePeopleDAO rolePeopleDAO;
-	@Inject
-	private MoviesPAO moviePao;
+    private static final int MAX_ROWS = 50;
+    @Inject
+    private MovieDAO movieDAO;
+    @Inject
+    private SearchServices searchServices;
+    @Inject
+    private CastingDAO castingDAO;
+    @Inject
+    private RolePeopleDAO rolePeopleDAO;
+    @Inject
+    private MoviesPAO moviePao;
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(
-			final MovieCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
-		final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
-				FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
-		criteria.setCriteria(crit);
-		for (final FacetSelection sel : selection) {
-			criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
-		}
-		final int maxRows = 50;
-		DtListState listState = new DtListState(maxRows, 0, null, null);
-		if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
-			criteria.setSortAsc(!uiListState.isSortDesc());
-			criteria.setSortFieldName(uiListState.getSortFieldName());
-			if (uiListState.getSkip() > 0) {
-				listState = new DtListState(maxRows, (uiListState.getSkip() - 1) * maxRows,
-						uiListState.getSortFieldName(), !uiListState.isSortDesc());
-			} else {
-				listState = new DtListState(maxRows, 0, uiListState.getSortFieldName(), !uiListState.isSortDesc());
-			}
-		}
-		return searchServices.searchMovie(criteria, listState);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(
+            final MovieCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
+        final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
+                FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
+        criteria.setCriteria(crit);
+        for (final FacetSelection sel : selection) {
+            criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
+        }
+        String sortFieldName = null;
+        boolean isSortDesc = false;
+        DtListState listState = new DtListState(MAX_ROWS, 0, null, null);
+        if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
+            sortFieldName = uiListState.getSortFieldName();
+            isSortDesc = uiListState.isSortDesc();
+        }
+        if (uiListState.getSkip() > 0) {
+            listState = new DtListState(MAX_ROWS, (uiListState.getSkip() - 1) * MAX_ROWS, sortFieldName, isSortDesc);
+        } else {
+            listState = new DtListState(MAX_ROWS, 0, sortFieldName, isSortDesc);
+        }
+        return searchServices.searchMovie(criteria, listState);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public Movie getMovie(final Long movId) {
-		return movieDAO.get(movId);
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public Movie getMovie(final Long movId) {
+        return movieDAO.get(movId);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public Movie saveMovie(final Movie movie) {
-		movieDAO.save(movie);
-		searchServices.indexMovie(movie.getMovId());
-		return movie;
-	}
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public Movie saveMovie(final Movie movie) {
+        movieDAO.save(movie);
+        searchServices.indexMovie(movie.getMovId());
+        return movie;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -142,11 +143,11 @@ public class MovieServicesImpl implements MovieServices {
     @Override
     @Transactional
     public MovieView getMovieDetails(final Long movId) {
-        final MovieView MovieView = moviePao.getMovieViewForMovieDetailsByMovId(movId);
-        MovieView.setActors(getActors(movId));
-        MovieView.setProducers(getProducers(movId));
-        MovieView.setDirectors(getDirectors(movId));
-        return MovieView;
+        final MovieView movieView = moviePao.getMovieViewForMovieDetailsByMovId(movId);
+        movieView.setActors(getActors(movId));
+        movieView.setProducers(getProducers(movId));
+        movieView.setDirectors(getDirectors(movId));
+        return movieView;
     }
 
     /** {@inheritDoc} */

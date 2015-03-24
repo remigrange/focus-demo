@@ -32,7 +32,7 @@ public final class WsMovie implements RestfulService {
     private MovieServices movieServices;
 
     /**
-     * Search movies
+     * Search movies.
      *
      * @param movieCriteria search criteria
      * @param uiListState uiListState
@@ -47,7 +47,7 @@ public final class WsMovie implements RestfulService {
 
     /**
      * Get movie by id.
-     * 
+     *
      * @param movId movie id.
      * @return movie.
      */
@@ -57,7 +57,13 @@ public final class WsMovie implements RestfulService {
         return movieServices.getMovie(movId);
     }
 
-    // TODO: change the ws name.
+    // TODO change the ws name.
+    /**
+     * Save Movie.
+     *
+     * @param movie movie
+     * @return movie
+     */
     @POST("/movies/new")
     @AnonymousAccessAllowed
     public Movie saveMovie(final Movie movie) {
@@ -66,7 +72,7 @@ public final class WsMovie implements RestfulService {
 
     /**
      * Get movie's actors.
-     * 
+     *
      * @param movId movie identifier
      * @return people list
      */
@@ -78,7 +84,7 @@ public final class WsMovie implements RestfulService {
 
     /**
      * Get movie's producers.
-     * 
+     *
      * @param movId movie identifier
      * @return people list
      */
@@ -90,7 +96,7 @@ public final class WsMovie implements RestfulService {
 
     /**
      * Get movie's directors.
-     * 
+     *
      * @param movId movie identifier
      * @return people list
      */
@@ -102,7 +108,7 @@ public final class WsMovie implements RestfulService {
 
     /**
      * Get movie by id.
-     * 
+     *
      * @param movId movie id.
      * @return movie.
      */
@@ -114,7 +120,7 @@ public final class WsMovie implements RestfulService {
 
     /**
      * Get movie castings by movie id.
-     * 
+     *
      * @param movId movie id.
      * @return list of castings.
      */

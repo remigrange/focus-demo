@@ -144,6 +144,7 @@ public class SearchCriterium<S extends DtObject> {
      *
      * @param facetName Nom de la facette.
      * @param facetValueKey Valeur de la facette.
+     * @param facetQuery facet query
      */
     public void addFacet(final String facetName, final String facetValueKey, final ListFilter facetQuery) {
         Assertion.checkState(getFacetsDefinition().getFacetDefinition(facetName) != null, facetName + " inconnu");

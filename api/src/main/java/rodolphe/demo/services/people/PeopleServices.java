@@ -24,6 +24,7 @@ public interface PeopleServices extends Component {
      *
      * @param crit criteria
      * @param uiListState uiListState
+     * @param selection selected facets.
      * @return result
      */
     FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit,
@@ -38,7 +39,7 @@ public interface PeopleServices extends Component {
     People getPeople(Long peopId);
 
     /**
-     * Save People
+     * Save People.
      *
      * @param people people
      * @return peopel

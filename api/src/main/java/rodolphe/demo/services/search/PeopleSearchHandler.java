@@ -19,10 +19,12 @@ import rodolphe.demo.domain.people.PeopleResult;
 import rodolphe.demo.domain.people.PeopleView;
 
 /**
+ * People Search handler.
+ * 
  * @author JDALMEIDA
  */
 public class PeopleSearchHandler extends
-        AbstractElasticSearchHandler<PeopleIndex, PeopleResult, PeopleView, PeopleCriteria> {
+AbstractElasticSearchHandler<PeopleIndex, PeopleResult, PeopleView, PeopleCriteria> {
 
     @Inject
     private PeoplePAO peoplePAO;

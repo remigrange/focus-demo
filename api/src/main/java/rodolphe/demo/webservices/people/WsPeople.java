@@ -31,7 +31,7 @@ public final class WsPeople implements RestfulService {
     private PeopleServices peopleServices;
 
     /**
-     * Search people
+     * Search people.
      *
      * @param peopleCriteria search criteria
      * @param uiListState uiListState
@@ -62,7 +62,7 @@ public final class WsPeople implements RestfulService {
      * @param people people
      * @return people
      */
-    // TODO: change the ws name.
+    // TODO change the ws name.
     @POST("/people/new")
     @AnonymousAccessAllowed
     public People savePeople(final People people) {

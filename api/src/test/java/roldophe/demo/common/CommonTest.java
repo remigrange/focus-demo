@@ -31,14 +31,17 @@ import roldophe.demo.tools.AbstractRodolpheTestCase;
 
 /**
  * Test for common service.
- * 
+ *
  * @author JDALMEIDA
  */
 public class CommonTest extends AbstractRodolpheTestCase {
 
     @Inject
-    CommonServices commonServices;
+    private CommonServices commonServices;
 
+    /**
+     * Test search method.
+     */
     @Test
     public void testSearchMovie() {
         // Test for movie
@@ -67,6 +70,9 @@ public class CommonTest extends AbstractRodolpheTestCase {
         Logger.getLogger(getClass()).info("result with facet : " + movies.getCount());
     }
 
+    /**
+     * Test search method.
+     */
     @Test
     public void testSearchPeople() {
         // Test for people
@@ -80,6 +86,9 @@ public class CommonTest extends AbstractRodolpheTestCase {
         Logger.getLogger(getClass()).info("result : " + people.getCount());
     }
 
+    /**
+     * Test search method.
+     */
     @Test
     public void testSearchAll() {
         // Test for all

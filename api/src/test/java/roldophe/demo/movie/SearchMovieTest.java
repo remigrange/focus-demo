@@ -34,6 +34,8 @@ import rodolphe.demo.util.MemorizeTnrData;
 import roldophe.demo.tools.AbstractEsSearchTestCase;
 
 /**
+ * Tests class.
+ *
  * @author jmforhan
  */
 public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, MovieResult> {
@@ -58,6 +60,11 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
         return crit;
     }
 
+    /**
+     * Get new movie.
+     *
+     * @return Movie
+     */
     public static Movie getNewMovie() {
         final Movie mov = new Movie();
         mov.setDescription("Movie for non regression testing");
@@ -149,7 +156,6 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
     public void searchByTitleWithFacet() {
         final MovieCriteria crit = new MovieCriteria();
         final String titleToSearch = "Fantastic";
-        final String titleOther = "TITLE_TNR_OTHER";
         crit.setTitle(titleToSearch);
         final UiListState uiListState = new UiListState(50, 0, null, false, null);
         // Create new movies to seach

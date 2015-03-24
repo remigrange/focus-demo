@@ -22,7 +22,7 @@ public final class WsMasterdata implements RestfulService {
     private MasterdataServices masterdataServices;
 
     /**
-     * Get Scope list
+     * Get Scope list.
      *
      * @return scope List
      */

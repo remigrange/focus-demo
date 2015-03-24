@@ -14,6 +14,8 @@ import rodolphe.demo.webservices.movie.WsMovie;
 import roldophe.demo.tools.AbstractRodolpheTestCase;
 
 /**
+ * Test wsMovie.
+ *
  * @author JDALMEIDA
  */
 public class WsMovieTest extends AbstractRodolpheTestCase {
@@ -21,6 +23,9 @@ public class WsMovieTest extends AbstractRodolpheTestCase {
     @Inject
     private WsMovie wsMovie;
 
+    /**
+     * Test get movies.
+     */
     @Test
     public void testGetMovies() {
         final MovieCriteria movieCriteria = new MovieCriteria();
