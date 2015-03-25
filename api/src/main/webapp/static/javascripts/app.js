@@ -1693,9 +1693,7 @@ var action = {
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,
                         perPage: 50,
-                        totalRecords: data.totalRecords,
-                        order: criteria.pageInfos.order,
-                        group: criteria.pageInfos.group
+                        totalRecords: data.totalRecords
                     },
                     searchContext: {
                         scope: criteria.scope,
@@ -1778,19 +1776,27 @@ var config = {
 
 module.exports = React.createClass({displayName: "exports",
     render: function(){
-        return React.createElement(SearchFilterResult, {facetConfig: config.facetConfig, 
-                                    orderableColumnList: config.orderableColumnList, 
-                                    groupableColumnList: config.groupableColumnList, 
-                                    operationList: config.operationList, 
-                                    action: config.action, 
-                                    lineComponent: Line, 
-                                    onLineClick: config.onLineClick, 
-                                    isSelection: true, 
-                                    lineOperationList: config.lineOperationList, 
-                                    criteria: config.criteria}
+        /*return <SearchFilterResult facetConfig = {config.facetConfig}
+                                    orderableColumnList={config.orderableColumnList}
+                                    groupableColumnList={config.groupableColumnList}
+                                    operationList={config.operationList}
+                                    action={config.action}
+                                    lineComponent={Line}
+                                    onLineClick={config.onLineClick}
+                                    isSelection={true}
+                                    lineOperationList={config.lineOperationList}
+                                    criteria={config.criteria}
 
 
-        );
+        />;*/
+        var filterResult = React.createElement(
+                React.createClass({
+                    mixins: [focusComponents.page.search.filterResult.mixin],
+                    actions: action,
+                    store: new focus.store.SearchStore()
+                }),
+                config);
+        return filterResult;
     }
 });
 
@@ -2234,13 +2240,24 @@ var config = {
 
 module.exports= React.createClass({displayName: "exports",
     render: function(){
-        var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),{
-                lineComponent: Line,
-                onLineClick: config.onLineClick,
-                operationList: config.operationList,
-                scopeList: config.scopes,
-                scope: config.scope
-            }
+        var searchResult = React.createElement(React.createClass(
+                {   mixins: [focusComponents.page.search.searchResult.mixin],
+                    actions: config.action,
+                    store: new focus.store.SearchStore(),
+                    render: function render(){
+                        var qs = this.quickSearchComponent();
+                        var summary = React.createElement("div", {className: "summary"}, "100 results");
+                        var list = this.listComponent();
+                        var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
+                        return root;
+                    }}),
+                {
+                    lineComponent: Line,
+                    onLineClick: config.onLineClick,
+                    operationList: config.operationList,
+                    scopeList: config.scopes,
+                    scope: config.scope
+                }
         );
         return searchResult;
     }

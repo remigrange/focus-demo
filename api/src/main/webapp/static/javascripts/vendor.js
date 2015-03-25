@@ -22126,6 +22126,8 @@ module.exports = require("./store");
 },{"./store":95}],95:[function(require,module,exports){
 "use strict";
 
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
@@ -22149,6 +22151,25 @@ var ReferenceStore = (function (_CoreStore) {
   }
 
   _inherits(ReferenceStore, _CoreStore);
+
+  _createClass(ReferenceStore, {
+    getReference: {
+      value: function getReference(names) {
+        var _this = this;
+
+        var refs = {};
+        names.map(function (name) {
+          if (_this.data.has(name)) {
+            refs[name] = _this.data.get(name);
+          }
+        });
+        return { references: this.data.toJS() };
+      }
+    },
+    setReference: {
+      value: function setReference() {}
+    }
+  });
 
   return ReferenceStore;
 })(CoreStore);
@@ -22628,7 +22649,7 @@ var FieldMixin = {
   },
   /** @inheritdoc */
   componentWillReceiveProps: function fieldWillReceiveProps(newProps) {
-    this.setState({ value: newProps.value });
+    this.setState({ value: newProps.value, values: newProps.values });
   },
   /**
   * Get the css class of the field component.
@@ -22745,6 +22766,7 @@ var FieldMixin = {
         id: this.props.name,
         name: this.props.name,
         value: this.state.value,
+        values: this.state.values,
         type: this.props.type,
         onChange: this.onInputChange,
         ref: "input"
@@ -22783,7 +22805,7 @@ var FieldMixin = {
       "div",
       { className: this._className() },
       this.label(),
-      this.input(),
+      this.props.values ? this.select() : this.input(),
       this.help(),
       this.error()
     );
@@ -23017,7 +23039,7 @@ module.exports = {
       value: this.state[name],
       error: this.state.error ? this.state.error[name] : undefined,
       validator: def.validator,
-      values: this.state[listName], //Options to be rendered.
+      values: this.state.reference[listName], //Options to be rendered.
       FieldComponent: def.FieldComponent,
       InputLabelComponent: def.InputLabelComponent
     });
@@ -23065,6 +23087,9 @@ var referenceMixin = {
   /*  referenceNames: this.referenceNames || []
   };
   },*/
+  getInitialState: function getInitialState() {
+    return { reference: {} };
+  },
   /**
    * Build actions associated to the reference.
    */
@@ -23136,9 +23161,13 @@ var storeMixin = {
     if (this.computeEntityFromStoresData) {
       return this.computeEntityFromStoresData(data);
     }
-    var entity = {};
+    var entity = { reference: {} };
     for (var key in data) {
-      assign(entity, data[key]);
+      if (this.referenceNames.indexOf(key) !== -1) {
+        entity.reference[key] = data[key];
+      } else {
+        assign(entity, data[key]);
+      }
     }
     return entity;
   },
@@ -27589,41 +27618,46 @@ var assign = require("object-assign");
 var InfiniteScrollPageMixin = {
 
     /**
-     * Default state.
-     * @returns {object} Default state values.
+     * intial state for a scrolling page.
+     * @returns {*}
      */
-    getInfiniteScrollInitialState: function getInfiniteScrollInitialState() {
-        return {
+    getInitialState: function getInfiniteScrollInitialState() {
+        //var additionalStateData = this.getAdditionalStateData ? this.getAdditionalStateData() : {};
+        return assign({
             hasMoreData: false,
-            isLoading: false,
-            currentPage: 1,
-            totalRecords: undefined
-        };
+            currentPage: 1
+        }, this.getScrollState());
     },
+
     /**
-     * Default state.
-     * @returns {object} Defautl state values.
+     * current state of the scrolling list.
+     * @returns {*}
      */
-    getInfiniteScrollStateFromStore: function getSearchStateFromStore() {
+    getScrollState: function _getScrollState() {
         if (this.store) {
             var data = this.store.get();
-            var hasMoreData = data.pageInfos && data.pageInfos.totalPages ? data.pageInfos.currentPage < data.pageInfos.totalPages : false;
+            var hasMoreData = data.pageInfos && data.pageInfos.totalPages && data.pageInfos.currentPage < data.pageInfos.totalPages;
             var totalRecords = data.pageInfos && data.pageInfos.totalRecords ? data.pageInfos.totalRecords : undefined;
             return {
                 list: data.list || [],
                 hasMoreData: hasMoreData,
-                totalRecords: totalRecords
+                totalRecords: totalRecords,
+                isLoading: false
             };
         }
         return {};
     },
+
     /**
-     * Handler when store emit a change event.
+     * State for a no fetch search.
+     * @returns {object} currentpage set to 1.
      */
-    onSearchChange: function onSearchChange() {
-        console.log("Search success on mixin change");
-        this.setState(assign({ isLoading: false }, this._getStateFromStore()));
+    getNoFetchState: function getNoFetchState() {
+        return {
+            currentPage: 1
+        };
     },
+
     /**
      * Next page fetch action handler.
      */
@@ -27631,8 +27665,7 @@ var InfiniteScrollPageMixin = {
         this.setState({
             isLoading: true,
             currentPage: this.state.currentPage + 1
-        });
-        this.search();
+        }, this.search);
     },
     /**
      * Returns the search criteria sended to the store.
@@ -27680,10 +27713,6 @@ var searchFilterResultMixin = {
      * Display name.
      */
     displayName: "search-filter-result",
-    /**
-     * Search store.
-     */
-    store: new SearchStore(),
 
     /**
      * Component intialization
@@ -27711,7 +27740,7 @@ var searchFilterResultMixin = {
             operationList: {},
             lineComponent: undefined,
             isSelection: true,
-            lineOperationList: {},
+            lineOperationList: [],
             criteria: {
                 scope: undefined,
                 searchText: undefined
@@ -27729,20 +27758,19 @@ var searchFilterResultMixin = {
             openedFacetList: {},
             selectionStatus: "none",
             orderSelected: undefined,
-            groupSelectedKey: undefined,
-            list: []
-        }, this.getInfiniteScrollInitialState(), this._getStateFromStore());
+            groupSelectedKey: undefined
+        });
     },
     /**
      * Get the state from store.
      * @returns {object} Dtat to update store.
      */
-    _getStateFromStore: function getToUpdateState() {
+    _getStateFromStore: function _getStateFromStore() {
         if (this.store) {
             var data = this.store.get();
             return assign({
-                facetList: data.facet || {}
-            }, this.getInfiniteScrollStateFromStore());
+                facetList: data.facet
+            }, this.getScrollState());
         }
     },
 
@@ -27766,15 +27794,26 @@ var searchFilterResultMixin = {
     },
 
     /**
+     * Handler when store emit a change event.
+     */
+    onSearchChange: function onSearchChange() {
+        this.setState(this._getStateFromStore());
+    },
+
+    /**
      * Search function.
      */
-    search: function search() {
+    search: function search(event) {
+        if (event) {
+            event.preventDefault();
+        }
+
         var facets = [];
         for (var selectedFacet in this.state.selectedFacetList) {
             facets.push({ key: selectedFacet, value: this.state.selectedFacetList[selectedFacet].key });
         }
 
-        this.props.action.search(this.getSearchCriteria(this.props.criteria.scope, this.props.criteria.searchText, facets));
+        this.actions.search(this.getSearchCriteria(this.props.criteria.scope, this.props.criteria.searchText, facets));
     },
     /**
      * Get the list of facet to print into the top bar..
@@ -27798,9 +27837,8 @@ var searchFilterResultMixin = {
         var selectedFacetList = this.state.selectedFacetList;
         delete selectedFacetList[key];
 
-        // TODO : do we do it now ?
         this.state.selectedFacetList = selectedFacetList;
-        this.setState({ selectedFacetList: this.state.selectedFacetList }, this.search);
+        this.setState(assign({ selectedFacetList: selectedFacetList }, this.getNoFetchState()), this.search);
     },
     /**
      * Group action click handler.
@@ -27809,13 +27847,8 @@ var searchFilterResultMixin = {
      */
     _groupClick: function _groupClick(key) {
         console.log("Group by : " + key);
-        // TODO : do we do it now ?
-        this.state.groupSelectedKey = key;
-        this.state.orderSelected = key != undefined ? undefined : this.state.orderSelected;
-        this.setState({
-            groupSelectedKey: this.state.groupSelectedKey,
-            orderSelected: this.state.orderSelected
-        }, this.search);
+
+        this.setState(assign({ groupSelectedKey: key, orderSelected: key != undefined ? undefined : this.state.orderSelected }, this.getNoFetchState()), this.search);
     },
     /**
      * Order action click handler.
@@ -27825,9 +27858,7 @@ var searchFilterResultMixin = {
      */
     _orderClick: function _orderClick(key, order) {
         console.log("Order : " + key + " - " + order);
-        // TODO : do we do it now ?
-        this.state.orderSelected = { key: key, order: order };
-        this.setState({ orderSelected: this.state.orderSelected }, this.search);
+        this.setState(assign({ orderSelected: { key: key, order: order } }, this.getNoFetchState()), this.search);
     },
     /**
      * Selection action handler.
@@ -27851,13 +27882,7 @@ var searchFilterResultMixin = {
         console.warn("Facet selection ");
         console.log(selectedFacetList);
 
-        // TODO : Do we do it now ?
-        this.state.selectedFacetList = selectedFacetList;
-        this.state.openedFacetList = openedFacetList;
-        this.setState({
-            selectedFacetList: this.state.selectedFacetList,
-            openedFacetList: this.state.openedFacetList
-        }, this.search);
+        this.setState(assign({ selectedFacetList: selectedFacetList, openedFacetList: openedFacetList }, this.getNoFetchState()), this.search);
     },
     /**
      * Line selection handler.
@@ -27963,7 +27988,6 @@ var builder = window.focus.component.builder;
 var React = window.React;
 var QuickSearch = require("../../../search/quick-search").component;
 var List = require("../../../list/selection").list.component;
-var SearchStore = window.focus.store.SearchStore;
 var assign = require("object-assign");
 var type = window.focus.component.types;
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
@@ -27975,11 +27999,6 @@ var searchMixin = {
      * Tag name.
      */
     displayName: "search-panel",
-
-    /**
-     * Search store.
-     */
-    store: new SearchStore(),
 
     /**
      * Component intialization
@@ -28017,23 +28036,13 @@ var searchMixin = {
 
     /**
      * Initial state of the list component.
-     * @returns {{list: (*|Array)}}
+     * @returns {{list: (*|Array)}} the state
      */
     getInitialState: function getInitialState() {
-        var data = this.store.get();
-
-        return assign({
+        return {
             isAllSelected: false,
             selected: []
-        }, this.getInfiniteScrollInitialState(), this._getStateFromStore());
-    },
-
-    /**
-     * Get liste from current store.
-     * @returns {*}
-     */
-    _getStateFromStore: function getSearchStateFromStore() {
-        return assign({}, this.getInfiniteScrollStateFromStore());
+        };
     },
 
     /**
@@ -28057,8 +28066,15 @@ var searchMixin = {
     },
 
     /**
+     * Handler when store emit a change event.
+     */
+    onSearchChange: function onSearchChange() {
+        this.setState(assign({ isLoadingSearch: false }, this.getScrollState()));
+    },
+
+    /**
      * Action on item selection.
-     * @param item
+     * @param {object} item selected
      */
     _selectItem: function selectItem(item) {
         var index = this.state.selected.indexOf(item);
@@ -28071,7 +28087,7 @@ var searchMixin = {
 
     /**
      * Action on line click.
-     * @param item
+     * @param {object} item  the item clicked
      */
     _lineClick: function lineClick(item) {
         if (this.props.onLineClick) {
@@ -28081,45 +28097,51 @@ var searchMixin = {
 
     /**
      * Run search action.
-     * @param event
      */
-    search: function search(event) {
-        if (event) {
-            event.preventDefault();
-        }
+    search: function search() {
         var searchValues = this.refs.quickSearch.getValue();
         this.actions.search(this.getSearchCriteria(searchValues.scope, searchValues.query));
     },
 
+    _quickSearch: function quickSearch(event) {
+        event.preventDefault();
+        this.setState(assign({ isLoadingSearch: true }, this.getNoFetchState()), this.search());
+    },
+
     /**
-     * render the searchComponent.
+     * return a quickSearchComponent
+     * @returns {XML} the component
      */
-    render: function renderSearchComponent() {
-        return React.createElement(
-            "div",
-            { className: "search-panel" },
-            React.createElement(QuickSearch, { handleKeyUp: this.search,
-                ref: "quickSearch",
-                scope: this.props.scope,
-                scopes: this.props.scopeList
-            }),
-            React.createElement(List, { data: this.state.list,
-                ref: "list",
-                idField: this.props.idField,
-                isSelection: this.props.isSelection,
-                onSelection: this._selectItem,
-                onLineClick: this._lineClick,
-                fetchNextPage: this.fetchNextPage,
-                hasMoreData: this.state.hasMoreData,
-                isLoading: this.state.isLoading,
-                operationList: this.props.operationList,
-                lineComponent: this.props.lineComponent
-            })
-        );
+    quickSearchComponent: function quickSearchComponent() {
+        return React.createElement(QuickSearch, { handleKeyUp: this._quickSearch,
+            ref: "quickSearch",
+            scope: this.props.scope,
+            scopes: this.props.scopeList,
+            loading: this.state.isLoadingSearch
+        });
+    },
+
+    /**
+     * return a list component
+     * @returns {XML} the list component
+     */
+    listComponent: function listComponent() {
+        return React.createElement(List, { data: this.state.list,
+            ref: "list",
+            idField: this.props.idField,
+            isSelection: this.props.isSelection,
+            onSelection: this._selectItem,
+            onLineClick: this._lineClick,
+            fetchNextPage: this.fetchNextPage,
+            hasMoreData: this.state.hasMoreData,
+            isLoading: this.state.isLoading,
+            operationList: this.props.operationList,
+            lineComponent: this.props.lineComponent
+        });
     }
 };
 
-module.exports = builder(searchMixin);
+module.exports = builder(searchMixin, true);
 
 },{"../../../list/selection":29,"../../../search/quick-search":108,"../common-mixin/infinite-scroll-page-mixin":100,"object-assign":95}],104:[function(require,module,exports){
 "use strict";

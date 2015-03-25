@@ -31,9 +31,7 @@ var action = {
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,
                         perPage: 50,
-                        totalRecords: data.totalRecords,
-                        order: criteria.pageInfos.order,
-                        group: criteria.pageInfos.group
+                        totalRecords: data.totalRecords
                     },
                     searchContext: {
                         scope: criteria.scope,
@@ -116,7 +114,7 @@ var config = {
 
 module.exports = React.createClass({
     render: function(){
-        return <SearchFilterResult facetConfig = {config.facetConfig}
+        /*return <SearchFilterResult facetConfig = {config.facetConfig}
                                     orderableColumnList={config.orderableColumnList}
                                     groupableColumnList={config.groupableColumnList}
                                     operationList={config.operationList}
@@ -128,6 +126,14 @@ module.exports = React.createClass({
                                     criteria={config.criteria}
 
 
-        />;
+        />;*/
+        var filterResult = React.createElement(
+                React.createClass({
+                    mixins: [focusComponents.page.search.filterResult.mixin],
+                    actions: action,
+                    store: new focus.store.SearchStore()
+                }),
+                config);
+        return filterResult;
     }
 });
