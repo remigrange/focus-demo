@@ -22,7 +22,9 @@ public interface CommonServices extends Component {
      * @param searchCriteria criteria
      * @param selection facets.
      * @param uiListState uiListState
+     * @param clusteringFacetName clusteringFacetName
      * @return Object
      */
-    Object search(SearchCriteria searchCriteria, final DtList<SelectedFacet> selection, final UiListState uiListState);
+    Object search(SearchCriteria searchCriteria, final DtList<SelectedFacet> selection, final UiListState uiListState,
+            String clusteringFacetName);
 }

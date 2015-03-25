@@ -100,7 +100,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
     @Override
     protected DtList<MovieResult> getListByCritere(final MovieCriteria critere) {
         final UiListState uiListState = new UiListState(50, 0, null, false, null);
-        return movieServices.getMoviesByCriteria(critere, uiListState).getDtList();
+        return movieServices.getMoviesByCriteria(critere, uiListState, "").getDtList();
     }
 
     /*
@@ -170,7 +170,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
         FacetValue selectedFacetValue = null;
         long facetCount = 0L;
         FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(
-                crit, uiListState);
+                crit, uiListState, "");
         for (final Facet facet : movies.getFacets()) {
             if (selectedFacet == null) {
                 selectedFacet = facet;
@@ -195,7 +195,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
                             + selectedFacetValue.getListFilter().getFilterValue());
             final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(), selectedFacetValue
                     .getLabel().getDisplay(), selectedFacetValue.getListFilter());
-            movies = movieServices.getMoviesByCriteria(crit, uiListState, sel);
+            movies = movieServices.getMoviesByCriteria(crit, uiListState, "", sel);
             getLogger().info("results : " + movies.getCount());
             Assert.assertEquals(facetCount, movies.getCount());
             for (final Facet facetResult : movies.getFacets()) {
@@ -227,7 +227,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
         FacetValue selectedFacetValue = null;
         long facetCount = 0L;
         FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices.getMoviesByCriteria(
-                crit, uiListState);
+                crit, uiListState, "");
         for (final Facet facet : movies.getFacets()) {
             if (selectedFacet == null) {
                 selectedFacet = facet;
@@ -249,7 +249,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
             getLogger().info("facet filter : " + selectedFacetValue.getListFilter().getFilterValue());
             final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition().getName(), selectedFacetValue
                     .getLabel().getDisplay(), selectedFacetValue.getListFilter());
-            movies = movieServices.getMoviesByCriteria(crit, uiListState, sel);
+            movies = movieServices.getMoviesByCriteria(crit, uiListState, "", sel);
             getLogger().info("results : " + movies.getCount());
             Assert.assertEquals(facetCount, movies.getCount());
             for (final Facet facetResult : movies.getFacets()) {

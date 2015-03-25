@@ -42,7 +42,7 @@ public final class WsMovie implements RestfulService {
     @AnonymousAccessAllowed
     public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMovies(final MovieCriteria movieCriteria,
             @QueryParam("") final UiListState uiListState) {
-        return movieServices.getMoviesByCriteria(movieCriteria, uiListState);
+        return movieServices.getMoviesByCriteria(movieCriteria, uiListState, "");
     }
 
     /**

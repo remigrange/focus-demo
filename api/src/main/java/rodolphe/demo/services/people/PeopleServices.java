@@ -24,11 +24,12 @@ public interface PeopleServices extends Component {
      *
      * @param crit criteria
      * @param uiListState uiListState
+     * @param clusteringFacetName clustering facet param
      * @param selection selected facets.
      * @return result
      */
     FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(PeopleCriteria crit,
-            UiListState uiListState, FacetSelection... selection);
+            UiListState uiListState, String clusteringFacetName, FacetSelection... selection);
 
     /**
      * Get People by id.

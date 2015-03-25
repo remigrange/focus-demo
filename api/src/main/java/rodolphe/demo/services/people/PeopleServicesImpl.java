@@ -21,6 +21,7 @@ import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleResult;
 import rodolphe.demo.domain.people.PeopleView;
 import rodolphe.demo.domain.people.RolePeople;
+import rodolphe.demo.domain.search.FacetConst;
 import rodolphe.demo.domain.search.FacetedSearchConst;
 import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
@@ -46,7 +47,8 @@ public class PeopleServicesImpl implements PeopleServices {
     /** {@inheritDoc} */
     @Override
     public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
-            final PeopleCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
+            final PeopleCriteria crit, final UiListState uiListState, final String clusteringFacetName,
+            final FacetSelection... selection) {
         final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
                 FacetedSearchConst.QRY_PEOPLE_WO_FCT.getQuery());
         criteria.setCriteria(crit);
@@ -68,6 +70,10 @@ public class PeopleServicesImpl implements PeopleServices {
             listState = new DtListState(MAX_ROWS, (uiListState.getSkip() - 1) * MAX_ROWS, sortFieldName, isSortDesc);
         } else {
             listState = new DtListState(MAX_ROWS, 0, sortFieldName, isSortDesc);
+        }
+        final FacetConst facetConst = FacetConst.getFacetByName(clusteringFacetName);
+        if (facetConst != null) {
+            criteria.setClusteringFacetName(facetConst.name());
         }
         return searchServices.searchPeople(criteria, listState);
     }

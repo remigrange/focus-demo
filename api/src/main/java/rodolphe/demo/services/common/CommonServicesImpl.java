@@ -27,7 +27,7 @@ import rodolphe.demo.services.search.SearchCriterium;
 
 /**
  * Implementation of common ws.
- * 
+ *
  * @author JDALMEIDA
  */
 public class CommonServicesImpl implements CommonServices {
@@ -45,7 +45,7 @@ public class CommonServicesImpl implements CommonServices {
     @Override
     @Transactional
     public Object search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection,
-            final UiListState uiListState) {
+            final UiListState uiListState, final String clusteringFacetName) {
         final MovieCriteria movieCrit = new MovieCriteria();
         final String searchText = searchCriteria.getQuery();
         final String scope = searchCriteria.getScope();
@@ -73,14 +73,14 @@ public class CommonServicesImpl implements CommonServices {
             }
         }
         if (CodeScope.MOVIE.name().equals(scope)) {
-            return movieServices.getMoviesByCriteria(movieCrit, uiListState, facetSel);
+            return movieServices.getMoviesByCriteria(movieCrit, uiListState, clusteringFacetName, facetSel);
         } else if (CodeScope.PEOPLE.name().equals(scope)) {
-            return peopleServices.getPeopleByCriteria(peopleCrit, uiListState, facetSel);
+            return peopleServices.getPeopleByCriteria(peopleCrit, uiListState, clusteringFacetName, facetSel);
         } else {
             final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices
-                    .getMoviesByCriteria(movieCrit, uiListState, facetSel);
+                    .getMoviesByCriteria(movieCrit, uiListState, clusteringFacetName, facetSel);
             final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices
-                    .getPeopleByCriteria(peopleCrit, uiListState, facetSel);
+                    .getPeopleByCriteria(peopleCrit, uiListState, clusteringFacetName, facetSel);
             final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
             final SearchRet searchRet = new SearchRet();
             searchRet.setType(CodeScope.MOVIE.name());

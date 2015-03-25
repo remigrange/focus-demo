@@ -25,6 +25,7 @@ public class SearchCriterium<S extends DtObject> {
     private String sortFieldName;
     private boolean sortAsc;
     private final FacetedQueryDefinition facetsDefinition;
+    private String clusteringFacetName;
 
     /**
      * Construit une instance de SearchCriterium.
@@ -174,5 +175,23 @@ public class SearchCriterium<S extends DtObject> {
      */
     protected final FacetedQueryDefinition getFacetsDefinition() {
         return facetsDefinition;
+    }
+
+    /**
+     * Give the value of clusteringFacetName.
+     * 
+     * @return the value of clusteringFacetName.
+     */
+    public String getClusteringFacetName() {
+        return clusteringFacetName;
+    }
+
+    /**
+     * Set clusteringFacetName to clusteringFacetName.
+     * 
+     * @param clusteringFacetName The new value of clusteringFacetName
+     */
+    public void setClusteringFacetName(final String clusteringFacetName) {
+        this.clusteringFacetName = clusteringFacetName;
     }
 }

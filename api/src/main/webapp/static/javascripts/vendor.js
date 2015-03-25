@@ -22259,13 +22259,16 @@ var SearchStore = (function (_CoreStore) {
       value: function update(newData) {
         var previousData = this.data.toJS();
         var processedData = assign({}, previousData, newData);
-        if (this._isSameSearchContext(previousData, newData)) {
-          processedData.list = previousData.list.concat(newData.list);
-        }
 
-        //add calculated fields on data
-        if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
-          processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
+        if (isArray(newData.list)) {
+          if (this._isSameSearchContext(previousData, newData)) {
+            processedData.list = previousData.list.concat(newData.list);
+          }
+
+          //add calculated fields on data
+          if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
+            processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
+          }
         }
         var data = {};
         for (var key in processedData) {
@@ -23023,6 +23026,16 @@ module.exports = {
     });
   },
   /**
+   * Display a field.
+   * @param {string} name - property name.
+   * @param {object} options - options object.
+   * @returns {object} - A React Field.
+   */
+  displayFor: function displayFor(name, options) {
+    options = options || {};
+    return this.state[name];
+  },
+  /**
    * Button delete generation.
    * @returns {object} - A Reacte button.
    */
@@ -23141,7 +23154,7 @@ var storeMixin = {
     }
     var entity = { reference: {} };
     for (var key in data) {
-      if (this.referenceNames.indexOf(key) !== -1) {
+      if (this.referenceNames && this.referenceNames.indexOf(key) !== -1) {
         entity.reference[key] = data[key];
       } else {
         assign(entity, data[key]);
@@ -24100,7 +24113,7 @@ var actionBarMixin = {
             selectionStatus: "none", // none, selected, partial
             selectionAction: function selectionAction(selectionStatus) {}, // Action on selection click
 
-            orderableColumnList: {}, // [{key:"columnKey", label:"columnLabel"}]
+            orderableColumnList: undefined, // [{key:"columnKey", label:"columnLabel"}]
             orderAction: function orderAction(key, order) {}, // Action on click on order function
             orderSelected: {},
 
@@ -24158,22 +24171,29 @@ var actionBarMixin = {
      * @private
      */
     _getOrderObject: function _getOrderObject() {
-        // Order
-        var orderDescOperationList = [];
-        var orderAscOperationList = [];
-        var orderSelectedParsedKey = this.props.orderSelected.key + this.props.orderSelected.order;
+        if (this.props.orderableColumnList) {
+            // Order
+            var orderDescOperationList = [];
+            var orderAscOperationList = [];
+            var orderSelectedParsedKey = this.props.orderSelected.key + this.props.orderSelected.order;
 
-        for (var key in this.props.orderableColumnList) {
-            orderDescOperationList.push({
-                action: this._orderFunction(key, "desc"),
-                label: this.props.orderableColumnList[key],
-                style: this._getSelectedStyle(key + "desc", orderSelectedParsedKey)
-            });
-            orderAscOperationList.push({ action: this._orderFunction(key, "asc"), label: this.props.orderableColumnList[key], style: this._getSelectedStyle(key + "asc", orderSelectedParsedKey) });
+            for (var key in this.props.orderableColumnList) {
+                orderDescOperationList.push({
+                    action: this._orderFunction(key, "desc"),
+                    label: this.props.orderableColumnList[key],
+                    style: this._getSelectedStyle(key + "desc", orderSelectedParsedKey)
+                });
+                orderAscOperationList.push({
+                    action: this._orderFunction(key, "asc"),
+                    label: this.props.orderableColumnList[key],
+                    style: this._getSelectedStyle(key + "asc", orderSelectedParsedKey)
+                });
+            }
+            var downStyle = this.props.orderSelected.order == "desc" ? "circle-down" : "chevron-down";
+            var upStyle = this.props.orderSelected.order == "asc" ? "circle-up" : "chevron-up";
+            return [React.createElement(SelectAction, { style: downStyle, operationList: orderDescOperationList }), React.createElement(SelectAction, { style: upStyle, operationList: orderAscOperationList })];
         }
-        var downStyle = this.props.orderSelected.order == "desc" ? "circle-down" : "chevron-down";
-        var upStyle = this.props.orderSelected.order == "asc" ? "circle-up" : "chevron-up";
-        return [React.createElement(SelectAction, { style: downStyle, operationList: orderDescOperationList }), React.createElement(SelectAction, { style: upStyle, operationList: orderAscOperationList })];
+        return "";
     },
 
     /**
@@ -27597,7 +27617,7 @@ var InfiniteScrollPageMixin = {
 
     /**
      * intial state for a scrolling page.
-     * @returns {*}
+     * @returns {*} the initial state
      */
     getInitialState: function getInfiniteScrollInitialState() {
         //var additionalStateData = this.getAdditionalStateData ? this.getAdditionalStateData() : {};
@@ -27609,13 +27629,13 @@ var InfiniteScrollPageMixin = {
 
     /**
      * current state of the scrolling list.
-     * @returns {*}
+     * @returns {*} the scroll state
      */
     getScrollState: function _getScrollState() {
         if (this.store) {
             var data = this.store.get();
             var hasMoreData = data.pageInfos && data.pageInfos.totalPages && data.pageInfos.currentPage < data.pageInfos.totalPages;
-            var totalRecords = data.pageInfos && data.pageInfos.totalRecords ? data.pageInfos.totalRecords : undefined;
+            var totalRecords = data.pageInfos && data.pageInfos.totalRecords !== undefined ? data.pageInfos.totalRecords : undefined;
             return {
                 list: data.list || [],
                 hasMoreData: hasMoreData,
@@ -27680,9 +27700,12 @@ var LiveFilter = require("../../../search/live-filter/index").component;
 var ListActionBar = require("../../../list/action-bar/index").component;
 var ListSummary = require("../../../list/summary/index").component;
 var ListSelection = require("../../../list/selection").list.component;
+var Title = require("../../../common/title").component;
+var Button = require("../../../common/button/action").component;
 var SearchStore = window.focus.store.SearchStore;
 var assign = require("object-assign");
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
+var isArray = require("lodash/lang/isArray");
 
 var searchFilterResultMixin = {
     mixins: [InfiniteScrollPageMixin],
@@ -27714,7 +27737,6 @@ var searchFilterResultMixin = {
         return {
             facetConfig: {},
             orderableColumnList: {},
-            groupableColumnList: {},
             operationList: {},
             lineComponent: undefined,
             isSelection: true,
@@ -27853,14 +27875,19 @@ var searchFilterResultMixin = {
      * Handler called when facet is selected.
      * @param facetComponentData Data of facet.
      */
-    _facetSelectionClick: function _facetSelectionClick(facetComponentData) {
-        var selectedFacetList = facetComponentData.selectedFacetList;
-        var openedFacetList = facetComponentData.openedFacetList;
-
+    _facetSelectionClick: function _facetSelectionClick(facetComponentData, isDisableGroup) {
         console.warn("Facet selection ");
-        console.log(selectedFacetList);
+        console.log(facetComponentData.selectedFacetList);
 
-        this.setState(assign({ selectedFacetList: selectedFacetList, openedFacetList: openedFacetList }, this.getNoFetchState()), this.search);
+        var newState = {
+            selectedFacetList: facetComponentData.selectedFacetList,
+            openedFacetList: facetComponentData.openedFacetList
+        };
+        if (isDisableGroup) {
+            newState.groupSelectedKey = undefined;
+        }
+
+        this.setState(assign(newState, this.getNoFetchState()), this.search);
     },
     /**
      * Line selection handler.
@@ -27882,76 +27909,166 @@ var searchFilterResultMixin = {
         console.log("TODO SCOPE CLICK REDIRECTION");
     },
     /**
-     * Render the component.
-     * @returns {XML} Html code.
+     * Render the show all button  seect the group corresponding facet.
+     * @param groupKey Group key.
+     * @returns {Function} Function to select the facet.
+     * @private
      */
-    render: function renderSearchResult() {
+    _showAllGroupListHandler: function _showAllGroupListHandler(groupKey) {
+        var _this = this;
+
+        return function (event) {
+            var selectedFacetList = _this.state.selectedFacetList;
+
+            var facet = _this.store.getFacet();
+            selectedFacetList[_this.state.groupSelectedKey] = {
+                data: facet[_this.state.groupSelectedKey][groupKey],
+                key: groupKey
+            };
+            _this._facetSelectionClick({
+                selectedFacetList: selectedFacetList,
+                facetComponentData: _this.state.openedFacetList
+            }, true);
+        };
+    },
+
+    /**
+     * Render a group list.
+     * @param groupKey Key of the group.
+     * @returns {JSX} Rendu html.
+     * @private
+     */
+    _renderGroupList: function _renderGroupList(groupKey) {
+        return React.createElement(
+            "div",
+            { className: "listResultContainer panel" },
+            React.createElement(Title, { title: groupKey }),
+            this._renderSimpleList({ groupKey: groupKey }, this.state.list[groupKey]),
+            React.createElement(Button, { handleOnClick: this._showAllGroupListHandler(groupKey), label: "Show all" })
+        );
+    },
+
+    /**
+     * Render a simple list.
+     * @param id Technical id of the list.
+     * @param list Content of the list.
+     * @returns {JSX} Html rendering.
+     * @private
+     */
+    _renderSimpleList: function _renderSimpleList(id, list) {
+        return React.createElement(ListSelection, { data: list,
+            ref: id,
+            isSelection: this.props.isSelection,
+            onSelection: this._selectItem,
+            onLineClick: this.props.onLineClick,
+            fetchNextPage: this.fetchNextPage,
+            operationList: this.props.lineOperationList,
+            hasMoreData: this.state.hasMoreData,
+            isLoading: this.state.isLoading,
+            lineComponent: this.props.lineComponent,
+            selectionStatus: this.state.selectionStatus });
+    },
+
+    /**
+     * Get the list of the orderable columns.
+     * @returns {object} list of orderable columns.
+     * @private
+     */
+    _getOrderableColumnList: function _getOrderableColumnList() {
+        if (this._isSimpleList()) {
+            return this.props.orderableColumnList;
+        }
+        return undefined;
+    },
+
+    /**
+     * @returns {boolean} Returns true if list is a simple list, false if grouped.
+     * @private
+     */
+    _isSimpleList: function _isSimpleList() {
+        return isArray(this.state.list);
+    },
+
+    /**
+     * Render the liveFilter.
+     * @returns {JSX} Render the liveFilter.
+     */
+    liveFilterComponent: function liveFilterComponent() {
+        return React.createElement(
+            "div",
+            { className: "liveFilterContainer" },
+            React.createElement(LiveFilter, { ref: "liveFilter",
+                facetList: this.state.facetList,
+                selectedFacetList: this.state.selectedFacetList,
+                openedFacetList: this.state.openedFacetList,
+                config: this.props.facetConfig,
+                dataSelectionHandler: this._facetSelectionClick })
+        );
+    },
+
+    listSummary: function listSummary() {
         var scopeList = { scope: this.props.criteria.scope };
         return React.createElement(
             "div",
-            { className: "search-result" },
-            React.createElement(
-                "div",
-                { className: "liveFilterContainer" },
-                React.createElement(LiveFilter, { ref: "liveFilter",
-                    facetList: this.state.facetList,
-                    selectedFacetList: this.state.selectedFacetList,
-                    openedFacetList: this.state.openedFacetList,
-                    config: this.props.facetConfig,
-                    dataSelectionHandler: this._facetSelectionClick })
-            ),
-            React.createElement(
-                "div",
-                { className: "resultContainer" },
-                React.createElement(
-                    "div",
-                    { className: "listSummaryContainer panel" },
-                    React.createElement(ListSummary, {
-                        nb: this.state.totalRecords,
-                        queryText: this.props.criteria.searchText,
-                        scopeList: scopeList,
-                        scopeClickAction: this._scopeClick,
-                        exportAction: this._exportHandler
-                    })
-                ),
-                React.createElement(
-                    "div",
-                    { className: "listActionBarContainer panel" },
-                    React.createElement(ListActionBar, { selectionStatus: this.state.selectionStatus,
-                        selectionAction: this._selectionGroupLineClick,
-                        orderableColumnList: this.props.orderableColumnList,
-                        orderAction: this._orderClick,
-                        orderSelected: this.state.orderSelected,
-                        groupableColumnList: this.props.groupableColumnList,
-                        groupAction: this._groupClick,
-                        groupSelectedKey: this.state.groupSelectedKey,
-                        facetList: this._getFacetListForBar(),
-                        facetClickAction: this._facetBarClick,
-                        operationList: this.props.operationList })
-                ),
-                React.createElement(
-                    "div",
-                    { className: "listResultContainer panel" },
-                    React.createElement(ListSelection, { data: this.state.list,
-                        ref: "list",
-                        isSelection: this.props.isSelection,
-                        onSelection: this._selectItem,
-                        onLineClick: this.props.onLineClick,
-                        fetchNextPage: this.fetchNextPage,
-                        operationList: this.props.lineOperationList,
-                        hasMoreData: this.state.hasMoreData,
-                        isLoading: this.state.isLoading,
-                        lineComponent: this.props.lineComponent,
-                        selectionStatus: this.state.selectionStatus })
-                )
-            )
+            { className: "listSummaryContainer panel" },
+            React.createElement(ListSummary, {
+                nb: this.state.totalRecords,
+                queryText: this.props.criteria.searchText,
+                scopeList: scopeList,
+                scopeClickAction: this._scopeClick,
+                exportAction: this._exportHandler })
         );
+    },
+    /**
+     * Render the action bar.
+     * @returns {JSX} Rendering of the action bar.
+     */
+    actionBar: function actionBar() {
+        var groupableColumnList = {};
+        for (var facetKey in this.state.facetList) {
+            groupableColumnList[facetKey] = facetKey;
+        }
+        return React.createElement(
+            "div",
+            { className: "listActionBarContainer panel" },
+            React.createElement(ListActionBar, { selectionStatus: this.state.selectionStatus,
+                selectionAction: this._selectionGroupLineClick,
+                orderableColumnList: this._getOrderableColumnList(),
+                orderAction: this._orderClick,
+                orderSelected: this.state.orderSelected,
+                groupableColumnList: groupableColumnList,
+                groupAction: this._groupClick,
+                groupSelectedKey: this.state.groupSelectedKey,
+                facetList: this._getFacetListForBar(),
+                facetClickAction: this._facetBarClick,
+                operationList: this.props.operationList })
+        );
+    },
+
+    /**
+     * Render the resutl list.
+     * @returns {JSX} The rendering of the list.
+     * @private
+     */
+    resultList: function resultList() {
+        if (this._isSimpleList()) {
+            return React.createElement(
+                "div",
+                { className: "listResultContainer panel" },
+                this._renderSimpleList("list", this.state.list)
+            );
+        }
+        var groupList = [];
+        for (var groupKey in this.state.list) {
+            groupList.push(this._renderGroupList(groupKey));
+        }
+        return groupList;
     }
 };
 
-module.exports = builder(searchFilterResultMixin);
+module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../list/action-bar/index":26,"../../../list/selection":29,"../../../list/summary/index":33,"../../../search/live-filter/index":105,"../common-mixin/infinite-scroll-page-mixin":100,"object-assign":95}],102:[function(require,module,exports){
+},{"../../../common/button/action":3,"../../../common/title":24,"../../../list/action-bar/index":26,"../../../list/selection":29,"../../../list/summary/index":33,"../../../search/live-filter/index":105,"../common-mixin/infinite-scroll-page-mixin":100,"lodash/lang/isArray":79,"object-assign":95}],102:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -28513,8 +28630,8 @@ var SearchInputMixin = {
     return {
       placeholder: "",
       value: "defaultValue",
-      scope: 2,
-      scopes: [{ code: undefined, label: "None", style: "qs-scope-none" }, { code: 1, label: "Scope1", style: "qs-scope-1" }, { code: 2, label: "Scope2", style: "qs-scope-2" }, { code: 3, label: "Scope3", style: "qs-scope-3" }],
+      scope: undefined,
+      scopes: [],
       minChar: 0,
       loading: false
     };
@@ -28534,7 +28651,7 @@ var SearchInputMixin = {
       loading: this.props.loading
     };
   },
-  getValue: function getValue() {
+  getValue: function getQuickSearchValue() {
     return {
       scope: this.refs.scope.getValue(),
       query: this.refs.query.getDOMNode().value
@@ -28543,14 +28660,12 @@ var SearchInputMixin = {
   handleKeyUp: function handleKeyUpInputSearch(event) {
     var val = event.target.value;
     if (val.length >= this.props.minChar) {
-      console.log("keyUp", words(val));
       if (this.props.handleKeyUp) {
         this.props.handleKeyUp(event);
       }
     }
   },
   handleOnClickScope: function handleOnClickScope() {
-    console.log("Search value", this.getValue());
     this.setState({ scope: this.refs.scope.getValue() }, this.focusQuery);
   },
   renderHelp: function renderHelp() {
@@ -28568,6 +28683,12 @@ var SearchInputMixin = {
       )
     );
   },
+  /** @inheritdoc */
+  componentWillReceiveProps: function fieldWillReceiveProps(newProps) {
+    if (newProps && newProps.loading !== undefined) {
+      this.setState({ loading: newProps.loading });
+    }
+  },
   focusQuery: function focusQuery() {
     this.refs.query.getDOMNode().focus();
   },
@@ -28575,11 +28696,12 @@ var SearchInputMixin = {
     return this.setState(this.getValue(), this.focusQuery);
   },
   render: function renderSearchInput() {
+    var loadingClassName = this.props.loading ? "qs-loading" : "";
     return React.createElement(
       "div",
       { className: "qs-quick-search" },
       React.createElement(Scope, { ref: "scope", list: this.props.scopes, value: this.state.scope, handleOnClick: this.handleOnClickScope }),
-      React.createElement("input", { ref: "query", onKeyUp: this.handleKeyUp, type: "search" }),
+      React.createElement("input", { ref: "query", onKeyUp: this.handleKeyUp, type: "search", className: loadingClassName }),
       this.renderHelp()
     );
   }
@@ -28598,141 +28720,145 @@ var React = window.React;
 var find = require("lodash/collection/find");
 var uuid = require("uuid");
 var scopeMixin = {
-	/**
-  * Component tag name.
-  * @type {String}
-  */
-	displayName: "Scope",
-	/**
-  * Component default properties.
-  */
-	getDefaultProps: function getScopeDefaultProperties() {
-		return {
-			list: [],
-			value: undefined,
-			isDeployed: false
-		};
-	},
-	/**
-  * Scope property validation.
-  * @type {Object}
-  */
-	propTypes: {
-		list: type("array"),
-		isDeployed: type("bool"),
-		value: type(["string", "number"])
-	},
-	/**
-  * Get the initial state from the data.
-  */
-	getInitialState: function getScopeInitialState() {
-		return {
-			isDeployed: this.props.isDeployed,
-			value: this.props.value
-		};
-	},
-	/**
-  * Get the value of the scope.
-  */
-	getValue: function getValue() {
-		return this.state.value;
-	},
-	/**
-  * Define the scope label.
-  */
-	scopeLabel: function scopeLabel() {
-		return;
-		if (!this.state.value) {
-			return "Choose your scope";
-		}
-		return this.state.value;
-	},
-	/**
-  * Internal function which handles the click on the scope line element and call the real handleOnclick if it is defined.
-  * @param {object} event - Event trigger by the search.
-  */
-	_handleOnClick: function _handleOnClick(event) {
-		var val = event.target.hasAttribute("value") ? event.target.value : undefined;
-		this.setState({
-			value: val,
-			isDeployed: false
-		}, this.props.handleOnClick);
-	},
-	/**
-  * Handle the click on the scope element.
-  */
-	handleDeployClick: function handleDeployClick() {
-		this.setState({
-			isDeployed: !this.state.isDeployed
-		});
-	},
-	/**
-  * Get the current active scope.
-  */
-	getActiveScope: function getActiveScope() {
-		var _this = this;
+  /**
+   * Component tag name.
+   * @type {String}
+   */
+  displayName: "Scope",
+  /**
+   * Component default properties.
+   */
+  getDefaultProps: function getScopeDefaultProperties() {
+    return {
+      list: [],
+      value: undefined,
+      isDeployed: false
+    };
+  },
+  /**
+   * Scope property validation.
+   * @type {Object}
+   */
+  propTypes: {
+    list: type("array"),
+    isDeployed: type("bool"),
+    value: type(["string", "number"])
+  },
+  /**
+   * Get the initial state from the data.
+   */
+  getInitialState: function getScopeInitialState() {
+    return {
+      isDeployed: this.props.isDeployed,
+      value: this.props.value
+    };
+  },
+  /**
+   * Get the value of the scope.
+   */
+  getValue: function getValue() {
+    return this.state.value;
+  },
+  /**
+   * Define the scope label.
+   */
+  scopeLabel: function scopeLabel() {
+    return;
+    if (!this.state.value) {
+      return "Choose your scope";
+    }
+    return this.state.value;
+  },
+  /**
+   * Internal function which handles the click on the scope line element and call the real handleOnclick if it is defined.
+   * @param {object} event - Event trigger by the search.
+   */
+  _handleOnClick: function _handleOnClick(event) {
+    var val = event.target.hasAttribute("value") ? event.target.value : undefined;
+    this.setState({
+      value: val,
+      isDeployed: false
+    }, this.props.handleOnClick);
+  },
+  /**
+   * Handle the click on the scope element.
+   */
+  handleDeployClick: function handleDeployClick() {
+    this.setState({
+      isDeployed: !this.state.isDeployed
+    });
+  },
+  /**
+   * Get the current active scope.
+   */
+  getActiveScope: function getActiveScope() {
+    var _this = this;
 
-		return find(this.props.list, function (scope) {
-			return scope.code === _this.state.value;
-		});
-	},
-	/**
-  * Return the css class for the scope.
-  */
-	scopeStyle: function scopeStyle() {
-		return "" + this.getActiveScope().style;
-	},
-	renderScopeList: function renderScopeList() {
-		var _this = this;
+    return find(this.props.list, function (scope) {
+      return scope.code === _this.state.value;
+    });
+  },
+  /**
+   * Return the css class for the scope.
+   */
+  scopeStyle: function scopeStyle() {
+    var activeScope = this.getActiveScope();
+    if (!activeScope) {
+      return "qs-scope-none";
+    }
+    return activeScope.style || "qs-scope-" + activeScope.value;
+  },
+  renderScopeList: function renderScopeList() {
+    var _this = this;
 
-		if (!this.state.isDeployed) {
-			return;
-		}
-		var scopes = this.props.list.map(function (scope) {
-			var selectedValue = _this.state.value === scope.code ? "active" : "";
-			return React.createElement(
-				"li",
-				{ key: scope.code || uuid.v4(),
-					value: scope.code,
-					className: "" + selectedValue + " " + scope.style,
-					onClick: _this._handleOnClick },
-				scope.label
-			);
-		});
-		return React.createElement(
-			"ul",
-			{ className: "qs-scope-list" },
-			" ",
-			scopes,
-			" "
-		);
-	},
-	/**
-  * Render the complete scope element.
-  * @return {object} - The jsx element.
-  */
-	render: function renderScopeComponent() {
-		var cssClass = "qs-icon qs-scope-deploy-" + (this.state.isDeployed ? "up" : "down");
-		return React.createElement(
-			"div",
-			{ className: this.props.className + " qs-scope" },
-			React.createElement(
-				"div",
-				{ className: cssClass,
-					onClick: this.handleDeployClick },
-				React.createElement(
-					"div",
-					{ className: this.scopeStyle() },
-					" ",
-					this.scopeLabel(),
-					" "
-				)
-			),
-			" ",
-			this.renderScopeList(),
-			" "
-		);
-	}
+    if (!this.state.isDeployed) {
+      return;
+    }
+    var scopes = this.props.list.map(function (scope) {
+      var selectedValue = _this.state.value === scope.code ? "active" : "";
+      return React.createElement(
+        "li",
+        { key: scope.code || uuid.v4(),
+          value: scope.code,
+          className: "" + selectedValue + " " + scope.style,
+          onClick: _this._handleOnClick },
+        scope.label
+      );
+    });
+    return React.createElement(
+      "ul",
+      { className: "qs-scope-list" },
+      " ",
+      scopes,
+      " "
+    );
+  },
+  /**
+   * Render the complete scope element.
+   * @return {object} - The jsx element.
+   */
+  render: function renderScopeComponent() {
+    var cssClass = "qs-icon qs-scope-deploy-" + (this.state.isDeployed ? "up" : "down");
+    return React.createElement(
+      "div",
+      { className: this.props.className + " qs-scope" },
+      React.createElement(
+        "div",
+        { className: cssClass,
+          onClick: this.handleDeployClick },
+        React.createElement(
+          "div",
+          { className: this.scopeStyle() },
+          " ",
+          this.scopeLabel(),
+          " "
+        )
+      ),
+      " ",
+      this.renderScopeList(),
+      " "
+    );
+  }
 };
 
 module.exports = builder(scopeMixin);

@@ -33,13 +33,14 @@ public class WsCommon implements RestfulService {
      * @param searchCriteria Criteria
      * @param selection selected facet
      * @param uiListState list state
+     * @param clusteringFacetName clusteringFacetName
      * @return results
      */
     @POST("/searchByScope")
     @AnonymousAccessAllowed
     public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria,
             @InnerBodyParam("facets") final DtList<SelectedFacet> selection,
-            @QueryParam("") final UiListState uiListState) {
-        return commonServices.search(searchCriteria, selection, uiListState);
+            @QueryParam("") final UiListState uiListState, @InnerBodyParam("group") final String clusteringFacetName) {
+        return commonServices.search(searchCriteria, selection, uiListState, clusteringFacetName);
     }
 }

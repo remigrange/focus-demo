@@ -41,7 +41,7 @@ public final class WsPeople implements RestfulService {
     @AnonymousAccessAllowed
     public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
             final PeopleCriteria peopleCriteria, @QueryParam("") final UiListState uiListState) {
-        return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState);
+        return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, "");
     }
 
     /**

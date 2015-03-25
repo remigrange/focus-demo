@@ -1,12 +1,11 @@
 /*global focusComponents, React*/
-var SearchResult = focusComponents.page.search.searchResult.component;
 var serviceCommon = require('../../services');
 var lineResume = require('./lineResume');
 //Actions de la page.
 var action = {
     search: function(criteria) {
         //TODO handle pageInfo
-        var page=0;
+        var page = 0;
         if((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)){
             page = criteria.pageInfos.page;
         }
@@ -20,8 +19,9 @@ var action = {
                 sortDesc: undefined,
                 skip: page
             },
-            facets: []
-        }
+            facets: [],
+            group: ''
+        };
         serviceCommon.common.searchByScope(critere).then(
             function success(data) {
                 var list = data;
@@ -34,7 +34,7 @@ var action = {
                     pageInfos: {
                         currentPage: 1,
                         perPage: 50,
-                        totalRecords: 100
+                        totalRecords: data.totalRecords
                     },
                     searchContext: {
                         scope: criteria.criteria.scope,
@@ -43,9 +43,9 @@ var action = {
                 };
                 focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
-            function error(error) {
-                //TODO
-                console.info('Errrors');
+            function error(errors) {
+                //TODO NOTIIFICATION
+                console.info('Errrors ', errors);
             }
         );
     }
@@ -124,7 +124,20 @@ module.exports= React.createClass({
                     store: new focus.store.SearchStore(),
                     render: function render(){
                         var qs = this.quickSearchComponent();
-                        var summary = <div className='summary'>100 results</div>;
+                        var summary = <div></div>;
+                        if(this.state.totalRecords !== undefined && this.state.totalRecords !== null){
+                            var resultsContent = <div className='results'>{this.state.totalRecords} results </div>;
+                            var linkFilterResult = <div></div>;
+                            if(this.state.totalRecords > 0){
+                                linkFilterResult = <div className='linkFilterResult'>
+                                                        <a href='#filterResult'>Filter result&nbsp;&nbsp;&nbsp;<img src='./static/img/arrow-right-16.png'/></a>
+                                                    </div>;
+                            }
+                            summary = <div className='summary'>
+                                        {resultsContent}
+                                        {linkFilterResult}
+                                      </div>;
+                        }
                         var list = this.listComponent();
                         var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
                         return root;

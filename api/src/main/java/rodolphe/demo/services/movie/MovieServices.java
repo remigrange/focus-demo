@@ -25,11 +25,12 @@ public interface MovieServices extends Component {
      *
      * @param crit criteria
      * @param uiListState uiListState
+     * @param clusteringFacetName Clustering facet name
      * @param selection selected facets.
      * @return result
      */
     FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(MovieCriteria crit,
-            UiListState uiListState, FacetSelection... selection);
+            UiListState uiListState, String clusteringFacetName, FacetSelection... selection);
 
     /**
      * Get a movie by its primary key.
