@@ -2114,39 +2114,26 @@ var Castings = require('./castings');
 var MovieProducers = require('./movieProducers');
 var MovieDirectors = require('./movieDirectors');
 var MoviePictures = require('./moviePictures');
-var Title = focus.components.common.title.component;
-
 module.exports = React.createClass({
     displayName: "slidingContent",
     render: function renderSlidingContent() {
         return (
           React.createElement("div", {className: "details"}, 
             React.createElement("div", {id: "slidingContent"}, 
-              React.createElement(Title, {id: "cast", title: "CAST"}), 
-              React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), 
-              React.createElement(Title, {id: "cast2", title: "CAST2"}), 
-              React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), 
-              React.createElement(Title, {id: "cast3", title: "CAST3"}), 
-              React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), 
-              React.createElement(Title, {id: "cast4", title: "CAST4"}), 
-              React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), React.createElement("br", null), 
-              React.createElement(Title, {id: "cast5", title: "CAST5"})
-
+              React.createElement(MovieDetails, {id: this.props.id}), 
+              React.createElement(Castings, {id: this.props.id}), 
+              React.createElement(MovieProducers, {id: this.props.id}), 
+              React.createElement(MovieDirectors, {id: this.props.id}), 
+              React.createElement(MoviePictures, {id: this.props.id})
             )
           )
         );
     }
 });
-/*
- <MovieDetails id={this.props.id}/>
- <Castings id={this.props.id}/>
- <MovieProducers id={this.props.id}/>
- <MovieDirectors id={this.props.id}/>
- <MoviePictures id={this.props.id}/>
- */
+
 });
 
-;require.register("views/people/cartridge", function(exports, require, module) {
+require.register("views/people/cartridge", function(exports, require, module) {
 var formMixin = focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
