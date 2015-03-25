@@ -8564,6 +8564,9 @@ var dispatcher = require("../dispatcher");
  */
 function builtInReferenceAction(referenceNames) {
   return function () {
+    if (!this.referenceNames) {
+      return undefined;
+    }
     return Promise.all(loadManyReferenceList(referenceNames)).then(function successReferenceLoading(data) {
       //Rebuilt a constructed information from the map.
       var reconstructedData = {};
@@ -8846,6 +8849,8 @@ module.exports = require("./store");
 },{"./store":95}],95:[function(require,module,exports){
 "use strict";
 
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
@@ -8870,6 +8875,25 @@ var ReferenceStore = (function (_CoreStore) {
 
   _inherits(ReferenceStore, _CoreStore);
 
+  _createClass(ReferenceStore, {
+    getReference: {
+      value: function getReference(names) {
+        var _this = this;
+
+        var refs = {};
+        names.map(function (name) {
+          if (_this.data.has(name)) {
+            refs[name] = _this.data.get(name);
+          }
+        });
+        return { references: this.data.toJS() };
+      }
+    },
+    setReference: {
+      value: function setReference() {}
+    }
+  });
+
   return ReferenceStore;
 })(CoreStore);
 
@@ -8892,9 +8916,6 @@ module.exports = {
       domain: "DO_TEXT"
     },
     pageInfos: {
-      domain: "DO_TEXT"
-    },
-    searchContext: {
       domain: "DO_TEXT"
     }
   }
@@ -8961,12 +8982,16 @@ var SearchStore = (function (_CoreStore) {
       value: function update(newData) {
         var previousData = this.data.toJS();
         var processedData = assign({}, previousData, newData);
-        if (this._isSameSearchContext(previousData, newData)) {
-          processedData.list = previousData.list.concat(newData.list);
-        }
-        //add calculated fields on data
-        if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
-          processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
+
+        if (isArray(newData.list)) {
+          if (this._isSameSearchContext(previousData, newData)) {
+            processedData.list = previousData.list.concat(newData.list);
+          }
+
+          //add calculated fields on data
+          if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
+            processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
+          }
         }
         var data = {};
         for (var key in processedData) {
@@ -8983,18 +9008,10 @@ var SearchStore = (function (_CoreStore) {
        */
 
       value: function _isSameSearchContext(previousData, newData) {
-        var isSameSearchContext = false;
-        if (previousData.searchContext) {
-          var isSameScope = previousData.searchContext.scope === newData.searchContext.scope;
-          var isSameQuery = previousData.searchContext.query === newData.searchContext.query;
-          isSameSearchContext = isSameScope && isSameQuery;
+        if (newData.pageInfos) {
+          return newData.pageInfos.currentPage != 1;
         }
-        var isSameFacetContext = false;
-        if (previousData.facet) {
-          isSameFacetContext = isEqual(previousData.facet, newData.facet);
-        }
-
-        return isSameSearchContext && isSameFacetContext;
+        return false;
       }
     },
     addSearchChangeListener: {

@@ -2,7 +2,16 @@ var formMixin = focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
 var Title = focus.components.common.title.component;
+var SelectionList = focus.components.list.selection.list.component;
 var MovieCard = require('./movieCard');
+var line = React.createClass({
+  mixins: [focus.components.list.selection.line.mixin],
+  renderLineContent: function(data){
+    return (
+      <MovieCard picture="" name={data.title} middleName={data.genreIds} subName={data.year}/>
+    );
+  }
+});
 module.exports = React.createClass({
   definitionPath: 'people',
   displayName: 'slidingContent',
@@ -31,11 +40,9 @@ module.exports = React.createClass({
         </div>
         <div className='slidingBloc'>
           <Title id="filmography" title="FILMOGRAPHY"/>
-          {this.state.filmography.map(function (movie) {
-            return (
-              <MovieCard picture="" name={movie.title} middleName={movie.genresIds} subName={movie.year}/>
-            );
-          })}
+
+          <SelectionList data={this.state.filmography} hasMoreData={true} lineComponent={line} isSelection={false} isManualFetch={true}/>
+
         </div>
         <div className='slidingBloc noBorderBottom'>
           <Title id="pictures" title="PICTURES"/>

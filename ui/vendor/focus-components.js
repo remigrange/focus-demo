@@ -1,7 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focusComponents = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
 "use strict";
 
-//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
 console.log("\n\t.########..#######...######..##.....##..######...........######...#######..##.....##.########...#######..##....##.########.##....##.########..######.\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.###...###.##.....##.##.....##.###...##.##.......###...##....##....##....##\n.##.......##.....##.##.......##.....##.##...............##.......##.....##.####.####.##.....##.##.....##.####..##.##.......####..##....##....##......\n.######...##.....##.##.......##.....##..######..#######.##.......##.....##.##.###.##.########..##.....##.##.##.##.######...##.##.##....##.....######.\n.##.......##.....##.##.......##.....##.......##.........##.......##.....##.##.....##.##........##.....##.##..####.##.......##..####....##..........##\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.##.....##.##........##.....##.##...###.##.......##...###....##....##....##\n.##........#######...######...#######...######...........######...#######..##.....##.##.........#######..##....##.########.##....##....##.....######.\n");
 module.exports = {
 	common: require("./common"),
@@ -129,7 +129,8 @@ module.exports = {
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
 var React = window.React;
-var Input = require("../input/text").component;
+var InputText = require("../input/text").component;
+var SelectClassic = require("../select/classic").component;
 var Label = require("../label").component;
 var FieldMixin = {
   /**
@@ -145,7 +146,8 @@ var FieldMixin = {
       style: {},
       FieldComponent: undefined,
       InputLabelComponent: undefined,
-      InputComponent: Input
+      InputComponent: InputText,
+      SelectComponent: SelectClassic
     };
   },
   /** @inheritdoc */
@@ -165,7 +167,7 @@ var FieldMixin = {
   },
   /** @inheritdoc */
   componentWillReceiveProps: function fieldWillReceiveProps(newProps) {
-    this.setState({ value: newProps.value });
+    this.setState({ value: newProps.value, values: newProps.values });
   },
   /**
   * Get the css class of the field component.
@@ -265,6 +267,30 @@ var FieldMixin = {
       })
     );
   },
+  /**
+   * [select description]
+   * @return {[type]} [description]
+   */
+  select: function renderSelect() {
+    if (this.props.FieldComponent || this.props.InputLabelComponent) {
+      return this.renderFieldComponent();
+    }
+    var selectClassName = "form-control col-sm-" + (12 - this.props.labelSize);
+    return React.createElement(
+      "div",
+      { className: "input-group" },
+      React.createElement(this.props.SelectComponent, {
+        style: { "class": selectClassName },
+        id: this.props.name,
+        name: this.props.name,
+        value: this.state.value,
+        values: this.state.values,
+        type: this.props.type,
+        onChange: this.onInputChange,
+        ref: "input"
+      })
+    );
+  },
   error: function renderError() {
     if (this.state.error) {
       if (this.props.FieldComponent) {
@@ -297,7 +323,7 @@ var FieldMixin = {
       "div",
       { className: this._className() },
       this.label(),
-      this.input(),
+      this.props.values ? this.select() : this.input(),
       this.help(),
       this.error()
     );
@@ -305,7 +331,7 @@ var FieldMixin = {
 };
 module.exports = builder(FieldMixin);
 
-},{"../input/text":16,"../label":19}],6:[function(require,module,exports){
+},{"../input/text":16,"../label":19,"../select/classic":21}],6:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -490,16 +516,17 @@ module.exports = actionMixin;
 
 var React = window.React;
 var Field = require("../../field").component;
-var Field = require("../../field").component;
 var Button = require("../../button/action").component;
 module.exports = {
   /**
    * Create a field for the given property metadata.
    * @param {string} name - property name.
+   * @param {object} options - An object which contains all options for the built of the field.
    * @returns {object} - A React Field.
    */
-  fieldFor: function fieldFor(name) {
+  fieldFor: function fieldFor(name, options) {
     var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    options = options || {};
     //Maybe allow to overrife fieldFor here such as def.fieldFor?.
     return React.createElement(Field, {
       name: name,
@@ -510,6 +537,40 @@ module.exports = {
       FieldComponent: def.FieldComponent,
       InputLabelComponent: def.InputLabelComponent
     });
+  },
+  /**
+   * Select component for the component.
+   * @param {string} name - property name.
+   * @param {string} listName - list name.
+   * @param {object} options - options object.
+   * @returns {object} - A React Field.
+   */
+  selectFor: function selectFor(name, listName, options) {
+    options = options || {};
+    var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    listName = listName || def.listName;
+    //Check listName
+
+    return React.createElement(Field, {
+      name: name,
+      ref: name,
+      value: this.state[name],
+      error: this.state.error ? this.state.error[name] : undefined,
+      validator: def.validator,
+      values: this.state.reference[listName], //Options to be rendered.
+      FieldComponent: def.FieldComponent,
+      InputLabelComponent: def.InputLabelComponent
+    });
+  },
+  /**
+   * Display a field.
+   * @param {string} name - property name.
+   * @param {object} options - options object.
+   * @returns {object} - A React Field.
+   */
+  displayFor: function displayFor(name, options) {
+    options = options || {};
+    return this.state[name];
   },
   /**
    * Button delete generation.
@@ -535,9 +596,9 @@ module.exports = {
   } };
 
 },{"../../button/action":3,"../../field":5}],9:[function(require,module,exports){
-"use strict";
-
 //focus.reference.builder.loadListByName('papas').then(function(data){focus.dispatcher.dispatch({action: {type: "update",data: {papas: data}}})})
+
+"use strict";
 
 var builtInRefStoreAccessor = window.focus.reference.builtInStore;
 var builtInActionReferenceLoader = window.focus.reference.builtInAction;
@@ -554,6 +615,9 @@ var referenceMixin = {
   /*  referenceNames: this.referenceNames || []
   };
   },*/
+  getInitialState: function getInitialState() {
+    return { reference: {} };
+  },
   /**
    * Build actions associated to the reference.
    */
@@ -625,9 +689,13 @@ var storeMixin = {
     if (this.computeEntityFromStoresData) {
       return this.computeEntityFromStoresData(data);
     }
-    var entity = {};
+    var entity = { reference: {} };
     for (var key in data) {
-      assign(entity, data[key]);
+      if (this.referenceNames && this.referenceNames.indexOf(key) !== -1) {
+        entity.reference[key] = data[key];
+      } else {
+        assign(entity, data[key]);
+      }
     }
     return entity;
   },
@@ -717,14 +785,14 @@ module.exports = {
 };
 
 },{"./block":2,"./button":4,"./field":5,"./form":6,"./img":11,"./input":15,"./label":19,"./select":22,"./select-action":20,"./sticky-navigation":23,"./title":24,"./topic-displayer":25}],13:[function(require,module,exports){
-"use strict";
-
 //Target
 /*
 <label>
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
+"use strict";
+
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -842,9 +910,9 @@ module.exports = {
 };
 
 },{"./checkbox":13,"./date":14,"./text":16,"./textarea":17,"./toggle":18}],16:[function(require,module,exports){
+//Dependencies.
 "use strict";
 
-//Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -921,8 +989,6 @@ var inputTextMixin = {
 module.exports = builder(inputTextMixin);
 
 },{}],17:[function(require,module,exports){
-"use strict";
-
 //Target
 /*
 <div class="checkbox">
@@ -931,6 +997,8 @@ module.exports = builder(inputTextMixin);
   </label>
 </div>
  */
+"use strict";
+
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1015,14 +1083,14 @@ var textAreaMixin = {
 module.exports = builder(textAreaMixin);
 
 },{}],18:[function(require,module,exports){
-"use strict";
-
 //Target
 /*
 <label>
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
+"use strict";
+
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1235,9 +1303,9 @@ var selectActionMixin = {
 module.exports = builder(selectActionMixin);
 
 },{"../img":11}],21:[function(require,module,exports){
+//Dependencies.
 "use strict";
 
-//Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1556,9 +1624,9 @@ var topicDisplayerMixin = {
 module.exports = builder(topicDisplayerMixin);
 
 },{}],26:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1582,7 +1650,7 @@ var actionBarMixin = {
             selectionStatus: "none", // none, selected, partial
             selectionAction: function selectionAction(selectionStatus) {}, // Action on selection click
 
-            orderableColumnList: {}, // [{key:"columnKey", label:"columnLabel"}]
+            orderableColumnList: undefined, // [{key:"columnKey", label:"columnLabel"}]
             orderAction: function orderAction(key, order) {}, // Action on click on order function
             orderSelected: {},
 
@@ -1640,22 +1708,29 @@ var actionBarMixin = {
      * @private
      */
     _getOrderObject: function _getOrderObject() {
-        // Order
-        var orderDescOperationList = [];
-        var orderAscOperationList = [];
-        var orderSelectedParsedKey = this.props.orderSelected.key + this.props.orderSelected.order;
+        if (this.props.orderableColumnList) {
+            // Order
+            var orderDescOperationList = [];
+            var orderAscOperationList = [];
+            var orderSelectedParsedKey = this.props.orderSelected.key + this.props.orderSelected.order;
 
-        for (var key in this.props.orderableColumnList) {
-            orderDescOperationList.push({
-                action: this._orderFunction(key, "desc"),
-                label: this.props.orderableColumnList[key],
-                style: this._getSelectedStyle(key + "desc", orderSelectedParsedKey)
-            });
-            orderAscOperationList.push({ action: this._orderFunction(key, "asc"), label: this.props.orderableColumnList[key], style: this._getSelectedStyle(key + "asc", orderSelectedParsedKey) });
+            for (var key in this.props.orderableColumnList) {
+                orderDescOperationList.push({
+                    action: this._orderFunction(key, "desc"),
+                    label: this.props.orderableColumnList[key],
+                    style: this._getSelectedStyle(key + "desc", orderSelectedParsedKey)
+                });
+                orderAscOperationList.push({
+                    action: this._orderFunction(key, "asc"),
+                    label: this.props.orderableColumnList[key],
+                    style: this._getSelectedStyle(key + "asc", orderSelectedParsedKey)
+                });
+            }
+            var downStyle = this.props.orderSelected.order == "desc" ? "circle-down" : "chevron-down";
+            var upStyle = this.props.orderSelected.order == "asc" ? "circle-up" : "chevron-up";
+            return [React.createElement(SelectAction, { style: downStyle, operationList: orderDescOperationList }), React.createElement(SelectAction, { style: upStyle, operationList: orderAscOperationList })];
         }
-        var downStyle = this.props.orderSelected.order == "desc" ? "circle-down" : "chevron-down";
-        var upStyle = this.props.orderSelected.order == "asc" ? "circle-up" : "chevron-up";
-        return [React.createElement(SelectAction, { style: downStyle, operationList: orderDescOperationList }), React.createElement(SelectAction, { style: upStyle, operationList: orderAscOperationList })];
+        return "";
     },
 
     /**
@@ -1728,9 +1803,9 @@ var actionBarMixin = {
 module.exports = builder(actionBarMixin);
 
 },{"../../common/select-action":20,"../../common/topic-displayer":25,"../action-contextual":27}],27:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Button = require("../../common/button/action").component;
@@ -1944,9 +2019,9 @@ var InfiniteScrollMixin = {
 module.exports = { mixin: InfiniteScrollMixin };
 
 },{}],31:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var React = window.React;
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
@@ -2112,14 +2187,13 @@ var lineMixin = {
 module.exports = { mixin: lineMixin };
 
 },{"../../common/input/checkbox":13,"../action-contextual":27}],32:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Line = require("./line").mixin;
 var Button = require("../../common/button/action").component;
-var uuid = require("uuid");
 var type = window.focus.component.types;
 var InfiniteScrollMixin = require("./infinite-scroll").mixin;
 
@@ -2142,7 +2216,8 @@ var listMixin = {
             isLoading: false,
             hasMoreData: false,
             operationList: [],
-            isManualFetch: false
+            isManualFetch: false,
+            idField: "id"
         };
     },
 
@@ -2160,7 +2235,8 @@ var listMixin = {
         loader: type("func"),
         FetchNextPage: type("func"),
         operationList: type("array"),
-        isManualFetch: type("bool")
+        isManualFetch: type("bool"),
+        idField: type("bool")
     },
 
     /**
@@ -2220,7 +2296,7 @@ var listMixin = {
                     isSelected = false;
             }
             return React.createElement(LineComponent, {
-                key: line.id || uuid.v4(),
+                key: line[_this.props.idField],
                 data: line,
                 ref: "line" + lineCount++,
                 isSelection: _this.props.isSelection,
@@ -2275,10 +2351,10 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"../../common/button/action":3,"./infinite-scroll":30,"./line":31,"uuid":97}],33:[function(require,module,exports){
+},{"../../common/button/action":3,"./infinite-scroll":30,"./line":31}],33:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var TopicDisplayer = require("../../common/topic-displayer").component;
 var Button = require("../../common/button/action").component;
@@ -2345,9 +2421,9 @@ module.exports = {
 };
 
 },{"./line":35,"./list":36}],35:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var React = window.React;
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
@@ -2791,7 +2867,7 @@ function baseDifference(array, values) {
       }
       result.push(value);
     }
-    else if (indexOf(values, value) < 0) {
+    else if (indexOf(values, value, 0) < 0) {
       result.push(value);
     }
   }
@@ -2871,13 +2947,13 @@ var isArguments = require('../lang/isArguments'),
  *
  * @private
  * @param {Array} array The array to flatten.
- * @param {boolean} [isDeep] Specify a deep flatten.
- * @param {boolean} [isStrict] Restrict flattening to arrays and `arguments` objects.
- * @param {number} [fromIndex=0] The index to start from.
+ * @param {boolean} isDeep Specify a deep flatten.
+ * @param {boolean} isStrict Restrict flattening to arrays and `arguments` objects.
+ * @param {number} fromIndex The index to start from.
  * @returns {Array} Returns the new flattened array.
  */
 function baseFlatten(array, isDeep, isStrict, fromIndex) {
-  var index = (fromIndex || 0) - 1,
+  var index = fromIndex - 1,
       length = array.length,
       resIndex = -1,
       result = [];
@@ -2888,7 +2964,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
     if (isObjectLike(value) && isLength(value.length) && (isArray(value) || isArguments(value))) {
       if (isDeep) {
         // Recursively flatten arrays (susceptible to call stack limits).
-        value = baseFlatten(value, isDeep, isStrict);
+        value = baseFlatten(value, isDeep, isStrict, 0);
       }
       var valIndex = -1,
           valLength = value.length;
@@ -2985,14 +3061,14 @@ var indexOfNaN = require('./indexOfNaN');
  * @private
  * @param {Array} array The array to search.
  * @param {*} value The value to search for.
- * @param {number} [fromIndex=0] The index to search from.
+ * @param {number} fromIndex The index to search from.
  * @returns {number} Returns the index of the matched value, else `-1`.
  */
 function baseIndexOf(array, value, fromIndex) {
   if (value !== value) {
     return indexOfNaN(array, fromIndex);
   }
-  var index = (fromIndex || 0) - 1,
+  var index = fromIndex - 1,
       length = array.length;
 
   while (++index < length) {
@@ -3628,8 +3704,10 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
         othCtor = other.constructor;
 
     // Non `Object` object instances with different constructors are not equal.
-    if (objCtor != othCtor && ('constructor' in object && 'constructor' in other) &&
-        !(typeof objCtor == 'function' && objCtor instanceof objCtor && typeof othCtor == 'function' && othCtor instanceof othCtor)) {
+    if (objCtor != othCtor &&
+        ('constructor' in object && 'constructor' in other) &&
+        !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
+          typeof othCtor == 'function' && othCtor instanceof othCtor)) {
       return false;
     }
   }
@@ -3645,13 +3723,13 @@ module.exports = equalObjects;
  *
  * @private
  * @param {Array} array The array to search.
- * @param {number} [fromIndex] The index to search from.
+ * @param {number} fromIndex The index to search from.
  * @param {boolean} [fromRight] Specify iterating from right to left.
  * @returns {number} Returns the index of the matched `NaN`, else `-1`.
  */
 function indexOfNaN(array, fromIndex, fromRight) {
   var length = array.length,
-      index = fromRight ? (fromIndex || length) : ((fromIndex || 0) - 1);
+      index = fromIndex + (fromRight ? 0 : -1);
 
   while ((fromRight ? index-- : ++index < length)) {
     var other = array[index];
@@ -3755,7 +3833,7 @@ function isIterateeCall(value, index, object) {
   }
   if (prereq) {
     var other = object[index];
-    return value === value ? value === other : other !== other;
+    return value === value ? (value === other) : (other !== other);
   }
   return false;
 }
@@ -4038,7 +4116,7 @@ var isArguments = require('./isArguments'),
     keys = require('../object/keys');
 
 /**
- * Checks if a value is empty. A value is considered empty unless it is an
+ * Checks if `value` is empty. A value is considered empty unless it is an
  * `arguments` object, array, string, or jQuery-like collection with a length
  * greater than `0` or an object with own enumerable properties.
  *
@@ -4371,7 +4449,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
         length = object.length;
   }
   if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-     (typeof object != 'function' && (length && isLength(length)))) {
+      (typeof object != 'function' && (length && isLength(length)))) {
     return shimKeys(object);
   }
   return isObject(object) ? nativeKeys(object) : [];
@@ -4565,7 +4643,7 @@ var reWords = (function() {
   var upper = '[A-Z\\xc0-\\xd6\\xd8-\\xde]',
       lower = '[a-z\\xdf-\\xf6\\xf8-\\xff]+';
 
-  return RegExp(upper + '{2,}(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
+  return RegExp(upper + '+(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
 }());
 
 /**
@@ -5077,41 +5155,46 @@ var assign = require("object-assign");
 var InfiniteScrollPageMixin = {
 
     /**
-     * Default state.
-     * @returns {object} Default state values.
+     * intial state for a scrolling page.
+     * @returns {*} the initial state
      */
-    getInfiniteScrollInitialState: function getInfiniteScrollInitialState() {
-        return {
+    getInitialState: function getInfiniteScrollInitialState() {
+        //var additionalStateData = this.getAdditionalStateData ? this.getAdditionalStateData() : {};
+        return assign({
             hasMoreData: false,
-            isLoading: false,
-            currentPage: 1,
-            totalRecords: undefined
-        };
+            currentPage: 1
+        }, this.getScrollState());
     },
+
     /**
-     * Default state.
-     * @returns {object} Defautl state values.
+     * current state of the scrolling list.
+     * @returns {*} the scroll state
      */
-    getInfiniteScrollStateFromStore: function getSearchStateFromStore() {
+    getScrollState: function _getScrollState() {
         if (this.store) {
             var data = this.store.get();
-            var hasMoreData = data.pageInfos && data.pageInfos.totalPages ? data.pageInfos.currentPage < data.pageInfos.totalPages : false;
-            var totalRecords = data.pageInfos && data.pageInfos.totalRecords ? data.pageInfos.totalRecords : undefined;
+            var hasMoreData = data.pageInfos && data.pageInfos.totalPages && data.pageInfos.currentPage < data.pageInfos.totalPages;
+            var totalRecords = data.pageInfos && data.pageInfos.totalRecords !== undefined ? data.pageInfos.totalRecords : undefined;
             return {
                 list: data.list || [],
                 hasMoreData: hasMoreData,
-                totalRecords: totalRecords
+                totalRecords: totalRecords,
+                isLoading: false
             };
         }
         return {};
     },
+
     /**
-     * Handler when store emit a change event.
+     * State for a no fetch search.
+     * @returns {object} currentpage set to 1.
      */
-    onSearchChange: function onSearchChange() {
-        console.log("Search success on mixin change");
-        this.setState(assign({ isLoading: false }, this._getStateFromStore()));
+    getNoFetchState: function getNoFetchState() {
+        return {
+            currentPage: 1
+        };
     },
+
     /**
      * Next page fetch action handler.
      */
@@ -5119,8 +5202,7 @@ var InfiniteScrollPageMixin = {
         this.setState({
             isLoading: true,
             currentPage: this.state.currentPage + 1
-        });
-        this.search();
+        }, this.search);
     },
     /**
      * Returns the search criteria sended to the store.
@@ -5148,18 +5230,21 @@ var InfiniteScrollPageMixin = {
 module.exports = { mixin: InfiniteScrollPageMixin };
 
 },{"object-assign":95}],101:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var LiveFilter = require("../../../search/live-filter/index").component;
 var ListActionBar = require("../../../list/action-bar/index").component;
 var ListSummary = require("../../../list/summary/index").component;
 var ListSelection = require("../../../list/selection").list.component;
+var Title = require("../../../common/title").component;
+var Button = require("../../../common/button/action").component;
 var SearchStore = window.focus.store.SearchStore;
 var assign = require("object-assign");
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
+var isArray = require("lodash/lang/isArray");
 
 var searchFilterResultMixin = {
     mixins: [InfiniteScrollPageMixin],
@@ -5168,10 +5253,6 @@ var searchFilterResultMixin = {
      * Display name.
      */
     displayName: "search-filter-result",
-    /**
-     * Search store.
-     */
-    store: new SearchStore(),
 
     /**
      * Component intialization
@@ -5195,11 +5276,10 @@ var searchFilterResultMixin = {
         return {
             facetConfig: {},
             orderableColumnList: {},
-            groupableColumnList: {},
             operationList: {},
             lineComponent: undefined,
             isSelection: true,
-            lineOperationList: {},
+            lineOperationList: [],
             criteria: {
                 scope: undefined,
                 searchText: undefined
@@ -5217,20 +5297,19 @@ var searchFilterResultMixin = {
             openedFacetList: {},
             selectionStatus: "none",
             orderSelected: undefined,
-            groupSelectedKey: undefined,
-            list: []
-        }, this.getInfiniteScrollInitialState(), this._getStateFromStore());
+            groupSelectedKey: undefined
+        });
     },
     /**
      * Get the state from store.
      * @returns {object} Dtat to update store.
      */
-    _getStateFromStore: function getToUpdateState() {
+    _getStateFromStore: function _getStateFromStore() {
         if (this.store) {
             var data = this.store.get();
             return assign({
-                facetList: data.facet || {}
-            }, this.getInfiniteScrollStateFromStore());
+                facetList: data.facet
+            }, this.getScrollState());
         }
     },
 
@@ -5254,15 +5333,26 @@ var searchFilterResultMixin = {
     },
 
     /**
+     * Handler when store emit a change event.
+     */
+    onSearchChange: function onSearchChange() {
+        this.setState(this._getStateFromStore());
+    },
+
+    /**
      * Search function.
      */
-    search: function search() {
+    search: function search(event) {
+        if (event) {
+            event.preventDefault();
+        }
+
         var facets = [];
         for (var selectedFacet in this.state.selectedFacetList) {
             facets.push({ key: selectedFacet, value: this.state.selectedFacetList[selectedFacet].key });
         }
 
-        this.props.action.search(this.getSearchCriteria(this.props.criteria.scope, this.props.criteria.searchText, facets));
+        this.actions.search(this.getSearchCriteria(this.props.criteria.scope, this.props.criteria.searchText, facets));
     },
     /**
      * Get the list of facet to print into the top bar..
@@ -5286,9 +5376,8 @@ var searchFilterResultMixin = {
         var selectedFacetList = this.state.selectedFacetList;
         delete selectedFacetList[key];
 
-        // TODO : do we do it now ?
         this.state.selectedFacetList = selectedFacetList;
-        this.setState({ selectedFacetList: this.state.selectedFacetList }, this.search);
+        this.setState(assign({ selectedFacetList: selectedFacetList }, this.getNoFetchState()), this.search);
     },
     /**
      * Group action click handler.
@@ -5297,13 +5386,8 @@ var searchFilterResultMixin = {
      */
     _groupClick: function _groupClick(key) {
         console.log("Group by : " + key);
-        // TODO : do we do it now ?
-        this.state.groupSelectedKey = key;
-        this.state.orderSelected = key != undefined ? undefined : this.state.orderSelected;
-        this.setState({
-            groupSelectedKey: this.state.groupSelectedKey,
-            orderSelected: this.state.orderSelected
-        }, this.search);
+
+        this.setState(assign({ groupSelectedKey: key, orderSelected: key != undefined ? undefined : this.state.orderSelected }, this.getNoFetchState()), this.search);
     },
     /**
      * Order action click handler.
@@ -5313,9 +5397,7 @@ var searchFilterResultMixin = {
      */
     _orderClick: function _orderClick(key, order) {
         console.log("Order : " + key + " - " + order);
-        // TODO : do we do it now ?
-        this.state.orderSelected = { key: key, order: order };
-        this.setState({ orderSelected: this.state.orderSelected }, this.search);
+        this.setState(assign({ orderSelected: { key: key, order: order } }, this.getNoFetchState()), this.search);
     },
     /**
      * Selection action handler.
@@ -5332,20 +5414,19 @@ var searchFilterResultMixin = {
      * Handler called when facet is selected.
      * @param facetComponentData Data of facet.
      */
-    _facetSelectionClick: function _facetSelectionClick(facetComponentData) {
-        var selectedFacetList = facetComponentData.selectedFacetList;
-        var openedFacetList = facetComponentData.openedFacetList;
-
+    _facetSelectionClick: function _facetSelectionClick(facetComponentData, isDisableGroup) {
         console.warn("Facet selection ");
-        console.log(selectedFacetList);
+        console.log(facetComponentData.selectedFacetList);
 
-        // TODO : Do we do it now ?
-        this.state.selectedFacetList = selectedFacetList;
-        this.state.openedFacetList = openedFacetList;
-        this.setState({
-            selectedFacetList: this.state.selectedFacetList,
-            openedFacetList: this.state.openedFacetList
-        }, this.search);
+        var newState = {
+            selectedFacetList: facetComponentData.selectedFacetList,
+            openedFacetList: facetComponentData.openedFacetList
+        };
+        if (isDisableGroup) {
+            newState.groupSelectedKey = undefined;
+        }
+
+        this.setState(assign(newState, this.getNoFetchState()), this.search);
     },
     /**
      * Line selection handler.
@@ -5367,76 +5448,166 @@ var searchFilterResultMixin = {
         console.log("TODO SCOPE CLICK REDIRECTION");
     },
     /**
-     * Render the component.
-     * @returns {XML} Html code.
+     * Render the show all button  seect the group corresponding facet.
+     * @param groupKey Group key.
+     * @returns {Function} Function to select the facet.
+     * @private
      */
-    render: function renderSearchResult() {
+    _showAllGroupListHandler: function _showAllGroupListHandler(groupKey) {
+        var _this = this;
+
+        return function (event) {
+            var selectedFacetList = _this.state.selectedFacetList;
+
+            var facet = _this.store.getFacet();
+            selectedFacetList[_this.state.groupSelectedKey] = {
+                data: facet[_this.state.groupSelectedKey][groupKey],
+                key: groupKey
+            };
+            _this._facetSelectionClick({
+                selectedFacetList: selectedFacetList,
+                facetComponentData: _this.state.openedFacetList
+            }, true);
+        };
+    },
+
+    /**
+     * Render a group list.
+     * @param groupKey Key of the group.
+     * @returns {JSX} Rendu html.
+     * @private
+     */
+    _renderGroupList: function _renderGroupList(groupKey) {
+        return React.createElement(
+            "div",
+            { className: "listResultContainer panel" },
+            React.createElement(Title, { title: groupKey }),
+            this._renderSimpleList({ groupKey: groupKey }, this.state.list[groupKey]),
+            React.createElement(Button, { handleOnClick: this._showAllGroupListHandler(groupKey), label: "Show all" })
+        );
+    },
+
+    /**
+     * Render a simple list.
+     * @param id Technical id of the list.
+     * @param list Content of the list.
+     * @returns {JSX} Html rendering.
+     * @private
+     */
+    _renderSimpleList: function _renderSimpleList(id, list) {
+        return React.createElement(ListSelection, { data: list,
+            ref: id,
+            isSelection: this.props.isSelection,
+            onSelection: this._selectItem,
+            onLineClick: this.props.onLineClick,
+            fetchNextPage: this.fetchNextPage,
+            operationList: this.props.lineOperationList,
+            hasMoreData: this.state.hasMoreData,
+            isLoading: this.state.isLoading,
+            lineComponent: this.props.lineComponent,
+            selectionStatus: this.state.selectionStatus });
+    },
+
+    /**
+     * Get the list of the orderable columns.
+     * @returns {object} list of orderable columns.
+     * @private
+     */
+    _getOrderableColumnList: function _getOrderableColumnList() {
+        if (this._isSimpleList()) {
+            return this.props.orderableColumnList;
+        }
+        return undefined;
+    },
+
+    /**
+     * @returns {boolean} Returns true if list is a simple list, false if grouped.
+     * @private
+     */
+    _isSimpleList: function _isSimpleList() {
+        return isArray(this.state.list);
+    },
+
+    /**
+     * Render the liveFilter.
+     * @returns {JSX} Render the liveFilter.
+     */
+    liveFilterComponent: function liveFilterComponent() {
+        return React.createElement(
+            "div",
+            { className: "liveFilterContainer" },
+            React.createElement(LiveFilter, { ref: "liveFilter",
+                facetList: this.state.facetList,
+                selectedFacetList: this.state.selectedFacetList,
+                openedFacetList: this.state.openedFacetList,
+                config: this.props.facetConfig,
+                dataSelectionHandler: this._facetSelectionClick })
+        );
+    },
+
+    listSummary: function listSummary() {
         var scopeList = { scope: this.props.criteria.scope };
         return React.createElement(
             "div",
-            { className: "search-result" },
-            React.createElement(
-                "div",
-                { className: "liveFilterContainer" },
-                React.createElement(LiveFilter, { ref: "liveFilter",
-                    facetList: this.state.facetList,
-                    selectedFacetList: this.state.selectedFacetList,
-                    openedFacetList: this.state.openedFacetList,
-                    config: this.props.facetConfig,
-                    dataSelectionHandler: this._facetSelectionClick })
-            ),
-            React.createElement(
-                "div",
-                { className: "resultContainer" },
-                React.createElement(
-                    "div",
-                    { className: "listSummaryContainer panel" },
-                    React.createElement(ListSummary, {
-                        nb: this.state.totalRecords,
-                        queryText: this.props.criteria.searchText,
-                        scopeList: scopeList,
-                        scopeClickAction: this._scopeClick,
-                        exportAction: this._exportHandler
-                    })
-                ),
-                React.createElement(
-                    "div",
-                    { className: "listActionBarContainer panel" },
-                    React.createElement(ListActionBar, { selectionStatus: this.state.selectionStatus,
-                        selectionAction: this._selectionGroupLineClick,
-                        orderableColumnList: this.props.orderableColumnList,
-                        orderAction: this._orderClick,
-                        orderSelected: this.state.orderSelected,
-                        groupableColumnList: this.props.groupableColumnList,
-                        groupAction: this._groupClick,
-                        groupSelectedKey: this.state.groupSelectedKey,
-                        facetList: this._getFacetListForBar(),
-                        facetClickAction: this._facetBarClick,
-                        operationList: this.props.operationList })
-                ),
-                React.createElement(
-                    "div",
-                    { className: "listResultContainer panel" },
-                    React.createElement(ListSelection, { data: this.state.list,
-                        ref: "list",
-                        isSelection: this.props.isSelection,
-                        onSelection: this._selectItem,
-                        onLineClick: this.props.onLineClick,
-                        fetchNextPage: this.fetchNextPage,
-                        operationList: this.props.lineOperationList,
-                        hasMoreData: this.state.hasMoreData,
-                        isLoading: this.state.isLoading,
-                        lineComponent: this.props.lineComponent,
-                        selectionStatus: this.state.selectionStatus })
-                )
-            )
+            { className: "listSummaryContainer panel" },
+            React.createElement(ListSummary, {
+                nb: this.state.totalRecords,
+                queryText: this.props.criteria.searchText,
+                scopeList: scopeList,
+                scopeClickAction: this._scopeClick,
+                exportAction: this._exportHandler })
         );
+    },
+    /**
+     * Render the action bar.
+     * @returns {JSX} Rendering of the action bar.
+     */
+    actionBar: function actionBar() {
+        var groupableColumnList = {};
+        for (var facetKey in this.state.facetList) {
+            groupableColumnList[facetKey] = facetKey;
+        }
+        return React.createElement(
+            "div",
+            { className: "listActionBarContainer panel" },
+            React.createElement(ListActionBar, { selectionStatus: this.state.selectionStatus,
+                selectionAction: this._selectionGroupLineClick,
+                orderableColumnList: this._getOrderableColumnList(),
+                orderAction: this._orderClick,
+                orderSelected: this.state.orderSelected,
+                groupableColumnList: groupableColumnList,
+                groupAction: this._groupClick,
+                groupSelectedKey: this.state.groupSelectedKey,
+                facetList: this._getFacetListForBar(),
+                facetClickAction: this._facetBarClick,
+                operationList: this.props.operationList })
+        );
+    },
+
+    /**
+     * Render the resutl list.
+     * @returns {JSX} The rendering of the list.
+     * @private
+     */
+    resultList: function resultList() {
+        if (this._isSimpleList()) {
+            return React.createElement(
+                "div",
+                { className: "listResultContainer panel" },
+                this._renderSimpleList("list", this.state.list)
+            );
+        }
+        var groupList = [];
+        for (var groupKey in this.state.list) {
+            groupList.push(this._renderGroupList(groupKey));
+        }
+        return groupList;
     }
 };
 
-module.exports = builder(searchFilterResultMixin);
+module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../list/action-bar/index":26,"../../../list/selection":29,"../../../list/summary/index":33,"../../../search/live-filter/index":105,"../common-mixin/infinite-scroll-page-mixin":100,"object-assign":95}],102:[function(require,module,exports){
+},{"../../../common/button/action":3,"../../../common/title":24,"../../../list/action-bar/index":26,"../../../list/selection":29,"../../../list/summary/index":33,"../../../search/live-filter/index":105,"../common-mixin/infinite-scroll-page-mixin":100,"lodash/lang/isArray":79,"object-assign":95}],102:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -5451,8 +5622,8 @@ var builder = window.focus.component.builder;
 var React = window.React;
 var QuickSearch = require("../../../search/quick-search").component;
 var List = require("../../../list/selection").list.component;
-var SearchStore = window.focus.store.SearchStore;
 var assign = require("object-assign");
+var type = window.focus.component.types;
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
 
 var searchMixin = {
@@ -5462,11 +5633,6 @@ var searchMixin = {
      * Tag name.
      */
     displayName: "search-panel",
-
-    /**
-     * Search store.
-     */
-    store: new SearchStore(),
 
     /**
      * Component intialization
@@ -5487,29 +5653,30 @@ var searchMixin = {
         return {
             lineComponent: undefined,
             isSelection: false,
-            lineOperationList: {}
+            lineOperationList: {},
+            idField: "id"
         };
     },
 
     /**
-     * Initial state of the list component.
-     * @returns {{list: (*|Array)}}
+     * properties validation
      */
-    getInitialState: function getInitialState() {
-        var data = this.store.get();
-
-        return assign({
-            isAllSelected: false,
-            selected: []
-        }, this.getInfiniteScrollInitialState(), this._getStateFromStore());
+    propTypes: {
+        lineComponent: type("object"),
+        isSelection: type("bool"),
+        lineOperationList: type("array"),
+        idField: type("string")
     },
 
     /**
-     * Get liste from current store.
-     * @returns {*}
+     * Initial state of the list component.
+     * @returns {{list: (*|Array)}} the state
      */
-    _getStateFromStore: function getSearchStateFromStore() {
-        return assign({}, this.getInfiniteScrollStateFromStore());
+    getInitialState: function getInitialState() {
+        return {
+            isAllSelected: false,
+            selected: []
+        };
     },
 
     /**
@@ -5533,8 +5700,15 @@ var searchMixin = {
     },
 
     /**
+     * Handler when store emit a change event.
+     */
+    onSearchChange: function onSearchChange() {
+        this.setState(assign({ isLoadingSearch: false }, this.getScrollState()));
+    },
+
+    /**
      * Action on item selection.
-     * @param item
+     * @param {object} item selected
      */
     _selectItem: function selectItem(item) {
         var index = this.state.selected.indexOf(item);
@@ -5547,7 +5721,7 @@ var searchMixin = {
 
     /**
      * Action on line click.
-     * @param item
+     * @param {object} item  the item clicked
      */
     _lineClick: function lineClick(item) {
         if (this.props.onLineClick) {
@@ -5557,44 +5731,51 @@ var searchMixin = {
 
     /**
      * Run search action.
-     * @param event
      */
-    search: function search(event) {
-        if (event) {
-            event.preventDefault();
-        }
+    search: function search() {
         var searchValues = this.refs.quickSearch.getValue();
         this.actions.search(this.getSearchCriteria(searchValues.scope, searchValues.query));
     },
 
+    _quickSearch: function quickSearch(event) {
+        event.preventDefault();
+        this.setState(assign({ isLoadingSearch: true }, this.getNoFetchState()), this.search());
+    },
+
     /**
-     * render the searchComponent.
+     * return a quickSearchComponent
+     * @returns {XML} the component
      */
-    render: function renderSearchComponent() {
-        return React.createElement(
-            "div",
-            { className: "search-panel" },
-            React.createElement(QuickSearch, { handleKeyUp: this.search,
-                ref: "quickSearch",
-                scope: this.props.scope,
-                scopes: this.props.scopeList
-            }),
-            React.createElement(List, { data: this.state.list,
-                ref: "list",
-                isSelection: this.props.isSelection,
-                onSelection: this._selectItem,
-                onLineClick: this._lineClick,
-                fetchNextPage: this.fetchNextPage,
-                hasMoreData: this.state.hasMoreData,
-                isLoading: this.state.isLoading,
-                operationList: this.props.operationList,
-                lineComponent: this.props.lineComponent
-            })
-        );
+    quickSearchComponent: function quickSearchComponent() {
+        return React.createElement(QuickSearch, { handleKeyUp: this._quickSearch,
+            ref: "quickSearch",
+            scope: this.props.scope,
+            scopes: this.props.scopeList,
+            loading: this.state.isLoadingSearch
+        });
+    },
+
+    /**
+     * return a list component
+     * @returns {XML} the list component
+     */
+    listComponent: function listComponent() {
+        return React.createElement(List, { data: this.state.list,
+            ref: "list",
+            idField: this.props.idField,
+            isSelection: this.props.isSelection,
+            onSelection: this._selectItem,
+            onLineClick: this._lineClick,
+            fetchNextPage: this.fetchNextPage,
+            hasMoreData: this.state.hasMoreData,
+            isLoading: this.state.isLoading,
+            operationList: this.props.operationList,
+            lineComponent: this.props.lineComponent
+        });
     }
 };
 
-module.exports = builder(searchMixin);
+module.exports = builder(searchMixin, true);
 
 },{"../../../list/selection":29,"../../../search/quick-search":108,"../common-mixin/infinite-scroll-page-mixin":100,"object-assign":95}],104:[function(require,module,exports){
 "use strict";
@@ -5764,9 +5945,9 @@ var liveFilterMixin = {
 module.exports = builder(liveFilterMixin);
 
 },{"../../common/img":11,"./live-filter-facet":107,"lodash/object/omit":88,"object-assign":95}],106:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 
@@ -5812,9 +5993,9 @@ var liveFilterDataMixin = {
 module.exports = builder(liveFilterDataMixin);
 
 },{}],107:[function(require,module,exports){
+/**@jsx*/
 "use strict";
 
-/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Data = require("./live-filter-data").component;
@@ -5988,8 +6169,8 @@ var SearchInputMixin = {
     return {
       placeholder: "",
       value: "defaultValue",
-      scope: 2,
-      scopes: [{ code: undefined, label: "None", style: "qs-scope-none" }, { code: 1, label: "Scope1", style: "qs-scope-1" }, { code: 2, label: "Scope2", style: "qs-scope-2" }, { code: 3, label: "Scope3", style: "qs-scope-3" }],
+      scope: undefined,
+      scopes: [],
       minChar: 0,
       loading: false
     };
@@ -6009,7 +6190,7 @@ var SearchInputMixin = {
       loading: this.props.loading
     };
   },
-  getValue: function getValue() {
+  getValue: function getQuickSearchValue() {
     return {
       scope: this.refs.scope.getValue(),
       query: this.refs.query.getDOMNode().value
@@ -6018,14 +6199,12 @@ var SearchInputMixin = {
   handleKeyUp: function handleKeyUpInputSearch(event) {
     var val = event.target.value;
     if (val.length >= this.props.minChar) {
-      console.log("keyUp", words(val));
       if (this.props.handleKeyUp) {
         this.props.handleKeyUp(event);
       }
     }
   },
   handleOnClickScope: function handleOnClickScope() {
-    console.log("Search value", this.getValue());
     this.setState({ scope: this.refs.scope.getValue() }, this.focusQuery);
   },
   renderHelp: function renderHelp() {
@@ -6043,6 +6222,12 @@ var SearchInputMixin = {
       )
     );
   },
+  /** @inheritdoc */
+  componentWillReceiveProps: function fieldWillReceiveProps(newProps) {
+    if (newProps && newProps.loading !== undefined) {
+      this.setState({ loading: newProps.loading });
+    }
+  },
   focusQuery: function focusQuery() {
     this.refs.query.getDOMNode().focus();
   },
@@ -6050,11 +6235,12 @@ var SearchInputMixin = {
     return this.setState(this.getValue(), this.focusQuery);
   },
   render: function renderSearchInput() {
+    var loadingClassName = this.props.loading ? "qs-loading" : "";
     return React.createElement(
       "div",
       { className: "qs-quick-search" },
       React.createElement(Scope, { ref: "scope", list: this.props.scopes, value: this.state.scope, handleOnClick: this.handleOnClickScope }),
-      React.createElement("input", { ref: "query", onKeyUp: this.handleKeyUp, type: "search" }),
+      React.createElement("input", { ref: "query", onKeyUp: this.handleKeyUp, type: "search", className: loadingClassName }),
       this.renderHelp()
     );
   }
@@ -6073,141 +6259,145 @@ var React = window.React;
 var find = require("lodash/collection/find");
 var uuid = require("uuid");
 var scopeMixin = {
-	/**
-  * Component tag name.
-  * @type {String}
-  */
-	displayName: "Scope",
-	/**
-  * Component default properties.
-  */
-	getDefaultProps: function getScopeDefaultProperties() {
-		return {
-			list: [],
-			value: undefined,
-			isDeployed: false
-		};
-	},
-	/**
-  * Scope property validation.
-  * @type {Object}
-  */
-	propTypes: {
-		list: type("array"),
-		isDeployed: type("bool"),
-		value: type(["string", "number"])
-	},
-	/**
-  * Get the initial state from the data.
-  */
-	getInitialState: function getScopeInitialState() {
-		return {
-			isDeployed: this.props.isDeployed,
-			value: this.props.value
-		};
-	},
-	/**
-  * Get the value of the scope.
-  */
-	getValue: function getValue() {
-		return this.state.value;
-	},
-	/**
-  * Define the scope label.
-  */
-	scopeLabel: function scopeLabel() {
-		return;
-		if (!this.state.value) {
-			return "Choose your scope";
-		}
-		return this.state.value;
-	},
-	/**
-  * Internal function which handles the click on the scope line element and call the real handleOnclick if it is defined.
-  * @param {object} event - Event trigger by the search.
-  */
-	_handleOnClick: function _handleOnClick(event) {
-		var val = event.target.hasAttribute("value") ? event.target.value : undefined;
-		this.setState({
-			value: val,
-			isDeployed: false
-		}, this.props.handleOnClick);
-	},
-	/**
-  * Handle the click on the scope element.
-  */
-	handleDeployClick: function handleDeployClick() {
-		this.setState({
-			isDeployed: !this.state.isDeployed
-		});
-	},
-	/**
-  * Get the current active scope.
-  */
-	getActiveScope: function getActiveScope() {
-		var _this = this;
+  /**
+   * Component tag name.
+   * @type {String}
+   */
+  displayName: "Scope",
+  /**
+   * Component default properties.
+   */
+  getDefaultProps: function getScopeDefaultProperties() {
+    return {
+      list: [],
+      value: undefined,
+      isDeployed: false
+    };
+  },
+  /**
+   * Scope property validation.
+   * @type {Object}
+   */
+  propTypes: {
+    list: type("array"),
+    isDeployed: type("bool"),
+    value: type(["string", "number"])
+  },
+  /**
+   * Get the initial state from the data.
+   */
+  getInitialState: function getScopeInitialState() {
+    return {
+      isDeployed: this.props.isDeployed,
+      value: this.props.value
+    };
+  },
+  /**
+   * Get the value of the scope.
+   */
+  getValue: function getValue() {
+    return this.state.value;
+  },
+  /**
+   * Define the scope label.
+   */
+  scopeLabel: function scopeLabel() {
+    return;
+    if (!this.state.value) {
+      return "Choose your scope";
+    }
+    return this.state.value;
+  },
+  /**
+   * Internal function which handles the click on the scope line element and call the real handleOnclick if it is defined.
+   * @param {object} event - Event trigger by the search.
+   */
+  _handleOnClick: function _handleOnClick(event) {
+    var val = event.target.hasAttribute("value") ? event.target.value : undefined;
+    this.setState({
+      value: val,
+      isDeployed: false
+    }, this.props.handleOnClick);
+  },
+  /**
+   * Handle the click on the scope element.
+   */
+  handleDeployClick: function handleDeployClick() {
+    this.setState({
+      isDeployed: !this.state.isDeployed
+    });
+  },
+  /**
+   * Get the current active scope.
+   */
+  getActiveScope: function getActiveScope() {
+    var _this = this;
 
-		return find(this.props.list, function (scope) {
-			return scope.code === _this.state.value;
-		});
-	},
-	/**
-  * Return the css class for the scope.
-  */
-	scopeStyle: function scopeStyle() {
-		return "" + this.getActiveScope().style;
-	},
-	renderScopeList: function renderScopeList() {
-		var _this = this;
+    return find(this.props.list, function (scope) {
+      return scope.code === _this.state.value;
+    });
+  },
+  /**
+   * Return the css class for the scope.
+   */
+  scopeStyle: function scopeStyle() {
+    var activeScope = this.getActiveScope();
+    if (!activeScope) {
+      return "qs-scope-none";
+    }
+    return activeScope.style || "qs-scope-" + activeScope.value;
+  },
+  renderScopeList: function renderScopeList() {
+    var _this = this;
 
-		if (!this.state.isDeployed) {
-			return;
-		}
-		var scopes = this.props.list.map(function (scope) {
-			var selectedValue = _this.state.value === scope.code ? "active" : "";
-			return React.createElement(
-				"li",
-				{ key: scope.code || uuid.v4(),
-					value: scope.code,
-					className: "" + selectedValue + " " + scope.style,
-					onClick: _this._handleOnClick },
-				scope.label
-			);
-		});
-		return React.createElement(
-			"ul",
-			{ className: "qs-scope-list" },
-			" ",
-			scopes,
-			" "
-		);
-	},
-	/**
-  * Render the complete scope element.
-  * @return {object} - The jsx element.
-  */
-	render: function renderScopeComponent() {
-		var cssClass = "qs-icon qs-scope-deploy-" + (this.state.isDeployed ? "up" : "down");
-		return React.createElement(
-			"div",
-			{ className: this.props.className + " qs-scope" },
-			React.createElement(
-				"div",
-				{ className: cssClass,
-					onClick: this.handleDeployClick },
-				React.createElement(
-					"div",
-					{ className: this.scopeStyle() },
-					" ",
-					this.scopeLabel(),
-					" "
-				)
-			),
-			" ",
-			this.renderScopeList(),
-			" "
-		);
-	}
+    if (!this.state.isDeployed) {
+      return;
+    }
+    var scopes = this.props.list.map(function (scope) {
+      var selectedValue = _this.state.value === scope.code ? "active" : "";
+      return React.createElement(
+        "li",
+        { key: scope.code || uuid.v4(),
+          value: scope.code,
+          className: "" + selectedValue + " " + scope.style,
+          onClick: _this._handleOnClick },
+        scope.label
+      );
+    });
+    return React.createElement(
+      "ul",
+      { className: "qs-scope-list" },
+      " ",
+      scopes,
+      " "
+    );
+  },
+  /**
+   * Render the complete scope element.
+   * @return {object} - The jsx element.
+   */
+  render: function renderScopeComponent() {
+    var cssClass = "qs-icon qs-scope-deploy-" + (this.state.isDeployed ? "up" : "down");
+    return React.createElement(
+      "div",
+      { className: this.props.className + " qs-scope" },
+      React.createElement(
+        "div",
+        { className: cssClass,
+          onClick: this.handleDeployClick },
+        React.createElement(
+          "div",
+          { className: this.scopeStyle() },
+          " ",
+          this.scopeLabel(),
+          " "
+        )
+      ),
+      " ",
+      this.renderScopeList(),
+      " "
+    );
+  }
 };
 
 module.exports = builder(scopeMixin);

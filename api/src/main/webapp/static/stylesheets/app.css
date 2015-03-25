@@ -108,8 +108,8 @@ div.qs-quick-search {
     position: absolute;
     top: 0;
     left: 0; }
-    div.qs-quick-search input[type=search].qs-searching {
-      background: #FFF url(./img/loading.gif) no-repeat right center; }
+    div.qs-quick-search input[type=search].qs-loading {
+      background: #FFF url(../img/loading.gif) no-repeat right center; }
   div.qs-quick-search div.qs-help {
     z-index: 2;
     position: relative;
@@ -187,7 +187,8 @@ ul.selection-list {
       z-index: 1;
       height: 100%;
       width: 50px;
-      display: none; }
+      display: none;
+      background-color: #fff; }
     ul.selection-list li.sl-line div.sl-actions {
       position: absolute;
       top: 0px;
@@ -208,6 +209,12 @@ ul.selection-list {
     ul.selection-list li.sl-button a, ul.selection-list li.sl-button button {
       position: absolute;
       right: 0px; }
+
+.print {
+  background: url("../img/print.svg") no-repeat center; }
+
+.list-summary .nb-result, .list-summary .scope, .list-summary .print {
+  float: left; }
 
 /** css from : http://codepen.io/betdream/details/Ifvbi**/
 .timeline {
@@ -326,15 +333,6 @@ ul.selection-list {
 .timeline-body > p + p {
   margin-top: 5px; }
 
-.print {
-  background: url("../img/print.svg") no-repeat center; }
-
-.list-summary .nb-result, .list-summary .scope, .list-summary .print {
-  float: left; }
-
-.popin {
-  display: block; }
-
 .icon {
   float: left;
   width: 40px;
@@ -352,6 +350,9 @@ ul.selection-list {
 
 .topic-displayer .topic {
   background: url("../img/cross.svg") no-repeat right center; }
+
+.popin {
+  display: block; }
 
 .liveFilterContainer {
   padding-right: 10px; }
@@ -476,14 +477,19 @@ ul.selection-list {
 }
 .details {
   background-color: white;
-  float: right;
-  width: 85%;
   border: solid 1px;
+  margin-left: 260px;
+  position: relative;
+  float: left;
+  width: 86%;
 }
 .cartridgeCss {
   width: 454px;
+  border: solid 1px;
+  border-bottom: none;
+  position: absolute;
+  margin-left: 1336px;
   float: right;
-  border-left: solid 1px;
 }
 .cartridge .header {
   background-color: #EEECE1;
@@ -517,11 +523,15 @@ ul.selection-list {
   width: 70%;
   float: right;
 }
-.slidingContentCss {
-  width: 70%;
+.cartridge .header .link {
   float: left;
+  margin-top: 120px;
+  margin-left: -85px;
 }
-.slidingContentCss h3 {
+#slidingContent {
+  position: relative;
+}
+#slidingContent h3 {
   color: grey;
   margin-left: 20px;
 }
@@ -530,7 +540,7 @@ ul.selection-list {
 }
 .sticky-navigation {
   background-color: white;
-  width: 13%;
+  width: 250px;
   padding-left: 20px;
 }
 .sticky-navigation a {
@@ -540,27 +550,35 @@ ul.selection-list {
 .sticky-navigation a:focus {
   color: purple;
 }
-.slidingContentCss .card {
+#slidingContent .card {
   background-color: #E0E0E0;
-  height: 70px;
-  margin: 10px 20px;
-  padding: 10px;
+  margin: 0 20px;
   width: 900px;
+  padding: 5px 10px;
 }
-.slidingContentCss .card .picture {
+#slidingContent .card .picture {
   float: left;
   width: 50px;
   height: 50px;
   margin-right: 20px;
 }
-.slidingContentCss .card .name {
+#slidingContent .card .name {
   font-weight: bold;
   font-size: 20px;
+  color: #953737;
+}
+#slidingContent .card.middleName {
+  font-weight: bold;
+  font-size: 16px;
+}
+#slidingContent .noBorderBottom {
+  border-bottom: none;
 }
 
 body {
   background-color: #EEEEEE;
   font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
+  width: 1903px;
 }
 #leftMenu {
   height: 100%;
@@ -597,7 +615,7 @@ body {
   border-bottom: 1px @border-color solid;*/
 }
 #page {
-  margin: 0;
+  margin-right: 4px;
   padding: 10px;
 }
 .title-level-1 {
