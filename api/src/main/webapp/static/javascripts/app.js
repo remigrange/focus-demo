@@ -2270,7 +2270,7 @@ require.register("views/search-result/lineResume", function(exports, require, mo
 var Block = focus.components.common.block.component;
 var Label = focus.components.common.label.component;
 module.exports =  React.createClass({displayName: "exports",
-    render:function renderMovieResume(){
+    render: function renderMovieResume(){
         return(
             React.createElement(Block, null, 
                 React.createElement("div", {className: "movie-lineResume"}, 

@@ -22194,9 +22194,6 @@ module.exports = {
     },
     pageInfos: {
       domain: "DO_TEXT"
-    },
-    searchContext: {
-      domain: "DO_TEXT"
     }
   }
 };
@@ -22264,9 +22261,8 @@ var SearchStore = (function (_CoreStore) {
         var processedData = assign({}, previousData, newData);
         if (this._isSameSearchContext(previousData, newData)) {
           processedData.list = previousData.list.concat(newData.list);
-        } else {
-          processedData.pageInfos.currentPage = 1;
         }
+
         //add calculated fields on data
         if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
           processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
@@ -22286,28 +22282,10 @@ var SearchStore = (function (_CoreStore) {
        */
 
       value: function _isSameSearchContext(previousData, newData) {
-        var isSameSearchContext = false;
-        if (previousData.searchContext) {
-          var isSameScope = previousData.searchContext.scope === newData.searchContext.scope;
-          var isSameQuery = previousData.searchContext.query === newData.searchContext.query;
-          isSameSearchContext = isSameScope && isSameQuery;
+        if (newData.pageInfos) {
+          return newData.pageInfos.currentPage != 1;
         }
-        var isSameFacetContext = false;
-        if (previousData.facet) {
-          isSameFacetContext = isEqual(previousData.facet, newData.facet);
-        }
-
-        var isSameOrderContext = false;
-        if (previousData.pageInfos) {
-          isSameOrderContext = isEqual(previousData.pageInfos.order, newData.pageInfos.order);
-        }
-
-        var isSameGroupContext = false;
-        if (previousData.pageInfos) {
-          isSameGroupContext = isEqual(previousData.pageInfos.group, newData.pageInfos.group);
-        }
-
-        return isSameSearchContext && isSameFacetContext && isSameOrderContext && isSameGroupContext;
+        return false;
       }
     },
     addSearchChangeListener: {
