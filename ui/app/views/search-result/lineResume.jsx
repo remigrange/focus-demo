@@ -2,7 +2,7 @@
 var Block = focus.components.common.block.component;
 var Label = focus.components.common.label.component;
 module.exports =  React.createClass({
-    render:function renderMovieResume(){
+    render: function renderMovieResume(){
         return(
             <Block>
                 <div className ="movie-lineResume">

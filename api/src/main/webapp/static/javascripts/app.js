@@ -1738,7 +1738,7 @@ var config = {
         Genre: 'text',
         Country: 'text'
     },
-    orderableColumnList: {TITLE: 'Title', GENRE_IDS: 'Genre'},
+    orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
     groupableColumnList: {GENRE_IDS: 'Genre'},
     operationList: [
         /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
@@ -1777,19 +1777,27 @@ var config = {
 
 module.exports = React.createClass({displayName: "exports",
     render: function(){
-        return React.createElement(SearchFilterResult, {facetConfig: config.facetConfig, 
-                                    orderableColumnList: config.orderableColumnList, 
-                                    groupableColumnList: config.groupableColumnList, 
-                                    operationList: config.operationList, 
-                                    action: config.action, 
-                                    lineComponent: Line, 
-                                    onLineClick: config.onLineClick, 
-                                    isSelection: true, 
-                                    lineOperationList: config.lineOperationList, 
-                                    criteria: config.criteria}
+        /*return <SearchFilterResult facetConfig = {config.facetConfig}
+                                    orderableColumnList={config.orderableColumnList}
+                                    groupableColumnList={config.groupableColumnList}
+                                    operationList={config.operationList}
+                                    action={config.action}
+                                    lineComponent={Line}
+                                    onLineClick={config.onLineClick}
+                                    isSelection={true}
+                                    lineOperationList={config.lineOperationList}
+                                    criteria={config.criteria}
 
 
-        );
+        />;*/
+        var filterResult = React.createElement(
+                React.createClass({
+                    mixins: [focusComponents.page.search.filterResult.mixin],
+                    actions: action,
+                    store: new focus.store.SearchStore()
+                }),
+                config);
+        return filterResult;
     }
 });
 
@@ -2391,13 +2399,24 @@ var config = {
 
 module.exports= React.createClass({displayName: "exports",
     render: function(){
-        var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),{
-                lineComponent: Line,
-                onLineClick: config.onLineClick,
-                operationList: config.operationList,
-                scopeList: config.scopes,
-                scope: config.scope
-            }
+        var searchResult = React.createElement(React.createClass(
+                {   mixins: [focusComponents.page.search.searchResult.mixin],
+                    actions: config.action,
+                    store: new focus.store.SearchStore(),
+                    render: function render(){
+                        var qs = this.quickSearchComponent();
+                        var summary = React.createElement("div", {className: "summary"}, "100 results");
+                        var list = this.listComponent();
+                        var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
+                        return root;
+                    }}),
+                {
+                    lineComponent: Line,
+                    onLineClick: config.onLineClick,
+                    operationList: config.operationList,
+                    scopeList: config.scopes,
+                    scope: config.scope
+                }
         );
         return searchResult;
     }
@@ -2410,7 +2429,7 @@ require.register("views/search-result/lineResume", function(exports, require, mo
 var Block = focus.components.common.block.component;
 var Label = focus.components.common.label.component;
 module.exports =  React.createClass({displayName: "exports",
-    render:function renderMovieResume(){
+    render: function renderMovieResume(){
         return(
             React.createElement(Block, null, 
                 React.createElement("div", {className: "movie-lineResume"}, 

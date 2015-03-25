@@ -118,13 +118,24 @@ var config = {
 
 module.exports= React.createClass({
     render: function(){
-        var searchResult = React.createElement(React.createClass({mixins: [focusComponents.page.search.searchResult.mixin], actions: config.action}),{
-                lineComponent: Line,
-                onLineClick: config.onLineClick,
-                operationList: config.operationList,
-                scopeList: config.scopes,
-                scope: config.scope
-            }
+        var searchResult = React.createElement(React.createClass(
+                {   mixins: [focusComponents.page.search.searchResult.mixin],
+                    actions: config.action,
+                    store: new focus.store.SearchStore(),
+                    render: function render(){
+                        var qs = this.quickSearchComponent();
+                        var summary = <div className='summary'>100 results</div>;
+                        var list = this.listComponent();
+                        var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
+                        return root;
+                    }}),
+                {
+                    lineComponent: Line,
+                    onLineClick: config.onLineClick,
+                    operationList: config.operationList,
+                    scopeList: config.scopes,
+                    scope: config.scope
+                }
         );
         return searchResult;
     }

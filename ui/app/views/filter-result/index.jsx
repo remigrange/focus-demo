@@ -75,7 +75,7 @@ var config = {
         Genre: 'text',
         Country: 'text'
     },
-    orderableColumnList: {TITLE: 'Title', GENRE_IDS: 'Genre'},
+    orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
     groupableColumnList: {GENRE_IDS: 'Genre'},
     operationList: [
         /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
@@ -114,7 +114,7 @@ var config = {
 
 module.exports = React.createClass({
     render: function(){
-        return <SearchFilterResult facetConfig = {config.facetConfig}
+        /*return <SearchFilterResult facetConfig = {config.facetConfig}
                                     orderableColumnList={config.orderableColumnList}
                                     groupableColumnList={config.groupableColumnList}
                                     operationList={config.operationList}
@@ -126,6 +126,14 @@ module.exports = React.createClass({
                                     criteria={config.criteria}
 
 
-        />;
+        />;*/
+        var filterResult = React.createElement(
+                React.createClass({
+                    mixins: [focusComponents.page.search.filterResult.mixin],
+                    actions: action,
+                    store: new focus.store.SearchStore()
+                }),
+                config);
+        return filterResult;
     }
 });
