@@ -108,7 +108,6 @@ public class MovieServicesImpl implements MovieServices {
                 .withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.ACTOR.dbValue()).build();
         final DtList<Casting> castingList = castingDAO.getList(castingCriteria, Integer.MAX_VALUE);
         for (final Casting casting : castingList) {
-            casting.getPeople();
             ret.add(casting.getPeople());
         }
         return ret;

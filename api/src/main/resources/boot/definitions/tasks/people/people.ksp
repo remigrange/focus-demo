@@ -64,3 +64,21 @@ create Task TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID {
     attribute PEO_ID {domain : DO_ID notNull:"true" inOut :"in"}
     attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}
 }
+
+create Task TK_GET_FILMOGRAPHY_BY_PEO_ID {
+	className : "io.vertigo.dynamox.task.TaskEngineSelect"
+    request : " select 
+    				mov.*, 
+    				string_agg(DISTINCT gen.label, ', ') as GENRE_IDS
+				from role_people rolep 
+				inner join movie mov on mov.mov_id = rolep.mov_id
+				left join  mov_gen movGen on mov.mov_id = movGen.mov_id
+				left join  genre gen on gen.gen_cd = movGen.gen_cd
+				where 
+					rolep.peo_id = #PEO_ID# 
+					and rolep.rlm_cd = 'actor'
+				group by mov.mov_id
+     "
+    attribute PEO_ID {domain : DO_ID notNull:"true" inOut :"in"}
+    attribute DTC_MOVIE {domain : DO_DT_MOVIE_DTC notNull:"true" inOut :"out"}
+}

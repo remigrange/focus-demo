@@ -8564,6 +8564,9 @@ var dispatcher = require("../dispatcher");
  */
 function builtInReferenceAction(referenceNames) {
   return function () {
+    if (!this.referenceNames) {
+      return undefined;
+    }
     return Promise.all(loadManyReferenceList(referenceNames)).then(function successReferenceLoading(data) {
       //Rebuilt a constructed information from the map.
       var reconstructedData = {};

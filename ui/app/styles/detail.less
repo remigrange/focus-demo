@@ -1,14 +1,20 @@
 .details {
   background-color: white;
-  float: right;
-  width: 85%;//85%
   border: solid 1px;
+  margin-left: 260px;
+  position: relative;
+  float: left;
+  width: 86%;
 }
 
 .cartridgeCss {
   width: 454px;//30%
+  //float: right;
+  border: solid 1px;
+  border-bottom: none;
+  position: absolute;
+  margin-left: 1336px;
   float: right;
-  border-left: solid 1px;
 }
 
 .cartridge .header {
@@ -55,22 +61,23 @@
   margin-left: -85px;
 }
 
-.slidingContentCss {
-  width: 70%;
-  float: left;
+#slidingContent {
+  //width: 70%;
+  //float: left;
+  position: relative;
 }
-.slidingContentCss h3 {
+#slidingContent h3 {
   color: grey;
   margin-left: 20px;
 }
 
-.slidingContentCss .slidingBloc {
+#slidingContent .slidingBloc {
   border-bottom: solid 1px;
 }
 
 .sticky-navigation {
   background-color: white;
-  width: 13%;
+  width: 250px;
   padding-left: 20px;
 }
 
@@ -82,25 +89,31 @@
   color: purple;
 }
 
-.slidingContentCss .card {
+#slidingContent .card {
   background-color: #E0E0E0;
-  height: 70px;
-  margin: 10px 20px;
-  padding: 10px;
+  //height: 70px;
+  margin: 0 20px;
   width: 900px;
+  padding: 5px 10px;
 }
 
-.slidingContentCss .card .picture {
+#slidingContent .card .picture {
   float: left;
   width: 50px;
   height: 50px;
   margin-right: 20px;
 }
-.slidingContentCss .card .name {
+#slidingContent .card .name {
   font-weight: bold;
   font-size: 20px;
+  color: #953737;
 }
 
-.slidingContentCss .noBorderBottom {
+#slidingContent .card.middleName {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#slidingContent .noBorderBottom {
   border-bottom: none;
 }

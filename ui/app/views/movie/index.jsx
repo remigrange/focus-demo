@@ -9,11 +9,8 @@ module.exports = React.createClass({
         return (
             <div className="movieView">
                 <StickyNavigation contentSelector="#slidingContent"/>
-                <div className="details">
-                    <SlidingContent id={this.props.id} style={{className:'slidingContentCss'}}/>
-
-                    <MovieCartridge id={this.props.id} style={{className:'cartridgeCss'}}/>
-                </div>
+                <SlidingContent id={this.props.id}/>
+                <MovieCartridge id={this.props.id} style={{className: 'cartridgeCss'}}/>
             </div>
         );
     }
