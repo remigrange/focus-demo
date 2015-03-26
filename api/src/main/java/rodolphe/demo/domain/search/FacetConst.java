@@ -4,6 +4,7 @@
 package rodolphe.demo.domain.search;
 
 import io.vertigo.dynamo.domain.metamodel.DtFieldName;
+import io.vertigo.util.StringUtil;
 import rodolphe.demo.domain.CodeEnum;
 import rodolphe.demo.domain.DtDefinitions.MovieIndexFields;
 
@@ -33,7 +34,7 @@ public enum FacetConst implements CodeEnum {
 
     /**
      * Get the associated field.
-     * 
+     *
      * @return the field
      */
     public DtFieldName getField() {
@@ -42,10 +43,29 @@ public enum FacetConst implements CodeEnum {
 
     /**
      * Get the associated facet label.
-     * 
+     *
      * @return the facetName
      */
     public String getFacetName() {
         return facetName;
+    }
+
+    /**
+     * Get facetCost by facet Name.
+     *
+     * @param facetName facet Name
+     * @return Facet Const
+     */
+    public static FacetConst getFacetByName(final String facetName) {
+        if (!StringUtil.isEmpty(facetName)) {
+            if (FCT_MOVIE_GENRE.getFacetName().equalsIgnoreCase(facetName)) {
+                return FCT_MOVIE_GENRE;
+            } else if (FCT_MOVIE_LANGUAGE.getFacetName().equalsIgnoreCase(facetName)) {
+                return FCT_MOVIE_LANGUAGE;
+            } else if (FCT_MOVIE_COUNTRY.getFacetName().equalsIgnoreCase(facetName)) {
+                return FCT_MOVIE_COUNTRY;
+            }
+        }
+        return null;
     }
 }

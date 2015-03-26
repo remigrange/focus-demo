@@ -9,6 +9,10 @@ var action = {
             page = 0;
         }
         criteria.pageInfos.skip = page;
+        criteria.group = criteria.pageInfos.group;
+        if(criteria.group === undefined || criteria.group === null ){
+            criteria.group = '';
+        }
         if(criteria.pageInfos.order !== undefined){
             criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
             if(criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null){
@@ -30,14 +34,13 @@ var action = {
                     list: data.list,
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,
-                        perPage: 50,
+                        perPage: 1000,
                         totalRecords: data.totalRecords
-                    },
-                    searchContext: {
-                        scope: criteria.scope,
-                        query: criteria.query
                     }
                 };
+                if(criteria.group) {
+                    dataRet.pageInfos = {};
+                }
                 focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(error) {
@@ -76,7 +79,6 @@ var config = {
         Country: 'text'
     },
     orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
-    groupableColumnList: {GENRE_IDS: 'Genre'},
     operationList: [
         /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
          {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
@@ -98,16 +100,12 @@ var config = {
         alert('click sur la ligne ' + line.title);
     },
     isSelection: true,
-    lineOperationList: [
-        /*{label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-         {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-         {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
-         {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}*/
-    ],
+    lineOperationList: [],
     criteria: {
         scope: 'MOVIE',
         searchText: 'Fantastic'
-    }
+    },
+    idField: 'MOV_ID'
 };
 
 
@@ -131,7 +129,20 @@ module.exports = React.createClass({
                 React.createClass({
                     mixins: [focusComponents.page.search.filterResult.mixin],
                     actions: action,
-                    store: new focus.store.SearchStore()
+                    store: new focus.store.SearchStore(),
+                    render: function render() {
+                        var root = React.createElement('div', { className: 'search-result' },
+                            this.liveFilterComponent(),
+                            React.createElement(
+                                'div',
+                                { className: 'resultContainer' },
+                                this.listSummary(),
+                                this.actionBar(),
+                                this.resultList()
+                            )
+                        );
+                        return root;
+                    }
                 }),
                 config);
         return filterResult;

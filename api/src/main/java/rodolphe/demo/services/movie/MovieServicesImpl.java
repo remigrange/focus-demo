@@ -26,6 +26,7 @@ import rodolphe.demo.domain.movies.MovieView;
 import rodolphe.demo.domain.people.Casting;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.RolePeople;
+import rodolphe.demo.domain.search.FacetConst;
 import rodolphe.demo.domain.search.FacetedSearchConst;
 import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
@@ -38,7 +39,7 @@ import rodolphe.demo.services.search.SearchServices;
  */
 public class MovieServicesImpl implements MovieServices {
 
-    private static final int MAX_ROWS = 50;
+    private static final int MAX_ROWS = 1000;
     @Inject
     private MovieDAO movieDAO;
     @Inject
@@ -54,7 +55,8 @@ public class MovieServicesImpl implements MovieServices {
     @Override
     @Transactional
     public FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(
-            final MovieCriteria crit, final UiListState uiListState, final FacetSelection... selection) {
+            final MovieCriteria crit, final UiListState uiListState, final String clusteringFacetName,
+            final FacetSelection... selection) {
         final SearchCriterium<MovieCriteria> criteria = new SearchCriterium<>(
                 FacetedSearchConst.QRY_MOVIE_WITH_FCT.getQuery());
         criteria.setCriteria(crit);
@@ -72,6 +74,10 @@ public class MovieServicesImpl implements MovieServices {
             listState = new DtListState(MAX_ROWS, (uiListState.getSkip() - 1) * MAX_ROWS, sortFieldName, isSortDesc);
         } else {
             listState = new DtListState(MAX_ROWS, 0, sortFieldName, isSortDesc);
+        }
+        final FacetConst facetConst = FacetConst.getFacetByName(clusteringFacetName);
+        if (facetConst != null) {
+            criteria.setClusteringFacetName(facetConst.name());
         }
         return searchServices.searchMovie(criteria, listState);
     }

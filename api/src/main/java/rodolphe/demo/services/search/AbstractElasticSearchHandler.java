@@ -6,8 +6,8 @@ package rodolphe.demo.services.search;
 import io.vertigo.commons.config.ConfigManager;
 import io.vertigo.core.Home;
 import io.vertigo.dynamo.collections.ListFilter;
+import io.vertigo.dynamo.collections.metamodel.FacetDefinition;
 import io.vertigo.dynamo.collections.metamodel.FacetedQueryDefinition;
-import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQuery;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.metamodel.DataType;
@@ -60,7 +60,7 @@ import rodolphe.demo.util.TransactionScope;
  * @param <S> Type du critère.
  */
 public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends DtObject, V extends DtObject, S extends DtObject>
-implements ElasticSearchHandler<S, R>, MemorizeTnrData {
+        implements ElasticSearchHandler<S, R>, MemorizeTnrData {
 
     private static final String RANK_FIELD_NAME = "RANK";
     private static final String MSG_INDEXATION = "Indexation de l'index elastic search ";
@@ -365,9 +365,14 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
             final FacetedQuery facetedQuery = new FacetedQuery(facetedQueryDefinition, facetFilter);
             searchQueryBuilder = searchQueryBuilder.withFacetStrategy(facetedQuery);
         }
+        // Si Group by facet
+        if (!StringUtil.isEmpty(criterium.getClusteringFacetName())) {
+            searchQueryBuilder.withFacetClustering(Home.getDefinitionSpace().resolve(
+                    criterium.getClusteringFacetName(), FacetDefinition.class));
+        }
         final SearchQuery searchQuery = searchQueryBuilder.build();
         logger.info("ES request " + searchQuery.getListFilter().getFilterValue());
-        // final DtListState listState = new DtListState(100, 0, criterium.getSortFieldName(), !criterium.isSortAsc());
+        // final DtListState listState = new DtListState(100, 0, criterium.getSortFieldName(), !criterium.isSortAsc())
         final FacetedQueryResult<R, SearchQuery> result = searchManager.loadList(indexDef, searchQuery, listState);
         final SearchCriterium<S> retCrit = SearchCriterium.clone(criterium);
         // On met à jour les facettes
@@ -375,8 +380,7 @@ implements ElasticSearchHandler<S, R>, MemorizeTnrData {
         // On crée le bon objet de retour
         // FIXME : problème des highlihts
         return new FacetedQueryResult<>(result.getFacetedQuery(), result.getCount(), result.getDtList(),
-                result.getFacets(), new HashMap<FacetValue, DtList<R>>(), new HashMap<R, Map<DtField, String>>(),
-                retCrit);
+                result.getFacets(), result.getClusters(), new HashMap<R, Map<DtField, String>>(), retCrit);
     }
 
     /**

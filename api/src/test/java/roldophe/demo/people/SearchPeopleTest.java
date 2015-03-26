@@ -82,7 +82,7 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
     @Override
     protected DtList<PeopleResult> getListByCritere(final PeopleCriteria critere) {
         final UiListState uiListState = new UiListState(50, 0, null, false, null);
-        return peopleServices.getPeopleByCriteria(critere, uiListState).getDtList();
+        return peopleServices.getPeopleByCriteria(critere, uiListState, "").getDtList();
     }
 
     /*
