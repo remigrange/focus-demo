@@ -32,9 +32,8 @@ module.exports = React.createClass({
     return (
       <div className='slidingBloc'>
         <Title id="cast" title="CAST"/>
-        <div id='castList'>
-          <FormList data={this.state.castings} line={line} perPage={5} container={'#castList'}/>
-        </div>
+        <FormList data={this.state.castings} line={line} perPage={5}/>
+
       </div>
     );
   }

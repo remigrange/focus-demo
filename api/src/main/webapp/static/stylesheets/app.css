@@ -213,16 +213,8 @@ ul.selection-list {
 .print {
   background: url("../img/print.svg") no-repeat center; }
 
-.list-summary .nb-result, .list-summary .scope {
-  display: inline-block;
-  padding: 0 25px 0 25px; }
-.list-summary .print {
-  display: inline-block;
-  float: right;
-  padding: 0 25px 0 25px; }
-
-.popin {
-  display: block; }
+.list-summary .nb-result, .list-summary .scope, .list-summary .print {
+  float: left; }
 
 /** css from : http://codepen.io/betdream/details/Ifvbi**/
 .timeline {
@@ -358,6 +350,9 @@ ul.selection-list {
 
 .topic-displayer .topic {
   background: url("../img/cross.svg") no-repeat right center; }
+
+.popin {
+  display: block; }
 
 .liveFilterContainer {
   padding-right: 10px; }
@@ -578,6 +573,18 @@ ul.selection-list {
 }
 #slidingContent .noBorderBottom {
   border-bottom: none;
+}
+.slidingBloc button.btn.btn-raised.btn-primary {
+  margin-top: -30px;
+  margin-right: 450px;
+  position: relative;
+  float: right;
+}
+.slidingBloc ul.selection-list li.sl-line:hover {
+  background: none;
+}
+.slidingBloc ul.selection-list li.sl-line {
+  cursor: auto;
 }
 
 body {

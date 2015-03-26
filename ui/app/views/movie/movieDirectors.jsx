@@ -32,9 +32,7 @@ module.exports = React.createClass({
     return (
       <div className='slidingBloc'>
         <Title id="directors" title="DIRECTORS"/>
-        <div id='directorsList'>
-          <FormList data={this.state.directors} line={line} perPage={5} container={'#directorsList'}/>
-        </div>
+        <FormList data={this.state.directors} line={line} perPage={5}/>
       </div>
     );
   }

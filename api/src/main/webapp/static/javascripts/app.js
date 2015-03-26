@@ -1705,6 +1705,10 @@ var action = {
             page = 0;
         }
         criteria.pageInfos.skip = page;
+        criteria.group = criteria.pageInfos.group;
+        if(criteria.group === undefined || criteria.group === null ){
+            criteria.group = '';
+        }
         if(criteria.pageInfos.order !== undefined){
             criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
             if(criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null){
@@ -1726,14 +1730,13 @@ var action = {
                     list: data.list,
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,
-                        perPage: 50,
+                        perPage: 1000,
                         totalRecords: data.totalRecords
-                    },
-                    searchContext: {
-                        scope: criteria.scope,
-                        query: criteria.query
                     }
                 };
+                if(criteria.group) {
+                    dataRet.pageInfos = {};
+                }
                 focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(error) {
@@ -1772,7 +1775,6 @@ var config = {
         Country: 'text'
     },
     orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
-    groupableColumnList: {GENRE_IDS: 'Genre'},
     operationList: [
         /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
          {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
@@ -1794,16 +1796,12 @@ var config = {
         alert('click sur la ligne ' + line.title);
     },
     isSelection: true,
-    lineOperationList: [
-        /*{label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-         {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-         {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
-         {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}*/
-    ],
+    lineOperationList: [],
     criteria: {
         scope: 'MOVIE',
         searchText: 'Fantastic'
-    }
+    },
+    idField: 'MOV_ID'
 };
 
 
@@ -1827,7 +1825,20 @@ module.exports = React.createClass({displayName: "exports",
                 React.createClass({
                     mixins: [focusComponents.page.search.filterResult.mixin],
                     actions: action,
-                    store: new focus.store.SearchStore()
+                    store: new focus.store.SearchStore(),
+                    render: function render() {
+                        var root = React.createElement('div', { className: 'search-result' },
+                            this.liveFilterComponent(),
+                            React.createElement(
+                                'div',
+                                { className: 'resultContainer' },
+                                this.listSummary(),
+                                this.actionBar(),
+                                this.resultList()
+                            )
+                        );
+                        return root;
+                    }
                 }),
                 config);
         return filterResult;
@@ -1837,27 +1848,39 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 require.register("views/formList/index", function(exports, require, module) {
-var SelectionList = focus.components.list.selection.list.component;
+//var SelectionList = focus.components.list.selection.list.component;
+var Button = focus.components.common.button.action.component;
+
+//Pour étendre SelectionList
+//TODO Comment étendre une méthode d'un mixin d'une meilleur façon que celle la ?
+var MySelectionList = React.createClass($.extend(focus.components.list.selection.list.mixin, {
+  _renderManualFetch: function renderManualFetch(){
+    if(this.props.isManualFetch && this.props.hasMoreData){
+      var style = {className: "primary"};
+      return (
+        React.createElement("li", {className: "sl-button"}, 
+          React.createElement(Button, {label: "Next", 
+            type: "button", 
+            handleOnClick: this._handleShowMore, 
+            style: style})
+        )
+      );
+    }
+  }
+}));
 
 module.exports = React.createClass({displayName: "exports",
-  getDefaultProps: function getFieldDefaultProps() {
-    return {
-      maxElements: 0
-    };
-  },
   fetchNextPage: function fetchNextPage(page) {
     this.props.maxElements = this.props.perPage * page;
-    //return this.render();
-    //focus.application.render(this, this.props.container, {props: this.props});
-    React.render(this.render(), document.querySelector(this.props.container));
+    this.forceUpdate();
   },
-  getDataToUse: function getDataToUse(maxElements) {
-    return this.props.data.slice(0, maxElements===0?this.props.perPage:maxElements);
+  getDataToUse: function getDataToUse() {
+    return this.props.data.slice(0, this.props.maxElements ? this.props.maxElements : this.props.perPage);
   },
 
   render: function renderFormList() {
     return (
-      React.createElement(SelectionList, {data: this.getDataToUse(this.props.maxElements), hasMoreData: true, lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage})
+      React.createElement(MySelectionList, {data: this.getDataToUse(), hasMoreData: this.props.data.length > (this.props.maxElements ? this.props.maxElements : this.props.perPage), lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage})
     );
   }
 });
@@ -1978,9 +2001,8 @@ module.exports = React.createClass({
     return (
       React.createElement("div", {className: "slidingBloc"}, 
         React.createElement(Title, {id: "cast", title: "CAST"}), 
-        React.createElement("div", {id: "castList"}, 
-          React.createElement(FormList, {data: this.state.castings, line: line, perPage: 5, container: '#castList'})
-        )
+        React.createElement(FormList, {data: this.state.castings, line: line, perPage: 5})
+
       )
     );
   }
@@ -2078,9 +2100,7 @@ module.exports = React.createClass({
     return (
       React.createElement("div", {className: "slidingBloc"}, 
         React.createElement(Title, {id: "directors", title: "DIRECTORS"}), 
-        React.createElement("div", {id: "directorsList"}, 
-          React.createElement(FormList, {data: this.state.directors, line: line, perPage: 5, container: '#directorsList'})
-        )
+        React.createElement(FormList, {data: this.state.directors, line: line, perPage: 5})
       )
     );
   }
@@ -2145,9 +2165,7 @@ module.exports = React.createClass({
     return (
       React.createElement("div", {className: "slidingBloc"}, 
         React.createElement(Title, {id: "producers", title: "PRODUCERS"}), 
-        React.createElement("div", {id: "producersList"}, 
-          React.createElement(FormList, {data: this.state.producers, line: line, perPage: 5, container: '#producersList'})
-        )
+        React.createElement(FormList, {data: this.state.producers, line: line, perPage: 5})
       )
     );
   }
@@ -2329,9 +2347,7 @@ module.exports = React.createClass({
     return (
       React.createElement("div", {className: "slidingBloc"}, 
         React.createElement(Title, {id: "filmography", title: "FILMOGRAPHY"}), 
-        React.createElement("div", {id: "filmographyList"}, 
-          React.createElement(FormList, {data: this.state.filmography, line: line, perPage: 5, container: '#filmographyList'})
-        )
+        React.createElement(FormList, {data: this.state.filmography, line: line, perPage: 5})
       )
     );
   }
@@ -2368,14 +2384,13 @@ module.exports = React.createClass({
 
 require.register("views/search-result/index", function(exports, require, module) {
 /*global focusComponents, React*/
-var SearchResult = focusComponents.page.search.searchResult.component;
 var serviceCommon = require('../../services');
 var lineResume = require('./lineResume');
 //Actions de la page.
 var action = {
     search: function(criteria) {
         //TODO handle pageInfo
-        var page=0;
+        var page = 0;
         if((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)){
             page = criteria.pageInfos.page;
         }
@@ -2389,8 +2404,9 @@ var action = {
                 sortDesc: undefined,
                 skip: page
             },
-            facets: []
-        }
+            facets: [],
+            group: ''
+        };
         serviceCommon.common.searchByScope(critere).then(
             function success(data) {
                 var list = data;
@@ -2402,8 +2418,8 @@ var action = {
                     facet: {},
                     pageInfos: {
                         currentPage: 1,
-                        perPage: 50,
-                        totalRecords: 100
+                        perPage: 1000,
+                        totalRecords: data.totalRecords
                     },
                     searchContext: {
                         scope: criteria.criteria.scope,
@@ -2412,9 +2428,9 @@ var action = {
                 };
                 focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
-            function error(error) {
-                //TODO
-                console.info('Errrors');
+            function error(errors) {
+                //TODO NOTIIFICATION
+                console.info('Errrors ', errors);
             }
         );
     }
@@ -2493,7 +2509,20 @@ module.exports= React.createClass({displayName: "exports",
                     store: new focus.store.SearchStore(),
                     render: function render(){
                         var qs = this.quickSearchComponent();
-                        var summary = React.createElement("div", {className: "summary"}, "100 results");
+                        var summary = React.createElement("div", null);
+                        if(this.state.totalRecords !== undefined && this.state.totalRecords !== null){
+                            var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
+                            var linkFilterResult = React.createElement("div", null);
+                            if(this.state.totalRecords > 0){
+                                linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
+                                                        React.createElement("a", {href: "#filterResult"}, "Filter result   ", React.createElement("img", {src: "./static/img/arrow-right-16.png"}))
+                                                    );
+                            }
+                            summary = React.createElement("div", {className: "summary"}, 
+                                        resultsContent, 
+                                        linkFilterResult
+                                      );
+                        }
                         var list = this.listComponent();
                         var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
                         return root;
