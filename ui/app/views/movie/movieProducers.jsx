@@ -13,11 +13,15 @@ var line = React.createClass({
   }
 });
 module.exports = React.createClass({
-  definitionPath: "movie",
+  definitionPath: "people",
   displayName: "movieProducers",
   mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["movie"]}],
-  action: movieActions,
+  stores: [{store: movieStore, properties: ["producers"]}],
+  action: {
+    load: function (id) {
+      movieActions.loadProducers(id);
+    }
+  },
   getInitialState: function () {
     this.state = {
       producers: []
@@ -28,7 +32,9 @@ module.exports = React.createClass({
     return (
       <div className='slidingBloc'>
         <Title id="producers" title="PRODUCERS"/>
-        <FormList data={this.state.producers} line={line} perPage={5}/>
+        <div id='producersList'>
+          <FormList data={this.state.producers} line={line} perPage={5} container={'#producersList'}/>
+        </div>
       </div>
     );
   }

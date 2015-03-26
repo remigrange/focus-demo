@@ -13,11 +13,15 @@ var line = React.createClass({
   }
 });
 module.exports = React.createClass({
-  definitionPath: "movie",
+  definitionPath: "people",
   displayName: "movieDirectors",
   mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["movie"]}],
-  action: movieActions,
+  stores: [{store: movieStore, properties: ["directors"]}],
+  action: {
+    load: function (id) {
+      movieActions.loadDirectors(id);
+    }
+  },
   getInitialState: function () {
     this.state = {
       directors: []
@@ -28,7 +32,9 @@ module.exports = React.createClass({
     return (
       <div className='slidingBloc'>
         <Title id="directors" title="DIRECTORS"/>
-        <FormList data={this.state.directors} line={line} perPage={5}/>
+        <div id='directorsList'>
+          <FormList data={this.state.directors} line={line} perPage={5} container={'#directorsList'}/>
+        </div>
       </div>
     );
   }

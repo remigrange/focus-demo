@@ -7,11 +7,9 @@ var StickyNavigation = focus.components.common.stickyNavigation.component;
 module.exports = React.createClass({
     render: function renderPeopleView() {
         return (
-            <div className="movieView">
-                <StickyNavigation contentSelector="#slidingContent"/>
-                <div className="details">
-                    <SlidingContent id={this.props.id} style={{className: 'slidingContentCss'}}/>
-                </div>
+            <div className="peopleView">
+                <StickyNavigation contentSelector="body"/>
+                <SlidingContent id={this.props.id}/>
                 <MovieCartridge id={this.props.id} style={{className: 'cartridgeCss'}}/>
             </div>
         );
