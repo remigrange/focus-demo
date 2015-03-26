@@ -133,6 +133,28 @@ module.exports = {
                 });
             }
         );
+    },
+
+    loadProducers: function(id){
+      movieServices.getMovieProducersById(id).then(
+        function(data){
+          AppDispatcher.handleServerAction({
+            data: {producers: {producers: data}},
+            type: "update"
+          });
+        }
+      );
+    },
+
+    loadDirectors: function(id){
+      movieServices.getMovieDirectorsById(id).then(
+        function(data){
+          AppDispatcher.handleServerAction({
+            data: {directors: {directors: data}},
+            type: "update"
+          });
+        }
+      );
     }
 };
 
@@ -1586,8 +1608,17 @@ module.exports = {
     },
     getMovieCastingsById: function getMovieCastingsById(id){
         return fetch(URL.movie.castings({urlData:{id: id}}));
-    }
+    },
+
+  getMovieProducersById: function getMovieProducersById(id){
+    return fetch(URL.movie.producers({urlData:{id: id}}));
+  },
+
+  getMovieDirectorsById: function getMovieDirectorsById(id){
+    return fetch(URL.movie.directors({urlData:{id: id}}));
+  }
 };
+
 });
 
 require.register("services/people", function(exports, require, module) {
@@ -1622,7 +1653,9 @@ require.register("stores/movie", function(exports, require, module) {
 var movieStore = new focus.store.CoreStore({
     definition : {
         'movie': 'movie',
-        'castings': 'movieCasting'
+        'castings': 'movieCasting',
+        'producers': 'people',
+        'directors': 'people'
     }
   });
 module.exports = movieStore;
@@ -1657,6 +1690,46 @@ var referenceStore = new focus.store.CoreStore({
     }
 });
 module.exports = referenceStore;
+
+});
+
+require.register("views/commons/formList/index", function(exports, require, module) {
+//var SelectionList = focus.components.list.selection.list.component;
+var Button = focus.components.common.button.action.component;
+
+//Pour étendre SelectionList
+//TODO Comment étendre une méthode d'un mixin d'une meilleur façon que celle la ?
+var MySelectionList = React.createClass($.extend(focus.components.list.selection.list.mixin, {
+  _renderManualFetch: function renderManualFetch(){
+    if(this.props.isManualFetch && this.props.hasMoreData){
+      var style = {className: "primary"};
+      return (
+        React.createElement("li", {className: "sl-button"}, 
+          React.createElement(Button, {label: "Next", 
+            type: "button", 
+            handleOnClick: this._handleShowMore, 
+            style: style})
+        )
+      );
+    }
+  }
+}));
+
+module.exports = React.createClass({displayName: "exports",
+  fetchNextPage: function fetchNextPage(page) {
+    this.props.maxElements = this.props.perPage * page;
+    this.forceUpdate();
+  },
+  getDataToUse: function getDataToUse() {
+    return this.props.data.slice(0, this.props.maxElements ? this.props.maxElements : this.props.perPage);
+  },
+
+  render: function renderFormList() {
+    return (
+      React.createElement(MySelectionList, {data: this.getDataToUse(), hasMoreData: this.props.data.length > (this.props.maxElements ? this.props.maxElements : this.props.perPage), lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage})
+    );
+  }
+});
 
 });
 
@@ -1820,18 +1893,6 @@ module.exports = React.createClass({displayName: "exports",
 
 });
 
-require.register("views/formList/index", function(exports, require, module) {
-var SelectionList = focus.components.list.selection.list.component;
-module.exports = React.createClass({displayName: "exports",
-  render: function renderFormList() {
-    return (
-      React.createElement(SelectionList, {data: this.props.data, hasMoreData: true, lineComponent: this.props.line, isSelection: false, isManualFetch: true})
-    );
-  }
-});
-
-});
-
 require.register("views/movie/cartridge", function(exports, require, module) {
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
@@ -1917,7 +1978,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 var PeopleCard = require('./peopleCard');
-var FormList = require('../formList');
+var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -1947,6 +2008,7 @@ module.exports = React.createClass({
       React.createElement("div", {className: "slidingBloc"}, 
         React.createElement(Title, {id: "cast", title: "CAST"}), 
         React.createElement(FormList, {data: this.state.castings, line: line, perPage: 5})
+
       )
     );
   }
@@ -1965,7 +2027,7 @@ module.exports = React.createClass({displayName: "exports",
     render: function renderMovieView() {
         return (
             React.createElement("div", {className: "movieView"}, 
-                React.createElement(StickyNavigation, {contentSelector: "#slidingContent"}), 
+                React.createElement(StickyNavigation, {contentSelector: "body"}), 
                 React.createElement(SlidingContent, {id: this.props.id}), 
                 React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}})
             )
@@ -2015,7 +2077,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 var PeopleCard = require('./peopleCard');
-var FormList = require('../formList');
+var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2025,11 +2087,15 @@ var line = React.createClass({displayName: "line",
   }
 });
 module.exports = React.createClass({
-  definitionPath: "movie",
+  definitionPath: "people",
   displayName: "movieDirectors",
   mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["movie"]}],
-  action: movieActions,
+  stores: [{store: movieStore, properties: ["directors"]}],
+  action: {
+    load: function (id) {
+      movieActions.loadDirectors(id);
+    }
+  },
   getInitialState: function () {
     this.state = {
       directors: []
@@ -2076,7 +2142,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 var PeopleCard = require('./peopleCard');
-var FormList = require('../formList');
+var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2086,11 +2152,15 @@ var line = React.createClass({displayName: "line",
   }
 });
 module.exports = React.createClass({
-  definitionPath: "movie",
+  definitionPath: "people",
   displayName: "movieProducers",
   mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["movie"]}],
-  action: movieActions,
+  stores: [{store: movieStore, properties: ["producers"]}],
+  action: {
+    load: function (id) {
+      movieActions.loadProducers(id);
+    }
+  },
   getInitialState: function () {
     this.state = {
       producers: []
@@ -2132,7 +2202,7 @@ var MovieProducers = require('./movieProducers');
 var MovieDirectors = require('./movieDirectors');
 var MoviePictures = require('./moviePictures');
 module.exports = React.createClass({
-    displayName: "slidingContent",
+    displayName: 'slidingContent',
     render: function renderSlidingContent() {
         return (
           React.createElement("div", {className: "details"}, 
@@ -2194,11 +2264,9 @@ var StickyNavigation = focus.components.common.stickyNavigation.component;
 module.exports = React.createClass({displayName: "exports",
     render: function renderPeopleView() {
         return (
-            React.createElement("div", {className: "movieView"}, 
-                React.createElement(StickyNavigation, {contentSelector: "#slidingContent"}), 
-                React.createElement("div", {className: "details"}, 
-                    React.createElement(SlidingContent, {id: this.props.id, style: {className: 'slidingContentCss'}})
-                ), 
+            React.createElement("div", {className: "peopleView"}, 
+                React.createElement(StickyNavigation, {contentSelector: "body"}), 
+                React.createElement(SlidingContent, {id: this.props.id}), 
                 React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}})
             )
         );
@@ -2225,13 +2293,38 @@ module.exports = React.createClass({displayName: "exports",
 
 });
 
-require.register("views/people/slidingContent", function(exports, require, module) {
+require.register("views/people/peopleDetails", function(exports, require, module) {
 var formMixin = focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
 var Title = focus.components.common.title.component;
-var SelectionList = focus.components.list.selection.list.component;
+module.exports = React.createClass({
+  definitionPath: 'people',
+  displayName: 'peopleIdentification',
+  mixins: [formMixin],
+  stores: [{store: peopleStore, properties: ['people']}],
+  action: peopleActions,
+  renderContent: function render() {
+    return (
+      React.createElement("div", {className: "slidingBloc"}, 
+        React.createElement(Title, {id: "identification", title: "IDENTIFICATION"}), 
+          this.fieldFor('lastName'), 
+          this.fieldFor('firstName'), 
+          this.fieldFor('imdbid')
+      )
+    );
+  }
+});
+
+});
+
+require.register("views/people/peopleFilmography", function(exports, require, module) {
+var formMixin = focus.components.common.form.mixin;
+var peopleActions = require('../../action/people');
+var peopleStore = require('../../stores/people');
+var Title = focus.components.common.title.component;
 var MovieCard = require('./movieCard');
+var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2241,39 +2334,52 @@ var line = React.createClass({displayName: "line",
   }
 });
 module.exports = React.createClass({
-  definitionPath: 'people',
-  displayName: 'slidingContent',
+  definitionPath: "movie",
+  displayName: "peopleFilmography",
+  mixins: [formMixin],
   getInitialState: function () {
     this.state = {
       filmography: []
     };
     return this.state;
   },
-  mixins: [formMixin],
-  stores: [{store: peopleStore, properties: ['people', 'filmography']}],
+  stores: [{store: peopleStore, properties: ['filmography']}],
   action: {
-    load: function load(id) {
-      peopleActions.load(id);
+    load: function (id) {
       peopleActions.loadFilmography(id);
     }
   },
-  renderContent: function renderSlidingContent() {
+  renderContent: function render() {
     return (
-      React.createElement("div", {id: "slidingContent"}, 
-        React.createElement("div", {className: "slidingBloc"}, 
-          React.createElement(Title, {id: "identification", title: "IDENTIFICATION"}), 
-          this.fieldFor('lastName'), 
-          this.fieldFor('firstName'), 
-          this.fieldFor('imdbid')
-        ), 
-        React.createElement("div", {className: "slidingBloc"}, 
-          React.createElement(Title, {id: "filmography", title: "FILMOGRAPHY"}), 
+      React.createElement("div", {className: "slidingBloc"}, 
+        React.createElement(Title, {id: "filmography", title: "FILMOGRAPHY"}), 
+        React.createElement(FormList, {data: this.state.filmography, line: line, perPage: 5})
+      )
+    );
+  }
+});
 
-          React.createElement(SelectionList, {data: this.state.filmography, hasMoreData: true, lineComponent: line, isSelection: false, isManualFetch: true})
+});
 
-        ), 
-        React.createElement("div", {className: "slidingBloc noBorderBottom"}, 
-          React.createElement(Title, {id: "pictures", title: "PICTURES"})
+require.register("views/people/peoplePictures", function(exports, require, module) {
+React.createElement("div", {className: "slidingBloc noBorderBottom"}, 
+  React.createElement(Title, {id: "pictures", title: "PICTURES"})
+)
+});
+
+;require.register("views/people/slidingContent", function(exports, require, module) {
+var PeopleDetails = require('./peopleDetails');
+var PeopleFilmography = require('./peopleFilmography');
+
+module.exports = React.createClass({
+  displayName: 'slidingContent',
+  render: function renderSlidingContent() {
+    return (
+      React.createElement("div", {className: "details"}, 
+        React.createElement("div", {id: "slidingContent"}, 
+          React.createElement(PeopleDetails, {id: this.props.id}), 
+          React.createElement(PeopleFilmography, {id: this.props.id})
+
         )
       )
     );

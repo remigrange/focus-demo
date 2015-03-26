@@ -21,5 +21,27 @@ module.exports = {
                 });
             }
         );
+    },
+
+    loadProducers: function(id){
+      movieServices.getMovieProducersById(id).then(
+        function(data){
+          AppDispatcher.handleServerAction({
+            data: {producers: {producers: data}},
+            type: "update"
+          });
+        }
+      );
+    },
+
+    loadDirectors: function(id){
+      movieServices.getMovieDirectorsById(id).then(
+        function(data){
+          AppDispatcher.handleServerAction({
+            data: {directors: {directors: data}},
+            type: "update"
+          });
+        }
+      );
     }
 };

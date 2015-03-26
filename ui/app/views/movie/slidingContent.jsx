@@ -5,7 +5,7 @@ var MovieProducers = require('./movieProducers');
 var MovieDirectors = require('./movieDirectors');
 var MoviePictures = require('./moviePictures');
 module.exports = React.createClass({
-    displayName: "slidingContent",
+    displayName: 'slidingContent',
     render: function renderSlidingContent() {
         return (
           <div className="details">

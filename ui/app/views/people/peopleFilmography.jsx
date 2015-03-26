@@ -1,39 +1,38 @@
 var formMixin = focus.components.common.form.mixin;
-var movieActions = require('../../action/movie');
-var movieStore = require('../../stores/movie');
+var peopleActions = require('../../action/people');
+var peopleStore = require('../../stores/people');
 var Title = focus.components.common.title.component;
-var PeopleCard = require('./peopleCard');
+var MovieCard = require('./movieCard');
 var FormList = require('../commons/formList');
 var line = React.createClass({
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
-      <PeopleCard picture="" name={data.peoName} subName={"As ("+data.role+") "+(data.characterName!==undefined?data.characterName:"")}/>
+      <MovieCard picture="" name={data.title} middleName={data.genreIds} subName={data.year}/>
     );
   }
 });
 module.exports = React.createClass({
-  definitionPath: "people",
-  displayName: "movieCastings",
+  definitionPath: "movie",
+  displayName: "peopleFilmography",
   mixins: [formMixin],
   getInitialState: function () {
     this.state = {
-      castings: []
+      filmography: []
     };
     return this.state;
   },
-  stores: [{store: movieStore, properties: ["castings"]}],
+  stores: [{store: peopleStore, properties: ['filmography']}],
   action: {
     load: function (id) {
-      movieActions.loadCastings(id);
+      peopleActions.loadFilmography(id);
     }
   },
   renderContent: function render() {
     return (
       <div className='slidingBloc'>
-        <Title id="cast" title="CAST"/>
-        <FormList data={this.state.castings} line={line} perPage={5}/>
-
+        <Title id="filmography" title="FILMOGRAPHY"/>
+        <FormList data={this.state.filmography} line={line} perPage={5}/>
       </div>
     );
   }

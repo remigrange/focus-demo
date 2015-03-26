@@ -6,7 +6,9 @@
 var movieStore = new focus.store.CoreStore({
     definition : {
         'movie': 'movie',
-        'castings': 'movieCasting'
+        'castings': 'movieCasting',
+        'producers': 'people',
+        'directors': 'people'
     }
   });
 module.exports = movieStore;
