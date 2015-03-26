@@ -1699,21 +1699,25 @@ var Button = focus.components.common.button.action.component;
 
 //Pour étendre SelectionList
 //TODO Comment étendre une méthode d'un mixin d'une meilleur façon que celle la ?
-var MySelectionList = React.createClass($.extend(focus.components.list.selection.list.mixin, {
-  _renderManualFetch: function renderManualFetch(){
-    if(this.props.isManualFetch && this.props.hasMoreData){
-      var style = {className: "primary"};
-      return (
-        React.createElement("li", {className: "sl-button"}, 
-          React.createElement(Button, {label: "Next", 
-            type: "button", 
-            handleOnClick: this._handleShowMore, 
-            style: style})
-        )
-      );
-    }
+var MySelectionList = React.createClass(
+  $.extend(focus.components.list.selection.list.mixin,
+    {
+      _renderManualFetch: function renderManualFetch(){
+        if(this.props.isManualFetch && this.props.hasMoreData){
+          var style = {className: "primary"};
+          return (
+            React.createElement("li", {className: "sl-button"}, 
+              React.createElement(Button, {label: "Next", 
+                type: "button", 
+                handleOnClick: this._handleShowMore, 
+                style: style})
+            )
+          );
+        }
+      }
   }
-}));
+  )
+);
 
 module.exports = React.createClass({displayName: "exports",
   fetchNextPage: function fetchNextPage(page) {
@@ -2053,16 +2057,16 @@ module.exports = React.createClass({
       React.createElement("div", null, 
         React.createElement("div", {className: "slidingBloc"}, 
           React.createElement(Title, {id: "details", title: "DETAILS"}), 
-          this.fieldFor("title"), 
-          this.fieldFor("released"), 
-          this.fieldFor("runtime"), 
-          this.fieldFor("countryIds"), 
-          this.fieldFor("languageIds"), 
-          this.fieldFor("genreIds")
+          this.displayFor("title"), 
+          this.displayFor("released"), 
+          this.displayFor("runtime"), 
+          this.displayFor("countryIds"), 
+          this.displayFor("languageIds"), 
+          this.displayFor("genreIds")
         ), 
         React.createElement("div", {className: "slidingBloc"}, 
           React.createElement(Title, {id: "storyline", title: "STORYLINE"}), 
-          this.displayFor("description")
+          this.state.description
         )
       )
     );
@@ -2115,17 +2119,10 @@ module.exports = React.createClass({
 });
 
 require.register("views/movie/moviePictures", function(exports, require, module) {
-var formMixin = focus.components.common.form.mixin;
-var movieActions = require('../../action/movie');
-var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 module.exports = React.createClass({
-  definitionPath: "movie",
   displayName: "moviePictures",
-  mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["movie"]}],
-  action: movieActions,
-  renderContent: function render() {
+  render: function render() {
     return (
       React.createElement("div", {className: "slidingBloc noBorderBottom"}, 
         React.createElement(Title, {id: "pictures", title: "PICTURES"})
@@ -2308,9 +2305,9 @@ module.exports = React.createClass({
     return (
       React.createElement("div", {className: "slidingBloc"}, 
         React.createElement(Title, {id: "identification", title: "IDENTIFICATION"}), 
-          this.fieldFor('lastName'), 
-          this.fieldFor('firstName'), 
-          this.fieldFor('imdbid')
+          this.displayFor('lastName'), 
+          this.displayFor('firstName'), 
+          this.displayFor('imdbid')
       )
     );
   }
@@ -2362,15 +2359,24 @@ module.exports = React.createClass({
 });
 
 require.register("views/people/peoplePictures", function(exports, require, module) {
-React.createElement("div", {className: "slidingBloc noBorderBottom"}, 
-  React.createElement(Title, {id: "pictures", title: "PICTURES"})
-)
+var Title = focus.components.common.title.component;
+module.exports = React.createClass({
+  displayName: "moviePictures",
+  render: function render() {
+    return (
+      React.createElement("div", {className: "slidingBloc noBorderBottom"}, 
+        React.createElement(Title, {id: "pictures", title: "PICTURES"})
+      )
+    );
+  }
 });
 
-;require.register("views/people/slidingContent", function(exports, require, module) {
+});
+
+require.register("views/people/slidingContent", function(exports, require, module) {
 var PeopleDetails = require('./peopleDetails');
 var PeopleFilmography = require('./peopleFilmography');
-
+var PeoplePictures = require('./peoplePictures');
 module.exports = React.createClass({
   displayName: 'slidingContent',
   render: function renderSlidingContent() {
@@ -2378,8 +2384,8 @@ module.exports = React.createClass({
       React.createElement("div", {className: "details"}, 
         React.createElement("div", {id: "slidingContent"}, 
           React.createElement(PeopleDetails, {id: this.props.id}), 
-          React.createElement(PeopleFilmography, {id: this.props.id})
-
+          React.createElement(PeopleFilmography, {id: this.props.id}), 
+          React.createElement(PeoplePictures, {id: this.props.id})
         )
       )
     );

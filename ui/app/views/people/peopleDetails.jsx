@@ -12,9 +12,9 @@ module.exports = React.createClass({
     return (
       <div className='slidingBloc'>
         <Title id="identification" title="IDENTIFICATION"/>
-          {this.fieldFor('lastName')}
-          {this.fieldFor('firstName')}
-          {this.fieldFor('imdbid')}
+          {this.displayFor('lastName')}
+          {this.displayFor('firstName')}
+          {this.displayFor('imdbid')}
       </div>
     );
   }

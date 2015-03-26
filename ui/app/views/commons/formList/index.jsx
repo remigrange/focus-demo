@@ -3,21 +3,25 @@ var Button = focus.components.common.button.action.component;
 
 //Pour étendre SelectionList
 //TODO Comment étendre une méthode d'un mixin d'une meilleur façon que celle la ?
-var MySelectionList = React.createClass($.extend(focus.components.list.selection.list.mixin, {
-  _renderManualFetch: function renderManualFetch(){
-    if(this.props.isManualFetch && this.props.hasMoreData){
-      var style = {className: "primary"};
-      return (
-        <li className="sl-button">
-          <Button label="Next"
-            type="button"
-            handleOnClick={this._handleShowMore}
-            style={style}/>
-        </li>
-      );
-    }
+var MySelectionList = React.createClass(
+  $.extend(focus.components.list.selection.list.mixin,
+    {
+      _renderManualFetch: function renderManualFetch(){
+        if(this.props.isManualFetch && this.props.hasMoreData){
+          var style = {className: "primary"};
+          return (
+            <li className="sl-button">
+              <Button label="Next"
+                type="button"
+                handleOnClick={this._handleShowMore}
+                style={style}/>
+            </li>
+          );
+        }
+      }
   }
-}));
+  )
+);
 
 module.exports = React.createClass({
   fetchNextPage: function fetchNextPage(page) {
