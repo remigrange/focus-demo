@@ -1346,9 +1346,10 @@ var selectActionMixin = {
                 )
             ));
             if (operation.childOperationList) {
+                var subKey = "sub_" + key;
                 liList.push(React.createElement(
                     "li",
-                    null,
+                    { key: subKey },
                     React.createElement(
                         "ul",
                         null,
@@ -1374,7 +1375,7 @@ var selectActionMixin = {
             { className: "select-action btn-group" },
             React.createElement(
                 "a",
-                { href: window.location.pathname, "data-target": "#", "class": "btn btn-primary dropdown-toggle", "data-toggle": "dropdown" },
+                { href: window.location.pathname, "data-target": "#", className: "dropdown-toggle", "data-toggle": "dropdown" },
                 React.createElement(Img, { src: this.props.style })
             ),
             React.createElement(
@@ -1678,7 +1679,7 @@ var topicDisplayerMixin = {
         for (var key in this.props.topicList) {
             topicList.push(React.createElement(
                 "a",
-                { href: "javascript:void(0)", onClick: this.topicClickHandler(key), className: className },
+                { key: key, href: "javascript:void(0)", onClick: this.topicClickHandler(key), className: className },
                 this.props.topicList[key]
             ));
         }
@@ -1715,8 +1716,6 @@ module.exports = builder(topicDisplayerMixin);
 
 /**@jsx*/
 var builder = window.focus.component.builder;
-var React = window.React;
-var type = window.focus.component.types;
 var SelectAction = require("../../common/select-action").component;
 var ActionContextual = require("../action-contextual").component;
 var TopicDisplayer = require("../../common/topic-displayer").component;
@@ -1730,58 +1729,34 @@ var actionBarMixin = {
 
     /**
      * INit default props
-     * @returns Defautkl props.
+     * @returns {object} Defautkl props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
             selectionStatus: "none", // none, selected, partial
-            selectionAction: function selectionAction(selectionStatus) {}, // Action on selection click
-
+            selectionAction: function selectionAction(selectionStatus) {
+                console.warn(selectionStatus);
+            }, // Action on selection click
             orderableColumnList: undefined, // [{key:"columnKey", label:"columnLabel"}]
-            orderAction: function orderAction(key, order) {}, // Action on click on order function
+            orderAction: function orderAction(key, order) {
+                console.warn(key + "-" + order);
+            }, // Action on click on order function
             orderSelected: {},
-
-            facetClickAction: function facetClickAction(key) {}, // Action when click on facet
+            facetClickAction: function facetClickAction(key) {
+                console.warn(key);
+            }, // Action when click on facet
             facetList: {}, // {facet1: "Label of facet one", facet2:"Label of facet 2"} List of facets
-
             groupableColumnList: {}, // {col1: "Label1", col2: "Label2"}
-            groupAction: function groupAction(key) {}, // Action on group function
+            groupAction: function groupAction(key) {
+                console.warn(key);
+            }, // Action on group function
             groupSelectedKey: undefined, // Defautl grouped key.
-
             operationList: [] // List of contextual operations
         };
     },
 
     /**
-     * Render the html
-     * @returns {XML}
-     */
-    render: function renderActionBar() {
-        return React.createElement(
-            "div",
-            { className: "action-bar" },
-            React.createElement(
-                "div",
-                { className: "general-action" },
-                this._getSelectionObject(),
-                this._getOrderObject(),
-                this._getGroupObject()
-            ),
-            React.createElement(
-                "div",
-                { className: "facet-container" },
-                React.createElement(TopicDisplayer, { topicList: this.props.facetList, topicClickAction: this.props.facetClickAction })
-            ),
-            React.createElement(
-                "div",
-                { className: "contextual-action" },
-                React.createElement(ActionContextual, { operationList: this.props.operationList })
-            )
-        );
-    },
-
-    /**
-     * @returns Selection component.
+     * @returns {JSX} Selection component.
      * @private
      */
     _getSelectionObject: function _getSelectionObject() {
@@ -1791,7 +1766,7 @@ var actionBarMixin = {
     },
 
     /**
-     * @returns Order component.
+     * @returns {JSX} Order component.
      * @private
      */
     _getOrderObject: function _getOrderObject() {
@@ -1815,13 +1790,13 @@ var actionBarMixin = {
             }
             var downStyle = this.props.orderSelected.order == "desc" ? "circle-down" : "chevron-down";
             var upStyle = this.props.orderSelected.order == "asc" ? "circle-up" : "chevron-up";
-            return [React.createElement(SelectAction, { style: downStyle, operationList: orderDescOperationList }), React.createElement(SelectAction, { style: upStyle, operationList: orderAscOperationList })];
+            return [React.createElement(SelectAction, { key: "down", style: downStyle, operationList: orderDescOperationList }), React.createElement(SelectAction, { key: "up", style: upStyle, operationList: orderAscOperationList })];
         }
         return "";
     },
 
     /**
-     * @returns Grouping component.
+     * @returns {JSX} Grouping component.
      * @private
      */
     _getGroupObject: function _getGroupObject() {
@@ -1839,9 +1814,9 @@ var actionBarMixin = {
     },
 
     /**
-     * @param currentKey
-     * @param selectedKey
-     * @returns Class selected if currentKey corresponds to the selectedKey.
+     * @param {string} currentKey Current selected key.
+     * @param {string} selectedKey Key corresponding to the selected one.
+     * @returns {string} Class selected if currentKey corresponds to the selectedKey.
      * @private
      */
     _getSelectedStyle: function _getSelectedStyle(currentKey, selectedKey) {
@@ -1852,7 +1827,7 @@ var actionBarMixin = {
     },
 
     /**
-     * @return Style of the selection compoent icon.
+     * @return {string} Class of the selection component icon.
      * @private
      */
     _getSelectionObjectStyle: function _getSelectionObjectStyle() {
@@ -1867,23 +1842,53 @@ var actionBarMixin = {
     _selectionFunction: function _selectionFunction(selectionStatus) {
         var _this = this;
 
-        return function (event) {
+        return function () {
             _this.props.selectionAction(selectionStatus);
         };
     },
     _orderFunction: function _orderFunction(key, order) {
         var _this = this;
 
-        return function (event) {
+        return function () {
             _this.props.orderAction(key, order);
         };
     },
     _groupFunction: function _groupFunction(key) {
         var _this = this;
 
-        return function (event) {
+        return function () {
             _this.props.groupAction(key);
         };
+    },
+
+    /**
+     * Render the html
+     * @returns {JSX} Htm content.
+     */
+    render: function renderActionBar() {
+        return React.createElement(
+            "div",
+            { className: "action-bar" },
+            React.createElement(
+                "div",
+                { className: "general-action" },
+                this._getSelectionObject(),
+                " ",
+                this._getOrderObject(),
+                " ",
+                this._getGroupObject()
+            ),
+            React.createElement(
+                "div",
+                { className: "facet-container" },
+                React.createElement(TopicDisplayer, { topicList: this.props.facetList, topicClickAction: this.props.facetClickAction })
+            ),
+            React.createElement(
+                "div",
+                { className: "contextual-action" },
+                React.createElement(ActionContextual, { operationList: this.props.operationList })
+            )
+        );
     }
 };
 
@@ -1894,10 +1899,8 @@ module.exports = builder(actionBarMixin);
 
 /**@jsx*/
 var builder = window.focus.component.builder;
-var React = window.React;
 var Button = require("../../common/button/action").component;
 var SelectAction = require("../../common/select-action").component;
-var type = window.focus.component.types;
 
 var actionContextualMixin = {
 
@@ -1908,7 +1911,7 @@ var actionContextualMixin = {
 
     /**
      * Init default props.
-     * @returns {{operationList: List of operations.}}
+     * @returns {object} Default props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -1918,21 +1921,23 @@ var actionContextualMixin = {
     },
     /**
      * Init default state.
-     * @returns {{isSecondaryActionListExpanded: true if secondary actionList is expanded.}}
+     * @returns {oject} Initial state.
      */
     getInitialState: function getInitialState() {
         return {
-            isSecondaryActionListExpanded: false
+            isSecondaryActionListExpanded: false // true if secondary actionList is expanded.
         };
     },
 
     /**
      * handle contextual action on click.
+     * @param {string} key Action key.
      */
     _handleAction: function handleContextualAction(key) {
         var _this = this;
 
         return function (event) {
+            event.preventDefault();
             if (_this.props.operationParam) {
                 _this.props.operationList[key].action(_this.props.operationParam);
             } else {
@@ -1943,7 +1948,7 @@ var actionContextualMixin = {
 
     /**
      * render the component.
-     * @returns Html code.
+     * @returns {JSX} Html code.
      */
     render: function renderContextualAction() {
         var primaryActionList = [];
@@ -2293,7 +2298,7 @@ var listMixin = {
 
     /**
      * Default properties for the list.
-     * @returns {{isSelection: boolean}}
+     * @returns {{isSelection: boolean}} the default properties
      */
     getDefaultProps: function getLineDefaultProps() {
         return {
@@ -2323,11 +2328,12 @@ var listMixin = {
         FetchNextPage: type("func"),
         operationList: type("array"),
         isManualFetch: type("bool"),
-        idField: type("bool")
+        idField: type("string")
     },
 
     /**
      * Return selected items in the list.
+     * @return {Array} selected items
      */
     getSelectedItems: function getListSelectedItems() {
         var selected = [];
@@ -2340,6 +2346,12 @@ var listMixin = {
         }
         return selected;
     },
+
+    /**
+     * Fetch the next page.
+     * @param {number} page the page to fetch
+     * @return {*}
+     */
     fetchNextPage: function fetchNextPage(page) {
         if (!this.props.hasMoreData) {
             return;
@@ -2351,7 +2363,7 @@ var listMixin = {
 
     /**
      * handle manual fetch.
-     * @param event
+     * @param {object} event event received
      */
     _handleShowMore: function handleShowMore(event) {
         this.nextPage++;
@@ -2360,7 +2372,7 @@ var listMixin = {
 
     /**
      * Render lines of the list.
-     * @returns {*}
+     * @returns {*} DOM for lines
      */
     _renderLines: function renderLines() {
         var _this = this;
@@ -2423,7 +2435,7 @@ var listMixin = {
 
     /**
      * Render the list.
-     * @returns {XML}
+     * @returns {XML} DOM of the component
      */
     render: function renderList() {
         return React.createElement(
@@ -2476,7 +2488,11 @@ var listSummaryMixin = {
             var nbResult = React.createElement(
                 "div",
                 { className: "nb-result" },
-                this.props.nb,
+                React.createElement(
+                    "b",
+                    null,
+                    this.props.nb
+                ),
                 " result.for \"",
                 this.props.queryText,
                 "\""
@@ -5167,6 +5183,7 @@ var popinMixin = {
     getDefaultProps: function getDefaultProps() {
         return {
             animation: "right", // right, left, up, down
+            type: "full", // full, centered
             displaySelector: undefined, // Html selector of the element wich open/close the modal when click on it.
             contentLoadingFunction: undefined // Function wich returns the content of the modal.
         };
@@ -5183,7 +5200,7 @@ var popinMixin = {
     },
 
     _getModalCss: function _getModalCss() {
-        var cssClass = "popin animated";
+        var cssClass = "popin animated float:right;";
         switch (this.props.animation) {
             case "right":
                 cssClass += " bounceInRight";
@@ -5200,6 +5217,25 @@ var popinMixin = {
         }
         return cssClass;
     },
+    _getModalContentCss: function _getModalContentCss() {
+        var cssClass = "modal-content";
+        switch (this.props.type) {
+            case "full":
+                cssClass += " full";
+                break;
+            case "centered":
+                cssClass += " centered";
+                break;
+        }
+        return cssClass;
+    },
+
+    openModal: function openModal() {
+        this.setState({ isDisplayed: true });
+    },
+    closeModal: function closeModal() {
+        this.setState({ isDisplayed: false });
+    },
 
     /**
      * Render the component.
@@ -5210,6 +5246,12 @@ var popinMixin = {
         var currentView = this;
         source.onclick = function () {
             currentView.setState({ isDisplayed: !currentView.state.isDisplayed });
+            /*
+            if(currentView.state.isDisplayed) {
+                currentView.closeModal();
+            } else {
+                currentView.openModal();
+            }*/
         };
 
         if (!this.state.isDisplayed) {
@@ -5221,12 +5263,11 @@ var popinMixin = {
             { className: this._getModalCss() },
             React.createElement(
                 "div",
-                { className: "modal-content" },
+                { className: this._getModalContentCss() },
                 this.props.contentLoadingFunction()
             )
         );
     }
-
 };
 
 module.exports = builder(popinMixin);
@@ -5327,8 +5368,6 @@ var LiveFilter = require("../../../search/live-filter/index").component;
 var ListActionBar = require("../../../list/action-bar/index").component;
 var ListSummary = require("../../../list/summary/index").component;
 var ListSelection = require("../../../list/selection").list.component;
-var Title = require("../../../common/title").component;
-var Button = require("../../../common/button/action").component;
 var SearchStore = window.focus.store.SearchStore;
 var assign = require("object-assign");
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
@@ -5371,7 +5410,11 @@ var searchFilterResultMixin = {
             criteria: {
                 scope: undefined,
                 searchText: undefined
-            }
+            },
+            idField: undefined,
+            exportAction: function exportAction() {},
+            unselectedScopeAction: function unselectedScopeAction() {},
+            groupMaxRows: undefined
         };
     },
     /**
@@ -5527,21 +5570,20 @@ var searchFilterResultMixin = {
      * Export action handler.
      */
     _exportHandler: function exportHandler() {
-        console.log("EXPORT TODO");
+        this.props.exportAction();
     },
     /**
      * Click on scope action handler.
      */
     _scopeClick: function scopeClick() {
-        console.log("TODO SCOPE CLICK REDIRECTION");
+        this.props.unselectedScopeAction();
     },
     /**
      * Render the show all button  seect the group corresponding facet.
      * @param groupKey Group key.
      * @returns {Function} Function to select the facet.
-     * @private
      */
-    _showAllGroupListHandler: function _showAllGroupListHandler(groupKey) {
+    showAllGroupListHandler: function showAllGroupListHandler(groupKey) {
         var _this = this;
 
         return function (event) {
@@ -5560,22 +5602,6 @@ var searchFilterResultMixin = {
     },
 
     /**
-     * Render a group list.
-     * @param groupKey Key of the group.
-     * @returns {JSX} Rendu html.
-     * @private
-     */
-    _renderGroupList: function _renderGroupList(groupKey) {
-        return React.createElement(
-            "div",
-            { className: "listResultContainer panel" },
-            React.createElement(Title, { title: groupKey }),
-            this._renderSimpleList({ groupKey: groupKey }, this.state.list[groupKey]),
-            React.createElement(Button, { handleOnClick: this._showAllGroupListHandler(groupKey), label: "Show all" })
-        );
-    },
-
-    /**
      * Render a simple list.
      * @param id Technical id of the list.
      * @param list Content of the list.
@@ -5583,8 +5609,12 @@ var searchFilterResultMixin = {
      * @private
      */
     _renderSimpleList: function _renderSimpleList(id, list) {
+        if (!this._isSimpleList()) {
+            list.splice(this.props.groupMaxRows);
+        }
         return React.createElement(ListSelection, { data: list,
             ref: id,
+            idField: this.props.idField,
             isSelection: this.props.isSelection,
             onSelection: this._selectItem,
             onLineClick: this.props.onLineClick,
@@ -5675,7 +5705,7 @@ var searchFilterResultMixin = {
         }
         var groupList = [];
         for (var groupKey in this.state.list) {
-            groupList.push(this._renderGroupList(groupKey));
+            groupList.push(this.groupList(groupKey));
         }
         return groupList;
     }
@@ -5683,7 +5713,7 @@ var searchFilterResultMixin = {
 
 module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../common/button/action":3,"../../../common/title":25,"../../../list/action-bar/index":27,"../../../list/selection":30,"../../../list/summary/index":34,"../../../search/live-filter/index":106,"../common-mixin/infinite-scroll-page-mixin":101,"lodash/lang/isArray":80,"object-assign":96}],103:[function(require,module,exports){
+},{"../../../list/action-bar/index":27,"../../../list/selection":30,"../../../list/summary/index":34,"../../../search/live-filter/index":106,"../common-mixin/infinite-scroll-page-mixin":101,"lodash/lang/isArray":80,"object-assign":96}],103:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -5967,7 +5997,7 @@ var liveFilterMixin = {
         var facets = [];
         for (var key in this.props.facetList) {
             var selectedDataKey = this.props.selectedFacetList[key] ? this.props.selectedFacetList[key].key : undefined;
-            facets.push(React.createElement(LiveFilterFacet, { facetKey: key,
+            facets.push(React.createElement(LiveFilterFacet, { facetKey: key, key: key,
                 facet: this.props.facetList[key],
                 selectedDataKey: selectedDataKey,
                 isExpanded: this.state.openedFacetList[key],
@@ -6389,7 +6419,8 @@ var scopeMixin = {
    * @param {object} event - Event trigger by the search.
    */
   _handleOnClick: function _handleOnClick(event) {
-    var val = event.target.hasAttribute("value") ? event.target.value : undefined;
+    //TODO var val = event.target.hasAttribute("value") ? event.target.value : undefined;
+    var val = event.target.hasAttribute("value") ? event.target.getAttribute("value") : undefined;
     this.setState({
       value: val,
       isDeployed: false
@@ -6421,7 +6452,7 @@ var scopeMixin = {
     if (!activeScope) {
       return "qs-scope-none";
     }
-    return activeScope.style || "qs-scope-" + activeScope.value;
+    return activeScope.style || "qs-scope-" + activeScope.code;
   },
   renderScopeList: function renderScopeList() {
     var _this = this;
@@ -6431,6 +6462,13 @@ var scopeMixin = {
     }
     var scopes = this.props.list.map(function (scope) {
       var selectedValue = _this.state.value === scope.code ? "active" : "";
+      //Add defaut Style to scope if not define
+      var scopeCss = scope.style;
+      if (!scopeCss) {
+        scopeCss = "qs-scope-" + scope.code;
+      }
+      scope.style = scopeCss;
+
       return React.createElement(
         "li",
         { key: scope.code || uuid.v4(),

@@ -1,8 +1,14 @@
 /*global focusComponents, React */
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
+var Title = focusComponents.common.title.component;
+var Button = focusComponents.common.button.action.component
+
 var serviceCommon = require('../../services');
 
+
+
 var action = {
+
     search: function(criteria) {
         var page = criteria.pageInfos.page;
         if(page === undefined || page === null ){
@@ -80,23 +86,11 @@ var config = {
     },
     orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
     operationList: [
-        /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},
-         {label: "Button1_b",action: function() {alert("Button1b");},style:undefined,priority: 1},
-         {label: "Button2_a",action: function() {alert("Button2a");},style:undefined,priority: 2},
-         {label: "Button2_b",action: function() {alert("Button2b");},style: undefined,priority: 2},*/
+        /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},*/
     ],
     action: action,
     lineComponent: Line,
     onLineClick: function onLineClick(line){
-        /*var data = line;
-        focus.application.render(lineResume, '#lineResume',
-            {props: {
-                title: data.title,
-                description: data.description,
-                released: data.released,
-                countryIds: data.countryIds,
-                languageIds: data.languageIds,
-                runtime: this.runtime }});*/
         alert('click sur la ligne ' + line.title);
     },
     isSelection: true,
@@ -105,32 +99,35 @@ var config = {
         scope: 'MOVIE',
         searchText: 'Fantastic'
     },
-    idField: 'MOV_ID'
+    idField: 'MOV_ID',
+    groupMaxRows: 1
+    // groupMaxRows: this.state.groupMaxRows
+};
+
+var seeMore = function(){
+    seeMore();
 };
 
 
-
 module.exports = React.createClass({
+    getInitialState: function() {
+        return {
+            groupMaxRows: 3
+        };
+    },
+    seeMore: function() {
+        this.setState({groupMaxRows: 10});
+    },
+
     render: function(){
-        /*return <SearchFilterResult facetConfig = {config.facetConfig}
-                                    orderableColumnList={config.orderableColumnList}
-                                    groupableColumnList={config.groupableColumnList}
-                                    operationList={config.operationList}
-                                    action={config.action}
-                                    lineComponent={Line}
-                                    onLineClick={config.onLineClick}
-                                    isSelection={true}
-                                    lineOperationList={config.lineOperationList}
-                                    criteria={config.criteria}
-
-
-        />;*/
+        var currentView = this;
+        config.groupMaxRows = this.state.groupMaxRows;
         var filterResult = React.createElement(
                 React.createClass({
                     mixins: [focusComponents.page.search.filterResult.mixin],
                     actions: action,
                     store: new focus.store.SearchStore(),
-                    render: function render() {
+                    render: function() {
                         var root = React.createElement('div', { className: 'search-result' },
                             this.liveFilterComponent(),
                             React.createElement(
@@ -142,6 +139,15 @@ module.exports = React.createClass({
                             )
                         );
                         return root;
+                    },
+                    groupList: function(groupKey) {
+                         return <div className="listResultContainer panel">
+                             <Title title={groupKey} />
+                             {this._renderSimpleList({ groupKey: groupKey }, this.state.list[groupKey])}
+                             <Button handleOnClick = {currentView.seeMore()} label = "See More" />
+                             <Button handleOnClick = {this.showAllGroupListHandler(groupKey)} label = "Show all" />
+                         </div>;
+
                     }
                 }),
                 config);

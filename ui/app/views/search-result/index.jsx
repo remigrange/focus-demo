@@ -107,11 +107,11 @@ var config = {
     },
     //TODO USE REFERENCE
     scopes: [
+        {code: 'ALL', label: 'ALL'},
         {code: 'MOVIE', label: 'MOVIE'},
-        {code: 'PEOPLE', label: 'PEOPLE'},
-        {code: 'ALL', label: 'ALL'}
+        {code: 'PEOPLE', label: 'PEOPLE'}
     ],
-    scope: 'PEOPLE'
+    scope: 'ALL'
 
 
 };
