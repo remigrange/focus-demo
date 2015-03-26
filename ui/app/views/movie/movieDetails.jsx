@@ -13,16 +13,16 @@ module.exports = React.createClass({
       <div>
         <div className='slidingBloc'>
           <Title id="details" title="DETAILS"/>
-          {this.fieldFor("title")}
-          {this.fieldFor("released")}
-          {this.fieldFor("runtime")}
-          {this.fieldFor("countryIds")}
-          {this.fieldFor("languageIds")}
-          {this.fieldFor("genreIds")}
+          {this.displayFor("title")}
+          {this.displayFor("released")}
+          {this.displayFor("runtime")}
+          {this.displayFor("countryIds")}
+          {this.displayFor("languageIds")}
+          {this.displayFor("genreIds")}
         </div>
         <div className='slidingBloc'>
           <Title id="storyline" title="STORYLINE"/>
-          {this.displayFor("description")}
+          {this.state.description}
         </div>
       </div>
     );
