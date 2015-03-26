@@ -99,7 +99,7 @@ var config = {
         scope: 'MOVIE',
         searchText: 'Fantastic'
     },
-    idField: 'MOV_ID',
+    idField: 'movId',
     groupMaxRows: 1
     // groupMaxRows: this.state.groupMaxRows
 };
@@ -133,9 +133,9 @@ module.exports = React.createClass({
                             React.createElement(
                                 'div',
                                 { className: 'resultContainer' },
-                                this.listSummary(),
-                                this.actionBar(),
-                                this.resultList()
+                                this.listSummaryComponent(),
+                                this.actionBarComponent(),
+                                this.resultListComponent()
                             )
                         );
                         return root;
