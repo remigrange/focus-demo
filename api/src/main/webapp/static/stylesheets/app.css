@@ -575,10 +575,10 @@ ul.selection-list {
   border-bottom: none;
 }
 .slidingBloc button.btn.btn-raised.btn-primary {
-  margin-top: -30px;
-  margin-right: 450px;
+  margin-top: 0;
+  margin-left: 900px;
   position: relative;
-  float: right;
+  margin-bottom: 0px;
 }
 .slidingBloc ul.selection-list li.sl-line:hover {
   background: none;
