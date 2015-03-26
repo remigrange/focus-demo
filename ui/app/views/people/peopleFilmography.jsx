@@ -3,7 +3,7 @@ var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
 var Title = focus.components.common.title.component;
 var MovieCard = require('./movieCard');
-var FormList = require('../formList');
+var FormList = require('../commons/formList');
 var line = React.createClass({
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){

@@ -1693,6 +1693,46 @@ module.exports = referenceStore;
 
 });
 
+require.register("views/commons/formList/index", function(exports, require, module) {
+//var SelectionList = focus.components.list.selection.list.component;
+var Button = focus.components.common.button.action.component;
+
+//Pour étendre SelectionList
+//TODO Comment étendre une méthode d'un mixin d'une meilleur façon que celle la ?
+var MySelectionList = React.createClass($.extend(focus.components.list.selection.list.mixin, {
+  _renderManualFetch: function renderManualFetch(){
+    if(this.props.isManualFetch && this.props.hasMoreData){
+      var style = {className: "primary"};
+      return (
+        React.createElement("li", {className: "sl-button"}, 
+          React.createElement(Button, {label: "Next", 
+            type: "button", 
+            handleOnClick: this._handleShowMore, 
+            style: style})
+        )
+      );
+    }
+  }
+}));
+
+module.exports = React.createClass({displayName: "exports",
+  fetchNextPage: function fetchNextPage(page) {
+    this.props.maxElements = this.props.perPage * page;
+    this.forceUpdate();
+  },
+  getDataToUse: function getDataToUse() {
+    return this.props.data.slice(0, this.props.maxElements ? this.props.maxElements : this.props.perPage);
+  },
+
+  render: function renderFormList() {
+    return (
+      React.createElement(MySelectionList, {data: this.getDataToUse(), hasMoreData: this.props.data.length > (this.props.maxElements ? this.props.maxElements : this.props.perPage), lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage})
+    );
+  }
+});
+
+});
+
 require.register("views/filter-result/index", function(exports, require, module) {
 /*global focusComponents, React */
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
@@ -1847,46 +1887,6 @@ module.exports = React.createClass({displayName: "exports",
 
 });
 
-require.register("views/formList/index", function(exports, require, module) {
-//var SelectionList = focus.components.list.selection.list.component;
-var Button = focus.components.common.button.action.component;
-
-//Pour étendre SelectionList
-//TODO Comment étendre une méthode d'un mixin d'une meilleur façon que celle la ?
-var MySelectionList = React.createClass($.extend(focus.components.list.selection.list.mixin, {
-  _renderManualFetch: function renderManualFetch(){
-    if(this.props.isManualFetch && this.props.hasMoreData){
-      var style = {className: "primary"};
-      return (
-        React.createElement("li", {className: "sl-button"}, 
-          React.createElement(Button, {label: "Next", 
-            type: "button", 
-            handleOnClick: this._handleShowMore, 
-            style: style})
-        )
-      );
-    }
-  }
-}));
-
-module.exports = React.createClass({displayName: "exports",
-  fetchNextPage: function fetchNextPage(page) {
-    this.props.maxElements = this.props.perPage * page;
-    this.forceUpdate();
-  },
-  getDataToUse: function getDataToUse() {
-    return this.props.data.slice(0, this.props.maxElements ? this.props.maxElements : this.props.perPage);
-  },
-
-  render: function renderFormList() {
-    return (
-      React.createElement(MySelectionList, {data: this.getDataToUse(), hasMoreData: this.props.data.length > (this.props.maxElements ? this.props.maxElements : this.props.perPage), lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage})
-    );
-  }
-});
-
-});
-
 require.register("views/movie/cartridge", function(exports, require, module) {
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
@@ -1972,7 +1972,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 var PeopleCard = require('./peopleCard');
-var FormList = require('../formList');
+var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2071,7 +2071,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 var PeopleCard = require('./peopleCard');
-var FormList = require('../formList');
+var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2136,7 +2136,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 var PeopleCard = require('./peopleCard');
-var FormList = require('../formList');
+var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2318,7 +2318,7 @@ var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
 var Title = focus.components.common.title.component;
 var MovieCard = require('./movieCard');
-var FormList = require('../formList');
+var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
