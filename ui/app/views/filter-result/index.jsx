@@ -121,7 +121,7 @@ module.exports = React.createClass({
 
     render: function(){
         var currentView = this;
-        config.groupMaxRows = this.state.groupMaxRows;
+        config.groupMaxRows = 3;
         var filterResult = React.createElement(
                 React.createClass({
                     mixins: [focusComponents.page.search.filterResult.mixin],
@@ -144,7 +144,7 @@ module.exports = React.createClass({
                          return <div className="listResultContainer panel">
                              <Title title={groupKey} />
                              {this._renderSimpleList({ groupKey: groupKey }, this.state.list[groupKey])}
-                             <Button handleOnClick = {currentView.seeMore()} label = "See More" />
+                             <Button handleOnClick = {currentView.seeMore} label = "See More" />
                              <Button handleOnClick = {this.showAllGroupListHandler(groupKey)} label = "Show all" />
                          </div>;
 

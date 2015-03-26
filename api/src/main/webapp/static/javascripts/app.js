@@ -1857,7 +1857,7 @@ module.exports = React.createClass({displayName: "exports",
 
     render: function(){
         var currentView = this;
-        config.groupMaxRows = this.state.groupMaxRows;
+        config.groupMaxRows = 3;
         var filterResult = React.createElement(
                 React.createClass({
                     mixins: [focusComponents.page.search.filterResult.mixin],
@@ -1880,7 +1880,7 @@ module.exports = React.createClass({displayName: "exports",
                          return React.createElement("div", {className: "listResultContainer panel"}, 
                              React.createElement(Title, {title: groupKey}), 
                              this._renderSimpleList({ groupKey: groupKey }, this.state.list[groupKey]), 
-                             React.createElement(Button, {handleOnClick: currentView.seeMore(), label: "See More"}), 
+                             React.createElement(Button, {handleOnClick: currentView.seeMore, label: "See More"}), 
                              React.createElement(Button, {handleOnClick: this.showAllGroupListHandler(groupKey), label: "Show all"})
                          );
 
@@ -2483,7 +2483,8 @@ var config = {
                 released: data.released,
                 countryIds: data.countryIds,
                 languageIds: data.languageIds,
-                runtime: this.runtime }});
+                runtime: this.runtime }
+            });
         //alert('click sur la ligne ' + line.title);
     },
     //Est ce qu'on peut sélectionner la ligne.
@@ -2530,7 +2531,9 @@ module.exports= React.createClass({displayName: "exports",
                                       );
                         }
                         var list = this.listComponent();
-                        var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
+                        var search = React.createElement("div", {className: "search-part"}, qs, " ", summary, " ", list)
+                        var lineResumeContent = React.createElement("div", {id: "lineResume"});
+                        var root = React.createElement('div', {className: 'search-panel slideInLeft animated'}, search, lineResumeContent);
                         return root;
                     }}),
                 {
@@ -2553,66 +2556,68 @@ var Block = focus.components.common.block.component;
 var Label = focus.components.common.label.component;
 module.exports =  React.createClass({displayName: "exports",
     render: function renderMovieResume(){
-        return(
-            React.createElement(Block, null, 
-                React.createElement("div", {className: "movie-lineResume"}, 
-                    React.createElement("div", {className: "movie-resume-logo"}, 
-                        React.createElement("img", {src: "./static/img/logoMovie.png"})
-                    ), 
-                    React.createElement("div", {className: "movie-info"}, 
-                        React.createElement("div", {className: "title-level-2"}, 
-                         React.createElement(Label, {name: "title", value: this.props.title})
+        return (
+            React.createElement("div", {className: "slideInRight animated"}, 
+                React.createElement(Block, null, 
+                    React.createElement("div", {className: "movie-lineResume"}, 
+                        React.createElement("div", {className: "movie-resume-logo"}, 
+                            React.createElement("img", {src: "./static/img/logoMovie.png"})
                         ), 
-                        React.createElement("div", {className: "title-level-3"}, 
-                            this.props.imdbId
+                        React.createElement("div", {className: "movie-info"}, 
+                            React.createElement("div", {className: "title-level-2"}, 
+                             React.createElement(Label, {name: "title", value: this.props.title})
+                            ), 
+                            React.createElement("div", {className: "title-level-3"}, 
+                                this.props.imdbId
+                            )
+                        ), 
+                        React.createElement("div", {className: "movie-link-detailed-sheet"}, 
+                            React.createElement("a", {href: "#"}, "Detailed sheet")
                         )
                     ), 
-                    React.createElement("div", {className: "movie-link-detailed-sheet"}, 
-                        React.createElement("a", {href: "#"}, "Detailed sheet")
-                    )
-                ), 
-                React.createElement("div", {className: "movie-descrition"}, 
-                   React.createElement("div", {className: "container-title"}, "Storyline"), 
-                   React.createElement("div", null, this.props.description)
-                ), 
-
-                React.createElement("div", {className: "movie-details"}, 
-                    React.createElement("div", {className: "details-panel-title"}, "Details"), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Country")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.countryIds)
-                        )
+                    React.createElement("div", {className: "movie-descrition"}, 
+                       React.createElement("div", {className: "container-title"}, "Storyline"), 
+                       React.createElement("div", null, this.props.description)
                     ), 
 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Language")
+                    React.createElement("div", {className: "movie-details"}, 
+                        React.createElement("div", {className: "details-panel-title"}, "Details"), 
+                        React.createElement("div", {className: "movie-detail-line"}, 
+                            React.createElement("div", {className: "details-label-name"}, 
+                                React.createElement("div", null, "Country")
+                            ), 
+                            React.createElement("div", {className: "details-label-value"}, 
+                                React.createElement("div", null, this.props.countryIds)
+                            )
                         ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.languageIds)
-                        )
-                    ), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Release date")
+
+                        React.createElement("div", {className: "movie-detail-line"}, 
+                            React.createElement("div", {className: "details-label-name"}, 
+                                React.createElement("div", null, "Language")
+                            ), 
+                            React.createElement("div", {className: "details-label-value"}, 
+                                React.createElement("div", null, this.props.languageIds)
+                            )
                         ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.released)
-                        )
-                    ), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Runtime")
+                        React.createElement("div", {className: "movie-detail-line"}, 
+                            React.createElement("div", {className: "details-label-name"}, 
+                                React.createElement("div", null, "Release date")
+                            ), 
+                            React.createElement("div", {className: "details-label-value"}, 
+                                React.createElement("div", null, this.props.released)
+                            )
                         ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.runtime)
+                        React.createElement("div", {className: "movie-detail-line"}, 
+                            React.createElement("div", {className: "details-label-name"}, 
+                                React.createElement("div", null, "Runtime")
+                            ), 
+                            React.createElement("div", {className: "details-label-value"}, 
+                                React.createElement("div", null, this.props.runtime)
+                            )
                         )
                     )
+
                 )
-
             )
         );
     }

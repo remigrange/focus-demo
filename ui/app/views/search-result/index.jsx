@@ -92,7 +92,8 @@ var config = {
                 released: data.released,
                 countryIds: data.countryIds,
                 languageIds: data.languageIds,
-                runtime: this.runtime }});
+                runtime: this.runtime }
+            });
         //alert('click sur la ligne ' + line.title);
     },
     //Est ce qu'on peut sélectionner la ligne.
@@ -139,7 +140,9 @@ module.exports= React.createClass({
                                       </div>;
                         }
                         var list = this.listComponent();
-                        var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
+                        var search = <div className='search-part'>{qs} {summary} {list}</div>
+                        var lineResumeContent = <div id='lineResume'></div>;
+                        var root = React.createElement('div', {className: 'search-panel slideInLeft animated'}, search, lineResumeContent);
                         return root;
                     }}),
                 {
