@@ -100,16 +100,12 @@ var config = {
         alert('click sur la ligne ' + line.title);
     },
     isSelection: true,
-    lineOperationList: [
-        /*{label: "Button1_a",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-         {label: "Button1_b",action: function(data) {alert(data.title);},style: undefined,priority: 1},
-         {label: "Button2_a",action: function(data) {alert(data.title);},style: undefined,priority: 2},
-         {label: "Button2_b",action: function(data) {alert(data.title);},style: undefined,priority: 2}*/
-    ],
+    lineOperationList: [],
     criteria: {
         scope: 'MOVIE',
         searchText: 'Fantastic'
-    }
+    },
+    idField: 'MOV_ID'
 };
 
 

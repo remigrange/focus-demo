@@ -33,7 +33,7 @@ var action = {
                     facet: {},
                     pageInfos: {
                         currentPage: 1,
-                        perPage: 50,
+                        perPage: 1000,
                         totalRecords: data.totalRecords
                     },
                     searchContext: {

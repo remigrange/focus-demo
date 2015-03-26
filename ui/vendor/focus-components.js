@@ -10,7 +10,7 @@ module.exports = {
 	page: require("./page")
 };
 
-},{"./common":12,"./list":28,"./page":98,"./search":104}],2:[function(require,module,exports){
+},{"./common":13,"./list":29,"./page":99,"./search":105}],2:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -116,7 +116,7 @@ var buttonMixin = {
 
 module.exports = builder(buttonMixin);
 
-},{"../../img":11}],4:[function(require,module,exports){
+},{"../../img":12}],4:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -126,10 +126,64 @@ module.exports = {
 },{"./action":3}],5:[function(require,module,exports){
 "use strict";
 
+//Dependencies.
+var builder = window.focus.component.builder;
+var React = window.React;
+var type = window.focus.component.types;
+
+/**
+ * Input text mixin.
+ * @type {Object}
+ */
+var displayTextMixin = {
+  /** @inheritdoc */
+  getDefaultProps: function getInputDefaultProps() {
+    return {
+      value: undefined,
+      name: undefined,
+      formatter: function formatter(data) {
+        return data;
+      },
+      style: {}
+    };
+  },
+  /** @inheritdoc */
+  propTypes: {
+    type: type("string"),
+    value: type(["string", "number"]),
+    name: type("string"),
+    style: type("object")
+  },
+  renderValue: function renderValueDisplayText() {
+    return this.props.formatter(this.props.value);
+  },
+  /**
+   * Render a display field.
+   * @return {DOM} - The dom of an input.
+   */
+  render: function renderInput() {
+    return React.createElement(
+      "div",
+      {
+        id: this.props.name,
+        name: this.props.name,
+        className: this.props.style["class"]
+      },
+      this.renderValue()
+    );
+  }
+};
+
+module.exports = builder(displayTextMixin);
+
+},{}],6:[function(require,module,exports){
+"use strict";
+
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
 var React = window.React;
 var InputText = require("../input/text").component;
+var DisplayText = require("../display/text").component;
 var SelectClassic = require("../select/classic").component;
 var Label = require("../label").component;
 var FieldMixin = {
@@ -139,6 +193,7 @@ var FieldMixin = {
   getDefaultProps: function getFieldDefaultProps() {
     return {
       hasLabel: true,
+      isEdit: true,
       labelSize: 3,
       type: "text",
       value: undefined,
@@ -147,7 +202,8 @@ var FieldMixin = {
       FieldComponent: undefined,
       InputLabelComponent: undefined,
       InputComponent: InputText,
-      SelectComponent: SelectClassic
+      SelectComponent: SelectClassic,
+      DisplayComponent: DisplayText
     };
   },
   /** @inheritdoc */
@@ -291,6 +347,25 @@ var FieldMixin = {
       })
     );
   },
+  display: function renderDisplay() {
+    if (this.props.FieldComponent || this.props.InputLabelComponent) {
+      return this.renderFieldComponent();
+    }
+    var selectClassName = "form-control col-sm-" + (12 - this.props.labelSize);
+    return React.createElement(
+      "div",
+      { className: "input-group" },
+      React.createElement(this.props.DisplayComponent, {
+        style: { "class": selectClassName },
+        id: this.props.name,
+        name: this.props.name,
+        value: this.state.value,
+        type: this.props.type,
+        ref: "display",
+        formatter: this.props.formatter
+      })
+    );
+  },
   error: function renderError() {
     if (this.state.error) {
       if (this.props.FieldComponent) {
@@ -323,7 +398,7 @@ var FieldMixin = {
       "div",
       { className: this._className() },
       this.label(),
-      this.props.values ? this.select() : this.input(),
+      this.props.isEdit ? this.props.values ? this.select() : this.input() : this.display(),
       this.help(),
       this.error()
     );
@@ -331,7 +406,7 @@ var FieldMixin = {
 };
 module.exports = builder(FieldMixin);
 
-},{"../input/text":16,"../label":19,"../select/classic":21}],6:[function(require,module,exports){
+},{"../display/text":5,"../input/text":17,"../label":20,"../select/classic":22}],7:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -476,7 +551,7 @@ var formMixin = {
 
 module.exports = builder(formMixin);
 
-},{"./mixin/action-behaviour":7,"./mixin/built-in-components":8,"./mixin/reference-behaviour":9,"./mixin/store-behaviour":10,"lodash/lang/isEmpty":80,"object-assign":95}],7:[function(require,module,exports){
+},{"./mixin/action-behaviour":8,"./mixin/built-in-components":9,"./mixin/reference-behaviour":10,"./mixin/store-behaviour":11,"lodash/lang/isEmpty":81,"object-assign":96}],8:[function(require,module,exports){
 "use strict";
 
 var actionMixin = {
@@ -511,7 +586,7 @@ var actionMixin = {
 
 module.exports = actionMixin;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -535,7 +610,8 @@ module.exports = {
       error: this.state.error ? this.state.error[name] : undefined,
       validator: def.validator,
       FieldComponent: def.FieldComponent,
-      InputLabelComponent: def.InputLabelComponent
+      InputLabelComponent: def.InputLabelComponent,
+      isEdit: true
     });
   },
   /**
@@ -559,7 +635,8 @@ module.exports = {
       validator: def.validator,
       values: this.state.reference[listName], //Options to be rendered.
       FieldComponent: def.FieldComponent,
-      InputLabelComponent: def.InputLabelComponent
+      InputLabelComponent: def.InputLabelComponent,
+      isEdit: true
     });
   },
   /**
@@ -570,7 +647,17 @@ module.exports = {
    */
   displayFor: function displayFor(name, options) {
     options = options || {};
-    return this.state[name];
+    var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    var listName = listName || def.listName;
+    return React.createElement(Field, {
+      name: name,
+      ref: name,
+      value: this.state[name],
+      values: this.state.reference ? this.state.reference[listName] : unefined, //Options to be rendered.
+      FieldComponent: def.FieldComponent,
+      InputLabelComponent: def.InputLabelComponent,
+      isEdit: false
+    });
   },
   /**
    * Button delete generation.
@@ -595,7 +682,7 @@ module.exports = {
     });
   } };
 
-},{"../../button/action":3,"../../field":5}],9:[function(require,module,exports){
+},{"../../button/action":3,"../../field":6}],10:[function(require,module,exports){
 "use strict";
 
 //focus.reference.builder.loadListByName('papas').then(function(data){focus.dispatcher.dispatch({action: {type: "update",data: {papas: data}}})})
@@ -657,7 +744,7 @@ var referenceMixin = {
 
 module.exports = referenceMixin;
 
-},{"lodash/lang/isEmpty":80}],10:[function(require,module,exports){
+},{"lodash/lang/isEmpty":81}],11:[function(require,module,exports){
 "use strict";
 
 var capitalize = require("lodash/string/capitalize");
@@ -729,7 +816,7 @@ var storeMixin = {
 
 module.exports = storeMixin;
 
-},{"lodash/string/capitalize":89,"object-assign":95}],11:[function(require,module,exports){
+},{"lodash/string/capitalize":90,"object-assign":96}],12:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -766,7 +853,7 @@ var imgMixin = {
 
 module.exports = builder(imgMixin);
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -784,7 +871,7 @@ module.exports = {
   topicDisplayer: require("./topic-displayer")
 };
 
-},{"./block":2,"./button":4,"./field":5,"./form":6,"./img":11,"./input":15,"./label":19,"./select":22,"./select-action":20,"./sticky-navigation":23,"./title":24,"./topic-displayer":25}],13:[function(require,module,exports){
+},{"./block":2,"./button":4,"./field":6,"./form":7,"./img":12,"./input":16,"./label":20,"./select":23,"./select-action":21,"./sticky-navigation":24,"./title":25,"./topic-displayer":26}],14:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -864,7 +951,7 @@ var checkBoxMixin = {
 
 module.exports = builder(checkBoxMixin);
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 var jQuery = window.jQuery;
@@ -898,7 +985,7 @@ var inputDateMixin = {
 
 module.exports = builder(inputDateMixin);
 
-},{"../text":16}],15:[function(require,module,exports){
+},{"../text":17}],16:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -909,7 +996,7 @@ module.exports = {
   toggle: require("./toggle")
 };
 
-},{"./checkbox":13,"./date":14,"./text":16,"./textarea":17,"./toggle":18}],16:[function(require,module,exports){
+},{"./checkbox":14,"./date":15,"./text":17,"./textarea":18,"./toggle":19}],17:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -988,7 +1075,7 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -1082,7 +1169,7 @@ var textAreaMixin = {
 
 module.exports = builder(textAreaMixin);
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -1160,7 +1247,7 @@ var toggleMixin = {
 
 module.exports = builder(toggleMixin);
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1193,7 +1280,7 @@ var labelMixin = {
 
 module.exports = builder(labelMixin);
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1302,7 +1389,7 @@ var selectActionMixin = {
 
 module.exports = builder(selectActionMixin);
 
-},{"../img":11}],21:[function(require,module,exports){
+},{"../img":12}],22:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -1399,14 +1486,14 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   classic: require("./classic")
 };
 
-},{"./classic":21}],23:[function(require,module,exports){
+},{"./classic":22}],24:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1517,7 +1604,7 @@ var stickyNavigationMixin = {
 
 module.exports = builder(stickyNavigationMixin);
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1556,7 +1643,7 @@ var titleMixin = {
 
 module.exports = builder(titleMixin);
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1623,7 +1710,7 @@ var topicDisplayerMixin = {
 
 module.exports = builder(topicDisplayerMixin);
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -1802,7 +1889,7 @@ var actionBarMixin = {
 
 module.exports = builder(actionBarMixin);
 
-},{"../../common/select-action":20,"../../common/topic-displayer":25,"../action-contextual":27}],27:[function(require,module,exports){
+},{"../../common/select-action":21,"../../common/topic-displayer":26,"../action-contextual":28}],28:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -1885,7 +1972,7 @@ var actionContextualMixin = {
 
 module.exports = builder(actionContextualMixin);
 
-},{"../../common/button/action":3,"../../common/select-action":20}],28:[function(require,module,exports){
+},{"../../common/button/action":3,"../../common/select-action":21}],29:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -1896,7 +1983,7 @@ module.exports = {
 	timeline: require("./timeline")
 };
 
-},{"./action-bar":26,"./action-contextual":27,"./selection":29,"./summary":33,"./timeline":34}],29:[function(require,module,exports){
+},{"./action-bar":27,"./action-contextual":28,"./selection":30,"./summary":34,"./timeline":35}],30:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -1904,7 +1991,7 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":31,"./list":32}],30:[function(require,module,exports){
+},{"./line":32,"./list":33}],31:[function(require,module,exports){
 "use strict";
 
 var topOfElement = (function (_topOfElement) {
@@ -2018,7 +2105,7 @@ var InfiniteScrollMixin = {
 
 module.exports = { mixin: InfiniteScrollMixin };
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2186,7 +2273,7 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{"../../common/input/checkbox":13,"../action-contextual":27}],32:[function(require,module,exports){
+},{"../../common/input/checkbox":14,"../action-contextual":28}],33:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2351,7 +2438,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"../../common/button/action":3,"./infinite-scroll":30,"./line":31}],33:[function(require,module,exports){
+},{"../../common/button/action":3,"./infinite-scroll":31,"./line":32}],34:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2367,8 +2454,8 @@ var listSummaryMixin = {
     displayName: "list-summary",
 
     /**
-     * INit default props
-     * @returns Defautkl props.
+     * Init the default props.
+     * @returns {objet} default props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -2381,26 +2468,29 @@ var listSummaryMixin = {
     },
 
     /**
-     * Render the html
-     * @returns {XML}
+     * Render the html.
+     * @returns {JSX} Html rendering.
      */
     render: function renderActionBar() {
-        return React.createElement(
-            "div",
-            { className: "list-summary" },
-            React.createElement(
+        if (this.props.nb) {
+            var nbResult = React.createElement(
                 "div",
                 { className: "nb-result" },
                 this.props.nb,
                 " result.for \"",
                 this.props.queryText,
                 "\""
-            ),
+            );
+        }
+        return React.createElement(
+            "div",
+            { className: "list-summary" },
             React.createElement(
                 "div",
                 { className: "scope" },
                 React.createElement(TopicDisplayer, { topicList: this.props.scopeList, topicClickAction: this.props.scopeClickAction })
             ),
+            nbResult,
             React.createElement(
                 "div",
                 { className: "print" },
@@ -2412,7 +2502,7 @@ var listSummaryMixin = {
 
 module.exports = builder(listSummaryMixin);
 
-},{"../../common/button/action":3,"../../common/topic-displayer":25}],34:[function(require,module,exports){
+},{"../../common/button/action":3,"../../common/topic-displayer":26}],35:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2420,7 +2510,7 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":35,"./list":36}],35:[function(require,module,exports){
+},{"./line":36,"./list":37}],36:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2523,7 +2613,7 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2594,7 +2684,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"./line":35,"uuid":97}],37:[function(require,module,exports){
+},{"./line":36,"uuid":98}],38:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback');
 
 /**
@@ -2660,7 +2750,7 @@ function findIndex(array, predicate, thisArg) {
 
 module.exports = findIndex;
 
-},{"../internal/baseCallback":41}],38:[function(require,module,exports){
+},{"../internal/baseCallback":42}],39:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
     baseFind = require('../internal/baseFind'),
@@ -2728,7 +2818,7 @@ function find(collection, predicate, thisArg) {
 
 module.exports = find;
 
-},{"../array/findIndex":37,"../internal/baseCallback":41,"../internal/baseEach":43,"../internal/baseFind":44,"../lang/isArray":79}],39:[function(require,module,exports){
+},{"../array/findIndex":38,"../internal/baseCallback":42,"../internal/baseEach":44,"../internal/baseFind":45,"../lang/isArray":80}],40:[function(require,module,exports){
 (function (global){
 var cachePush = require('./cachePush'),
     isNative = require('../lang/isNative');
@@ -2761,7 +2851,7 @@ SetCache.prototype.push = cachePush;
 module.exports = SetCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":82,"./cachePush":61}],40:[function(require,module,exports){
+},{"../lang/isNative":83,"./cachePush":62}],41:[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for callback
  * shorthands or `this` binding.
@@ -2784,7 +2874,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var baseMatches = require('./baseMatches'),
     baseMatchesProperty = require('./baseMatchesProperty'),
     baseProperty = require('./baseProperty'),
@@ -2822,7 +2912,7 @@ function baseCallback(func, thisArg, argCount) {
 
 module.exports = baseCallback;
 
-},{"../utility/identity":94,"./baseMatches":54,"./baseMatchesProperty":55,"./baseProperty":56,"./bindCallback":59,"./isBindable":67}],42:[function(require,module,exports){
+},{"../utility/identity":95,"./baseMatches":55,"./baseMatchesProperty":56,"./baseProperty":57,"./bindCallback":60,"./isBindable":68}],43:[function(require,module,exports){
 var baseIndexOf = require('./baseIndexOf'),
     cacheIndexOf = require('./cacheIndexOf'),
     createCache = require('./createCache');
@@ -2876,7 +2966,7 @@ function baseDifference(array, values) {
 
 module.exports = baseDifference;
 
-},{"./baseIndexOf":49,"./cacheIndexOf":60,"./createCache":62}],43:[function(require,module,exports){
+},{"./baseIndexOf":50,"./cacheIndexOf":61,"./createCache":63}],44:[function(require,module,exports){
 var baseForOwn = require('./baseForOwn'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -2908,7 +2998,7 @@ function baseEach(collection, iteratee) {
 
 module.exports = baseEach;
 
-},{"./baseForOwn":48,"./isLength":70,"./toObject":77}],44:[function(require,module,exports){
+},{"./baseForOwn":49,"./isLength":71,"./toObject":78}],45:[function(require,module,exports){
 /**
  * The base implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
  * without support for callback shorthands and `this` binding, which iterates
@@ -2935,7 +3025,7 @@ function baseFind(collection, predicate, eachFunc, retKey) {
 
 module.exports = baseFind;
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isLength = require('./isLength'),
@@ -2982,7 +3072,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
 
 module.exports = baseFlatten;
 
-},{"../lang/isArguments":78,"../lang/isArray":79,"./isLength":70,"./isObjectLike":71}],46:[function(require,module,exports){
+},{"../lang/isArguments":79,"../lang/isArray":80,"./isLength":71,"./isObjectLike":72}],47:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -3014,7 +3104,7 @@ function baseFor(object, iteratee, keysFunc) {
 
 module.exports = baseFor;
 
-},{"./toObject":77}],47:[function(require,module,exports){
+},{"./toObject":78}],48:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keysIn = require('../object/keysIn');
 
@@ -3033,7 +3123,7 @@ function baseForIn(object, iteratee) {
 
 module.exports = baseForIn;
 
-},{"../object/keysIn":87,"./baseFor":46}],48:[function(require,module,exports){
+},{"../object/keysIn":88,"./baseFor":47}],49:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keys = require('../object/keys');
 
@@ -3052,7 +3142,7 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"../object/keys":86,"./baseFor":46}],49:[function(require,module,exports){
+},{"../object/keys":87,"./baseFor":47}],50:[function(require,module,exports){
 var indexOfNaN = require('./indexOfNaN');
 
 /**
@@ -3081,7 +3171,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./indexOfNaN":66}],50:[function(require,module,exports){
+},{"./indexOfNaN":67}],51:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep');
 
 /**
@@ -3117,7 +3207,7 @@ function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"./baseIsEqualDeep":51}],51:[function(require,module,exports){
+},{"./baseIsEqualDeep":52}],52:[function(require,module,exports){
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -3220,7 +3310,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, 
 
 module.exports = baseIsEqualDeep;
 
-},{"../lang/isArray":79,"../lang/isTypedArray":85,"./equalArrays":63,"./equalByTag":64,"./equalObjects":65}],52:[function(require,module,exports){
+},{"../lang/isArray":80,"../lang/isTypedArray":86,"./equalArrays":64,"./equalByTag":65,"./equalObjects":66}],53:[function(require,module,exports){
 /**
  * The base implementation of `_.isFunction` without support for environments
  * with incorrect `typeof` results.
@@ -3237,7 +3327,7 @@ function baseIsFunction(value) {
 
 module.exports = baseIsFunction;
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual');
 
 /** Used for native method references. */
@@ -3297,7 +3387,7 @@ function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./baseIsEqual":50}],54:[function(require,module,exports){
+},{"./baseIsEqual":51}],55:[function(require,module,exports){
 var baseIsMatch = require('./baseIsMatch'),
     isStrictComparable = require('./isStrictComparable'),
     keys = require('../object/keys');
@@ -3344,7 +3434,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"../object/keys":86,"./baseIsMatch":53,"./isStrictComparable":72}],55:[function(require,module,exports){
+},{"../object/keys":87,"./baseIsMatch":54,"./isStrictComparable":73}],56:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual'),
     isStrictComparable = require('./isStrictComparable');
 
@@ -3370,7 +3460,7 @@ function baseMatchesProperty(key, value) {
 
 module.exports = baseMatchesProperty;
 
-},{"./baseIsEqual":50,"./isStrictComparable":72}],56:[function(require,module,exports){
+},{"./baseIsEqual":51,"./isStrictComparable":73}],57:[function(require,module,exports){
 /**
  * The base implementation of `_.property` which does not coerce `key` to a string.
  *
@@ -3386,7 +3476,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var identity = require('../utility/identity'),
     metaMap = require('./metaMap');
 
@@ -3405,7 +3495,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"../utility/identity":94,"./metaMap":73}],58:[function(require,module,exports){
+},{"../utility/identity":95,"./metaMap":74}],59:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -3423,7 +3513,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 var identity = require('../utility/identity');
 
 /**
@@ -3464,7 +3554,7 @@ function bindCallback(func, thisArg, argCount) {
 
 module.exports = bindCallback;
 
-},{"../utility/identity":94}],60:[function(require,module,exports){
+},{"../utility/identity":95}],61:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -3485,7 +3575,7 @@ function cacheIndexOf(cache, value) {
 
 module.exports = cacheIndexOf;
 
-},{"../lang/isObject":83}],61:[function(require,module,exports){
+},{"../lang/isObject":84}],62:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -3507,7 +3597,7 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"../lang/isObject":83}],62:[function(require,module,exports){
+},{"../lang/isObject":84}],63:[function(require,module,exports){
 (function (global){
 var SetCache = require('./SetCache'),
     constant = require('../utility/constant'),
@@ -3533,7 +3623,7 @@ var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
 module.exports = createCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":82,"../utility/constant":93,"./SetCache":39}],63:[function(require,module,exports){
+},{"../lang/isNative":83,"../utility/constant":94,"./SetCache":40}],64:[function(require,module,exports){
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
  * partial deep comparisons.
@@ -3589,7 +3679,7 @@ function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stack
 
 module.exports = equalArrays;
 
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 /** `Object#toString` result references. */
 var boolTag = '[object Boolean]',
     dateTag = '[object Date]',
@@ -3640,7 +3730,7 @@ function equalByTag(object, other, tag) {
 
 module.exports = equalByTag;
 
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 var keys = require('../object/keys');
 
 /** Used for native method references. */
@@ -3714,7 +3804,7 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
 
 module.exports = equalObjects;
 
-},{"../object/keys":86}],66:[function(require,module,exports){
+},{"../object/keys":87}],67:[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
  * If `fromRight` is provided elements of `array` are iterated from right to left.
@@ -3740,7 +3830,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = indexOfNaN;
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     isNative = require('../lang/isNative'),
     support = require('../support');
@@ -3780,7 +3870,7 @@ function isBindable(func) {
 
 module.exports = isBindable;
 
-},{"../lang/isNative":82,"../support":92,"./baseSetData":57}],68:[function(require,module,exports){
+},{"../lang/isNative":83,"../support":93,"./baseSetData":58}],69:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -3804,7 +3894,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -3838,7 +3928,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":83,"./isIndex":68,"./isLength":70}],70:[function(require,module,exports){
+},{"../lang/isObject":84,"./isIndex":69,"./isLength":71}],71:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -3863,7 +3953,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -3877,7 +3967,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -3894,7 +3984,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"../lang/isObject":83}],73:[function(require,module,exports){
+},{"../lang/isObject":84}],74:[function(require,module,exports){
 (function (global){
 var isNative = require('../lang/isNative');
 
@@ -3907,7 +3997,7 @@ var metaMap = WeakMap && new WeakMap;
 module.exports = metaMap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":82}],74:[function(require,module,exports){
+},{"../lang/isNative":83}],75:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -3937,7 +4027,7 @@ function pickByArray(object, props) {
 
 module.exports = pickByArray;
 
-},{"./toObject":77}],75:[function(require,module,exports){
+},{"./toObject":78}],76:[function(require,module,exports){
 var baseForIn = require('./baseForIn');
 
 /**
@@ -3961,7 +4051,7 @@ function pickByCallback(object, predicate) {
 
 module.exports = pickByCallback;
 
-},{"./baseForIn":47}],76:[function(require,module,exports){
+},{"./baseForIn":48}],77:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -4005,7 +4095,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":78,"../lang/isArray":79,"../object/keysIn":87,"../support":92,"./isIndex":68,"./isLength":70}],77:[function(require,module,exports){
+},{"../lang/isArguments":79,"../lang/isArray":80,"../object/keysIn":88,"../support":93,"./isIndex":69,"./isLength":71}],78:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -4021,7 +4111,7 @@ function toObject(value) {
 
 module.exports = toObject;
 
-},{"../lang/isObject":83}],78:[function(require,module,exports){
+},{"../lang/isObject":84}],79:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -4061,7 +4151,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":70,"../internal/isObjectLike":71}],79:[function(require,module,exports){
+},{"../internal/isLength":71,"../internal/isObjectLike":72}],80:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -4104,7 +4194,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":70,"../internal/isObjectLike":71,"./isNative":82}],80:[function(require,module,exports){
+},{"../internal/isLength":71,"../internal/isObjectLike":72,"./isNative":83}],81:[function(require,module,exports){
 var isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isFunction = require('./isFunction'),
@@ -4154,7 +4244,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"../internal/isLength":70,"../internal/isObjectLike":71,"../object/keys":86,"./isArguments":78,"./isArray":79,"./isFunction":81,"./isString":84}],81:[function(require,module,exports){
+},{"../internal/isLength":71,"../internal/isObjectLike":72,"../object/keys":87,"./isArguments":79,"./isArray":80,"./isFunction":82,"./isString":85}],82:[function(require,module,exports){
 (function (global){
 var baseIsFunction = require('../internal/baseIsFunction'),
     isNative = require('./isNative');
@@ -4201,7 +4291,7 @@ var isFunction = !(baseIsFunction(/x/) || (Uint8Array && !baseIsFunction(Uint8Ar
 module.exports = isFunction;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../internal/baseIsFunction":52,"./isNative":82}],82:[function(require,module,exports){
+},{"../internal/baseIsFunction":53,"./isNative":83}],83:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -4258,7 +4348,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":71,"../string/escapeRegExp":90}],83:[function(require,module,exports){
+},{"../internal/isObjectLike":72,"../string/escapeRegExp":91}],84:[function(require,module,exports){
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -4290,7 +4380,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -4328,7 +4418,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"../internal/isObjectLike":71}],85:[function(require,module,exports){
+},{"../internal/isObjectLike":72}],86:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -4405,7 +4495,7 @@ function isTypedArray(value) {
 
 module.exports = isTypedArray;
 
-},{"../internal/isLength":70,"../internal/isObjectLike":71}],86:[function(require,module,exports){
+},{"../internal/isLength":71,"../internal/isObjectLike":72}],87:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -4455,7 +4545,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":70,"../internal/shimKeys":76,"../lang/isNative":82,"../lang/isObject":83}],87:[function(require,module,exports){
+},{"../internal/isLength":71,"../internal/shimKeys":77,"../lang/isNative":83,"../lang/isObject":84}],88:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -4522,7 +4612,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":68,"../internal/isLength":70,"../lang/isArguments":78,"../lang/isArray":79,"../lang/isObject":83,"../support":92}],88:[function(require,module,exports){
+},{"../internal/isIndex":69,"../internal/isLength":71,"../lang/isArguments":79,"../lang/isArray":80,"../lang/isObject":84,"../support":93}],89:[function(require,module,exports){
 var arrayMap = require('../internal/arrayMap'),
     baseDifference = require('../internal/baseDifference'),
     baseFlatten = require('../internal/baseFlatten'),
@@ -4575,7 +4665,7 @@ function omit(object, predicate, thisArg) {
 
 module.exports = omit;
 
-},{"../internal/arrayMap":40,"../internal/baseDifference":42,"../internal/baseFlatten":45,"../internal/bindCallback":59,"../internal/pickByArray":74,"../internal/pickByCallback":75,"./keysIn":87}],89:[function(require,module,exports){
+},{"../internal/arrayMap":41,"../internal/baseDifference":43,"../internal/baseFlatten":46,"../internal/bindCallback":60,"../internal/pickByArray":75,"../internal/pickByCallback":76,"./keysIn":88}],90:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -4598,7 +4688,7 @@ function capitalize(string) {
 
 module.exports = capitalize;
 
-},{"../internal/baseToString":58}],90:[function(require,module,exports){
+},{"../internal/baseToString":59}],91:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -4632,7 +4722,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":58}],91:[function(require,module,exports){
+},{"../internal/baseToString":59}],92:[function(require,module,exports){
 var baseToString = require('../internal/baseToString'),
     isIterateeCall = require('../internal/isIterateeCall');
 
@@ -4672,7 +4762,7 @@ function words(string, pattern, guard) {
 
 module.exports = words;
 
-},{"../internal/baseToString":58,"../internal/isIterateeCall":69}],92:[function(require,module,exports){
+},{"../internal/baseToString":59,"../internal/isIterateeCall":70}],93:[function(require,module,exports){
 (function (global){
 var isNative = require('./lang/isNative');
 
@@ -4751,7 +4841,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":82}],93:[function(require,module,exports){
+},{"./lang/isNative":83}],94:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -4776,7 +4866,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 /**
  * This method returns the first argument provided to it.
  *
@@ -4798,7 +4888,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],95:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -4826,7 +4916,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],96:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 (function (global){
 
 var rng;
@@ -4861,7 +4951,7 @@ module.exports = rng;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],97:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 //     uuid.js
 //
 //     Copyright (c) 2010-2012 Robert Kieffer
@@ -5046,7 +5136,7 @@ uuid.unparse = unparse;
 
 module.exports = uuid;
 
-},{"./rng":96}],98:[function(require,module,exports){
+},{"./rng":97}],99:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -5054,7 +5144,7 @@ module.exports = {
   popin: require("./popin")
 };
 
-},{"./popin":99,"./search":102}],99:[function(require,module,exports){
+},{"./popin":100,"./search":103}],100:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -5141,7 +5231,7 @@ var popinMixin = {
 
 module.exports = builder(popinMixin);
 
-},{}],100:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -5227,7 +5317,7 @@ var InfiniteScrollPageMixin = {
 
 module.exports = { mixin: InfiniteScrollPageMixin };
 
-},{"object-assign":95}],101:[function(require,module,exports){
+},{"object-assign":96}],102:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -5385,7 +5475,7 @@ var searchFilterResultMixin = {
     _groupClick: function _groupClick(key) {
         console.log("Group by : " + key);
 
-        this.setState(assign({ groupSelectedKey: key, orderSelected: key != undefined ? undefined : this.state.orderSelected }, this.getNoFetchState()), this.search);
+        this.setState(assign({ groupSelectedKey: key }, this.getNoFetchState()), this.search);
     },
     /**
      * Order action click handler.
@@ -5507,18 +5597,6 @@ var searchFilterResultMixin = {
     },
 
     /**
-     * Get the list of the orderable columns.
-     * @returns {object} list of orderable columns.
-     * @private
-     */
-    _getOrderableColumnList: function _getOrderableColumnList() {
-        if (this._isSimpleList()) {
-            return this.props.orderableColumnList;
-        }
-        return undefined;
-    },
-
-    /**
      * @returns {boolean} Returns true if list is a simple list, false if grouped.
      * @private
      */
@@ -5570,7 +5648,7 @@ var searchFilterResultMixin = {
             { className: "listActionBarContainer panel" },
             React.createElement(ListActionBar, { selectionStatus: this.state.selectionStatus,
                 selectionAction: this._selectionGroupLineClick,
-                orderableColumnList: this._getOrderableColumnList(),
+                orderableColumnList: this.props.orderableColumnList,
                 orderAction: this._orderClick,
                 orderSelected: this.state.orderSelected,
                 groupableColumnList: groupableColumnList,
@@ -5605,7 +5683,7 @@ var searchFilterResultMixin = {
 
 module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../common/button/action":3,"../../../common/title":24,"../../../list/action-bar/index":26,"../../../list/selection":29,"../../../list/summary/index":33,"../../../search/live-filter/index":105,"../common-mixin/infinite-scroll-page-mixin":100,"lodash/lang/isArray":79,"object-assign":95}],102:[function(require,module,exports){
+},{"../../../common/button/action":3,"../../../common/title":25,"../../../list/action-bar/index":27,"../../../list/selection":30,"../../../list/summary/index":34,"../../../search/live-filter/index":106,"../common-mixin/infinite-scroll-page-mixin":101,"lodash/lang/isArray":80,"object-assign":96}],103:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -5613,7 +5691,7 @@ module.exports = {
     searchResult: require("./search-result")
 };
 
-},{"./filter-result":101,"./search-result":103}],103:[function(require,module,exports){
+},{"./filter-result":102,"./search-result":104}],104:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -5775,7 +5853,7 @@ var searchMixin = {
 
 module.exports = builder(searchMixin, true);
 
-},{"../../../list/selection":29,"../../../search/quick-search":108,"../common-mixin/infinite-scroll-page-mixin":100,"object-assign":95}],104:[function(require,module,exports){
+},{"../../../list/selection":30,"../../../search/quick-search":109,"../common-mixin/infinite-scroll-page-mixin":101,"object-assign":96}],105:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -5783,7 +5861,7 @@ module.exports = {
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":105,"./quick-search":108}],105:[function(require,module,exports){
+},{"./live-filter":106,"./quick-search":109}],106:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -5942,7 +6020,7 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/img":11,"./live-filter-facet":107,"lodash/object/omit":88,"object-assign":95}],106:[function(require,module,exports){
+},{"../../common/img":12,"./live-filter-facet":108,"lodash/object/omit":89,"object-assign":96}],107:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -5990,7 +6068,7 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],107:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -6147,12 +6225,12 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":106}],108:[function(require,module,exports){
+},{"./live-filter-data":107}],109:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":109}],109:[function(require,module,exports){
+},{"./input":110}],110:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -6246,7 +6324,7 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":110,"lodash/string/words":91}],110:[function(require,module,exports){
+},{"./scope":111,"lodash/string/words":92}],111:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -6400,5 +6478,5 @@ var scopeMixin = {
 
 module.exports = builder(scopeMixin);
 
-},{"lodash/collection/find":38,"uuid":97}]},{},[1])(1)
+},{"lodash/collection/find":39,"uuid":98}]},{},[1])(1)
 });
