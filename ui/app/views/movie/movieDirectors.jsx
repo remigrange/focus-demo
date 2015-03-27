@@ -1,3 +1,4 @@
+//TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
@@ -17,6 +18,7 @@ module.exports = React.createClass({
   displayName: "movieDirectors",
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["directors"]}],
+  renderActions: function renderActions(){},
   action: {
     load: function (id) {
       movieActions.loadDirectors(id);

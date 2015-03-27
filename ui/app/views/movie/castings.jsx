@@ -1,3 +1,4 @@
+//TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
@@ -28,6 +29,7 @@ module.exports = React.createClass({
       movieActions.loadCastings(id);
     }
   },
+  renderActions: function renderActions(){},
   renderContent: function render() {
     return (
       <div className='slidingBloc'>

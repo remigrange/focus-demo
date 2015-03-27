@@ -7,6 +7,7 @@ module.exports = React.createClass({
   mixins: [formMixin],
   stores: [{store: peopleStore, properties: ['people']}],
   action: peopleActions,
+  renderActions: function renderActions(){},
   renderContent: function renderMovieCartridge() {
     return (
       <div className="cartridge">

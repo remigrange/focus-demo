@@ -1913,6 +1913,7 @@ module.exports = React.createClass({
     mixins: [formMixin],
     stores: [{store: movieStore, properties: ["movie"]}],
     action: movieActions,
+    renderActions: function renderActions(){},
     renderContent: function renderMovieCartridge() {
         return (
             React.createElement("div", {className: "cartridge"}, 
@@ -1977,6 +1978,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/movie/castings", function(exports, require, module) {
+//TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
@@ -2007,6 +2009,7 @@ module.exports = React.createClass({
       movieActions.loadCastings(id);
     }
   },
+  renderActions: function renderActions(){},
   renderContent: function render() {
     return (
       React.createElement("div", {className: "slidingBloc"}, 
@@ -2047,22 +2050,42 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 module.exports = React.createClass({
-  definitionPath: "movie",
-  displayName: "movieDetails",
+  definitionPath: 'movie',
+  displayName: 'movieDetails',
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["movie"]}],
   action: movieActions,
+  renderActions: function renderActions(){},
   renderContent: function render() {
+    if(this.state.isEdit) {
+      return (
+        React.createElement("div", null, 
+          React.createElement("div", {className: "slidingBloc"}, 
+            React.createElement(Title, {id: "details", title: "DETAILS"}), 
+          this.fieldFor('title'), 
+          this.fieldFor('released'), 
+          this.fieldFor('runtime'), 
+          this.fieldFor('countryIds'), 
+          this.fieldFor('languageIds'), 
+          this.fieldFor('genreIds')
+          ), 
+          React.createElement("div", {className: "slidingBloc"}, 
+            React.createElement(Title, {id: "storyline", title: "STORYLINE"}), 
+          this.state.description
+          )
+        )
+      );
+    }
     return (
       React.createElement("div", null, 
         React.createElement("div", {className: "slidingBloc"}, 
           React.createElement(Title, {id: "details", title: "DETAILS"}), 
-          this.displayFor("title"), 
-          this.displayFor("released"), 
-          this.displayFor("runtime"), 
-          this.displayFor("countryIds"), 
-          this.displayFor("languageIds"), 
-          this.displayFor("genreIds")
+          this.displayFor('title'), 
+          this.displayFor('released'), 
+          this.displayFor('runtime'), 
+          this.displayFor('countryIds'), 
+          this.displayFor('languageIds'), 
+          this.displayFor('genreIds')
         ), 
         React.createElement("div", {className: "slidingBloc"}, 
           React.createElement(Title, {id: "storyline", title: "STORYLINE"}), 
@@ -2076,6 +2099,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/movie/movieDirectors", function(exports, require, module) {
+//TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
@@ -2095,6 +2119,7 @@ module.exports = React.createClass({
   displayName: "movieDirectors",
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["directors"]}],
+  renderActions: function renderActions(){},
   action: {
     load: function (id) {
       movieActions.loadDirectors(id);
@@ -2134,6 +2159,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/movie/movieProducers", function(exports, require, module) {
+//TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
@@ -2158,6 +2184,7 @@ module.exports = React.createClass({
       movieActions.loadProducers(id);
     }
   },
+  renderActions: function renderActions(){},
   getInitialState: function () {
     this.state = {
       producers: []
@@ -2227,6 +2254,7 @@ module.exports = React.createClass({
   mixins: [formMixin],
   stores: [{store: peopleStore, properties: ['people']}],
   action: peopleActions,
+  renderActions: function renderActions(){},
   renderContent: function renderMovieCartridge() {
     return (
       React.createElement("div", {className: "cartridge"}, 
@@ -2301,7 +2329,18 @@ module.exports = React.createClass({
   mixins: [formMixin],
   stores: [{store: peopleStore, properties: ['people']}],
   action: peopleActions,
+  renderActions: function renderActions(){},
   renderContent: function render() {
+    if(this.state.isEdit) {
+      return (
+        React.createElement("div", {className: "slidingBloc"}, 
+          React.createElement(Title, {id: "identification", title: "IDENTIFICATION"}), 
+          this.fieldFor('lastName'), 
+          this.fieldFor('firstName'), 
+          this.fieldFor('imdbid')
+        )
+      );
+    }
     return (
       React.createElement("div", {className: "slidingBloc"}, 
         React.createElement(Title, {id: "identification", title: "IDENTIFICATION"}), 
@@ -2316,6 +2355,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/people/peopleFilmography", function(exports, require, module) {
+//TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
@@ -2334,6 +2374,7 @@ module.exports = React.createClass({
   definitionPath: "movie",
   displayName: "peopleFilmography",
   mixins: [formMixin],
+  renderActions: function renderActions(){},
   getInitialState: function () {
     this.state = {
       filmography: []

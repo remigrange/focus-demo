@@ -13,6 +13,7 @@ module.exports = React.createClass({
     mixins: [formMixin],
     stores: [{store: movieStore, properties: ["movie"]}],
     action: movieActions,
+    renderActions: function renderActions(){},
     renderContent: function renderMovieCartridge() {
         return (
             <div className="cartridge">
