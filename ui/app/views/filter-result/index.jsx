@@ -1,30 +1,28 @@
 /*global focusComponents, React */
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var Title = focusComponents.common.title.component;
-var Button = focusComponents.common.button.action.component
+var Button = focusComponents.common.button.action.component;
 
 var serviceCommon = require('../../services');
 
 
-
 var action = {
-
-    search: function(criteria) {
+    search: function (criteria) {
         var page = criteria.pageInfos.page;
-        if(page === undefined || page === null ){
+        if (page === undefined || page === null) {
             page = 0;
         }
         criteria.pageInfos.skip = page;
         criteria.group = criteria.pageInfos.group;
-        if(criteria.group === undefined || criteria.group === null ){
+        if (criteria.group === undefined || criteria.group === null) {
             criteria.group = '';
         }
-        if(criteria.pageInfos.order !== undefined){
+        if (criteria.pageInfos.order !== undefined) {
             criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
-            if(criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null){
-                if(criteria.pageInfos.order.order.toLowerCase() === 'asc'){
+            if (criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null) {
+                if (criteria.pageInfos.order.order.toLowerCase() === 'asc') {
                     criteria.pageInfos.sortDesc = false;
-                }else if(criteria.pageInfos.order.order.toLowerCase() === 'desc'){
+                } else if (criteria.pageInfos.order.order.toLowerCase() === 'desc') {
                     criteria.pageInfos.sortDesc = true;
                 }
             }
@@ -44,21 +42,20 @@ var action = {
                         totalRecords: data.totalRecords
                     }
                 };
-                if(criteria.group) {
+                if (criteria.group) {
                     dataRet.pageInfos = {};
                 }
                 focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
-            function error(error) {
-                //TODO
-                console.info("Errrors");
+            function error(errors) {
+                console.info('Errrors: ', errors);
             }
         );
     }
 };
 var Line = React.createClass({
     mixins: [focusComponents.list.selection.line.mixin],
-    renderLineContent: function(data){
+    renderLineContent: function (data) {
         return <div className="item">
             <div className="mov-logo" >
                 <img src="./static/img/logoMovie.png"/>
@@ -85,72 +82,78 @@ var config = {
         Country: 'text'
     },
     orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
-    operationList: [
-        /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},*/
-    ],
-    action: action,
+    operationList: [],
     lineComponent: Line,
-    onLineClick: function onLineClick(line){
+    onLineClick: function onLineClick(line) {
         alert('click sur la ligne ' + line.title);
     },
     isSelection: true,
-    lineOperationList: [],
+    lineOperationList: [
+        {label: '',
+         action: function(data) {
+             alert(data.title);
+         },
+         style: 'preview-content',
+         priority: 1},
+    ],
     criteria: {
         scope: 'MOVIE',
-        searchText: 'Fantastic'
+        searchText: ''
     },
     idField: 'movId',
-    groupMaxRows: 1
-    // groupMaxRows: this.state.groupMaxRows
+    groupMaxRows: 3
 };
 
-var seeMore = function(){
+var seeMore = function () {
     seeMore();
 };
 
 
 module.exports = React.createClass({
-    getInitialState: function() {
-        return {
-            groupMaxRows: 3
+    render: function () {
+        config.criteria = {
+            scope: this.props.scope,
+            searchText: this.props.query
         };
-    },
-    seeMore: function() {
-        this.setState({groupMaxRows: 10});
-    },
-
-    render: function(){
-        var currentView = this;
-        config.groupMaxRows = 3;
         var filterResult = React.createElement(
-                React.createClass({
-                    mixins: [focusComponents.page.search.filterResult.mixin],
-                    actions: action,
-                    store: new focus.store.SearchStore(),
-                    render: function() {
-                        var root = React.createElement('div', { className: 'search-result' },
-                            this.liveFilterComponent(),
-                            React.createElement(
-                                'div',
-                                { className: 'resultContainer' },
-                                this.listSummaryComponent(),
-                                this.actionBarComponent(),
-                                this.resultListComponent()
-                            )
-                        );
-                        return root;
-                    },
-                    groupList: function(groupKey) {
-                         return <div className="listResultContainer panel">
-                             <Title title={groupKey} />
-                             {this._renderSimpleList({ groupKey: groupKey }, this.state.list[groupKey])}
-                             <Button handleOnClick = {currentView.seeMore} label = "See More" />
-                             <Button handleOnClick = {this.showAllGroupListHandler(groupKey)} label = "Show all" />
-                         </div>;
-
+            React.createClass({
+                mixins: [focusComponents.page.search.filterResult.mixin],
+                actions: action,
+                store: new focus.store.SearchStore(),
+                render: function () {
+                    var root = React.createElement('div', {className: 'search-result'},
+                        this.liveFilterComponent(),
+                        React.createElement(
+                            'div',
+                            {className: 'resultContainer'},
+                            this.listSummaryComponent(),
+                            this.actionBarComponent(),
+                            this.resultListComponent()
+                        )
+                    );
+                    return root;
+                },
+                renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
+                    var buttonSeeMore = <div></div>;
+                    if (list.length > config.groupMaxRows) {
+                        if(maxRows > config.groupMaxRows){
+                            buttonSeeMore = <Button handleOnClick = {this.changeGroupByMaxRows(groupKey, config.groupMaxRows)} label = "See Less" className='btn-show-all' />;
+                        } else {
+                            buttonSeeMore = <Button handleOnClick = {this.changeGroupByMaxRows(groupKey, 10)} label = "See More" className='btn-show-all' />;
+                        }
                     }
-                }),
-                config);
+                    return <div className="listResultContainer panel">
+                        <Title className="results-groupBy-title" title={groupKey} />
+                             {this.renderSimpleList(groupKey, list, maxRows)}
+                        <div className='btn-group-by-container'>
+                            <div className = "btn-see-more-less" >{buttonSeeMore}</div>
+                            <div className = "btn-show-all" ><Button handleOnClick = {this.showAllGroupListHandler(groupKey)} label = "Show all" /></div>
+                        </div>
+                    </div>;
+
+                }
+            }),
+            config);
         return filterResult;
     }
 });

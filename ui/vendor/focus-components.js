@@ -1,17 +1,90 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focusComponents = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
 "use strict";
 
-console.log("\n\t.########..#######...######..##.....##..######...........######...#######..##.....##.########...#######..##....##.########.##....##.########..######.\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.###...###.##.....##.##.....##.###...##.##.......###...##....##....##....##\n.##.......##.....##.##.......##.....##.##...............##.......##.....##.####.####.##.....##.##.....##.####..##.##.......####..##....##....##......\n.######...##.....##.##.......##.....##..######..#######.##.......##.....##.##.###.##.########..##.....##.##.##.##.######...##.##.##....##.....######.\n.##.......##.....##.##.......##.....##.......##.........##.......##.....##.##.....##.##........##.....##.##..####.##.......##..####....##..........##\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.##.....##.##........##.....##.##...###.##.......##...###....##....##....##\n.##........#######...######...#######...######...........######...#######..##.....##.##.........#######..##....##.########.##....##....##.....######.\n");
+//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
+console.log("\n  .########..#######...######..##.....##..######...........######...#######..##.....##.########...#######..##....##.########.##....##.########..######.\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.###...###.##.....##.##.....##.###...##.##.......###...##....##....##....##\n.##.......##.....##.##.......##.....##.##...............##.......##.....##.####.####.##.....##.##.....##.####..##.##.......####..##....##....##......\n.######...##.....##.##.......##.....##..######..#######.##.......##.....##.##.###.##.########..##.....##.##.##.##.######...##.##.##....##.....######.\n.##.......##.....##.##.......##.....##.......##.........##.......##.....##.##.....##.##........##.....##.##..####.##.......##..####....##..........##\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.##.....##.##........##.....##.##...###.##.......##...###....##....##....##\n.##........#######...######...#######...######...........######...#######..##.....##.##.........#######..##....##.########.##....##....##.....######.\n");
 module.exports = {
-	common: require("./common"),
-	list: require("./list"),
-	search: require("./search"),
-	page: require("./page"),
-	message: require("./message")
+  common: require("./common"),
+  list: require("./list"),
+  search: require("./search"),
+  page: require("./page"),
+  message: require("./message"),
+  application: require("./application")
 };
 
-},{"./common":13,"./list":29,"./message":38,"./page":100,"./search":107}],2:[function(require,module,exports){
+},{"./application":3,"./common":16,"./list":32,"./message":41,"./page":103,"./search":110}],2:[function(require,module,exports){
+"use strict";
+
+module.exports = {};
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+  bar: require("./bar"),
+  menu: require("./menu")
+};
+
+},{"./bar":2,"./menu":4}],4:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var React = window.React;
+var type = window.focus.component.types;
+
+var menuMixin = {
+  /** @inheritedProps*/
+  getDefaultProps: function getMenuDefaultProps() {
+    return {
+      direction: "vertical", //horizontal
+      position: "left", // top, bottom, right, left
+      links: [],
+      open: false
+    };
+  },
+  /** @inheritedProps*/
+  getInitialState: function getMenuDefaultState() {
+    return {
+      open: this.props.open
+    };
+  },
+  /**
+   * Toggle the state of the menu.
+   */
+  toggle: function toggleOpenMenu() {
+    this.setState({ open: !this.state.open });
+  },
+  /**
+   * Render the links of the menu
+   */
+  renderLinks: function renderLinks() {
+    return this.props.links.map(function (link) {
+      return React.createElement(
+        "a",
+        { href: link.url },
+        link.name
+      );
+    });
+  },
+  /** @inheriteddoc */
+  render: function render() {
+    var className = "menu menu-" + this.props.direction + " menu-" + this.props.position + " menu-" + (this.state.open ? "open" : "");
+    return React.createElement(
+      "nav",
+      { className: className },
+      React.createElement(
+        "h3",
+        null,
+        this.props.title
+      ),
+      this.renderLinks()
+    );
+  }
+};
+
+module.exports = builder(menuMixin);
+
+},{}],5:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -53,7 +126,7 @@ var blockMixin = {
 };
 module.exports = builder(blockMixin);
 
-},{}],3:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -118,17 +191,17 @@ var buttonMixin = {
 
 module.exports = builder(buttonMixin);
 
-},{"../../img":12}],4:[function(require,module,exports){
+},{"../../img":15}],7:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	action: require("./action")
 };
 
-},{"./action":3}],5:[function(require,module,exports){
-//Dependencies.
+},{"./action":6}],8:[function(require,module,exports){
 "use strict";
 
+//Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -178,7 +251,7 @@ var displayTextMixin = {
 
 module.exports = builder(displayTextMixin);
 
-},{}],6:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -408,7 +481,7 @@ var FieldMixin = {
 };
 module.exports = builder(FieldMixin);
 
-},{"../display/text":5,"../input/text":17,"../label":20,"../select/classic":22}],7:[function(require,module,exports){
+},{"../display/text":8,"../input/text":20,"../label":23,"../select/classic":25}],10:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -576,7 +649,7 @@ var formMixin = {
 
 module.exports = builder(formMixin);
 
-},{"./mixin/action-behaviour":8,"./mixin/built-in-components":9,"./mixin/reference-behaviour":10,"./mixin/store-behaviour":11,"lodash/lang/isEmpty":82,"object-assign":97}],8:[function(require,module,exports){
+},{"./mixin/action-behaviour":11,"./mixin/built-in-components":12,"./mixin/reference-behaviour":13,"./mixin/store-behaviour":14,"lodash/lang/isEmpty":85,"object-assign":100}],11:[function(require,module,exports){
 "use strict";
 
 var actionMixin = {
@@ -616,7 +689,7 @@ var actionMixin = {
 
 module.exports = actionMixin;
 
-},{}],9:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -743,10 +816,10 @@ module.exports = {
   return;
 }*/
 
-},{"../../button/action":3,"../../field":6}],10:[function(require,module,exports){
-//focus.reference.builder.loadListByName('papas').then(function(data){focus.dispatcher.dispatch({action: {type: "update",data: {papas: data}}})})
-
+},{"../../button/action":6,"../../field":9}],13:[function(require,module,exports){
 "use strict";
+
+//focus.reference.builder.loadListByName('papas').then(function(data){focus.dispatcher.dispatch({action: {type: "update",data: {papas: data}}})})
 
 var builtInRefStoreAccessor = window.focus.reference.builtInStore;
 var builtInActionReferenceLoader = window.focus.reference.builtInAction;
@@ -805,7 +878,7 @@ var referenceMixin = {
 
 module.exports = referenceMixin;
 
-},{"lodash/lang/isEmpty":82}],11:[function(require,module,exports){
+},{"lodash/lang/isEmpty":85}],14:[function(require,module,exports){
 "use strict";
 
 var capitalize = require("lodash/string/capitalize");
@@ -877,7 +950,7 @@ var storeMixin = {
 
 module.exports = storeMixin;
 
-},{"lodash/string/capitalize":91,"object-assign":97}],12:[function(require,module,exports){
+},{"lodash/string/capitalize":94,"object-assign":100}],15:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -914,7 +987,7 @@ var imgMixin = {
 
 module.exports = builder(imgMixin);
 
-},{}],13:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -932,15 +1005,15 @@ module.exports = {
   topicDisplayer: require("./topic-displayer")
 };
 
-},{"./block":2,"./button":4,"./field":6,"./form":7,"./img":12,"./input":16,"./label":20,"./select":23,"./select-action":21,"./sticky-navigation":24,"./title":25,"./topic-displayer":26}],14:[function(require,module,exports){
+},{"./block":5,"./button":7,"./field":9,"./form":10,"./img":15,"./input":19,"./label":23,"./select":26,"./select-action":24,"./sticky-navigation":27,"./title":28,"./topic-displayer":29}],17:[function(require,module,exports){
+"use strict";
+
 //Target
 /*
 <label>
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
-"use strict";
-
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1012,7 +1085,7 @@ var checkBoxMixin = {
 
 module.exports = builder(checkBoxMixin);
 
-},{}],15:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 var jQuery = window.jQuery;
@@ -1046,7 +1119,7 @@ var inputDateMixin = {
 
 module.exports = builder(inputDateMixin);
 
-},{"../text":17}],16:[function(require,module,exports){
+},{"../text":20}],19:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -1057,10 +1130,10 @@ module.exports = {
   toggle: require("./toggle")
 };
 
-},{"./checkbox":14,"./date":15,"./text":17,"./textarea":18,"./toggle":19}],17:[function(require,module,exports){
-//Dependencies.
+},{"./checkbox":17,"./date":18,"./text":20,"./textarea":21,"./toggle":22}],20:[function(require,module,exports){
 "use strict";
 
+//Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1136,7 +1209,9 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],18:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
+"use strict";
+
 //Target
 /*
 <div class="checkbox">
@@ -1145,8 +1220,6 @@ module.exports = builder(inputTextMixin);
   </label>
 </div>
  */
-"use strict";
-
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1230,15 +1303,15 @@ var textAreaMixin = {
 
 module.exports = builder(textAreaMixin);
 
-},{}],19:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
+"use strict";
+
 //Target
 /*
 <label>
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
-"use strict";
-
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1308,7 +1381,7 @@ var toggleMixin = {
 
 module.exports = builder(toggleMixin);
 
-},{}],20:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1341,7 +1414,7 @@ var labelMixin = {
 
 module.exports = builder(labelMixin);
 
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1451,10 +1524,10 @@ var selectActionMixin = {
 
 module.exports = builder(selectActionMixin);
 
-},{"../img":12}],22:[function(require,module,exports){
-//Dependencies.
+},{"../img":15}],25:[function(require,module,exports){
 "use strict";
 
+//Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
@@ -1548,14 +1621,14 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],23:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   classic: require("./classic")
 };
 
-},{"./classic":22}],24:[function(require,module,exports){
+},{"./classic":25}],27:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1666,7 +1739,7 @@ var stickyNavigationMixin = {
 
 module.exports = builder(stickyNavigationMixin);
 
-},{}],25:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1705,7 +1778,7 @@ var titleMixin = {
 
 module.exports = builder(titleMixin);
 
-},{}],26:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1772,10 +1845,10 @@ var topicDisplayerMixin = {
 
 module.exports = builder(topicDisplayerMixin);
 
-},{}],27:[function(require,module,exports){
-/**@jsx*/
+},{}],30:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var SelectAction = require("../../common/select-action").component;
 var ActionContextual = require("../action-contextual").component;
@@ -1955,10 +2028,10 @@ var actionBarMixin = {
 
 module.exports = builder(actionBarMixin);
 
-},{"../../common/select-action":21,"../../common/topic-displayer":26,"../action-contextual":28}],28:[function(require,module,exports){
-/**@jsx*/
+},{"../../common/select-action":24,"../../common/topic-displayer":29,"../action-contextual":31}],31:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var Button = require("../../common/button/action").component;
 var SelectAction = require("../../common/select-action").component;
@@ -2038,7 +2111,7 @@ var actionContextualMixin = {
 
 module.exports = builder(actionContextualMixin);
 
-},{"../../common/button/action":3,"../../common/select-action":21}],29:[function(require,module,exports){
+},{"../../common/button/action":6,"../../common/select-action":24}],32:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2049,7 +2122,7 @@ module.exports = {
 	timeline: require("./timeline")
 };
 
-},{"./action-bar":27,"./action-contextual":28,"./selection":30,"./summary":34,"./timeline":35}],30:[function(require,module,exports){
+},{"./action-bar":30,"./action-contextual":31,"./selection":33,"./summary":37,"./timeline":38}],33:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2057,7 +2130,7 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":32,"./list":33}],31:[function(require,module,exports){
+},{"./line":35,"./list":36}],34:[function(require,module,exports){
 "use strict";
 
 var topOfElement = (function (_topOfElement) {
@@ -2171,10 +2244,10 @@ var InfiniteScrollMixin = {
 
 module.exports = { mixin: InfiniteScrollMixin };
 
-},{}],32:[function(require,module,exports){
-/**@jsx*/
+},{}],35:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var React = window.React;
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
@@ -2339,10 +2412,10 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{"../../common/input/checkbox":14,"../action-contextual":28}],33:[function(require,module,exports){
-/**@jsx*/
+},{"../../common/input/checkbox":17,"../action-contextual":31}],36:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Line = require("./line").mixin;
@@ -2511,10 +2584,10 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"../../common/button/action":3,"./infinite-scroll":31,"./line":32}],34:[function(require,module,exports){
-/**@jsx*/
+},{"../../common/button/action":6,"./infinite-scroll":34,"./line":35}],37:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var TopicDisplayer = require("../../common/topic-displayer").component;
 var Button = require("../../common/button/action").component;
@@ -2579,7 +2652,7 @@ var listSummaryMixin = {
 
 module.exports = builder(listSummaryMixin);
 
-},{"../../common/button/action":3,"../../common/topic-displayer":26}],35:[function(require,module,exports){
+},{"../../common/button/action":6,"../../common/topic-displayer":29}],38:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2587,10 +2660,10 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":36,"./list":37}],36:[function(require,module,exports){
-/**@jsx*/
+},{"./line":39,"./list":40}],39:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var React = window.React;
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
@@ -2690,7 +2763,7 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{}],37:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2761,7 +2834,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"./line":36,"uuid":99}],38:[function(require,module,exports){
+},{"./line":39,"uuid":102}],41:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2822,7 +2895,7 @@ var messageMixin = {
 };
 module.exports = builder(messageMixin);
 
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback');
 
 /**
@@ -2888,7 +2961,7 @@ function findIndex(array, predicate, thisArg) {
 
 module.exports = findIndex;
 
-},{"../internal/baseCallback":43}],40:[function(require,module,exports){
+},{"../internal/baseCallback":46}],43:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
     baseFind = require('../internal/baseFind'),
@@ -2956,7 +3029,7 @@ function find(collection, predicate, thisArg) {
 
 module.exports = find;
 
-},{"../array/findIndex":39,"../internal/baseCallback":43,"../internal/baseEach":45,"../internal/baseFind":46,"../lang/isArray":81}],41:[function(require,module,exports){
+},{"../array/findIndex":42,"../internal/baseCallback":46,"../internal/baseEach":48,"../internal/baseFind":49,"../lang/isArray":84}],44:[function(require,module,exports){
 (function (global){
 var cachePush = require('./cachePush'),
     isNative = require('../lang/isNative');
@@ -2989,7 +3062,7 @@ SetCache.prototype.push = cachePush;
 module.exports = SetCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":84,"./cachePush":63}],42:[function(require,module,exports){
+},{"../lang/isNative":87,"./cachePush":66}],45:[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for callback
  * shorthands or `this` binding.
@@ -3012,7 +3085,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],43:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var baseMatches = require('./baseMatches'),
     baseMatchesProperty = require('./baseMatchesProperty'),
     baseProperty = require('./baseProperty'),
@@ -3050,7 +3123,7 @@ function baseCallback(func, thisArg, argCount) {
 
 module.exports = baseCallback;
 
-},{"../utility/identity":96,"./baseMatches":56,"./baseMatchesProperty":57,"./baseProperty":58,"./bindCallback":61,"./isBindable":69}],44:[function(require,module,exports){
+},{"../utility/identity":99,"./baseMatches":59,"./baseMatchesProperty":60,"./baseProperty":61,"./bindCallback":64,"./isBindable":72}],47:[function(require,module,exports){
 var baseIndexOf = require('./baseIndexOf'),
     cacheIndexOf = require('./cacheIndexOf'),
     createCache = require('./createCache');
@@ -3095,7 +3168,7 @@ function baseDifference(array, values) {
       }
       result.push(value);
     }
-    else if (indexOf(values, value, 0) < 0) {
+    else if (indexOf(values, value) < 0) {
       result.push(value);
     }
   }
@@ -3104,7 +3177,7 @@ function baseDifference(array, values) {
 
 module.exports = baseDifference;
 
-},{"./baseIndexOf":51,"./cacheIndexOf":62,"./createCache":64}],45:[function(require,module,exports){
+},{"./baseIndexOf":54,"./cacheIndexOf":65,"./createCache":67}],48:[function(require,module,exports){
 var baseForOwn = require('./baseForOwn'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -3136,7 +3209,7 @@ function baseEach(collection, iteratee) {
 
 module.exports = baseEach;
 
-},{"./baseForOwn":50,"./isLength":72,"./toObject":79}],46:[function(require,module,exports){
+},{"./baseForOwn":53,"./isLength":75,"./toObject":82}],49:[function(require,module,exports){
 /**
  * The base implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
  * without support for callback shorthands and `this` binding, which iterates
@@ -3163,7 +3236,7 @@ function baseFind(collection, predicate, eachFunc, retKey) {
 
 module.exports = baseFind;
 
-},{}],47:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isLength = require('./isLength'),
@@ -3175,13 +3248,13 @@ var isArguments = require('../lang/isArguments'),
  *
  * @private
  * @param {Array} array The array to flatten.
- * @param {boolean} isDeep Specify a deep flatten.
- * @param {boolean} isStrict Restrict flattening to arrays and `arguments` objects.
- * @param {number} fromIndex The index to start from.
+ * @param {boolean} [isDeep] Specify a deep flatten.
+ * @param {boolean} [isStrict] Restrict flattening to arrays and `arguments` objects.
+ * @param {number} [fromIndex=0] The index to start from.
  * @returns {Array} Returns the new flattened array.
  */
 function baseFlatten(array, isDeep, isStrict, fromIndex) {
-  var index = fromIndex - 1,
+  var index = (fromIndex || 0) - 1,
       length = array.length,
       resIndex = -1,
       result = [];
@@ -3192,7 +3265,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
     if (isObjectLike(value) && isLength(value.length) && (isArray(value) || isArguments(value))) {
       if (isDeep) {
         // Recursively flatten arrays (susceptible to call stack limits).
-        value = baseFlatten(value, isDeep, isStrict, 0);
+        value = baseFlatten(value, isDeep, isStrict);
       }
       var valIndex = -1,
           valLength = value.length;
@@ -3210,7 +3283,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
 
 module.exports = baseFlatten;
 
-},{"../lang/isArguments":80,"../lang/isArray":81,"./isLength":72,"./isObjectLike":73}],48:[function(require,module,exports){
+},{"../lang/isArguments":83,"../lang/isArray":84,"./isLength":75,"./isObjectLike":76}],51:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -3242,7 +3315,7 @@ function baseFor(object, iteratee, keysFunc) {
 
 module.exports = baseFor;
 
-},{"./toObject":79}],49:[function(require,module,exports){
+},{"./toObject":82}],52:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keysIn = require('../object/keysIn');
 
@@ -3261,7 +3334,7 @@ function baseForIn(object, iteratee) {
 
 module.exports = baseForIn;
 
-},{"../object/keysIn":89,"./baseFor":48}],50:[function(require,module,exports){
+},{"../object/keysIn":92,"./baseFor":51}],53:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keys = require('../object/keys');
 
@@ -3280,7 +3353,7 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"../object/keys":88,"./baseFor":48}],51:[function(require,module,exports){
+},{"../object/keys":91,"./baseFor":51}],54:[function(require,module,exports){
 var indexOfNaN = require('./indexOfNaN');
 
 /**
@@ -3289,14 +3362,14 @@ var indexOfNaN = require('./indexOfNaN');
  * @private
  * @param {Array} array The array to search.
  * @param {*} value The value to search for.
- * @param {number} fromIndex The index to search from.
+ * @param {number} [fromIndex=0] The index to search from.
  * @returns {number} Returns the index of the matched value, else `-1`.
  */
 function baseIndexOf(array, value, fromIndex) {
   if (value !== value) {
     return indexOfNaN(array, fromIndex);
   }
-  var index = fromIndex - 1,
+  var index = (fromIndex || 0) - 1,
       length = array.length;
 
   while (++index < length) {
@@ -3309,7 +3382,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./indexOfNaN":68}],52:[function(require,module,exports){
+},{"./indexOfNaN":71}],55:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep');
 
 /**
@@ -3345,7 +3418,7 @@ function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"./baseIsEqualDeep":53}],53:[function(require,module,exports){
+},{"./baseIsEqualDeep":56}],56:[function(require,module,exports){
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -3448,7 +3521,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, 
 
 module.exports = baseIsEqualDeep;
 
-},{"../lang/isArray":81,"../lang/isTypedArray":87,"./equalArrays":65,"./equalByTag":66,"./equalObjects":67}],54:[function(require,module,exports){
+},{"../lang/isArray":84,"../lang/isTypedArray":90,"./equalArrays":68,"./equalByTag":69,"./equalObjects":70}],57:[function(require,module,exports){
 /**
  * The base implementation of `_.isFunction` without support for environments
  * with incorrect `typeof` results.
@@ -3465,7 +3538,7 @@ function baseIsFunction(value) {
 
 module.exports = baseIsFunction;
 
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual');
 
 /** Used for native method references. */
@@ -3525,7 +3598,7 @@ function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./baseIsEqual":52}],56:[function(require,module,exports){
+},{"./baseIsEqual":55}],59:[function(require,module,exports){
 var baseIsMatch = require('./baseIsMatch'),
     isStrictComparable = require('./isStrictComparable'),
     keys = require('../object/keys');
@@ -3572,7 +3645,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"../object/keys":88,"./baseIsMatch":55,"./isStrictComparable":74}],57:[function(require,module,exports){
+},{"../object/keys":91,"./baseIsMatch":58,"./isStrictComparable":77}],60:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual'),
     isStrictComparable = require('./isStrictComparable');
 
@@ -3598,7 +3671,7 @@ function baseMatchesProperty(key, value) {
 
 module.exports = baseMatchesProperty;
 
-},{"./baseIsEqual":52,"./isStrictComparable":74}],58:[function(require,module,exports){
+},{"./baseIsEqual":55,"./isStrictComparable":77}],61:[function(require,module,exports){
 /**
  * The base implementation of `_.property` which does not coerce `key` to a string.
  *
@@ -3614,7 +3687,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],59:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 var identity = require('../utility/identity'),
     metaMap = require('./metaMap');
 
@@ -3633,7 +3706,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"../utility/identity":96,"./metaMap":75}],60:[function(require,module,exports){
+},{"../utility/identity":99,"./metaMap":78}],63:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -3651,7 +3724,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],61:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 var identity = require('../utility/identity');
 
 /**
@@ -3692,7 +3765,7 @@ function bindCallback(func, thisArg, argCount) {
 
 module.exports = bindCallback;
 
-},{"../utility/identity":96}],62:[function(require,module,exports){
+},{"../utility/identity":99}],65:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -3713,7 +3786,7 @@ function cacheIndexOf(cache, value) {
 
 module.exports = cacheIndexOf;
 
-},{"../lang/isObject":85}],63:[function(require,module,exports){
+},{"../lang/isObject":88}],66:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -3735,7 +3808,7 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"../lang/isObject":85}],64:[function(require,module,exports){
+},{"../lang/isObject":88}],67:[function(require,module,exports){
 (function (global){
 var SetCache = require('./SetCache'),
     constant = require('../utility/constant'),
@@ -3761,7 +3834,7 @@ var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
 module.exports = createCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":84,"../utility/constant":95,"./SetCache":41}],65:[function(require,module,exports){
+},{"../lang/isNative":87,"../utility/constant":98,"./SetCache":44}],68:[function(require,module,exports){
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
  * partial deep comparisons.
@@ -3817,7 +3890,7 @@ function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stack
 
 module.exports = equalArrays;
 
-},{}],66:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /** `Object#toString` result references. */
 var boolTag = '[object Boolean]',
     dateTag = '[object Date]',
@@ -3868,7 +3941,7 @@ function equalByTag(object, other, tag) {
 
 module.exports = equalByTag;
 
-},{}],67:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 var keys = require('../object/keys');
 
 /** Used for native method references. */
@@ -3932,10 +4005,8 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
         othCtor = other.constructor;
 
     // Non `Object` object instances with different constructors are not equal.
-    if (objCtor != othCtor &&
-        ('constructor' in object && 'constructor' in other) &&
-        !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
-          typeof othCtor == 'function' && othCtor instanceof othCtor)) {
+    if (objCtor != othCtor && ('constructor' in object && 'constructor' in other) &&
+        !(typeof objCtor == 'function' && objCtor instanceof objCtor && typeof othCtor == 'function' && othCtor instanceof othCtor)) {
       return false;
     }
   }
@@ -3944,20 +4015,20 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
 
 module.exports = equalObjects;
 
-},{"../object/keys":88}],68:[function(require,module,exports){
+},{"../object/keys":91}],71:[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
  * If `fromRight` is provided elements of `array` are iterated from right to left.
  *
  * @private
  * @param {Array} array The array to search.
- * @param {number} fromIndex The index to search from.
+ * @param {number} [fromIndex] The index to search from.
  * @param {boolean} [fromRight] Specify iterating from right to left.
  * @returns {number} Returns the index of the matched `NaN`, else `-1`.
  */
 function indexOfNaN(array, fromIndex, fromRight) {
   var length = array.length,
-      index = fromIndex + (fromRight ? 0 : -1);
+      index = fromRight ? (fromIndex || length) : ((fromIndex || 0) - 1);
 
   while ((fromRight ? index-- : ++index < length)) {
     var other = array[index];
@@ -3970,7 +4041,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = indexOfNaN;
 
-},{}],69:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     isNative = require('../lang/isNative'),
     support = require('../support');
@@ -4010,7 +4081,7 @@ function isBindable(func) {
 
 module.exports = isBindable;
 
-},{"../lang/isNative":84,"../support":94,"./baseSetData":59}],70:[function(require,module,exports){
+},{"../lang/isNative":87,"../support":97,"./baseSetData":62}],73:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -4034,7 +4105,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],71:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -4061,14 +4132,14 @@ function isIterateeCall(value, index, object) {
   }
   if (prereq) {
     var other = object[index];
-    return value === value ? (value === other) : (other !== other);
+    return value === value ? value === other : other !== other;
   }
   return false;
 }
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":85,"./isIndex":70,"./isLength":72}],72:[function(require,module,exports){
+},{"../lang/isObject":88,"./isIndex":73,"./isLength":75}],75:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -4093,7 +4164,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],73:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -4107,7 +4178,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],74:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -4124,7 +4195,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"../lang/isObject":85}],75:[function(require,module,exports){
+},{"../lang/isObject":88}],78:[function(require,module,exports){
 (function (global){
 var isNative = require('../lang/isNative');
 
@@ -4137,7 +4208,7 @@ var metaMap = WeakMap && new WeakMap;
 module.exports = metaMap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":84}],76:[function(require,module,exports){
+},{"../lang/isNative":87}],79:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -4167,7 +4238,7 @@ function pickByArray(object, props) {
 
 module.exports = pickByArray;
 
-},{"./toObject":79}],77:[function(require,module,exports){
+},{"./toObject":82}],80:[function(require,module,exports){
 var baseForIn = require('./baseForIn');
 
 /**
@@ -4191,7 +4262,7 @@ function pickByCallback(object, predicate) {
 
 module.exports = pickByCallback;
 
-},{"./baseForIn":49}],78:[function(require,module,exports){
+},{"./baseForIn":52}],81:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -4235,7 +4306,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":80,"../lang/isArray":81,"../object/keysIn":89,"../support":94,"./isIndex":70,"./isLength":72}],79:[function(require,module,exports){
+},{"../lang/isArguments":83,"../lang/isArray":84,"../object/keysIn":92,"../support":97,"./isIndex":73,"./isLength":75}],82:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -4251,7 +4322,7 @@ function toObject(value) {
 
 module.exports = toObject;
 
-},{"../lang/isObject":85}],80:[function(require,module,exports){
+},{"../lang/isObject":88}],83:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -4291,7 +4362,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":72,"../internal/isObjectLike":73}],81:[function(require,module,exports){
+},{"../internal/isLength":75,"../internal/isObjectLike":76}],84:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -4334,7 +4405,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":72,"../internal/isObjectLike":73,"./isNative":84}],82:[function(require,module,exports){
+},{"../internal/isLength":75,"../internal/isObjectLike":76,"./isNative":87}],85:[function(require,module,exports){
 var isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isFunction = require('./isFunction'),
@@ -4344,7 +4415,7 @@ var isArguments = require('./isArguments'),
     keys = require('../object/keys');
 
 /**
- * Checks if `value` is empty. A value is considered empty unless it is an
+ * Checks if a value is empty. A value is considered empty unless it is an
  * `arguments` object, array, string, or jQuery-like collection with a length
  * greater than `0` or an object with own enumerable properties.
  *
@@ -4384,7 +4455,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"../internal/isLength":72,"../internal/isObjectLike":73,"../object/keys":88,"./isArguments":80,"./isArray":81,"./isFunction":83,"./isString":86}],83:[function(require,module,exports){
+},{"../internal/isLength":75,"../internal/isObjectLike":76,"../object/keys":91,"./isArguments":83,"./isArray":84,"./isFunction":86,"./isString":89}],86:[function(require,module,exports){
 (function (global){
 var baseIsFunction = require('../internal/baseIsFunction'),
     isNative = require('./isNative');
@@ -4431,7 +4502,7 @@ var isFunction = !(baseIsFunction(/x/) || (Uint8Array && !baseIsFunction(Uint8Ar
 module.exports = isFunction;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../internal/baseIsFunction":54,"./isNative":84}],84:[function(require,module,exports){
+},{"../internal/baseIsFunction":57,"./isNative":87}],87:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -4488,7 +4559,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":73,"../string/escapeRegExp":92}],85:[function(require,module,exports){
+},{"../internal/isObjectLike":76,"../string/escapeRegExp":95}],88:[function(require,module,exports){
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -4520,7 +4591,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],86:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -4558,7 +4629,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"../internal/isObjectLike":73}],87:[function(require,module,exports){
+},{"../internal/isObjectLike":76}],90:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -4635,7 +4706,7 @@ function isTypedArray(value) {
 
 module.exports = isTypedArray;
 
-},{"../internal/isLength":72,"../internal/isObjectLike":73}],88:[function(require,module,exports){
+},{"../internal/isLength":75,"../internal/isObjectLike":76}],91:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -4677,7 +4748,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
         length = object.length;
   }
   if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-      (typeof object != 'function' && (length && isLength(length)))) {
+     (typeof object != 'function' && (length && isLength(length)))) {
     return shimKeys(object);
   }
   return isObject(object) ? nativeKeys(object) : [];
@@ -4685,7 +4756,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":72,"../internal/shimKeys":78,"../lang/isNative":84,"../lang/isObject":85}],89:[function(require,module,exports){
+},{"../internal/isLength":75,"../internal/shimKeys":81,"../lang/isNative":87,"../lang/isObject":88}],92:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -4752,7 +4823,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":70,"../internal/isLength":72,"../lang/isArguments":80,"../lang/isArray":81,"../lang/isObject":85,"../support":94}],90:[function(require,module,exports){
+},{"../internal/isIndex":73,"../internal/isLength":75,"../lang/isArguments":83,"../lang/isArray":84,"../lang/isObject":88,"../support":97}],93:[function(require,module,exports){
 var arrayMap = require('../internal/arrayMap'),
     baseDifference = require('../internal/baseDifference'),
     baseFlatten = require('../internal/baseFlatten'),
@@ -4805,7 +4876,7 @@ function omit(object, predicate, thisArg) {
 
 module.exports = omit;
 
-},{"../internal/arrayMap":42,"../internal/baseDifference":44,"../internal/baseFlatten":47,"../internal/bindCallback":61,"../internal/pickByArray":76,"../internal/pickByCallback":77,"./keysIn":89}],91:[function(require,module,exports){
+},{"../internal/arrayMap":45,"../internal/baseDifference":47,"../internal/baseFlatten":50,"../internal/bindCallback":64,"../internal/pickByArray":79,"../internal/pickByCallback":80,"./keysIn":92}],94:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -4828,7 +4899,7 @@ function capitalize(string) {
 
 module.exports = capitalize;
 
-},{"../internal/baseToString":60}],92:[function(require,module,exports){
+},{"../internal/baseToString":63}],95:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -4862,7 +4933,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":60}],93:[function(require,module,exports){
+},{"../internal/baseToString":63}],96:[function(require,module,exports){
 var baseToString = require('../internal/baseToString'),
     isIterateeCall = require('../internal/isIterateeCall');
 
@@ -4871,7 +4942,7 @@ var reWords = (function() {
   var upper = '[A-Z\\xc0-\\xd6\\xd8-\\xde]',
       lower = '[a-z\\xdf-\\xf6\\xf8-\\xff]+';
 
-  return RegExp(upper + '+(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
+  return RegExp(upper + '{2,}(?=' + upper + lower + ')|' + upper + '?' + lower + '|' + upper + '+|[0-9]+', 'g');
 }());
 
 /**
@@ -4902,7 +4973,7 @@ function words(string, pattern, guard) {
 
 module.exports = words;
 
-},{"../internal/baseToString":60,"../internal/isIterateeCall":71}],94:[function(require,module,exports){
+},{"../internal/baseToString":63,"../internal/isIterateeCall":74}],97:[function(require,module,exports){
 (function (global){
 var isNative = require('./lang/isNative');
 
@@ -4981,7 +5052,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":84}],95:[function(require,module,exports){
+},{"./lang/isNative":87}],98:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -5006,7 +5077,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],96:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 /**
  * This method returns the first argument provided to it.
  *
@@ -5028,7 +5099,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],97:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -5056,7 +5127,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],98:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 (function (global){
 
 var rng;
@@ -5091,7 +5162,7 @@ module.exports = rng;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],99:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 //     uuid.js
 //
 //     Copyright (c) 2010-2012 Robert Kieffer
@@ -5276,7 +5347,7 @@ uuid.unparse = unparse;
 
 module.exports = uuid;
 
-},{"./rng":98}],100:[function(require,module,exports){
+},{"./rng":101}],103:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -5284,7 +5355,7 @@ module.exports = {
   popin: require("./popin")
 };
 
-},{"./popin":101,"./search":105}],101:[function(require,module,exports){
+},{"./popin":104,"./search":108}],104:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -5322,25 +5393,58 @@ var popinMixin = {
             isDisplayed: false // True if modal is displayed
         };
     },
+    /**
+     * Declare the open action.
+     */
+    componentDidMount: function popinDidMount() {
+        var source = document.querySelector(this.props.displaySelector);
+        var currentView = this;
+        source.onclick = function () {
+            currentView.setState({ isDisplayed: !currentView.state.isDisplayed });
+        };
+    },
 
+    /**
+     * Open the modal.
+     */
+    openModal: function openModal() {
+        this.setState({ isDisplayed: true });
+    },
+    /**
+     * Close the modal.
+     */
+    closeModal: function closeModal() {
+        this.setState({ isDisplayed: false });
+    },
+
+    /**
+     * Css class of modal.
+     * @returns {string} css classes.
+     * @private
+     */
     _getModalCss: function _getModalCss() {
         var cssClass = "popin animated float:right;";
         switch (this.props.animation) {
             case "right":
-                cssClass += " bounceInRight";
+                cssClass += " bounceInRight right";
                 break;
             case "left":
-                cssClass += " bounceInLeft";
+                cssClass += " bounceInLeft left";
                 break;
             case "down":
-                cssClass += " bounceInDown";
+                cssClass += " bounceInDown down";
                 break;
             case "up":
-                cssClass += " bounceInUp";
+                cssClass += " bounceInUp up";
                 break;
         }
         return cssClass;
     },
+    /**
+     * Content css class.
+     * @returns {string} css classes.
+     * @private
+     */
     _getModalContentCss: function _getModalContentCss() {
         var cssClass = "modal-content";
         switch (this.props.type) {
@@ -5354,38 +5458,27 @@ var popinMixin = {
         return cssClass;
     },
 
-    openModal: function openModal() {
-        this.setState({ isDisplayed: true });
-    },
-    closeModal: function closeModal() {
-        this.setState({ isDisplayed: false });
-    },
-
-    componentDidMount: function popinDidMount() {
-        var source = document.querySelector(this.props.displaySelector);
-        var currentView = this;
-        source.onclick = function () {
-            currentView.setState({ isDisplayed: !currentView.state.isDisplayed });
-        };
-    },
-
     /**
      * Render the component.
-     * @returns {JSX} Htm code.
+     * @returns {JSX} Html code.
      */
     render: function renderPopin() {
-
         if (!this.state.isDisplayed) {
             return React.createElement("div", null);
         }
-
         return React.createElement(
             "span",
             { className: this._getModalCss() },
             React.createElement(
                 "div",
                 { className: this._getModalContentCss() },
-                this.props.contentLoadingFunction()
+                this.renderPopinHeader(this),
+                React.createElement(
+                    "div",
+                    { className: "modal-body" },
+                    this.renderContent(this)
+                ),
+                this.renderPopinFooter(this)
             )
         );
     }
@@ -5393,7 +5486,7 @@ var popinMixin = {
 
 module.exports = builder(popinMixin);
 
-},{}],102:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -5479,10 +5572,10 @@ var InfiniteScrollPageMixin = {
 
 module.exports = { mixin: InfiniteScrollPageMixin };
 
-},{"object-assign":97}],103:[function(require,module,exports){
-/**@jsx*/
+},{"object-assign":100}],106:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var LiveFilter = require("../../../search/live-filter/index").component;
@@ -5542,10 +5635,10 @@ var groupByComponent = {
 
 module.exports = builder(groupByComponent);
 
-},{"../../../list/action-bar/index":27,"../../../list/selection":30,"../../../list/summary/index":34,"../../../search/live-filter/index":108,"../common-mixin/infinite-scroll-page-mixin":102,"lodash/lang/isArray":81,"object-assign":97}],104:[function(require,module,exports){
-/**@jsx*/
+},{"../../../list/action-bar/index":30,"../../../list/selection":33,"../../../list/summary/index":37,"../../../search/live-filter/index":111,"../common-mixin/infinite-scroll-page-mixin":105,"lodash/lang/isArray":84,"object-assign":100}],107:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var LiveFilter = require("../../../search/live-filter/index").component;
@@ -5918,7 +6011,7 @@ var searchFilterResultMixin = {
 
 module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../list/action-bar/index":27,"../../../list/selection":30,"../../../list/summary/index":34,"../../../search/live-filter/index":108,"../common-mixin/infinite-scroll-page-mixin":102,"./group-by":103,"lodash/lang/isArray":81,"object-assign":97}],105:[function(require,module,exports){
+},{"../../../list/action-bar/index":30,"../../../list/selection":33,"../../../list/summary/index":37,"../../../search/live-filter/index":111,"../common-mixin/infinite-scroll-page-mixin":105,"./group-by":106,"lodash/lang/isArray":84,"object-assign":100}],108:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -5926,7 +6019,7 @@ module.exports = {
     searchResult: require("./search-result")
 };
 
-},{"./filter-result":104,"./search-result":106}],106:[function(require,module,exports){
+},{"./filter-result":107,"./search-result":109}],109:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -6088,7 +6181,7 @@ var searchMixin = {
 
 module.exports = builder(searchMixin, true);
 
-},{"../../../list/selection":30,"../../../search/quick-search":111,"../common-mixin/infinite-scroll-page-mixin":102,"object-assign":97}],107:[function(require,module,exports){
+},{"../../../list/selection":33,"../../../search/quick-search":114,"../common-mixin/infinite-scroll-page-mixin":105,"object-assign":100}],110:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -6096,7 +6189,7 @@ module.exports = {
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":108,"./quick-search":111}],108:[function(require,module,exports){
+},{"./live-filter":111,"./quick-search":114}],111:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -6255,10 +6348,10 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/img":12,"./live-filter-facet":110,"lodash/object/omit":90,"object-assign":97}],109:[function(require,module,exports){
-/**@jsx*/
+},{"../../common/img":15,"./live-filter-facet":113,"lodash/object/omit":93,"object-assign":100}],112:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 
@@ -6303,10 +6396,10 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],110:[function(require,module,exports){
-/**@jsx*/
+},{}],113:[function(require,module,exports){
 "use strict";
 
+/**@jsx*/
 var builder = window.focus.component.builder;
 var React = window.React;
 var Data = require("./live-filter-data").component;
@@ -6460,12 +6553,12 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":109}],111:[function(require,module,exports){
+},{"./live-filter-data":112}],114:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":112}],112:[function(require,module,exports){
+},{"./input":115}],115:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -6559,7 +6652,7 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":113,"lodash/string/words":93}],113:[function(require,module,exports){
+},{"./scope":116,"lodash/string/words":96}],116:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -6720,5 +6813,5 @@ var scopeMixin = {
 
 module.exports = builder(scopeMixin);
 
-},{"lodash/collection/find":40,"uuid":99}]},{},[1])(1)
+},{"lodash/collection/find":43,"uuid":102}]},{},[1])(1)
 });

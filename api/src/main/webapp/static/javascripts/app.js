@@ -1533,39 +1533,43 @@ var render = focus.application.render;
 var AppRouter = Router.extend({
   routes: {
     '': 'home',
-    'filterResult': 'filterResult',
-    'searchResult': 'searchResult',
+    'search/advanced/scope/:scope/query/:query': 'filterResult',
+    'search/quick': 'searchResult',
     'movie/:id': 'movie',
     'people/:id': 'people'
   },
   home: function handleHomeRoute() {
     console.log('ROUTE: HOME');
-    //Require the applications modules
+    var HomeView = require('../views/home');
+    render(HomeView, '#page');
   },
   movie: function handleMovieRoute(id) {
     console.log('ROUTE: MOVIE');
-    //Require the applications modules
     var MovieDetailView = require('../views/movie');
     render(MovieDetailView, '#page', {props: {id: id}});
   },
   people: function handlePeopleRoute(id) {
     console.log('ROUTE: PEOPLE');
-    //Require the applications modules
     var PeopleDetailView = require('../views/people');
     render(PeopleDetailView, '#page', {props: {id: id}});
   },
-  filterResult: function handleFilterResult() {
+  filterResult: function handleFilterResult(scope, query) {
     console.log('ROUTE: FILTER RESULT');
-    //Require the applications modules
+    if(!scope){
+      //set defaut to MOVIE
+      scope = 'MOVIE';
+    }
+    if(!query){
+      //set defaut to empty
+      query = '';
+    }
     var FilterResultView = require('../views/filter-result');
-    //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
-    render(FilterResultView, '#page');
+    render(FilterResultView, '#page', {props: {scope: scope, query: query}});
   },
+
   searchResult: function handleSearchResult() {
     console.log('ROUTE: SEARCH RESULT');
-    //Require the applications modules
     var SearchResultView = require('../views/search-result');
-    //React.render(<TestView test="Test Rodolphe ROUTE"/>, document.querySelector('#page'));
     render(SearchResultView, '#page');
   }
 });
@@ -1741,30 +1745,28 @@ require.register("views/filter-result/index", function(exports, require, module)
 /*global focusComponents, React */
 var SearchFilterResult = focusComponents.page.search.filterResult.component;
 var Title = focusComponents.common.title.component;
-var Button = focusComponents.common.button.action.component
+var Button = focusComponents.common.button.action.component;
 
 var serviceCommon = require('../../services');
 
 
-
 var action = {
-
-    search: function(criteria) {
+    search: function (criteria) {
         var page = criteria.pageInfos.page;
-        if(page === undefined || page === null ){
+        if (page === undefined || page === null) {
             page = 0;
         }
         criteria.pageInfos.skip = page;
         criteria.group = criteria.pageInfos.group;
-        if(criteria.group === undefined || criteria.group === null ){
+        if (criteria.group === undefined || criteria.group === null) {
             criteria.group = '';
         }
-        if(criteria.pageInfos.order !== undefined){
+        if (criteria.pageInfos.order !== undefined) {
             criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
-            if(criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null){
-                if(criteria.pageInfos.order.order.toLowerCase() === 'asc'){
+            if (criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null) {
+                if (criteria.pageInfos.order.order.toLowerCase() === 'asc') {
                     criteria.pageInfos.sortDesc = false;
-                }else if(criteria.pageInfos.order.order.toLowerCase() === 'desc'){
+                } else if (criteria.pageInfos.order.order.toLowerCase() === 'desc') {
                     criteria.pageInfos.sortDesc = true;
                 }
             }
@@ -1784,21 +1786,20 @@ var action = {
                         totalRecords: data.totalRecords
                     }
                 };
-                if(criteria.group) {
+                if (criteria.group) {
                     dataRet.pageInfos = {};
                 }
                 focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
-            function error(error) {
-                //TODO
-                console.info("Errrors");
+            function error(errors) {
+                console.info('Errrors: ', errors);
             }
         );
     }
 };
 var Line = React.createClass({displayName: "Line",
     mixins: [focusComponents.list.selection.line.mixin],
-    renderLineContent: function(data){
+    renderLineContent: function (data) {
         return React.createElement("div", {className: "item"}, 
             React.createElement("div", {className: "mov-logo"}, 
                 React.createElement("img", {src: "./static/img/logoMovie.png"})
@@ -1825,73 +1826,89 @@ var config = {
         Country: 'text'
     },
     orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
-    operationList: [
-        /*{label: "Button1_a", action: function() {alert("Button1a");}, style:undefined, priority: 1},*/
-    ],
-    action: action,
+    operationList: [],
     lineComponent: Line,
-    onLineClick: function onLineClick(line){
+    onLineClick: function onLineClick(line) {
         alert('click sur la ligne ' + line.title);
     },
     isSelection: true,
-    lineOperationList: [],
+    lineOperationList: [
+        {label: '',
+         action: function(data) {
+             alert(data.title);
+         },
+         style: 'preview-content',
+         priority: 1},
+    ],
     criteria: {
         scope: 'MOVIE',
-        searchText: 'Fantastic'
+        searchText: ''
     },
     idField: 'movId',
-    groupMaxRows: 1
-    // groupMaxRows: this.state.groupMaxRows
+    groupMaxRows: 3
 };
 
-var seeMore = function(){
+var seeMore = function () {
     seeMore();
 };
 
 
 module.exports = React.createClass({displayName: "exports",
-    getInitialState: function() {
-        return {
-            groupMaxRows: 3
+    render: function () {
+        config.criteria = {
+            scope: this.props.scope,
+            searchText: this.props.query
         };
-    },
-    seeMore: function() {
-        this.setState({groupMaxRows: 10});
-    },
-
-    render: function(){
-        var currentView = this;
-        config.groupMaxRows = 3;
         var filterResult = React.createElement(
-                React.createClass({
-                    mixins: [focusComponents.page.search.filterResult.mixin],
-                    actions: action,
-                    store: new focus.store.SearchStore(),
-                    render: function() {
-                        var root = React.createElement('div', { className: 'search-result' },
-                            this.liveFilterComponent(),
-                            React.createElement(
-                                'div',
-                                { className: 'resultContainer' },
-                                this.listSummaryComponent(),
-                                this.actionBarComponent(),
-                                this.resultListComponent()
-                            )
-                        );
-                        return root;
-                    },
-                    groupList: function(groupKey) {
-                         return React.createElement("div", {className: "listResultContainer panel"}, 
-                             React.createElement(Title, {title: groupKey}), 
-                             this._renderSimpleList({ groupKey: groupKey }, this.state.list[groupKey]), 
-                             React.createElement(Button, {handleOnClick: currentView.seeMore, label: "See More"}), 
-                             React.createElement(Button, {handleOnClick: this.showAllGroupListHandler(groupKey), label: "Show all"})
-                         );
-
+            React.createClass({
+                mixins: [focusComponents.page.search.filterResult.mixin],
+                actions: action,
+                store: new focus.store.SearchStore(),
+                render: function () {
+                    var root = React.createElement('div', {className: 'search-result'},
+                        this.liveFilterComponent(),
+                        React.createElement(
+                            'div',
+                            {className: 'resultContainer'},
+                            this.listSummaryComponent(),
+                            this.actionBarComponent(),
+                            this.resultListComponent()
+                        )
+                    );
+                    return root;
+                },
+                renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
+                    var buttonSeeMore = React.createElement("div", null);
+                    if (list.length > config.groupMaxRows) {
+                        if(maxRows > config.groupMaxRows){
+                            buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, config.groupMaxRows), label: "See Less", className: "btn-show-all"});
+                        } else {
+                            buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, 10), label: "See More", className: "btn-show-all"});
+                        }
                     }
-                }),
-                config);
+                    return React.createElement("div", {className: "listResultContainer panel"}, 
+                        React.createElement(Title, {className: "results-groupBy-title", title: groupKey}), 
+                             this.renderSimpleList(groupKey, list, maxRows), 
+                        React.createElement("div", {className: "btn-group-by-container"}, 
+                            React.createElement("div", {className: "btn-see-more-less"}, buttonSeeMore), 
+                            React.createElement("div", {className: "btn-show-all"}, React.createElement(Button, {handleOnClick: this.showAllGroupListHandler(groupKey), label: "Show all"}))
+                        )
+                    );
+
+                }
+            }),
+            config);
         return filterResult;
+    }
+});
+
+});
+
+require.register("views/home/index", function(exports, require, module) {
+/* global React */
+module.exports = React.createClass({displayName: "exports",
+    render: function () {
+        return React.createElement("h3", {className: "welcome-title"}, "Bienvenue à la formation FOCUS");
     }
 });
 
@@ -2439,12 +2456,11 @@ require.register("views/search-result/index", function(exports, require, module)
 /*global focusComponents, React*/
 var serviceCommon = require('../../services');
 var lineResume = require('./lineResume');
-//Actions de la page.
+
 var action = {
-    search: function(criteria) {
-        //TODO handle pageInfo
+    search: function (criteria) {
         var page = 0;
-        if((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)){
+        if ((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)) {
             page = criteria.pageInfos.page;
         }
         var critere = {
@@ -2463,7 +2479,7 @@ var action = {
         serviceCommon.common.searchByScope(critere).then(
             function success(data) {
                 var list = data;
-                if(data.list !== undefined){
+                if (data.list !== undefined) {
                     list = data.list;
                 }
                 var dataRet = {
@@ -2482,7 +2498,6 @@ var action = {
                 focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(errors) {
-                //TODO NOTIIFICATION
                 console.info('Errrors ', errors);
             }
         );
@@ -2492,7 +2507,7 @@ var action = {
 //Composant d'une ligne.
 var Line = React.createClass({displayName: "Line",
     mixins: [focusComponents.list.selection.line.mixin],
-    renderLineContent: function(data){
+    renderLineContent: function (data) {
         return React.createElement("div", {className: "item"}, 
             React.createElement("div", {className: "mov-logo"}, 
                 React.createElement("img", {src: "./static/img/logoMovie.png"})
@@ -2514,82 +2529,83 @@ var Line = React.createClass({displayName: "Line",
 
 //Configuration des props du composant de vue de recherche.
 var config = {
-
-    //todo: a enlever
-    operationList: [
-    ],
-    action: action,
-    lineComponent: Line,
-    //Click sur une ligne
-    onLineClick: function onLineClick(line){
+    onLineClick: function onLineClick(line) {
         var data = line;
-        focus.application.render(lineResume, '#lineResume',
-            {props: {
-                title: data.title,
-                description: data.description,
-                released: data.released,
-                countryIds: data.countryIds,
-                languageIds: data.languageIds,
-                runtime: this.runtime }
-            });
-        //alert('click sur la ligne ' + line.title);
+        /*focus.application.render(lineResume, '#lineResume',
+            {
+                props: {
+                    title: data.title,
+                    description: data.description,
+                    released: data.released,
+                    countryIds: data.countryIds,
+                    languageIds: data.languageIds,
+                    runtime: this.runtime
+                }
+            });*/
+        var url = '';
+        if(data.movId !== undefined && data.movId !== null){
+            url = '#movie/' + data.movId;
+        } else {
+            if(data.peoId !== undefind && data.peoId !== nul){
+                url = '#people/' + data.peoId;
+            }
+        }
+        Backbone.history.navigate(url, true);
     },
-    //Est ce qu'on peut sélectionner la ligne.
-    //Todo: a enlever
-    isSelection: true,
-    //Opération d'une ligne
-    lineOperationList: [
-    ],
-    criteria: {
-        scope: 'MOVIE',
-        searchText: 'Fantastic'
-    },
-    //TODO USE REFERENCE
+    action: action,
     scopes: [
         {code: 'ALL', label: 'ALL'},
         {code: 'MOVIE', label: 'MOVIE'},
         {code: 'PEOPLE', label: 'PEOPLE'}
     ],
-    scope: 'ALL'
-
-
+    scope: 'ALL',
+    idField: 'movId'
 };
 
-module.exports= React.createClass({displayName: "exports",
-    render: function(){
+module.exports = React.createClass({displayName: "exports",
+    render: function () {
         var searchResult = React.createElement(React.createClass(
-                {   mixins: [focusComponents.page.search.searchResult.mixin],
+                {
+                    mixins: [focusComponents.page.search.searchResult.mixin],
                     actions: config.action,
                     store: new focus.store.SearchStore(),
-                    render: function render(){
+                    render: function render() {
                         var qs = this.quickSearchComponent();
                         var summary = React.createElement("div", null);
-                        if(this.state.totalRecords !== undefined && this.state.totalRecords !== null){
+                        if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
                             var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
                             var linkFilterResult = React.createElement("div", null);
-                            if(this.state.totalRecords > 0){
-                                linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
-                                                        React.createElement("a", {href: "#filterResult"}, "Filter result   ", React.createElement("img", {src: "./static/img/arrow-right-16.png"}))
-                                                    );
+                            if (this.state.totalRecords > 0) {
+                                var criteria = this.refs.quickSearch.getValue();
+                                if(criteria.scope.toLowerCase() !== 'all'){
+                                    var url = '#filterResult/scope/' + criteria.scope + '/query/' + criteria.query;
+                                    linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
+                                        React.createElement("a", {href: url}, "Filter result   ", 
+                                            React.createElement("img", {src: "./static/img/arrow-right-16.png"})
+                                        )
+                                    );
+                                }
                             }
                             summary = React.createElement("div", {className: "summary"}, 
                                         resultsContent, 
                                         linkFilterResult
-                                      );
+                            );
                         }
                         var list = this.listComponent();
-                        var search = React.createElement("div", {className: "search-part"}, qs, " ", summary, " ", list)
+                        var search = React.createElement("div", {className: "search-part"}, " ", qs, " ", summary, " ", list)
                         var lineResumeContent = React.createElement("div", {id: "lineResume"});
                         var root = React.createElement('div', {className: 'search-panel slideInLeft animated'}, search, lineResumeContent);
                         return root;
-                    }}),
-                {
-                    lineComponent: Line,
-                    onLineClick: config.onLineClick,
-                    operationList: config.operationList,
-                    scopeList: config.scopes,
-                    scope: config.scope
-                }
+                    }
+                }),
+            {
+                lineComponent: Line,
+                onLineClick: config.onLineClick,
+                operationList: config.operationList,
+                scopeList: config.scopes,
+                scope: config.scope,
+                idField: config.idField
+            }
         );
         return searchResult;
     }

@@ -1,12 +1,11 @@
 /*global focusComponents, React*/
 var serviceCommon = require('../../services');
 var lineResume = require('./lineResume');
-//Actions de la page.
+
 var action = {
-    search: function(criteria) {
-        //TODO handle pageInfo
+    search: function (criteria) {
         var page = 0;
-        if((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)){
+        if ((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)) {
             page = criteria.pageInfos.page;
         }
         var critere = {
@@ -25,7 +24,7 @@ var action = {
         serviceCommon.common.searchByScope(critere).then(
             function success(data) {
                 var list = data;
-                if(data.list !== undefined){
+                if (data.list !== undefined) {
                     list = data.list;
                 }
                 var dataRet = {
@@ -44,7 +43,6 @@ var action = {
                 focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(errors) {
-                //TODO NOTIIFICATION
                 console.info('Errrors ', errors);
             }
         );
@@ -54,7 +52,7 @@ var action = {
 //Composant d'une ligne.
 var Line = React.createClass({
     mixins: [focusComponents.list.selection.line.mixin],
-    renderLineContent: function(data){
+    renderLineContent: function (data) {
         return <div className="item">
             <div className="mov-logo" >
                 <img src="./static/img/logoMovie.png"/>
@@ -76,82 +74,83 @@ var Line = React.createClass({
 
 //Configuration des props du composant de vue de recherche.
 var config = {
-
-    //todo: a enlever
-    operationList: [
-    ],
-    action: action,
-    lineComponent: Line,
-    //Click sur une ligne
-    onLineClick: function onLineClick(line){
+    onLineClick: function onLineClick(line) {
         var data = line;
-        focus.application.render(lineResume, '#lineResume',
-            {props: {
-                title: data.title,
-                description: data.description,
-                released: data.released,
-                countryIds: data.countryIds,
-                languageIds: data.languageIds,
-                runtime: this.runtime }
-            });
-        //alert('click sur la ligne ' + line.title);
+        /*focus.application.render(lineResume, '#lineResume',
+            {
+                props: {
+                    title: data.title,
+                    description: data.description,
+                    released: data.released,
+                    countryIds: data.countryIds,
+                    languageIds: data.languageIds,
+                    runtime: this.runtime
+                }
+            });*/
+        var url = '';
+        if(data.movId !== undefined && data.movId !== null){
+            url = '#movie/' + data.movId;
+        } else {
+            if(data.peoId !== undefind && data.peoId !== nul){
+                url = '#people/' + data.peoId;
+            }
+        }
+        Backbone.history.navigate(url, true);
     },
-    //Est ce qu'on peut sélectionner la ligne.
-    //Todo: a enlever
-    isSelection: true,
-    //Opération d'une ligne
-    lineOperationList: [
-    ],
-    criteria: {
-        scope: 'MOVIE',
-        searchText: 'Fantastic'
-    },
-    //TODO USE REFERENCE
+    action: action,
     scopes: [
         {code: 'ALL', label: 'ALL'},
         {code: 'MOVIE', label: 'MOVIE'},
         {code: 'PEOPLE', label: 'PEOPLE'}
     ],
-    scope: 'ALL'
-
-
+    scope: 'ALL',
+    idField: 'movId'
 };
 
-module.exports= React.createClass({
-    render: function(){
+module.exports = React.createClass({
+    render: function () {
         var searchResult = React.createElement(React.createClass(
-                {   mixins: [focusComponents.page.search.searchResult.mixin],
+                {
+                    mixins: [focusComponents.page.search.searchResult.mixin],
                     actions: config.action,
                     store: new focus.store.SearchStore(),
-                    render: function render(){
+                    render: function render() {
                         var qs = this.quickSearchComponent();
                         var summary = <div></div>;
-                        if(this.state.totalRecords !== undefined && this.state.totalRecords !== null){
+                        if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
                             var resultsContent = <div className='results'>{this.state.totalRecords} results </div>;
                             var linkFilterResult = <div></div>;
-                            if(this.state.totalRecords > 0){
-                                linkFilterResult = <div className='linkFilterResult'>
-                                                        <a href='#filterResult'>Filter result&nbsp;&nbsp;&nbsp;<img src='./static/img/arrow-right-16.png'/></a>
-                                                    </div>;
+                            if (this.state.totalRecords > 0) {
+                                var criteria = this.refs.quickSearch.getValue();
+                                if(criteria.scope.toLowerCase() !== 'all'){
+                                    var url = '#filterResult/scope/' + criteria.scope + '/query/' + criteria.query;
+                                    linkFilterResult = <div className='linkFilterResult'>
+                                        <a href={url}>Filter result&nbsp;&nbsp;&nbsp;
+                                            <img src='./static/img/arrow-right-16.png'/>
+                                        </a>
+                                    </div>;
+                                }
                             }
                             summary = <div className='summary'>
                                         {resultsContent}
                                         {linkFilterResult}
-                                      </div>;
+                            </div>;
                         }
                         var list = this.listComponent();
-                        var search = <div className='search-part'>{qs} {summary} {list}</div>
+                        var search = <div className='search-part'> {qs} {summary} {list}</div>
                         var lineResumeContent = <div id='lineResume'></div>;
                         var root = React.createElement('div', {className: 'search-panel slideInLeft animated'}, search, lineResumeContent);
                         return root;
-                    }}),
-                {
-                    lineComponent: Line,
-                    onLineClick: config.onLineClick,
-                    operationList: config.operationList,
-                    scopeList: config.scopes,
-                    scope: config.scope
-                }
+                    }
+                }),
+            {
+                lineComponent: Line,
+                onLineClick: config.onLineClick,
+                operationList: config.operationList,
+                scopeList: config.scopes,
+                scope: config.scope,
+                idField: config.idField
+            }
         );
         return searchResult;
     }
