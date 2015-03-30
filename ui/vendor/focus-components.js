@@ -2631,16 +2631,18 @@ var listSummaryMixin = {
                 this.props.queryText,
                 "\""
             );
+        } else {
+            var nbResult = React.createElement("div", { className: "nb-result" });
         }
         return React.createElement(
             "div",
             { className: "list-summary" },
+            nbResult,
             React.createElement(
                 "div",
                 { className: "scope" },
                 React.createElement(TopicDisplayer, { topicList: this.props.scopeList, topicClickAction: this.props.scopeClickAction })
             ),
-            nbResult,
             React.createElement(
                 "div",
                 { className: "print" },
@@ -6258,7 +6260,10 @@ var liveFilterMixin = {
         var className = "panel live-filter";
         if (this.state.isExpanded) {
             className += " expanded";
+        } else {
+            className += " collapsed";
         }
+
         return React.createElement(
             "div",
             { className: className },
@@ -6294,14 +6299,17 @@ var liveFilterMixin = {
         }
         var facets = [];
         for (var key in this.props.facetList) {
+            var facet = this.props.facetList[key];
             var selectedDataKey = this.props.selectedFacetList[key] ? this.props.selectedFacetList[key].key : undefined;
-            facets.push(React.createElement(LiveFilterFacet, { facetKey: key, key: key,
-                facet: this.props.facetList[key],
-                selectedDataKey: selectedDataKey,
-                isExpanded: this.state.openedFacetList[key],
-                expandHandler: this.expandFacetHandler,
-                selectHandler: this.selectHandler,
-                type: this.props.config[key] }));
+            if (selectedDataKey || Object.keys(facet).length > 1) {
+                facets.push(React.createElement(LiveFilterFacet, { facetKey: key, key: key,
+                    facet: facet,
+                    selectedDataKey: selectedDataKey,
+                    isExpanded: this.state.openedFacetList[key],
+                    expandHandler: this.expandFacetHandler,
+                    selectHandler: this.selectHandler,
+                    type: this.props.config[key] }));
+            }
         }
         return React.createElement(
             "div",
@@ -6444,8 +6452,10 @@ var liveFilterFacetMixin = {
         var className = "panel panel-primary facet";
         if (this.props.selectedDataKey) {
             className += "-selected";
+        } else if (this.props.isExpanded) {
+            className += "-expanded";
         } else {
-            className += " unselected";
+            className += "-collapsed";
         }
         return React.createElement(
             "div",
@@ -6461,12 +6471,10 @@ var liveFilterFacetMixin = {
      */
     renderLiveFilterFacetTitle: function renderLiveFilterFacetTitle() {
         var title = this.props.facetKey;
+        var className = "panel-heading";
         if (this.props.selectedDataKey) {
             title += " : " + this.props.facet[this.props.selectedDataKey].label;
         }
-        // return <div className="title"  onClick={this.liveFilterFacetTitleClick}>{title}</div>
-        var className = "panel-heading";
-        // if(this.props.selectedDataKey || this.props.isExpanded)
         return React.createElement(
             "div",
             { className: className, onClick: this.liveFilterFacetTitleClick },

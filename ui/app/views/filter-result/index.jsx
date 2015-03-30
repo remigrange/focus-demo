@@ -104,11 +104,6 @@ var config = {
     groupMaxRows: 3
 };
 
-var seeMore = function () {
-    seeMore();
-};
-
-
 module.exports = React.createClass({
     render: function () {
         config.criteria = {

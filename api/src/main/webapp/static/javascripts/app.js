@@ -1848,11 +1848,6 @@ var config = {
     groupMaxRows: 3
 };
 
-var seeMore = function () {
-    seeMore();
-};
-
-
 module.exports = React.createClass({displayName: "exports",
     render: function () {
         config.criteria = {
@@ -2578,7 +2573,7 @@ module.exports = React.createClass({displayName: "exports",
                             if (this.state.totalRecords > 0) {
                                 var criteria = this.refs.quickSearch.getValue();
                                 if(criteria.scope.toLowerCase() !== 'all'){
-                                    var url = '#filterResult/scope/' + criteria.scope + '/query/' + criteria.query;
+                                    var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
                                     linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
                                         React.createElement("a", {href: url}, "Filter result   ", 
                                             React.createElement("img", {src: "./static/img/arrow-right-16.png"})
@@ -2594,7 +2589,7 @@ module.exports = React.createClass({displayName: "exports",
                         var list = this.listComponent();
                         var search = React.createElement("div", {className: "search-part"}, " ", qs, " ", summary, " ", list)
                         var lineResumeContent = React.createElement("div", {id: "lineResume"});
-                        var root = React.createElement('div', {className: 'search-panel slideInLeft animated'}, search, lineResumeContent);
+                        var root = React.createElement('div', {className: 'search-panel'}, search, lineResumeContent);
                         return root;
                     }
                 }),

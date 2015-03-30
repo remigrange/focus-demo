@@ -123,7 +123,7 @@ module.exports = React.createClass({
                             if (this.state.totalRecords > 0) {
                                 var criteria = this.refs.quickSearch.getValue();
                                 if(criteria.scope.toLowerCase() !== 'all'){
-                                    var url = '#filterResult/scope/' + criteria.scope + '/query/' + criteria.query;
+                                    var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
                                     linkFilterResult = <div className='linkFilterResult'>
                                         <a href={url}>Filter result&nbsp;&nbsp;&nbsp;
                                             <img src='./static/img/arrow-right-16.png'/>
@@ -139,7 +139,7 @@ module.exports = React.createClass({
                         var list = this.listComponent();
                         var search = <div className='search-part'> {qs} {summary} {list}</div>
                         var lineResumeContent = <div id='lineResume'></div>;
-                        var root = React.createElement('div', {className: 'search-panel slideInLeft animated'}, search, lineResumeContent);
+                        var root = React.createElement('div', {className: 'search-panel'}, search, lineResumeContent);
                         return root;
                     }
                 }),

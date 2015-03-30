@@ -51,7 +51,7 @@
 <body>
 	<div id="pageContent">
 		<div id="leftMenu">
-			<div id="search"><a href="#searchResult"><img src="static/img/search.png"/></a></div>
+			<div id="search"><a href="#search/quick"><img src="static/img/search.png"/></a></div>
 		</div>
 		<div id="container">
 			<div id="header">
