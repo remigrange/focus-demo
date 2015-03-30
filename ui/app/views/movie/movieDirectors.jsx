@@ -25,10 +25,9 @@ module.exports = React.createClass({
     }
   },
   getInitialState: function () {
-    this.state = {
+    return {
       directors: []
     };
-    return this.state;
   },
   renderContent: function render() {
     return (

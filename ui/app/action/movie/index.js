@@ -43,5 +43,9 @@ module.exports = {
           });
         }
       );
+    },
+    save: function saveMovie(json){
+        localStorage.setItem('movie/'+(json.id || 1), JSON.stringify(json));
+        return Promise.resolve(json);
     }
 };

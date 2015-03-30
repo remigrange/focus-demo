@@ -5,15 +5,15 @@ module.exports = React.createClass({
     definitionPath: "movie",
     displayName: "cartridge",
     getInitialState: function () {
-        this.state = {actors: [],
-            producers: [],
-            directors: []};
-        return this.state;
+        return {
+          actors: [],
+          producers: [],
+          directors: []
+        };
     },
     mixins: [formMixin],
     stores: [{store: movieStore, properties: ["movie"]}],
     action: movieActions,
-    renderActions: function renderActions(){},
     renderContent: function renderMovieCartridge() {
         return (
             <div className="cartridge">

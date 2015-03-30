@@ -18,10 +18,9 @@ module.exports = React.createClass({
   displayName: "movieCastings",
   mixins: [formMixin],
   getInitialState: function () {
-    this.state = {
+    return {
       castings: []
     };
-    return this.state;
   },
   stores: [{store: movieStore, properties: ["castings"]}],
   action: {
@@ -29,7 +28,6 @@ module.exports = React.createClass({
       movieActions.loadCastings(id);
     }
   },
-  renderActions: function renderActions(){},
   renderContent: function render() {
     return (
       <div className='slidingBloc'>

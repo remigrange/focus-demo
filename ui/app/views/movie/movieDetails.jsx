@@ -8,43 +8,23 @@ module.exports = React.createClass({
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["movie"]}],
   action: movieActions,
-  renderActions: function renderActions(){},
   renderContent: function render() {
-    if(this.state.isEdit) {
       return (
         <div>
           <div className='slidingBloc'>
             <Title id="details" title="DETAILS"/>
-          {this.fieldFor('title')}
-          {this.fieldFor('released')}
-          {this.fieldFor('runtime')}
-          {this.fieldFor('countryIds')}
-          {this.fieldFor('languageIds')}
-          {this.fieldFor('genreIds')}
+            {this.fieldFor('title')}
+            {this.fieldFor('released')}
+            {this.fieldFor('runtime')}
+            {this.fieldFor('countryIds')}
+            {this.fieldFor('languageIds')}
+            {this.fieldFor('genreIds')}
           </div>
           <div className='slidingBloc'>
             <Title id="storyline" title="STORYLINE"/>
-          {this.state.description}
+            {this.state.description}
           </div>
         </div>
       );
-    }
-    return (
-      <div>
-        <div className='slidingBloc'>
-          <Title id="details" title="DETAILS"/>
-          {this.displayFor('title')}
-          {this.displayFor('released')}
-          {this.displayFor('runtime')}
-          {this.displayFor('countryIds')}
-          {this.displayFor('languageIds')}
-          {this.displayFor('genreIds')}
-        </div>
-        <div className='slidingBloc'>
-          <Title id="storyline" title="STORYLINE"/>
-          {this.state.description}
-        </div>
-      </div>
-    );
   }
 });

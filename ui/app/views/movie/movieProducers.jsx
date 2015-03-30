@@ -25,10 +25,9 @@ module.exports = React.createClass({
   },
   renderActions: function renderActions(){},
   getInitialState: function () {
-    this.state = {
+    return {
       producers: []
     };
-    return this.state;
   },
   renderContent: function render() {
     return (
