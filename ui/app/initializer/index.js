@@ -13,4 +13,4 @@ Backbone.$ = $;*/
 require('./domain-initializer');
 require('./definition-initializer');
 require('./reference_list_initializer').initialize();
-
+require('./i18n-initializer');
