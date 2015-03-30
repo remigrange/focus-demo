@@ -112,6 +112,7 @@ public final class WsMovie implements RestfulService {
      * @param movId movie id.
      * @return movie.
      */
+     //todo: rename in /movies/{id}/detail
     @GET("/movies/{id}/movieView")
     @AnonymousAccessAllowed
     public MovieView getMovieDetails(@PathParam("id") final long movId) {
