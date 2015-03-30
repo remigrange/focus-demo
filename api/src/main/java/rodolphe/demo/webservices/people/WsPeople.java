@@ -87,6 +87,7 @@ public final class WsPeople implements RestfulService {
      * @param peoId people id.
      * @return people.
      */
+     //todo: rename in /people/{id}/detail
     @GET("/people/{id}/peopleView")
     @AnonymousAccessAllowed
     public PeopleView getPeopleDetails(@PathParam("id") final long peoId) {
