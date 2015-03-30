@@ -369,13 +369,13 @@ ul.selection-list {
   height: 40px;
   cursor: pointer; }
 
+.sticky-navigation li.active {
+  font-weight: bold; }
+
 .dots-three-vertical {
   background: url("../img/dots-three-vertical.svg") no-repeat center; }
 
 .select-action li.selected a {
-  font-weight: bold; }
-
-.sticky-navigation li.active {
   font-weight: bold; }
 
 .topic-displayer .topic {

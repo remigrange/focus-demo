@@ -1,26 +1,23 @@
 .details {
   background-color: white;
-  border: solid 1px;
-  margin-left: 260px;
+  border: solid 1px #CCCCCC;
+  margin-left: 270px;
   position: relative;
-  float: left;
-  width: 86%;
 }
 
 .cartridgeCss {
-  width: 454px;//30%
-  //float: right;
-  border: solid 1px;
+  z-index: 10;
+  width: 500px;
+  border-left: solid 1px #CCCCCC;
+  border-bottom: solid 1px #CCCCCC;
   border-bottom: none;
-  position: absolute;
-  margin-left: 1336px;
-  float: right;
+  float:right;
 }
 
 .cartridge .header {
   background-color: #EEECE1;
   height: 150px;
-  border-bottom: solid 1px;
+  border-bottom: solid 1px #CCCCCC;
 }
 
 .cartridge .header .picture {
@@ -41,7 +38,7 @@
   float: left;
   width: 100%;
   padding: 10px;
-  border-bottom: solid 1px;
+  border-bottom: solid 1px #CCCCCC;
 }
 
 .cartridge .field .title{
@@ -62,23 +59,28 @@
 }
 
 #slidingContent {
-  //width: 70%;
-  //float: left;
-  position: relative;
+
 }
+
+#slidingContent .slidingBloc:first-of-type {
+  border: 0;
+}
+
+
 #slidingContent h3 {
   color: grey;
-  margin-left: 20px;
+  margin: 10px 0;
 }
 
 #slidingContent .slidingBloc {
-  border-bottom: solid 1px;
+  border-top: solid 1px #CCCCCC;
+  padding: 5px 15px 10px 15px;
 }
 
 .sticky-navigation {
   background-color: white;
   width: 250px;
-  padding-left: 20px;
+  float:left;
 }
 
 .sticky-navigation a {
@@ -114,16 +116,18 @@
   font-size: 16px;
 }
 
+/*
 #slidingContent .noBorderBottom {
   border-bottom: none;
-}
+}*/
 
+/*
 .slidingBloc button.btn.btn-raised.btn-primary {
   margin-top: 0;
   margin-left: 900px;
   position: relative;
   margin-bottom: 0px;
-}
+}*/
 
 .slidingBloc ul.selection-list li.sl-line:hover {
   background: none;

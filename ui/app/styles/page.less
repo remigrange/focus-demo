@@ -1,11 +1,10 @@
-@sidebar-width:100px;
+@sidebar-width:80px;
 @background-color: #EEEEEE;
 @border-color: #c3c3c3;
 
 body{
   background-color: #EEEEEE;
   font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
-  width: 1903px;
 }
 #leftMenu {
   height: 100%;
@@ -13,17 +12,32 @@ body{
   top:0;
   left:0;
   position: fixed;
-  background-color: #1A3481;
+  background-color: rgba(8, 47, 162, 0.65);
   text-align: center;
-  padding-top: 10px;
 }
-#leftMenu img {
-  width: 40px;
-  height: 40px;
-  margin: 20px 0 20px 10px;
+
+#leftMenu #brand {
+  background-color: #8B8B8B;
+  padding: 2px;
+  height: 50px;
+}
+
+#leftMenu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#leftMenu ul li {
+  padding: 20px 10px;
+}
+
+#leftMenu ul li img {
+/*  width: 40px;*/
   cursor: pointer;
  // border: 1px dashed white;
 }
+
 #logo, #search {
   width: @sidebar-width;
   cursor: pointer;
@@ -31,19 +45,35 @@ body{
 #logo:hover, #search:hover {
   background-color: @background-color;
 }
-#container {
+
+#pageContent {
   margin-left: @sidebar-width;
-  padding:0;
+  position: relative;
 }
+
 #header {
-  height: 20px;
-  /*text-align: right;
-  border-bottom: 1px @border-color solid;*/
+  background-color: #FFF;
+  box-shadow: 0px 4px 1px #CCC;
+  padding: 5px;
+  text-align: center;
+  position: absolute;
+  left:0;
+  right: 0;
+  z-index: 99;
+  line-height: 40px;
+  /*width: 100%;*/
+
+}
+
+#header:before {
+  content: 'header à définir';
 }
 
 #page {
-  margin-right: 4px;
-  padding: 10px;
+  padding: 70px 20px 20px 20px;
+  display: inline-block;
+  width: 100%;
+  min-width: 1300px;
 }
 
 .title-level-1 {

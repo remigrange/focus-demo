@@ -81,7 +81,11 @@ var config = {
         Genre: 'text',
         Country: 'text'
     },
-    orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
+    orderableColumnList: [
+        {key: 'TITLE_SORT_ONLY', order: 'desc', label: 'Title desc'},
+        {key: 'TITLE_SORT_ONLY', order: 'asc', label: 'Title asc'},
+        {key: 'GENRE_IDS', order: 'desc', label: 'Genre desc'},
+        {key: 'GENRE_IDS', order: 'asc', label: 'Genre asc'}],
     operationList: [],
     lineComponent: Line,
     onLineClick: function onLineClick(line) {

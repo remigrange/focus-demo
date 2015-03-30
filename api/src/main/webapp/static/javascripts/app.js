@@ -1825,7 +1825,11 @@ var config = {
         Genre: 'text',
         Country: 'text'
     },
-    orderableColumnList: {TITLE_SORT_ONLY: 'Title', GENRE_IDS: 'Genre'},
+    orderableColumnList: [
+        {key: 'TITLE_SORT_ONLY', order: 'desc', label: 'Title desc'},
+        {key: 'TITLE_SORT_ONLY', order: 'asc', label: 'Title asc'},
+        {key: 'GENRE_IDS', order: 'desc', label: 'Genre desc'},
+        {key: 'GENRE_IDS', order: 'asc', label: 'Genre asc'}],
     operationList: [],
     lineComponent: Line,
     onLineClick: function onLineClick(line) {
@@ -2037,9 +2041,7 @@ module.exports = React.createClass({
 
 require.register("views/movie/index", function(exports, require, module) {
 //Get the form mixin.
-var MovieCartridge = require('./cartridge');
 var SlidingContent = require('./slidingContent');
-
 var StickyNavigation = focus.components.common.stickyNavigation.component;
 
 module.exports = React.createClass({displayName: "exports",
@@ -2047,8 +2049,7 @@ module.exports = React.createClass({displayName: "exports",
         return (
             React.createElement("div", {className: "movieView"}, 
                 React.createElement(StickyNavigation, {contentSelector: "body"}), 
-                React.createElement(SlidingContent, {id: this.props.id}), 
-                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}})
+                React.createElement(SlidingContent, {id: this.props.id})
             )
         );
     }
@@ -2237,19 +2238,24 @@ var Castings = require('./castings');
 var MovieProducers = require('./movieProducers');
 var MovieDirectors = require('./movieDirectors');
 var MoviePictures = require('./moviePictures');
+
+var MovieCartridge = require('./cartridge');
+
 module.exports = React.createClass({
     displayName: 'slidingContent',
     render: function renderSlidingContent() {
         return (
-          React.createElement("div", {className: "details"}, 
-            React.createElement("div", {id: "slidingContent"}, 
-              React.createElement(MovieDetails, {id: this.props.id}), 
-              React.createElement(Castings, {id: this.props.id}), 
-              React.createElement(MovieProducers, {id: this.props.id}), 
-              React.createElement(MovieDirectors, {id: this.props.id}), 
-              React.createElement(MoviePictures, {id: this.props.id})
+            React.createElement("div", {className: "details"}, 
+                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}}), 
+                React.createElement("div", {id: "slidingContent"}, 
+                    React.createElement(MovieDetails, {id: this.props.id}), 
+                    React.createElement(Castings, {id: this.props.id}), 
+                    React.createElement(MovieProducers, {id: this.props.id}), 
+                    React.createElement(MovieDirectors, {id: this.props.id}), 
+                    React.createElement(MoviePictures, {id: this.props.id})
+                )
+
             )
-          )
         );
     }
 });
@@ -2293,7 +2299,6 @@ module.exports = React.createClass({
 
 require.register("views/people/index", function(exports, require, module) {
 //Get the form mixin.
-var MovieCartridge = require('./cartridge');
 var SlidingContent = require('./slidingContent');
 
 var StickyNavigation = focus.components.common.stickyNavigation.component;
@@ -2303,8 +2308,7 @@ module.exports = React.createClass({displayName: "exports",
         return (
             React.createElement("div", {className: "peopleView"}, 
                 React.createElement(StickyNavigation, {contentSelector: "body"}), 
-                React.createElement(SlidingContent, {id: this.props.id}), 
-                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}})
+                React.createElement(SlidingContent, {id: this.props.id})
             )
         );
     }
@@ -2430,19 +2434,21 @@ require.register("views/people/slidingContent", function(exports, require, modul
 var PeopleDetails = require('./peopleDetails');
 var PeopleFilmography = require('./peopleFilmography');
 var PeoplePictures = require('./peoplePictures');
+var MovieCartridge = require('./cartridge');
 module.exports = React.createClass({
-  displayName: 'slidingContent',
-  render: function renderSlidingContent() {
-    return (
-      React.createElement("div", {className: "details"}, 
-        React.createElement("div", {id: "slidingContent"}, 
-          React.createElement(PeopleDetails, {id: this.props.id}), 
-          React.createElement(PeopleFilmography, {id: this.props.id}), 
-          React.createElement(PeoplePictures, {id: this.props.id})
-        )
-      )
-    );
-  }
+    displayName: 'slidingContent',
+    render: function renderSlidingContent() {
+        return (
+            React.createElement("div", {className: "details"}, 
+                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}}), 
+                React.createElement("div", {id: "slidingContent"}, 
+                    React.createElement(PeopleDetails, {id: this.props.id}), 
+                    React.createElement(PeopleFilmography, {id: this.props.id}), 
+                    React.createElement(PeoplePictures, {id: this.props.id})
+                )
+            )
+        );
+    }
 });
 
 });

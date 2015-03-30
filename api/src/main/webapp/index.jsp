@@ -49,15 +49,17 @@
 
 </head>
 <body>
+	<div id="leftMenu">
+		<div id="brand">
+			&nbsp;
+		</div>
+		<ul>
+			<li><a href="#search/quick"><img src="static/img/search.png"/></a></li>
+		</ul>
+	</div>
 	<div id="pageContent">
-		<div id="leftMenu">
-			<div id="search"><a href="#search/quick"><img src="static/img/search.png"/></a></div>
-		</div>
-		<div id="container">
-			<div id="header">
-			</div>
-			<div id="page"></div>
-		</div>
+		<div id="header" class="affix"></div>
+		<div id="page"></div>		
 	</div>
 	<script>require('./index');</script>
 
