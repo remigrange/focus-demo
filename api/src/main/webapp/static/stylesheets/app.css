@@ -3409,9 +3409,9 @@ body {
   text-align: center;
 }
 #leftMenu #brand {
-  background-color: #8B8B8B;
+  background-color: #009587;
   padding: 2px;
-  height: 50px;
+  height: 60px;
 }
 #leftMenu ul {
   list-style: none;
@@ -3422,7 +3422,6 @@ body {
   padding: 20px 10px;
 }
 #leftMenu ul li img {
-  /*  width: 40px;*/
   cursor: pointer;
 }
 #logo,
@@ -3439,9 +3438,6 @@ body {
   position: relative;
 }
 #header {
-  background-color: #FFF;
-  box-shadow: 0px 4px 1px #CCC;
-  padding: 5px;
   text-align: center;
   position: absolute;
   left: 0;
@@ -3449,9 +3445,6 @@ body {
   z-index: 99;
   line-height: 40px;
   /*width: 100%;*/
-}
-#header:before {
-  content: 'header à définir';
 }
 #page {
   padding: 70px 20px 20px 20px;
