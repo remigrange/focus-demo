@@ -128,7 +128,7 @@ module.exports = {
         movieServices.getMovieCastingsById(id).then(
             function(data){
               AppDispatcher.handleServerAction({
-                    data: {castings: {castings: data}},
+                    data: {castings: data},
                     type: "update"
                 });
             }
@@ -139,7 +139,7 @@ module.exports = {
       movieServices.getMovieProducersById(id).then(
         function(data){
           AppDispatcher.handleServerAction({
-            data: {producers: {producers: data}},
+            data: {producers: data},
             type: "update"
           });
         }
@@ -150,15 +150,22 @@ module.exports = {
       movieServices.getMovieDirectorsById(id).then(
         function(data){
           AppDispatcher.handleServerAction({
-            data: {directors: {directors: data}},
+            data: {directors: data},
             type: "update"
           });
         }
       );
     },
-    save: function saveMovie(json){
-        localStorage.setItem('movie/'+(json.id || 1), JSON.stringify(json));
-        return Promise.resolve(json);
+    save: function saveMovie(jsonMovie){
+      jsonMovie.movId = jsonMovie.movId || 1;
+      movieServices.updateMovie(jsonMovie).then(
+        function(data){
+          AppDispatcher.handleServerAction({
+            data: {movie: data},
+            type: "update"
+          });
+        }
+      );
     }
 };
 
@@ -1188,7 +1195,6 @@ module.exports = {
     movieView: url(root + "${id}/" + 'details', 'GET'),
     castings: url(root + "${id}/" + 'castings', 'GET')
 };
-
 });
 
 require.register("config/server/people", function(exports, require, module) {
@@ -1644,6 +1650,10 @@ module.exports = {
 
   getMovieDirectorsById: function getMovieDirectorsById(id){
     return fetch(URL.movie.directors({urlData:{id: id}}));
+  },
+
+  updateMovie: function updateMovie(jsonMovie) {
+    return fetch(URL.movie.update({urlData:{id: jsonMovie.movId}, data: jsonMovie}));
   }
 };
 
@@ -1728,7 +1738,7 @@ var Button = focus.components.common.button.action.component;
 //Pour étendre SelectionList
 //TODO Comment étendre une méthode d'un mixin d'une meilleur façon que celle la ?
 var MySelectionList = React.createClass(
-  $.extend(focus.components.list.selection.list.mixin,
+  _.extend(focus.components.list.selection.list.mixin,
     {
       _renderManualFetch: function renderManualFetch(){
         if(this.props.isManualFetch && this.props.hasMoreData){
@@ -1748,17 +1758,27 @@ var MySelectionList = React.createClass(
 );
 
 module.exports = React.createClass({displayName: "exports",
+  getDefaultProps: function() {
+    data: []
+  },
+  getInitialState: function(){
+    return { maxElements:  this.props.perPage * page};
+  },
   fetchNextPage: function fetchNextPage(page) {
-    this.props.maxElements = this.props.perPage * page;
-    this.forceUpdate();
+    this.setState({maxElements:this.props.perPage * page });
   },
   getDataToUse: function getDataToUse() {
-    return this.props.data.slice(0, this.props.maxElements ? this.props.maxElements : this.props.perPage);
+    if(!this.props.data){
+      return [];
+    }
+    return this.props.data.slice(0, this.state.maxElements ? this.state.maxElements : this.props.perPage);
   },
 
   render: function renderFormList() {
+    var data =  this.props.data || [];
+    var hasMoreData = data.length > (this.state.maxElements ? this.state.maxElements : this.props.perPage);
     return (
-      React.createElement(MySelectionList, {data: this.getDataToUse(), hasMoreData: this.props.data.length > (this.props.maxElements ? this.props.maxElements : this.props.perPage), lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage})
+      React.createElement(MySelectionList, {data: this.getDataToUse(), hasMoreData: hasMoreData, lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage})
     );
   }
 });
@@ -2025,7 +2045,7 @@ var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
-var PeopleCard = require('./peopleCard');
+var PeopleCard = require('./component/peopleCard');
 var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
@@ -2039,26 +2059,35 @@ module.exports = React.createClass({
   definitionPath: "people",
   displayName: "movieCastings",
   mixins: [formMixin],
-  getInitialState: function () {
-    return {
-      castings: []
-    };
-  },
   stores: [{store: movieStore, properties: ["castings"]}],
   action: {
     load: function (id) {
       movieActions.loadCastings(id);
     }
   },
-  renderContent: function render() {
+  renderContent: function renderContentCastings() {
     return (
       React.createElement("div", {className: "slidingBloc"}, 
         React.createElement(Title, {id: "cast", title: "CAST"}), 
         React.createElement(FormList, {data: this.state.castings, line: line, perPage: 5})
-
       )
     );
   }
+});
+
+});
+
+require.register("views/movie/component/peopleCard", function(exports, require, module) {
+module.exports = React.createClass({displayName: "exports",
+    render: function renderPeopleCard() {
+        return (
+            React.createElement("div", {className: "card"}, 
+                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/peopleLogo.png", width: "100%", height: "100%"})), 
+                React.createElement("div", {className: "name"}, this.props.name), 
+                React.createElement("div", {className: "subName"}, this.props.subName)
+            )
+        );
+    }
 });
 
 });
@@ -2097,7 +2126,8 @@ module.exports = React.createClass({
         React.createElement("div", null, 
           React.createElement("div", {className: "slidingBloc"}, 
             React.createElement(Title, {id: "details", title: "DETAILS"}), 
-            this.fieldFor('title'), 
+            this._renderActions(), 
+            this.fieldFor('title'), {isEdit: true}, 
             this.fieldFor('released'), 
             this.fieldFor('runtime'), 
             this.fieldFor('countryIds'), 
@@ -2107,7 +2137,7 @@ module.exports = React.createClass({
           React.createElement("div", {className: "slidingBloc"}, 
             React.createElement(Title, {id: "storyline", title: "STORYLINE"}), 
             this.state.description
-          )
+        )
         )
       );
   }
@@ -2121,7 +2151,7 @@ var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
-var PeopleCard = require('./peopleCard');
+var PeopleCard = require('./component/peopleCard');
 var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
@@ -2141,11 +2171,6 @@ module.exports = React.createClass({
     load: function (id) {
       movieActions.loadDirectors(id);
     }
-  },
-  getInitialState: function () {
-    return {
-      directors: []
-    };
   },
   renderContent: function render() {
     return (
@@ -2180,7 +2205,7 @@ var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
-var PeopleCard = require('./peopleCard');
+var PeopleCard = require('./component/peopleCard');
 var FormList = require('../commons/formList');
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
@@ -2200,12 +2225,6 @@ module.exports = React.createClass({
       movieActions.loadProducers(id);
     }
   },
-  renderActions: function renderActions(){},
-  getInitialState: function () {
-    return {
-      producers: []
-    };
-  },
   renderContent: function render() {
     return (
       React.createElement("div", {className: "slidingBloc"}, 
@@ -2214,21 +2233,6 @@ module.exports = React.createClass({
       )
     );
   }
-});
-
-});
-
-require.register("views/movie/peopleCard", function(exports, require, module) {
-module.exports = React.createClass({displayName: "exports",
-    render: function renderPeopleCard() {
-        return (
-            React.createElement("div", {className: "card"}, 
-                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/peopleLogo.png", width: "100%", height: "100%"})), 
-                React.createElement("div", {className: "name"}, this.props.name), 
-                React.createElement("div", {className: "subName"}, this.props.subName)
-            )
-        );
-    }
 });
 
 });

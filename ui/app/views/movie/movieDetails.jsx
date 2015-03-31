@@ -13,7 +13,8 @@ module.exports = React.createClass({
         <div>
           <div className='slidingBloc'>
             <Title id="details" title="DETAILS"/>
-            {this.fieldFor('title')}
+            {this._renderActions()}
+            {this.fieldFor('title'), {isEdit: true}}
             {this.fieldFor('released')}
             {this.fieldFor('runtime')}
             {this.fieldFor('countryIds')}
@@ -23,7 +24,7 @@ module.exports = React.createClass({
           <div className='slidingBloc'>
             <Title id="storyline" title="STORYLINE"/>
             {this.state.description}
-          </div>
+        </div>
         </div>
       );
   }

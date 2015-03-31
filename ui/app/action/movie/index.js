@@ -16,7 +16,7 @@ module.exports = {
         movieServices.getMovieCastingsById(id).then(
             function(data){
               AppDispatcher.handleServerAction({
-                    data: {castings: {castings: data}},
+                    data: {castings: data},
                     type: "update"
                 });
             }
@@ -27,7 +27,7 @@ module.exports = {
       movieServices.getMovieProducersById(id).then(
         function(data){
           AppDispatcher.handleServerAction({
-            data: {producers: {producers: data}},
+            data: {producers: data},
             type: "update"
           });
         }
@@ -38,14 +38,21 @@ module.exports = {
       movieServices.getMovieDirectorsById(id).then(
         function(data){
           AppDispatcher.handleServerAction({
-            data: {directors: {directors: data}},
+            data: {directors: data},
             type: "update"
           });
         }
       );
     },
-    save: function saveMovie(json){
-        localStorage.setItem('movie/'+(json.id || 1), JSON.stringify(json));
-        return Promise.resolve(json);
+    save: function saveMovie(jsonMovie){
+      jsonMovie.movId = jsonMovie.movId || 1;
+      movieServices.updateMovie(jsonMovie).then(
+        function(data){
+          AppDispatcher.handleServerAction({
+            data: {movie: data},
+            type: "update"
+          });
+        }
+      );
     }
 };
