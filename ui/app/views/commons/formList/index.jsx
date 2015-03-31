@@ -4,7 +4,7 @@ var Button = focus.components.common.button.action.component;
 //Pour étendre SelectionList
 //TODO Comment étendre une méthode d'un mixin d'une meilleur façon que celle la ?
 var MySelectionList = React.createClass(
-  $.extend(focus.components.list.selection.list.mixin,
+  _.extend(focus.components.list.selection.list.mixin,
     {
       _renderManualFetch: function renderManualFetch(){
         if(this.props.isManualFetch && this.props.hasMoreData){
@@ -24,17 +24,27 @@ var MySelectionList = React.createClass(
 );
 
 module.exports = React.createClass({
+  getDefaultProps: function() {
+    data: []
+  },
+  getInitialState: function(){
+    return { maxElements:  this.props.perPage * page};
+  },
   fetchNextPage: function fetchNextPage(page) {
-    this.props.maxElements = this.props.perPage * page;
-    this.forceUpdate();
+    this.setState({maxElements:this.props.perPage * page });
   },
   getDataToUse: function getDataToUse() {
-    return this.props.data.slice(0, this.props.maxElements ? this.props.maxElements : this.props.perPage);
+    if(!this.props.data){
+      return [];
+    }
+    return this.props.data.slice(0, this.state.maxElements ? this.state.maxElements : this.props.perPage);
   },
 
   render: function renderFormList() {
+    var data =  this.props.data || [];
+    var hasMoreData = data.length > (this.state.maxElements ? this.state.maxElements : this.props.perPage);
     return (
-      <MySelectionList data={this.getDataToUse()} hasMoreData={this.props.data.length > (this.props.maxElements ? this.props.maxElements : this.props.perPage)} lineComponent={this.props.line} isSelection={false} isManualFetch={true} fetchNextPage={this.fetchNextPage}/>
+      <MySelectionList data={this.getDataToUse()} hasMoreData={hasMoreData} lineComponent={this.props.line} isSelection={false} isManualFetch={true} fetchNextPage={this.fetchNextPage}/>
     );
   }
 });

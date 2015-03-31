@@ -3,7 +3,7 @@ var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
-var PeopleCard = require('./peopleCard');
+var PeopleCard = require('./component/peopleCard');
 var FormList = require('../commons/formList');
 var line = React.createClass({
   mixins: [focus.components.list.selection.line.mixin],
@@ -22,12 +22,6 @@ module.exports = React.createClass({
     load: function (id) {
       movieActions.loadProducers(id);
     }
-  },
-  renderActions: function renderActions(){},
-  getInitialState: function () {
-    return {
-      producers: []
-    };
   },
   renderContent: function render() {
     return (
