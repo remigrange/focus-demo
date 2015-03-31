@@ -102,7 +102,7 @@ public final class WsMovie implements RestfulService {
      * @param movId movie id.
      * @return movie.
      */
-    @GET("/movies/{id}/movieView")
+    @GET("/{id}/details")
     @AnonymousAccessAllowed
     public MovieView getMovieDetails(@PathParam("id") final long movId) {
         return movieServices.getMovieDetails(movId);
