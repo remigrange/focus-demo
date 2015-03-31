@@ -49,6 +49,7 @@ public class PeopleServicesImpl implements PeopleServices {
 
     /** {@inheritDoc} */
     @Override
+    @Transactional
     public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
             final PeopleCriteria crit, final UiListState uiListState, final String clusteringFacetName,
             final FacetSelection... selection) {

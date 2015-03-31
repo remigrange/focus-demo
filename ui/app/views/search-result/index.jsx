@@ -74,29 +74,32 @@ var Line = React.createClass({
 
 //Configuration des props du composant de vue de recherche.
 var config = {
-    onLineClick: function onLineClick(line) {
-        var data = line;
-        /*focus.application.render(lineResume, '#lineResume',
-            {
-                props: {
-                    title: data.title,
-                    description: data.description,
-                    released: data.released,
-                    countryIds: data.countryIds,
-                    languageIds: data.languageIds,
-                    runtime: this.runtime
-                }
-            });*/
+    onLineClick: function onLineClick(data) {
         var url = '';
         if(data.movId !== undefined && data.movId !== null){
             url = '#movie/' + data.movId;
         } else {
-            if(data.peoId !== undefind && data.peoId !== nul){
+            if(data.peoId !== undefined && data.peoId !== null){
                 url = '#people/' + data.peoId;
             }
         }
         Backbone.history.navigate(url, true);
     },
+    operationList: [
+        {label: 'testt', action: function(data) {
+            focus.application.render(lineResume, '#lineResume',
+             {
+             props: {
+             title: data.title,
+             description: data.description,
+             released: data.released,
+             countryIds: data.countryIds,
+             languageIds: data.languageIds,
+             runtime: this.runtime
+             }
+             });
+        }, style: {className: 'preview'}, priority: 1}
+    ],
     action: action,
     scopes: [
         {code: 'ALL', label: 'ALL'},

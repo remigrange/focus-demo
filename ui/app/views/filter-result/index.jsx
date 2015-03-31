@@ -77,10 +77,11 @@ var Line = React.createClass({
 
 var config = {
     facetConfig: {
-        Language: 'text',
+        Country: 'text',
         Genre: 'text',
-        Country: 'text'
+        Language: 'text'
     },
+    openedFacetList: {Genre: true},
     orderableColumnList: [
         {key: 'TITLE_SORT_ONLY', order: 'desc', label: 'Title desc'},
         {key: 'TITLE_SORT_ONLY', order: 'asc', label: 'Title asc'},
@@ -88,18 +89,19 @@ var config = {
         {key: 'GENRE_IDS', order: 'asc', label: 'Genre asc'}],
     operationList: [],
     lineComponent: Line,
-    onLineClick: function onLineClick(line) {
-        alert('click sur la ligne ' + line.title);
+    onLineClick: function onLineClick(data) {
+        var url = '';
+        if(data.movId !== undefined && data.movId !== null){
+            url = '#movie/' + data.movId;
+        } else {
+            if(data.peoId !== undefined && data.peoId !== null){
+                url = '#people/' + data.peoId;
+            }
+        }
+        Backbone.history.navigate(url, true);
     },
     isSelection: true,
-    lineOperationList: [
-        {label: '',
-         action: function(data) {
-             alert(data.title);
-         },
-         style: 'preview-content',
-         priority: 1},
-    ],
+    lineOperationList: [],
     criteria: {
         scope: 'MOVIE',
         searchText: ''

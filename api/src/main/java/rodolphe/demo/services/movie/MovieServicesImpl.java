@@ -39,7 +39,7 @@ import rodolphe.demo.services.search.SearchServices;
  */
 public class MovieServicesImpl implements MovieServices {
 
-    private static final int MAX_ROWS = 1000;
+    private static final int MAX_ROWS = 50;
     @Inject
     private MovieDAO movieDAO;
     @Inject

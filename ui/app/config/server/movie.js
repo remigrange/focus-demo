@@ -8,6 +8,6 @@ module.exports = {
     actors: url(root + "${id}/" + 'actors', 'GET'),
     producers: url(root + "${id}/" + 'producers', 'GET'),
     directors: url(root + "${id}/" + 'directors', 'GET'),
-    movieView: url(root + "${id}/" + 'movieView', 'GET'),
-    castings: url(root + "${id}/" + 'castings', 'GET'),
+    movieView: url(root + "${id}/" + 'details', 'GET'),
+    castings: url(root + "${id}/" + 'castings', 'GET')
 };

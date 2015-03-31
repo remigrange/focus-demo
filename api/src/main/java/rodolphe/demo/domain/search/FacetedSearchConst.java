@@ -17,7 +17,7 @@ public enum FacetedSearchConst implements CodeEnum {
     /** Movie without facets. */
     QRY_MOVIE_WO_FCT(),
     /** Movie with facets. */
-    QRY_MOVIE_WITH_FCT(MovieIndex.class, FacetConst.FCT_MOVIE_GENRE, FacetConst.FCT_MOVIE_COUNTRY,
+    QRY_MOVIE_WITH_FCT(MovieIndex.class, FacetConst.FCT_MOVIE_COUNTRY, FacetConst.FCT_MOVIE_GENRE,
             FacetConst.FCT_MOVIE_LANGUAGE),
     /** People without facets. */
     QRY_PEOPLE_WO_FCT();
@@ -37,7 +37,7 @@ public enum FacetedSearchConst implements CodeEnum {
 
     /**
      * Give the value of facetConstTab.
-     * 
+     *
      * @return the value of facetConstTab.
      */
     public FacetConst[] getFacetConstTab() {
@@ -46,7 +46,7 @@ public enum FacetedSearchConst implements CodeEnum {
 
     /**
      * Give the value of indexClassname.
-     * 
+     *
      * @return the value of indexClassname.
      */
     public Class getIndexClassname() {
