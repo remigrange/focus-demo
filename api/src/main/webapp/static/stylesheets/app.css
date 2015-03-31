@@ -3279,6 +3279,10 @@ Copyright (c) 2014 Daniel Eden
   animation-name: slideOutUp;
 }
 
+hr {
+  border-top: solid 1px #cccccc;
+}
+
 .details {
   background-color: white;
   border: solid 1px #CCCCCC;

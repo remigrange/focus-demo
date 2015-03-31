@@ -15,9 +15,13 @@ module.exports = React.createClass({
                 <MovieCartridge id={this.props.id} style={{className: 'cartridgeCss'}}/>
                 <div id="slidingContent">
                     <MovieDetails id={this.props.id}/>
+                    <hr></hr>
                     <Castings id={this.props.id}/>
+                    <hr></hr>
                     <MovieProducers id={this.props.id}/>
+                    <hr></hr>
                     <MovieDirectors id={this.props.id}/>
+                    <hr></hr>
                     <MoviePictures id={this.props.id}/>
                 </div>
 
