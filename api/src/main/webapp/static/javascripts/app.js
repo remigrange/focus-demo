@@ -1185,7 +1185,7 @@ module.exports = {
     actors: url(root + "${id}/" + 'actors', 'GET'),
     producers: url(root + "${id}/" + 'producers', 'GET'),
     directors: url(root + "${id}/" + 'directors', 'GET'),
-    movieView: url(root + "${id}/" + 'movieView', 'GET'),
+    movieView: url(root + "${id}/" + 'details', 'GET'),
     castings: url(root + "${id}/" + 'castings', 'GET')
 };
 
@@ -1845,10 +1845,11 @@ var Line = React.createClass({displayName: "Line",
 
 var config = {
     facetConfig: {
-        Language: 'text',
+        Country: 'text',
         Genre: 'text',
-        Country: 'text'
+        Language: 'text'
     },
+    openedFacetList: {Genre: true},
     orderableColumnList: [
         {key: 'TITLE_SORT_ONLY', order: 'desc', label: 'Title desc'},
         {key: 'TITLE_SORT_ONLY', order: 'asc', label: 'Title asc'},
@@ -1856,18 +1857,19 @@ var config = {
         {key: 'GENRE_IDS', order: 'asc', label: 'Genre asc'}],
     operationList: [],
     lineComponent: Line,
-    onLineClick: function onLineClick(line) {
-        alert('click sur la ligne ' + line.title);
+    onLineClick: function onLineClick(data) {
+        var url = '';
+        if(data.movId !== undefined && data.movId !== null){
+            url = '#movie/' + data.movId;
+        } else {
+            if(data.peoId !== undefined && data.peoId !== null){
+                url = '#people/' + data.peoId;
+            }
+        }
+        Backbone.history.navigate(url, true);
     },
     isSelection: true,
-    lineOperationList: [
-        {label: '',
-         action: function(data) {
-             alert(data.title);
-         },
-         style: 'preview-content',
-         priority: 1},
-    ],
+    lineOperationList: [],
     criteria: {
         scope: 'MOVIE',
         searchText: ''
@@ -2554,7 +2556,7 @@ var config = {
              runtime: this.runtime
              }
              });
-        }, style: 'preview', priority: 1}
+        }, style: {className: 'preview'}, priority: 1}
     ],
     action: action,
     scopes: [

@@ -5682,6 +5682,7 @@ var searchFilterResultMixin = {
     getDefaultProps: function getDefaultProps() {
         return {
             facetConfig: {},
+            openedFacetList: {},
             orderableColumnList: {},
             operationList: {},
             lineComponent: undefined,
@@ -5705,7 +5706,7 @@ var searchFilterResultMixin = {
         return assign({
             facetList: {},
             selectedFacetList: {},
-            openedFacetList: {},
+            openedFacetList: this.props.openedFacetList,
             selectionStatus: "none",
             orderSelected: undefined,
             groupSelectedKey: undefined

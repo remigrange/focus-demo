@@ -218,46 +218,6 @@ ul.selection-list {
       position: absolute;
       right: 0px; }
 
-.print {
-  background: url("../img/print.svg") no-repeat center; }
-
-.list-summary .nb-result, .list-summary .scope {
-  display: inline-block;
-  padding: 0 25px 0 25px;
-  min-width: 150px; }
-.list-summary .print {
-  display: inline-block;
-  float: right;
-  padding: 0 25px 0 25px; }
-
-.popin {
-  position: fixed; }
-  .popin .full {
-    min-height: 100vh;
-    min-width: 50vw; }
-  .popin .centered {
-    height: 80vh; }
-
-.popin.left {
-  top: 0px;
-  left: 0px; }
-
-.popin.right {
-  top: 0px;
-  right: 0px; }
-
-.icon {
-  float: left;
-  width: 40px;
-  height: 40px;
-  cursor: pointer; }
-
-.dots-three-vertical {
-  background: url("../img/dots-three-vertical.svg") no-repeat center; }
-
-.select-action li.selected a {
-  font-weight: bold; }
-
 /** css from : http://codepen.io/betdream/details/Ifvbi**/
 .timeline {
   list-style: none;
@@ -374,6 +334,46 @@ ul.selection-list {
 
 .timeline-body > p + p {
   margin-top: 5px; }
+
+.print {
+  background: url("../img/print.svg") no-repeat center; }
+
+.list-summary .nb-result, .list-summary .scope {
+  display: inline-block;
+  padding: 0 25px 0 25px;
+  min-width: 150px; }
+.list-summary .print {
+  display: inline-block;
+  float: right;
+  padding: 0 25px 0 25px; }
+
+.popin {
+  position: fixed; }
+  .popin .full {
+    min-height: 100vh;
+    min-width: 50vw; }
+  .popin .centered {
+    height: 80vh; }
+
+.popin.left {
+  top: 0px;
+  left: 0px; }
+
+.popin.right {
+  top: 0px;
+  right: 0px; }
+
+.icon {
+  float: left;
+  width: 40px;
+  height: 40px;
+  cursor: pointer; }
+
+.dots-three-vertical {
+  background: url("../img/dots-three-vertical.svg") no-repeat center; }
+
+.select-action li.selected a {
+  font-weight: bold; }
 
 .sticky-navigation li.active {
   font-weight: bold; }
@@ -3338,7 +3338,6 @@ Copyright (c) 2014 Daniel Eden
   margin: 10px 0;
 }
 #slidingContent .slidingBloc {
-  border-top: solid 1px #CCCCCC;
   padding: 5px 15px 10px 15px;
 }
 .sticky-navigation {
