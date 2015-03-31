@@ -17,5 +17,9 @@ module.exports = {
 
   getMovieDirectorsById: function getMovieDirectorsById(id){
     return fetch(URL.movie.directors({urlData:{id: id}}));
+  },
+
+  updateMovie: function updateMovie(jsonMovie) {
+    return fetch(URL.movie.update({urlData:{id: jsonMovie.movId}, data: jsonMovie}));
   }
 };

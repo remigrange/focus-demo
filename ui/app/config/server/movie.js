@@ -9,5 +9,5 @@ module.exports = {
     producers: url(root + "${id}/" + 'producers', 'GET'),
     directors: url(root + "${id}/" + 'directors', 'GET'),
     movieView: url(root + "${id}/" + 'movieView', 'GET'),
-    castings: url(root + "${id}/" + 'castings', 'GET')
+    castings: url(root + "${id}/" + 'castings', 'GET'),
 };
