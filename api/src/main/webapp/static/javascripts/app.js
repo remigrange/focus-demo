@@ -2255,9 +2255,13 @@ module.exports = React.createClass({
                 React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}}), 
                 React.createElement("div", {id: "slidingContent"}, 
                     React.createElement(MovieDetails, {id: this.props.id}), 
+                    React.createElement("hr", null), 
                     React.createElement(Castings, {id: this.props.id}), 
+                    React.createElement("hr", null), 
                     React.createElement(MovieProducers, {id: this.props.id}), 
+                    React.createElement("hr", null), 
                     React.createElement(MovieDirectors, {id: this.props.id}), 
+                    React.createElement("hr", null), 
                     React.createElement(MoviePictures, {id: this.props.id})
                 )
 
