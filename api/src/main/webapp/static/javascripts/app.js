@@ -155,6 +155,10 @@ module.exports = {
           });
         }
       );
+    },
+    save: function saveMovie(json){
+        localStorage.setItem('movie/'+(json.id || 1), JSON.stringify(json));
+        return Promise.resolve(json);
     }
 };
 
@@ -1448,6 +1452,11 @@ module.exports = {
 
 });
 
+require.register("i18n/index", function(exports, require, module) {
+module.exports = {'en-GB': {translation: require('./generated/fr-FR.generated')}};
+
+});
+
 require.register("index", function(exports, require, module) {
 /*global Backbone*/
 console.log('Application demo rodoplphe');
@@ -1462,19 +1471,6 @@ Backbone.history.start();
 
 });
 
-require.register("initialize", function(exports, require, module) {
-/* global focus*/
-console.log(focus);
-console.log(focusComponents);
-focus.components = focusComponents;
-//Require dependencies.
-require('./initializer');
-require("router");
-Backbone.history.start();
-//focus.application.render(Hello, '#page', {props: {name: "rodolphe ....."}});
-
-});
-
 require.register("initializer/definition-initializer", function(exports, require, module) {
 /*global focus*/
 focus.definition.entity.container.setEntityConfiguration(require('../config/entityDefinition'));
@@ -1484,6 +1480,34 @@ focus.definition.entity.container.setEntityConfiguration(require('../config/enti
 require.register("initializer/domain-initializer", function(exports, require, module) {
 /*global focus*/
 focus.definition.domain.container.setAll(require('../config/domain'));
+});
+
+require.register("initializer/i18n-initializer", function(exports, require, module) {
+//Initialize translations configuration.
+var i18nConfig = {
+  resStore: require('../i18n'),
+  lng: 'en-GB'///langOpts.i18nCulture
+};
+
+//In production, fallback is english.
+/*if (config.env === "production") {
+  _.extend(i18nConfig, {
+    fallbackLng: 'en-GB'
+  });
+}*/
+
+//Ajax culture into headers.
+/*$.ajaxSetup({
+  headers: {
+    'CultureCode': culture
+  }
+});*/
+
+// Plugin initialization.
+i18n.init(i18nConfig, function(content) {
+  return console.log('Translation correctly initialized.');
+});
+
 });
 
 require.register("initializer/index", function(exports, require, module) {
@@ -1502,7 +1526,7 @@ Backbone.$ = $;*/
 require('./domain-initializer');
 require('./definition-initializer');
 require('./reference_list_initializer').initialize();
-
+require('./i18n-initializer');
 
 });
 
@@ -1921,15 +1945,15 @@ module.exports = React.createClass({
     definitionPath: "movie",
     displayName: "cartridge",
     getInitialState: function () {
-        this.state = {actors: [],
-            producers: [],
-            directors: []};
-        return this.state;
+        return {
+          actors: [],
+          producers: [],
+          directors: []
+        };
     },
     mixins: [formMixin],
     stores: [{store: movieStore, properties: ["movie"]}],
     action: movieActions,
-    renderActions: function renderActions(){},
     renderContent: function renderMovieCartridge() {
         return (
             React.createElement("div", {className: "cartridge"}, 
@@ -2014,10 +2038,9 @@ module.exports = React.createClass({
   displayName: "movieCastings",
   mixins: [formMixin],
   getInitialState: function () {
-    this.state = {
+    return {
       castings: []
     };
-    return this.state;
   },
   stores: [{store: movieStore, properties: ["castings"]}],
   action: {
@@ -2025,7 +2048,6 @@ module.exports = React.createClass({
       movieActions.loadCastings(id);
     }
   },
-  renderActions: function renderActions(){},
   renderContent: function render() {
     return (
       React.createElement("div", {className: "slidingBloc"}, 
@@ -2068,44 +2090,24 @@ module.exports = React.createClass({
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["movie"]}],
   action: movieActions,
-  renderActions: function renderActions(){},
   renderContent: function render() {
-    if(this.state.isEdit) {
       return (
         React.createElement("div", null, 
           React.createElement("div", {className: "slidingBloc"}, 
             React.createElement(Title, {id: "details", title: "DETAILS"}), 
-          this.fieldFor('title'), 
-          this.fieldFor('released'), 
-          this.fieldFor('runtime'), 
-          this.fieldFor('countryIds'), 
-          this.fieldFor('languageIds'), 
-          this.fieldFor('genreIds')
+            this.fieldFor('title'), 
+            this.fieldFor('released'), 
+            this.fieldFor('runtime'), 
+            this.fieldFor('countryIds'), 
+            this.fieldFor('languageIds'), 
+            this.fieldFor('genreIds')
           ), 
           React.createElement("div", {className: "slidingBloc"}, 
             React.createElement(Title, {id: "storyline", title: "STORYLINE"}), 
-          this.state.description
+            this.state.description
           )
         )
       );
-    }
-    return (
-      React.createElement("div", null, 
-        React.createElement("div", {className: "slidingBloc"}, 
-          React.createElement(Title, {id: "details", title: "DETAILS"}), 
-          this.displayFor('title'), 
-          this.displayFor('released'), 
-          this.displayFor('runtime'), 
-          this.displayFor('countryIds'), 
-          this.displayFor('languageIds'), 
-          this.displayFor('genreIds')
-        ), 
-        React.createElement("div", {className: "slidingBloc"}, 
-          React.createElement(Title, {id: "storyline", title: "STORYLINE"}), 
-          this.state.description
-        )
-      )
-    );
   }
 });
 
@@ -2139,10 +2141,9 @@ module.exports = React.createClass({
     }
   },
   getInitialState: function () {
-    this.state = {
+    return {
       directors: []
     };
-    return this.state;
   },
   renderContent: function render() {
     return (
@@ -2199,10 +2200,9 @@ module.exports = React.createClass({
   },
   renderActions: function renderActions(){},
   getInitialState: function () {
-    this.state = {
+    return {
       producers: []
     };
-    return this.state;
   },
   renderContent: function render() {
     return (
@@ -2530,29 +2530,32 @@ var Line = React.createClass({displayName: "Line",
 
 //Configuration des props du composant de vue de recherche.
 var config = {
-    onLineClick: function onLineClick(line) {
-        var data = line;
-        /*focus.application.render(lineResume, '#lineResume',
-            {
-                props: {
-                    title: data.title,
-                    description: data.description,
-                    released: data.released,
-                    countryIds: data.countryIds,
-                    languageIds: data.languageIds,
-                    runtime: this.runtime
-                }
-            });*/
+    onLineClick: function onLineClick(data) {
         var url = '';
         if(data.movId !== undefined && data.movId !== null){
             url = '#movie/' + data.movId;
         } else {
-            if(data.peoId !== undefind && data.peoId !== nul){
+            if(data.peoId !== undefined && data.peoId !== null){
                 url = '#people/' + data.peoId;
             }
         }
         Backbone.history.navigate(url, true);
     },
+    operationList: [
+        {label: 'testt', action: function(data) {
+            focus.application.render(lineResume, '#lineResume',
+             {
+             props: {
+             title: data.title,
+             description: data.description,
+             released: data.released,
+             countryIds: data.countryIds,
+             languageIds: data.languageIds,
+             runtime: this.runtime
+             }
+             });
+        }, style: 'preview', priority: 1}
+    ],
     action: action,
     scopes: [
         {code: 'ALL', label: 'ALL'},

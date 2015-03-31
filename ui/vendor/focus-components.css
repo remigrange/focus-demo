@@ -138,22 +138,6 @@ div.qs-quick-search {
 .qs-scope-none {
   background: url('../img/qs-none.svg') no-repeat center center; }
 
-.popin {
-  position: fixed; }
-  .popin .full {
-    min-height: 100vh;
-    min-width: 50vw; }
-  .popin .centered {
-    height: 80vh; }
-
-.popin.left {
-  top: 0px;
-  left: 0px; }
-
-.popin.right {
-  top: 0px;
-  right: 0px; }
-
 .checkbox-unchecked {
   background: url("../img/checkbox-unchecked.svg") no-repeat center; }
 
@@ -245,6 +229,34 @@ ul.selection-list {
   display: inline-block;
   float: right;
   padding: 0 25px 0 25px; }
+
+.popin {
+  position: fixed; }
+  .popin .full {
+    min-height: 100vh;
+    min-width: 50vw; }
+  .popin .centered {
+    height: 80vh; }
+
+.popin.left {
+  top: 0px;
+  left: 0px; }
+
+.popin.right {
+  top: 0px;
+  right: 0px; }
+
+.icon {
+  float: left;
+  width: 40px;
+  height: 40px;
+  cursor: pointer; }
+
+.dots-three-vertical {
+  background: url("../img/dots-three-vertical.svg") no-repeat center; }
+
+.select-action li.selected a {
+  font-weight: bold; }
 
 /** css from : http://codepen.io/betdream/details/Ifvbi**/
 .timeline {
@@ -363,23 +375,11 @@ ul.selection-list {
 .timeline-body > p + p {
   margin-top: 5px; }
 
-.dots-three-vertical {
-  background: url("../img/dots-three-vertical.svg") no-repeat center; }
-
-.select-action li.selected a {
-  font-weight: bold; }
-
 .sticky-navigation li.active {
   font-weight: bold; }
 
 .topic-displayer .topic {
   background: url("../img/cross.svg") no-repeat right center; }
-
-.icon {
-  float: left;
-  width: 40px;
-  height: 40px;
-  cursor: pointer; }
 
 .liveFilterContainer {
   padding-right: 10px; }

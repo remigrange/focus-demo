@@ -31,6 +31,6 @@ public class WsMovieTest extends AbstractRodolpheTestCase {
         final MovieCriteria movieCriteria = new MovieCriteria();
         movieCriteria.setTitle("Fantastic");
         final UiListState uiListState = new UiListState(50, 0, null, false, null);
-        wsMovie.getMovies(movieCriteria, uiListState);
+        // wsMovie.getMovies(movieCriteria, uiListState,);
     }
 }

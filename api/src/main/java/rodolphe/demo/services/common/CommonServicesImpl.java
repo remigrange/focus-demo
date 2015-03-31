@@ -54,24 +54,7 @@ public class CommonServicesImpl implements CommonServices {
         peopleCrit.setPeoName(searchText);
         peopleCrit.setFirstName(searchText);
         peopleCrit.setLastName(searchText);
-        final FacetSelection[] facetSel = new FacetSelection[selection.size()];
-        // facet selection list.
-        for (int i = 0; i < selection.size(); i++) {
-            final SelectedFacet selected = selection.get(i);
-            FacetConst selectedFacetConst = null;
-            final FacetConst[] listFacets = FacetConst.values();
-            for (final FacetConst facetConst : listFacets) {
-                if (facetConst.getFacetName().equalsIgnoreCase(selected.getKey())) {
-                    selectedFacetConst = facetConst;
-                    break;
-                }
-            }
-            if (selectedFacetConst != null) {
-                final ListFilter filter = new ListFilter(selectedFacetConst.getField().name() + ":\""
-                        + selected.getValue() + "\"");
-                facetSel[i] = new FacetSelection(selectedFacetConst.name(), selected.getValue(), filter);
-            }
-        }
+        final FacetSelection[] facetSel = getFacetSelectionList(selection);
         if (CodeScope.MOVIE.name().equals(scope)) {
             return movieServices.getMoviesByCriteria(movieCrit, uiListState, clusteringFacetName, facetSel);
         } else if (CodeScope.PEOPLE.name().equals(scope)) {
@@ -103,5 +86,29 @@ public class CommonServicesImpl implements CommonServices {
             }
             return ret;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public FacetSelection[] getFacetSelectionList(final DtList<SelectedFacet> selection) {
+        final FacetSelection[] facetSel = new FacetSelection[selection.size()];
+        // facet selection list.
+        for (int i = 0; i < selection.size(); i++) {
+            final SelectedFacet selected = selection.get(i);
+            FacetConst selectedFacetConst = null;
+            final FacetConst[] listFacets = FacetConst.values();
+            for (final FacetConst facetConst : listFacets) {
+                if (facetConst.getFacetName().equalsIgnoreCase(selected.getKey())) {
+                    selectedFacetConst = facetConst;
+                    break;
+                }
+            }
+            if (selectedFacetConst != null) {
+                final ListFilter filter = new ListFilter(selectedFacetConst.getField().name() + ":\""
+                        + selected.getValue() + "\"");
+                facetSel[i] = new FacetSelection(selectedFacetConst.name(), selected.getValue(), filter);
+            }
+        }
+        return facetSel;
     }
 }
