@@ -7,6 +7,7 @@ import io.vertigo.vega.rest.model.UiListState;
 import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.GET;
 import io.vertigo.vega.rest.stereotype.POST;
+import io.vertigo.vega.rest.stereotype.PUT;
 import io.vertigo.vega.rest.stereotype.PathParam;
 import io.vertigo.vega.rest.stereotype.QueryParam;
 
@@ -70,6 +71,14 @@ public final class WsMovie implements RestfulService {
         return movieServices.saveMovie(movie);
     }
 
+    @PUT("/movies/{id}")
+    @AnonymousAccessAllowed
+    public Movie updateMovie(@PathParam("id") final long movId, final Movie movie) {
+        if (movId != movie.getMovId()) {
+        }
+        return movieServices.saveMovie(movie);
+    }
+
     /**
      * Get movie's actors.
      *
@@ -112,7 +121,7 @@ public final class WsMovie implements RestfulService {
      * @param movId movie id.
      * @return movie.
      */
-     //todo: rename in /movies/{id}/detail
+    // todo: rename in /movies/{id}/detail
     @GET("/movies/{id}/movieView")
     @AnonymousAccessAllowed
     public MovieView getMovieDetails(@PathParam("id") final long movId) {
