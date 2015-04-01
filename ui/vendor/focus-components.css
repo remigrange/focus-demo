@@ -173,6 +173,63 @@ div.qs-quick-search {
   width: 400px; }
 
 
+/* Style for the list component*/
+/*variables*/
+/*styles*/
+ul.selection-list {
+  list-style: none;
+  padding: 0;
+  margin: 0; }
+  ul.selection-list li {
+    padding: 10px;
+    background-color: #FFF;
+    margin: 10px 0; }
+  ul.selection-list li.sl-line {
+    cursor: pointer;
+    padding-left: 60px;
+    position: relative; }
+    ul.selection-list li.sl-line div.sl-selection {
+      top: 0;
+      left: 0;
+      position: absolute;
+      z-index: 1;
+      height: 100%;
+      width: 50px;
+      display: none;
+      background-color: #fff; }
+    ul.selection-list li.sl-line div.sl-actions {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      display: none; }
+    ul.selection-list li.sl-line:hover div.sl-selection {
+      display: block; }
+    ul.selection-list li.sl-line:hover div.sl-selection.no-selection {
+      border-left: 3px solid red; }
+    ul.selection-list li.sl-line:hover div.sl-actions {
+      display: inline-block; }
+    ul.selection-list li.sl-line div.sl-selection.selected {
+      display: block;
+      border-left: 3px solid green; }
+  ul.selection-list li.sl-button {
+    background-color: transparent;
+    position: relative; }
+    ul.selection-list li.sl-button a, ul.selection-list li.sl-button button {
+      position: absolute;
+      right: 0px; }
+
+.print {
+  background: url("../img/print.svg") no-repeat center; }
+
+.list-summary .nb-result, .list-summary .scope {
+  display: inline-block;
+  padding: 0 25px 0 25px;
+  min-width: 150px; }
+.list-summary .print {
+  display: inline-block;
+  float: right;
+  padding: 0 25px 0 25px; }
+
 /** css from : http://codepen.io/betdream/details/Ifvbi**/
 .timeline {
   list-style: none;
@@ -290,18 +347,6 @@ div.qs-quick-search {
 .timeline-body > p + p {
   margin-top: 5px; }
 
-.print {
-  background: url("../img/print.svg") no-repeat center; }
-
-.list-summary .nb-result, .list-summary .scope {
-  display: inline-block;
-  padding: 0 25px 0 25px;
-  min-width: 150px; }
-.list-summary .print {
-  display: inline-block;
-  float: right;
-  padding: 0 25px 0 25px; }
-
 .popin {
   position: fixed; }
   .popin .full {
@@ -335,51 +380,6 @@ form.form-edit {
 
 .select-action li.selected a {
   font-weight: bold; }
-
-/* Style for the list component*/
-/*variables*/
-/*styles*/
-ul.selection-list {
-  list-style: none;
-  padding: 0;
-  margin: 0; }
-  ul.selection-list li {
-    padding: 10px;
-    background-color: #FFF;
-    margin: 10px 0; }
-  ul.selection-list li.sl-line {
-    cursor: pointer;
-    padding-left: 60px;
-    position: relative; }
-    ul.selection-list li.sl-line div.sl-selection {
-      top: 0;
-      left: 0;
-      position: absolute;
-      z-index: 1;
-      height: 100%;
-      width: 50px;
-      display: none;
-      background-color: #fff; }
-    ul.selection-list li.sl-line div.sl-actions {
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      display: none; }
-    ul.selection-list li.sl-line:hover div.sl-selection {
-      display: block; }
-    ul.selection-list li.sl-line:hover div.sl-selection.no-selection {
-      border-left: 3px solid red; }
-    ul.selection-list li.sl-line:hover div.sl-actions {
-      display: inline-block; }
-    ul.selection-list li.sl-line div.sl-selection.selected {
-      display: block;
-      border-left: 3px solid green; }
-  ul.selection-list li.sl-button {
-    background-color: transparent;
-    position: relative; }
-    ul.selection-list li.sl-button a, ul.selection-list li.sl-button button {
-      position: absolute;
-      right: 0px; }
 
 .sticky-navigation li.active {
   font-weight: bold; }
