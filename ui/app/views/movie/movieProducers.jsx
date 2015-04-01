@@ -27,7 +27,7 @@ module.exports = React.createClass({
     return (
       <div className='slidingBloc'>
         <Title id="producers" title="PRODUCERS"/>
-        <FormList data={this.state.producers} line={line} perPage={5}/>
+        {this.listFor("producers", {LineComponent: line})}
       </div>
     );
   }

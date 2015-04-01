@@ -8,7 +8,21 @@ module.exports = {
         "style": "date right",
         "format": {
             "value": function(data){return data;}
+        },'InputComponent': focusComponents.common.input.date.component,
+        'formatter': function(date){
+            var monthNames = [
+                'January', "February", "March",
+                "April", "May", "June", "July",
+                "August", "September", "October",
+                "November", "December"
+            ];
+            date = new Date(date);
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var year = date.getFullYear();
+            return "" + day +" "+ monthNames[monthIndex] +" "+ year;
         }
+
     },
     "DO_MONTANT": {
         "type": "number",
