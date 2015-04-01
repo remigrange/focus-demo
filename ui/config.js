@@ -10,7 +10,8 @@ exports.config = {
         'javascripts/vendor.js': /^(bower_components|vendor)/
       },
       order: {
-        before: ['vendor/zepto.js', 'vendor/lodash.js', 'vendor/focus.js', 'vendor/focus-components.js']
+        before: ['vendor/zepto.js', 'vendor/lodash.js', 'vendor/focus.js', 'vendor/focus-components.js'],
+        after: ['vendor/picker.js']
       }
     },
     stylesheets: {
