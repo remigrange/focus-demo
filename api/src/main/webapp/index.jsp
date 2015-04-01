@@ -62,10 +62,6 @@
             		<li class="active"><a href="#">Home</a></li>
         		</ul>
         		<ul class="nav navbar-nav navbar-right">
-            		<li><a href="javascript:void(0)">Link</a></li>
-            		<li class="dropdown">
-                		<a href="bootstrap-elements.html" data-target="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-            		</li>
         		</ul>
     		</div>
 		</div>
