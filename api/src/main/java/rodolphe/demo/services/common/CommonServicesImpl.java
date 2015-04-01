@@ -7,6 +7,7 @@ import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.transaction.Transactional;
+import io.vertigo.vega.rest.engine.UiContext;
 import io.vertigo.vega.rest.model.UiListState;
 
 import javax.inject.Inject;
@@ -60,10 +61,13 @@ public class CommonServicesImpl implements CommonServices {
         } else if (CodeScope.PEOPLE.name().equals(scope)) {
             return peopleServices.getPeopleByCriteria(peopleCrit, uiListState, clusteringFacetName, facetSel);
         } else {
+            final UiContext uiContext = new UiContext();
             final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices
                     .getMoviesByCriteria(movieCrit, uiListState, clusteringFacetName, facetSel);
             final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices
                     .getPeopleByCriteria(peopleCrit, uiListState, clusteringFacetName, facetSel);
+            uiContext.put("totalRecords", movies.getCount() + people.getCount());
+            // final ui
             final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
             final SearchRet searchRet = new SearchRet();
             searchRet.setType(CodeScope.MOVIE.name());

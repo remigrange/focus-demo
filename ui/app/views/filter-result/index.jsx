@@ -129,7 +129,7 @@ module.exports = React.createClass({
                             {className: 'resultContainer'},
                             this.listSummaryComponent(),
                             this.actionBarComponent(),
-                            this.resultListComponent()
+                            this.listComponent()
                         )
                     );
                     return root;

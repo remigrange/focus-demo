@@ -1,0 +1,15 @@
+<?xml version =	'1.0' encoding = 'UTF-8'?>
+<config>
+	<module name="vertigo-search">
+		<component api="SearchManager" class="io.vertigo.dynamo.impl.search.SearchManagerImpl" initClass="rodolphe.demo.boot.initializer.SearchManagerInitializer">
+			<plugin
+				class="io.vertigo.dynamo.plugins.search.elasticsearch.commonshttp.ESSearchServicesPlugin">
+				<param name="servers.names" value="172.20.170.82:9300" />
+				<param name="cluster.name" value="ES-RODOLPHE-DEMO" />
+				<param name="cores" value="IDX_MOVIE,IDX_PEOPLE" />
+				<param name="rowsPerQuery" value="50" />
+				<param name="config.file" value="boot/elasticsearch.yml" />
+			</plugin>
+		</component>
+	</module>
+</config>
