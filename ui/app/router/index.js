@@ -9,8 +9,6 @@ var render = focus.application.render;
 var AppRouter = Router.extend({
   routes: {
     '': 'home',
-    'search/advanced/scope/:scope/query/:query': 'filterResult',
-    'search/quick': 'searchResult',
     'movie/:id': 'movie',
     'people/:id': 'people'
   },
@@ -28,11 +26,6 @@ var AppRouter = Router.extend({
     console.log('ROUTE: PEOPLE');
     var PeopleDetailView = require('../views/people');
     render(PeopleDetailView, '#page', {props: {id: id}});
-  },
-  searchResult: function handleSearchResult() {
-    console.log('ROUTE: SEARCH RESULT');
-    var SearchResultView = require('../views/search-result');
-    render(SearchResultView, '#page');
   }
 });
 module.exports = new AppRouter();
