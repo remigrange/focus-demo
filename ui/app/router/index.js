@@ -29,20 +29,6 @@ var AppRouter = Router.extend({
     var PeopleDetailView = require('../views/people');
     render(PeopleDetailView, '#page', {props: {id: id}});
   },
-  filterResult: function handleFilterResult(scope, query) {
-    console.log('ROUTE: FILTER RESULT');
-    if(!scope){
-      //set defaut to MOVIE
-      scope = 'MOVIE';
-    }
-    if(!query){
-      //set defaut to empty
-      query = '';
-    }
-    var FilterResultView = require('../views/filter-result');
-    render(FilterResultView, '#page', {props: {scope: scope, query: query}});
-  },
-
   searchResult: function handleSearchResult() {
     console.log('ROUTE: SEARCH RESULT');
     var SearchResultView = require('../views/search-result');
