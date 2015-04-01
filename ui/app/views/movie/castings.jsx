@@ -4,7 +4,6 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Block = focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
-var FormList = require('../commons/formList');
 var line = React.createClass({
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
