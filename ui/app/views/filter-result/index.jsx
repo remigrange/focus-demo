@@ -136,18 +136,14 @@ module.exports = React.createClass({
                 },
                 renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
                     var buttonSeeMore = <div></div>;
-                    if (list.length > config.groupMaxRows) {
-                        if(maxRows > config.groupMaxRows){
-                            buttonSeeMore = <Button handleOnClick = {this.changeGroupByMaxRows(groupKey, config.groupMaxRows)} label = "See Less" className='btn-show-all' />;
-                        } else {
-                            buttonSeeMore = <Button handleOnClick = {this.changeGroupByMaxRows(groupKey, 10)} label = "See More" className='btn-show-all' />;
-                        }
+                    if (list.length > config.groupMaxRows && maxRows <= config.groupMaxRows) {
+                        buttonSeeMore = <Button handleOnClick = {this.changeGroupByMaxRows(groupKey, 10)} label = "See More" className='btn-show-all' />;
                     }
                     return <div className="listResultContainer panel">
                         <Title className="results-groupBy-title" title={groupKey} />
                              {this.renderSimpleList(groupKey, list, maxRows)}
                         <div className='btn-group-by-container'>
-                            <div className = "btn-see-more-less" >{buttonSeeMore}</div>
+                            <div className = "btn-see-more" >{buttonSeeMore}</div>
                             <div className = "btn-show-all" ><Button handleOnClick = {this.showAllGroupListHandler(groupKey)} label = "Show all" /></div>
                         </div>
                     </div>;

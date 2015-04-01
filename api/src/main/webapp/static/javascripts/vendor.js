@@ -23309,7 +23309,9 @@ module.exports = {
       validator: def.validator,
       FieldComponent: def.FieldComponent,
       InputLabelComponent: def.InputLabelComponent,
-      isEdit: isEdit
+      InputComponent: def.InputComponent,
+      isEdit: isEdit,
+      formatter: def.formatter
     });
   },
   /**
@@ -25220,7 +25222,9 @@ var listSummaryMixin = {
                     null,
                     this.props.nb
                 ),
-                " result.for \"",
+                " ",
+                i18n.t("result.for"),
+                " \"",
                 this.props.queryText,
                 "\""
             );
@@ -28871,7 +28875,7 @@ var liveFilterMixin = {
      * @returns {XML} Hatml content.
      */
     renderLiveFacetTitle: function renderLiveFacetTitle() {
-        var title = this.state.isExpanded ? "live.filter.title" : "";
+        var title = this.state.isExpanded ? i18n.t("live.filter.title") : "";
         var img = this.state.isExpanded ? "chevron-thin-left" : "chevron-thin-right";
         return React.createElement(
             "div",

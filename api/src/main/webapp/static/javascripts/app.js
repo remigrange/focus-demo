@@ -1240,7 +1240,21 @@ module.exports = {
 
 });
 
-;require.register("i18n/generated/fr-FR.generated", function(exports, require, module) {
+;require.register("i18n/en-GB", function(exports, require, module) {
+module.exports = {
+    'live': {
+        'filter': {
+           'title': 'Filter results'
+        }
+    },
+    'result': {
+        'for': 'results for'
+    }
+};
+
+});
+
+require.register("i18n/generated/fr-FR.generated", function(exports, require, module) {
 /**
  * Attention ce fichier est généré automatiquement !
  * DtDefinitionsLabel
@@ -1459,8 +1473,11 @@ module.exports = {
 });
 
 require.register("i18n/index", function(exports, require, module) {
-module.exports = {'en-GB': {translation: require('./generated/fr-FR.generated')}};
+var combineHelper = require('../lib/combineFunction');
 
+var english = combineHelper.combine(require('./en-GB'), require('./generated/fr-FR.generated'));
+//module.exports = {'en-GB': {translation: require('./generated/fr-FR.generated')}};
+module.exports = {'en-GB': {translation: english}};
 });
 
 require.register("index", function(exports, require, module) {
@@ -1547,6 +1564,77 @@ module.exports = {
         reference.config.set({'scopes': serviceReference.refernce.getScopes});
         reference.builder.loadListByName('scopes');
     }
+};
+
+});
+
+require.register("lib/combineFunction", function(exports, require, module) {
+// Unflatten a json object.
+// from an object `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
+// Gives a `{contact: {nom: "nom", prenom: "prenom"}}`
+JSON.unflatten = function(data) {
+    if (Object(data) !== data || Array.isArray(data))
+        return data;
+    if ("" in data)
+        return data[""];
+    var result = {},
+        cur, prop, idx, last, temp;
+    for (var p in data) {
+        cur = result;
+        prop = "";
+        last = 0;
+        do {
+            idx = p.indexOf(".", last);
+            temp = p.substring(last, idx !== -1 ? idx : undefined);
+            cur = cur[prop] || (cur[prop] = (!isNaN(parseInt(temp)) ? [] : {}));
+            prop = temp;
+            last = idx + 1;
+        } while (idx >= 0);
+        cur[prop] = data[p];
+    }
+    return result[""];
+};
+
+//Flatten a json object.
+// from an object`{contact: {nom: "nom", prenom: "prenom"}}`
+// Gives a one level object:  `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
+JSON.flatten = function(data) {
+    var result = {};
+
+    function recurse(cur, prop) {
+        if (Object(cur) !== cur) {
+            result[prop] = cur;
+        } else if (Array.isArray(cur)) {
+            for (var i = 0, l = cur.length; i < l; i++)
+                recurse(cur[i], prop ? prop + "." + i : "" + i);
+            if (l === 0)
+                result[prop] = [];
+        } else {
+            var isEmpty = true;
+            for (var p in cur) {
+                isEmpty = false;
+                recurse(cur[p], prop ? prop + "." + p : p);
+            }
+            if (isEmpty)
+                result[prop] = {};
+        }
+    }
+    recurse(data, "");
+    return result;
+};
+//Deeply combine an arbitrary number of JS objects.
+var combine = function combine() {
+    var res = {};
+    var args = _.map(arguments, function (item) {
+        return item && !_.isEmpty(item) ? JSON.flatten(item) : {};
+    });
+    args.unshift(res);
+    _.extend.apply(this, args);
+    return JSON.unflatten(res);
+}
+
+module.exports = {
+    combine: combine
 };
 
 });
@@ -1924,18 +2012,14 @@ module.exports = React.createClass({displayName: "exports",
                 },
                 renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
                     var buttonSeeMore = React.createElement("div", null);
-                    if (list.length > config.groupMaxRows) {
-                        if(maxRows > config.groupMaxRows){
-                            buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, config.groupMaxRows), label: "See Less", className: "btn-show-all"});
-                        } else {
-                            buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, 10), label: "See More", className: "btn-show-all"});
-                        }
+                    if (list.length > config.groupMaxRows && maxRows <= config.groupMaxRows) {
+                        buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, 10), label: "See More", className: "btn-show-all"});
                     }
                     return React.createElement("div", {className: "listResultContainer panel"}, 
                         React.createElement(Title, {className: "results-groupBy-title", title: groupKey}), 
                              this.renderSimpleList(groupKey, list, maxRows), 
                         React.createElement("div", {className: "btn-group-by-container"}, 
-                            React.createElement("div", {className: "btn-see-more-less"}, buttonSeeMore), 
+                            React.createElement("div", {className: "btn-see-more"}, buttonSeeMore), 
                             React.createElement("div", {className: "btn-show-all"}, React.createElement(Button, {handleOnClick: this.showAllGroupListHandler(groupKey), label: "Show all"}))
                         )
                     );
