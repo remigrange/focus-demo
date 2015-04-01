@@ -1,11 +1,11 @@
-var Title = focus.components.common.title.component;
+var Block = focus.components.common.block.component;
 module.exports = React.createClass({
   displayName: "moviePictures",
   render: function render() {
     return (
-      <div className='slidingBloc noBorderBottom'>
-        <Title id="pictures" title="PICTURES"/>
-      </div>
+      <Block title="PICTURES" style={{className: "slidingBlocK noBorderBottom", titleId: "pictures"}}>
+      </Block>
+
     );
   }
 });

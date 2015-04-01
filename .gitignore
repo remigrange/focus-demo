@@ -38,3 +38,6 @@ api/src/main/webapp/static/img
 api/src/main/webapp/static/stylesheets/img
 api/src/main/webapp/static/javascripts/app.js
 api/src/main/webapp/static/javascripts/vendor.js
+api/.classpath
+api/.project
+api/.settings

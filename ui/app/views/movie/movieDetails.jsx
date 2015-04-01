@@ -1,7 +1,7 @@
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
-var Title = focus.components.common.title.component;
+var Block = focus.components.common.block.component;
 module.exports = React.createClass({
   definitionPath: 'movie',
   displayName: 'movieDetails',
@@ -11,8 +11,7 @@ module.exports = React.createClass({
   renderContent: function render() {
       return (
         <div>
-          <div className='slidingBloc'>
-            <Title id="details" title="DETAILS"/>
+          <Block title="DETAILS" style={{className: "slidingBlock", titleId: "details"}}>
             {this._renderActions()}
             {this.fieldFor('title'), {isEdit: true}}
             {this.fieldFor('released')}
@@ -20,11 +19,10 @@ module.exports = React.createClass({
             {this.fieldFor('countryIds')}
             {this.fieldFor('languageIds')}
             {this.fieldFor('genreIds')}
-          </div>
-          <div className='slidingBloc'>
-            <Title id="storyline" title="STORYLINE"/>
+          </Block>
+          <Block title="STORYLINE" style={{className: "slidingBlock", titleId: "storyline"}}>
             {this.state.description}
-        </div>
+          </Block>
         </div>
       );
   }
