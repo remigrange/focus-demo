@@ -2,7 +2,7 @@
 var formMixin = focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
-var Title = focus.components.common.title.component;
+var Block = focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
 var FormList = require('../commons/formList');
 var line = React.createClass({
@@ -25,10 +25,9 @@ module.exports = React.createClass({
   },
   renderContent: function renderContentCastings() {
     return (
-      <div className='slidingBloc'>
-        <Title id="cast" title="CAST"/>
+      <Block title="CAST" style={{className: "slidingBlock", titleId: "cast"}}>
         {this.listFor("castings", {LineComponent: line})}
-      </div>
+      </Block>
     );
   }
 });
