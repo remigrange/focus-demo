@@ -1,6 +1,44 @@
 div[data-component] {
   color: red; }
 
+.live-filter.collapsed {
+  width: 30px; }
+
+.live-filter.expanded {
+  width: 250px; }
+
+.live-filter {
+  min-height: 400px; }
+  .live-filter .icon {
+    float: right;
+    height: inherit; }
+  .live-filter .facet-selected .panel-heading {
+    background-image: url("../img/cross.svg");
+    background-repeat: no-repeat;
+    background-position: 90%; }
+  .live-filter .facet-collapsed .panel-heading {
+    background-image: url("../img/chevron-thin-down.svg");
+    background-repeat: no-repeat;
+    background-position: 90%; }
+  .live-filter .facet-expanded .panel-heading {
+    background-image: url("../img/chevron-thin-up.svg");
+    background-repeat: no-repeat;
+    background-position: 90%; }
+  .live-filter .panel-heading {
+    cursor: pointer; }
+  .live-filter ul {
+    list-style-type: none; }
+  .live-filter li {
+    cursor: pointer; }
+  .live-filter li:hover {
+    color: #E6E6E6; }
+
+.chevron-thin-left {
+  background: url("../img/chevron-thin-left.svg") no-repeat right center; }
+
+.chevron-thin-right {
+  background: url("../img/chevron-thin-right.svg") no-repeat right center; }
+
 /* Style for the quick-search-component*/
 /* Variables*/
 /* Style */
@@ -100,43 +138,45 @@ div.qs-quick-search {
 .qs-scope-none {
   background: url('../img/qs-none.svg') no-repeat center center; }
 
-.live-filter.collapsed {
-  width: 30px; }
+.popin {
+  position: fixed; }
+  .popin .full {
+    min-height: 100vh;
+    min-width: 50vw; }
+  .popin .centered {
+    height: 80vh; }
 
-.live-filter.expanded {
-  width: 250px; }
+.popin.left {
+  top: 0px;
+  left: 0px; }
 
-.live-filter {
-  min-height: 400px; }
-  .live-filter .icon {
-    float: right;
-    height: inherit; }
-  .live-filter .facet-selected .panel-heading {
-    background-image: url("../img/cross.svg");
-    background-repeat: no-repeat;
-    background-position: 90%; }
-  .live-filter .facet-collapsed .panel-heading {
-    background-image: url("../img/chevron-thin-down.svg");
-    background-repeat: no-repeat;
-    background-position: 90%; }
-  .live-filter .facet-expanded .panel-heading {
-    background-image: url("../img/chevron-thin-up.svg");
-    background-repeat: no-repeat;
-    background-position: 90%; }
-  .live-filter .panel-heading {
-    cursor: pointer; }
-  .live-filter ul {
-    list-style-type: none; }
-  .live-filter li {
-    cursor: pointer; }
-  .live-filter li:hover {
-    color: #E6E6E6; }
+.popin.right {
+  top: 0px;
+  right: 0px; }
 
-.chevron-thin-left {
-  background: url("../img/chevron-thin-left.svg") no-repeat right center; }
+form.form-edit {
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgba(240, 89, 100, 0.65);
+  background-color: rgba(137, 108, 108, 0.14); }
 
-.chevron-thin-right {
-  background: url("../img/chevron-thin-right.svg") no-repeat right center; }
+.icon {
+  float: left;
+  width: 40px;
+  height: 40px;
+  cursor: pointer; }
+
+.dots-three-vertical {
+  background: url("../img/dots-three-vertical.svg") no-repeat center; }
+
+.select-action li.selected a {
+  font-weight: bold; }
+
+.sticky-navigation li.active {
+  font-weight: bold; }
+
+.topic-displayer .topic {
+  background: url("../img/cross.svg") no-repeat right center; }
 
 .checkbox-unchecked {
   background: url("../img/checkbox-unchecked.svg") no-repeat center; }
@@ -346,46 +386,6 @@ ul.selection-list {
 
 .timeline-body > p + p {
   margin-top: 5px; }
-
-.popin {
-  position: fixed; }
-  .popin .full {
-    min-height: 100vh;
-    min-width: 50vw; }
-  .popin .centered {
-    height: 80vh; }
-
-.popin.left {
-  top: 0px;
-  left: 0px; }
-
-.popin.right {
-  top: 0px;
-  right: 0px; }
-
-form.form-edit {
-  border-style: solid;
-  border-width: 2px;
-  border-color: rgba(240, 89, 100, 0.65);
-  background-color: rgba(137, 108, 108, 0.14); }
-
-.icon {
-  float: left;
-  width: 40px;
-  height: 40px;
-  cursor: pointer; }
-
-.dots-three-vertical {
-  background: url("../img/dots-three-vertical.svg") no-repeat center; }
-
-.select-action li.selected a {
-  font-weight: bold; }
-
-.sticky-navigation li.active {
-  font-weight: bold; }
-
-.topic-displayer .topic {
-  background: url("../img/cross.svg") no-repeat right center; }
 
 .liveFilterContainer {
   padding-right: 10px; }
