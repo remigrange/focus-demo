@@ -200,7 +200,117 @@ module.exports = {
 
 });
 
-require.register("application", function(exports, require, module) {
+require.register("action/search/filterSearch/index", function(exports, require, module) {
+var services = require('../../../services');
+
+module.exports = {
+    search: function (criteria) {
+        var page = criteria.pageInfos.page;
+        if (page === undefined || page === null) {
+            page = 0;
+        }
+        criteria.pageInfos.skip = page;
+        criteria.group = criteria.pageInfos.group;
+        if (criteria.group === undefined || criteria.group === null) {
+            criteria.group = '';
+        }
+        if (criteria.pageInfos.order !== undefined) {
+            criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
+            if (criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null) {
+                if (criteria.pageInfos.order.order.toLowerCase() === 'asc') {
+                    criteria.pageInfos.sortDesc = false;
+                } else if (criteria.pageInfos.order.order.toLowerCase() === 'desc') {
+                    criteria.pageInfos.sortDesc = true;
+                }
+            }
+        } else {
+            criteria.pageInfos.sortFieldName = undefined;
+            criteria.pageInfos.sortDesc = undefined;
+        }
+        services.search.searchByScope(criteria).then(
+            function success(data) {
+
+                var dataRet = {
+                    facet: data.facet,
+                    list: data.list,
+                    pageInfos: {
+                        currentPage: criteria.pageInfos.page,
+                        perPage: 50,
+                        totalRecords: data.totalRecords
+                    }
+                };
+                if (criteria.group) {
+                    dataRet.pageInfos = {};
+                }
+                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+            },
+            function error(errors) {
+                console.info('Errrors: ', errors);
+            }
+        );
+    }
+};
+
+});
+
+require.register("action/search/index", function(exports, require, module) {
+var services = require('../../services');
+
+module.exports = {
+    search: function (criteria) {
+        var page = criteria.pageInfos.page;
+        if (page === undefined || page === null) {
+            page = 0;
+        }
+        criteria.pageInfos.skip = page;
+        criteria.group = criteria.pageInfos.group;
+        if (criteria.group === undefined || criteria.group === null) {
+            criteria.group = '';
+        }
+        if (criteria.pageInfos.order !== undefined) {
+            criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
+            if (criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null) {
+                if (criteria.pageInfos.order.order.toLowerCase() === 'asc') {
+                    criteria.pageInfos.sortDesc = false;
+                } else if (criteria.pageInfos.order.order.toLowerCase() === 'desc') {
+                    criteria.pageInfos.sortDesc = true;
+                }
+            }
+        } else {
+            criteria.pageInfos.sortFieldName = undefined;
+            criteria.pageInfos.sortDesc = undefined;
+        }
+        services.search.searchByScope(criteria).then(
+            function success(data) {
+
+                var dataRet = {
+                    facet: data.facet,
+                    list: data.list,
+                    pageInfos: {
+                        currentPage: criteria.pageInfos.page,
+                        perPage: 50,
+                        totalRecords: data.totalRecords
+                    }
+                };
+                if (criteria.group) {
+                    dataRet.pageInfos = {};
+                }
+                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+            },
+            function error(errors) {
+                console.info('Errrors: ', errors);
+            }
+        );
+    }
+};
+
+});
+
+require.register("action/search/quickSearch/index", function(exports, require, module) {
+
+});
+
+;require.register("application", function(exports, require, module) {
 console.log('Application');
 });
 
@@ -1175,21 +1285,11 @@ module.exports = {
 
 });
 
-require.register("config/server/common", function(exports, require, module) {
-var root = ".";
-var url = focus.util.url.builder;
-module.exports = {
-    searchByScope: url(root+"/searchByScope?sortFieldName=${sortFieldName}&sortDesc=${sortDesc}&skip=${skip}", 'POST')/*,
-    filterResult: url(root+"/filterResult", 'POST')*/
-};
-
-});
-
 require.register("config/server/index", function(exports, require, module) {
 module.exports= {
     movie: require('./movie'),
     people: require('./people'),
-    common: require('./common'),
+    search: require('./search'),
     reference: require('./reference')
 };
 
@@ -1231,6 +1331,15 @@ var root = ".";
 var url = focus.util.url.builder;
 module.exports = {
     getScopes: url(root+"/scopes", 'GET')
+};
+
+});
+
+require.register("config/server/search", function(exports, require, module) {
+var root = '.';
+var url = focus.util.url.builder;
+module.exports = {
+    searchByScope: url(root + '/searchByScope?sortFieldName=${sortFieldName}&sortDesc=${sortDesc}&skip=${skip}', 'POST')
 };
 
 });
@@ -1709,23 +1818,9 @@ module.exports = new AppRouter();
 
 });
 
-require.register("services/common", function(exports, require, module) {
-var URL = require('../../config/server');
-var fetch = focus.network.fetch;
-module.exports = {
-    searchByScope: function searchByScope(criteria){
-        //TODO CHECK AVEC PIERRE
-        return fetch(URL.common.searchByScope({urlData : criteria.pageInfos, data:criteria}));
-    }/*,
-    filterResult: function filterResult(criteria){
-        return fetch(URL.common.filterResult({data:criteria}));
-    }*/
-};
-});
-
 require.register("services/index", function(exports, require, module) {
 module.exports= {
-    common: require('./common'),
+    search: require('./search'),
     movie: require('./movie'),
     people: require('./people'),
     refernce : require('./reference')
@@ -1784,6 +1879,17 @@ module.exports = {
 };
 });
 
+require.register("services/search", function(exports, require, module) {
+var URL = require('../../config/server');
+var fetch = focus.network.fetch;
+module.exports = {
+    searchByScope: function searchByScope(criteria){
+        return fetch(URL.search.searchByScope({urlData: criteria.pageInfos, data: criteria}));
+    }
+};
+
+});
+
 require.register("stores/movie", function(exports, require, module) {
 /* global focus*/
 /**
@@ -1833,83 +1939,52 @@ module.exports = referenceStore;
 
 });
 
-require.register("views/filter-result/index", function(exports, require, module) {
-/*global focusComponents, React */
-var SearchFilterResult = focusComponents.page.search.filterResult.component;
+require.register("views/filter-result/filterResult", function(exports, require, module) {
+/*global React, focusComponents */
 var Title = focusComponents.common.title.component;
 var Button = focusComponents.common.button.action.component;
+var action = require('../../action/search/filterSearch');
 
-var serviceCommon = require('../../services');
-
-
-var action = {
-    search: function (criteria) {
-        var page = criteria.pageInfos.page;
-        if (page === undefined || page === null) {
-            page = 0;
-        }
-        criteria.pageInfos.skip = page;
-        criteria.group = criteria.pageInfos.group;
-        if (criteria.group === undefined || criteria.group === null) {
-            criteria.group = '';
-        }
-        if (criteria.pageInfos.order !== undefined) {
-            criteria.pageInfos.sortFieldName = criteria.pageInfos.order.key;
-            if (criteria.pageInfos.order.order !== undefined && criteria.pageInfos.order.order !== null) {
-                if (criteria.pageInfos.order.order.toLowerCase() === 'asc') {
-                    criteria.pageInfos.sortDesc = false;
-                } else if (criteria.pageInfos.order.order.toLowerCase() === 'desc') {
-                    criteria.pageInfos.sortDesc = true;
-                }
-            }
-        } else {
-            criteria.pageInfos.sortFieldName = undefined;
-            criteria.pageInfos.sortDesc = undefined;
-        }
-        serviceCommon.common.searchByScope(criteria).then(
-            function success(data) {
-
-                var dataRet = {
-                    facet: data.facet,
-                    list: data.list,
-                    pageInfos: {
-                        currentPage: criteria.pageInfos.page,
-                        perPage: 1000,
-                        totalRecords: data.totalRecords
-                    }
-                };
-                if (criteria.group) {
-                    dataRet.pageInfos = {};
-                }
-                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
-            },
-            function error(errors) {
-                console.info('Errrors: ', errors);
-            }
-        );
-    }
-};
-var Line = React.createClass({displayName: "Line",
-    mixins: [focusComponents.list.selection.line.mixin],
-    renderLineContent: function (data) {
-        return React.createElement("div", {className: "item"}, 
-            React.createElement("div", {className: "mov-logo"}, 
-                React.createElement("img", {src: "./static/img/logoMovie.png"})
-            ), 
-            React.createElement("div", null, 
-                React.createElement("div", {className: "title-level-1"}, 
-                            data.title
-                ), 
-                React.createElement("div", {className: "title-level-2"}, 
-                            data.genreIds
-                ), 
-                React.createElement("div", {className: "title-level-3"}, 
-                            data.released
-                )
+module.exports = React.createClass({displayName: "exports",
+    mixins: [focusComponents.page.search.filterResult.mixin],
+    actions: action,
+    store: new focus.store.SearchStore(),
+    render: function () {
+        var root = React.createElement('div', {className: 'search-result'},
+            this.liveFilterComponent(),
+            React.createElement(
+                'div',
+                {className: 'resultContainer'},
+                this.listSummaryComponent(),
+                this.actionBarComponent(),
+                this.listComponent()
             )
         );
+        return root;
+    },
+    renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
+        var buttonSeeMore = React.createElement("div", null);
+        if (list.length > this.props.groupMaxRows && maxRows <= this.props.groupMaxRows) {
+            buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, 10), label: "See More", className: "btn-show-all"});
+        }
+        return React.createElement("div", {className: "listResultContainer panel"}, 
+            React.createElement(Title, {className: "results-groupBy-title", title: groupKey}), 
+                             this.renderSimpleList(groupKey, list, maxRows), 
+            React.createElement("div", {className: "btn-group-by-container"}, 
+                React.createElement("div", {className: "btn-see-more"}, buttonSeeMore), 
+                React.createElement("div", {className: "btn-show-all"}, React.createElement(Button, {handleOnClick: this.showAllGroupListHandler(groupKey), label: "Show all"}))
+            )
+        );
+
     }
 });
+
+});
+
+require.register("views/filter-result/index", function(exports, require, module) {
+/*global focusComponents, React */
+var FilterResult = require('./filterResult');
+var Line = require('./lineComponent');
 
 var config = {
     facetConfig: {
@@ -1952,42 +2027,62 @@ module.exports = React.createClass({displayName: "exports",
             scope: this.props.scope,
             searchText: this.props.query
         };
-        var filterResult = React.createElement(
-            React.createClass({
-                mixins: [focusComponents.page.search.filterResult.mixin],
-                actions: action,
-                store: new focus.store.SearchStore(),
-                render: function () {
-                    var root = React.createElement('div', {className: 'search-result'},
-                        this.liveFilterComponent(),
-                        React.createElement(
-                            'div',
-                            {className: 'resultContainer'},
-                            this.listSummaryComponent(),
-                            this.actionBarComponent(),
-                            this.listComponent()
-                        )
-                    );
-                    return root;
-                },
-                renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
-                    var buttonSeeMore = React.createElement("div", null);
-                    if (list.length > config.groupMaxRows && maxRows <= config.groupMaxRows) {
-                        buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, 10), label: "See More", className: "btn-show-all"});
-                    }
-                    return React.createElement("div", {className: "listResultContainer panel"}, 
-                        React.createElement(Title, {className: "results-groupBy-title", title: groupKey}), 
-                             this.renderSimpleList(groupKey, list, maxRows), 
-                        React.createElement("div", {className: "btn-group-by-container"}, 
-                            React.createElement("div", {className: "btn-see-more"}, buttonSeeMore), 
-                            React.createElement("div", {className: "btn-show-all"}, React.createElement(Button, {handleOnClick: this.showAllGroupListHandler(groupKey), label: "Show all"}))
-                        )
-                    );
+        if(this.props.scope.toLowerCase() === 'movie'){
+            config.idField = 'movId';
+        } else if(this.props.scope.toLowerCase() === 'people'){
+            config.idField = 'peoId';
+        }
+        return React.createElement(FilterResult, {
+            facetConfig: config.facetConfig, 
+            openedFacetList: config.openedFacetList, 
+            orderableColumnList: config.orderableColumnList, 
+            operationList: config.operationList, 
+            lineComponent: config.lineComponent, 
+            onLineClick: config.onLineClick, 
+            isSelection: config.isSelection, 
+            lineOperationList: config.lineOperationList, 
+            criteria: config.criteria, 
+            idField: config.idField, 
+            groupMaxRows: config.groupMaxRows}
+        );
+    }
+});
 
-                }
-            }),
-            config);
-        return filterResult;
+});
+
+require.register("views/filter-result/lineComponent", function(exports, require, module) {
+/*global React, focusComponents */
+module.exports = React.createClass({displayName: "exports",
+    mixins: [focusComponents.list.selection.line.mixin],
+    renderLineContent: function (data) {
+        if(!data.movId){
+            return React.createElement("div", {className: "item"}, 
+                React.createElement("div", {className: "mov-logo"}, 
+                    React.createElement("img", {src: "./static/img/logoMovie.png"})
+                ), 
+                React.createElement("div", null, 
+                    React.createElement("div", {className: "title-level-1"}, 
+                            data.title
+                    )
+                )
+            );
+        }
+        return React.createElement("div", {className: "item"}, 
+            React.createElement("div", {className: "mov-logo"}, 
+                React.createElement("img", {src: "./static/img/logoMovie.png"})
+            ), 
+            React.createElement("div", null, 
+                React.createElement("div", {className: "title-level-1"}, 
+                            data.title
+                ), 
+                React.createElement("div", {className: "title-level-2"}, 
+                            data.genreIds
+                ), 
+                React.createElement("div", {className: "title-level-3"}, 
+                            data.released
+                )
+            )
+        );
     }
 });
 
@@ -2739,3 +2834,8 @@ module.exports =  React.createClass({displayName: "exports",
 
 });
 
+require.register("views/search-result/searchResult", function(exports, require, module) {
+
+});
+
+;
