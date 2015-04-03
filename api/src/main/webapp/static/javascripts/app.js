@@ -2752,7 +2752,30 @@ module.exports = React.createClass({displayName: "exports",
         $('.search-part').toggleClass('search-part-preview');
         $('#lineResume').removeClass('line-preview-none');
         var movieLink = '#movie/' + this.props.data.movId;
-        var peopleLink = '#people/' + this.props.data.peopId;
+        var peopleLink = '#people/' + this.props.data.peoId;
+        if(!this.props.data.movId){
+            return (
+                React.createElement(Block, {style: {className: 'slideInRight animated line-preview'}}, 
+                    React.createElement("div", {className: "movie-lineResume"}, 
+                        React.createElement("div", {className: "movie-resume-logo"}, 
+                            React.createElement("img", {src: "./static/img/pictoPeople.png"})
+                        ), 
+                        React.createElement("div", {className: "movie-info"}, 
+                            React.createElement("div", {className: "title-level-2"}, 
+                                React.createElement("div", null, this.props.data.peoName)
+                            ), 
+                            React.createElement("div", {className: "title-level-3"}, 
+                                this.props.data.imdbId
+                            )
+                        ), 
+                        React.createElement("div", {className: "movie-link-detailed-sheet"}, 
+                            React.createElement("a", {href: peopleLink}, "Detailed sheet ", React.createElement("img", {src: "./static/img/arrow-right-16.png"})), 
+                            React.createElement("img", {src: "./static/img/cross.svg", onClick: this._handleOnClickClose})
+                        )
+                    )
+                )
+            );
+        }
         return (
             React.createElement(Block, {style: {className: 'slideInRight animated line-preview'}}, 
                 React.createElement("div", {className: "movie-lineResume"}, 

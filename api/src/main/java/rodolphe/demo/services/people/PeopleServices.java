@@ -58,14 +58,16 @@ public interface PeopleServices extends Component {
     /**
      * Get People by id.
      *
-     * @param peopId people identifier
+     * @param peoId people identifier
      * @return people
      */
     PeopleView getPeopleDetails(long peoId);
 
     /**
-     * @param peoId
-     * @return
+     * Get movies by people ID.
+     *
+     * @param peoId people id
+     * @return movie list
      */
     DtList<Movie> getFilmographyByPeo(final Long peoId);
 }
