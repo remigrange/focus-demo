@@ -23782,10 +23782,11 @@ module.exports = {
   selectAction: require("./select-action"),
   stickyNavigation: require("./sticky-navigation"),
   title: require("./title"),
-  topicDisplayer: require("./topic-displayer")
+  topicDisplayer: require("./topic-displayer"),
+  list: require("./list")
 };
 
-},{"./block":5,"./button":7,"./field":9,"./form":13,"./img":20,"./input":24,"./label":28,"./panel":30,"./select":33,"./select-action":31,"./sticky-navigation":34,"./title":35,"./topic-displayer":36}],22:[function(require,module,exports){
+},{"./block":5,"./button":7,"./field":9,"./form":13,"./img":20,"./input":24,"./label":28,"./list":29,"./panel":30,"./select":33,"./select-action":31,"./sticky-navigation":34,"./title":35,"./topic-displayer":36}],22:[function(require,module,exports){
 "use strict";
 
 //Target
