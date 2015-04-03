@@ -307,10 +307,59 @@ module.exports = {
 });
 
 require.register("action/search/quickSearch/index", function(exports, require, module) {
+var services = require('../../../services');
+
+
+module.exports = {
+    search: function (criteria) {
+        var page = 0;
+        if ((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)) {
+            page = criteria.pageInfos.page;
+        }
+        var critere = {
+            criteria: {
+                scope: 'MOVIE',
+                query: criteria.criteria.query
+            },
+            pageInfos: {
+                sortFieldName: undefined,
+                sortDesc: undefined,
+                skip: page
+            },
+            facets: [],
+            group: ''
+        };
+        services.search.searchByScope(critere).then(
+            function success(data) {
+                var list = data;
+                if (data.list !== undefined) {
+                    list = data.list;
+                }
+                var dataRet = {
+                    list: list,
+                    facet: {},
+                    pageInfos: {
+                        currentPage: 1,
+                        perPage: 50,
+                        totalRecords: data.totalRecords
+                    },
+                    searchContext: {
+                        scope: criteria.criteria.scope,
+                        query: criteria.criteria.query
+                    }
+                };
+                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+            },
+            function error(errors) {
+                console.info('Errrors ', errors);
+            }
+        );
+    }
+};
 
 });
 
-;require.register("application", function(exports, require, module) {
+require.register("application", function(exports, require, module) {
 console.log('Application');
 });
 
@@ -2597,78 +2646,10 @@ module.exports = React.createClass({
 
 require.register("views/search-result/index", function(exports, require, module) {
 /*global focusComponents, React*/
-var serviceCommon = require('../../services');
 var lineResume = require('./lineResume');
-
-var action = {
-    search: function (criteria) {
-        var page = 0;
-        if ((criteria.pageInfos.page !== undefined) && (criteria.pageInfos.page !== null)) {
-            page = criteria.pageInfos.page;
-        }
-        var critere = {
-            criteria: {
-                scope: 'MOVIE',
-                query: criteria.criteria.query
-            },
-            pageInfos: {
-                sortFieldName: undefined,
-                sortDesc: undefined,
-                skip: page
-            },
-            facets: [],
-            group: ''
-        };
-        serviceCommon.common.searchByScope(critere).then(
-            function success(data) {
-                var list = data;
-                if (data.list !== undefined) {
-                    list = data.list;
-                }
-                var dataRet = {
-                    list: list,
-                    facet: {},
-                    pageInfos: {
-                        currentPage: 1,
-                        perPage: 1000,
-                        totalRecords: data.totalRecords
-                    },
-                    searchContext: {
-                        scope: criteria.criteria.scope,
-                        query: criteria.criteria.query
-                    }
-                };
-                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
-            },
-            function error(errors) {
-                console.info('Errrors ', errors);
-            }
-        );
-    }
-};
-
+var SearchResult = require('./searchResult');
 //Composant d'une ligne.
-var Line = React.createClass({displayName: "Line",
-    mixins: [focusComponents.list.selection.line.mixin],
-    renderLineContent: function (data) {
-        return React.createElement("div", {className: "item"}, 
-            React.createElement("div", {className: "mov-logo"}, 
-                React.createElement("img", {src: "./static/img/logoMovie.png"})
-            ), 
-            React.createElement("div", null, 
-                React.createElement("div", {className: "title-level-1"}, 
-                            data.title
-                ), 
-                React.createElement("div", {className: "title-level-2"}, 
-                            data.genreIds
-                ), 
-                React.createElement("div", {className: "title-level-3"}, 
-                            data.released
-                )
-            )
-        );
-    }
-});
+var Line = require('./lineComponent');
 
 //Configuration des props du composant de vue de recherche.
 var config = {
@@ -2698,7 +2679,6 @@ var config = {
              });
         }, style: {className: 'preview'}, priority: 1}
     ],
-    action: action,
     scopes: [
         {code: 'ALL', label: 'ALL'},
         {code: 'MOVIE', label: 'MOVIE'},
@@ -2710,50 +2690,51 @@ var config = {
 
 module.exports = React.createClass({displayName: "exports",
     render: function () {
-        var searchResult = React.createElement(React.createClass(
-                {
-                    mixins: [focusComponents.page.search.searchResult.mixin],
-                    actions: config.action,
-                    store: new focus.store.SearchStore(),
-                    render: function render() {
-                        var qs = this.quickSearchComponent();
-                        var summary = React.createElement("div", null);
-                        if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
-                            var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
-                            var linkFilterResult = React.createElement("div", null);
-                            if (this.state.totalRecords > 0) {
-                                var criteria = this.refs.quickSearch.getValue();
-                                if(criteria.scope.toLowerCase() !== 'all'){
-                                    var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
-                                    linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
-                                        React.createElement("a", {href: url}, "Filter result   ", 
-                                            React.createElement("img", {src: "./static/img/arrow-right-16.png"})
-                                        )
-                                    );
-                                }
-                            }
-                            summary = React.createElement("div", {className: "summary"}, 
-                                        resultsContent, 
-                                        linkFilterResult
-                            );
-                        }
-                        var list = this.listComponent();
-                        var search = React.createElement("div", {className: "search-part"}, " ", qs, " ", summary, " ", list)
-                        var lineResumeContent = React.createElement("div", {id: "lineResume"});
-                        var root = React.createElement('div', {className: 'search-panel'}, search, lineResumeContent);
-                        return root;
-                    }
-                }),
-            {
-                lineComponent: Line,
-                onLineClick: config.onLineClick,
-                operationList: config.operationList,
-                scopeList: config.scopes,
-                scope: config.scope,
-                idField: config.idField
-            }
+       return React.createElement(SearchResult, {
+                lineComponent: Line, 
+                onLineClick: config.onLineClick, 
+                operationList: config.operationList, 
+                scopeList: config.scopeList, 
+                scope: config.scope, 
+                idField: config.idField});
+    }
+});
+
+});
+
+require.register("views/search-result/lineComponent", function(exports, require, module) {
+/*global React, focusComponents */
+module.exports = React.createClass({displayName: "exports",
+    mixins: [focusComponents.list.selection.line.mixin],
+    renderLineContent: function (data) {
+        if(!data.movId){
+            return React.createElement("div", {className: "item"}, 
+                React.createElement("div", {className: "mov-logo"}, 
+                    React.createElement("img", {src: "./static/img/logoMovie.png"})
+                ), 
+                React.createElement("div", null, 
+                    React.createElement("div", {className: "title-level-1"}, 
+                            data.title
+                    )
+                )
+            );
+        }
+        return React.createElement("div", {className: "item"}, 
+            React.createElement("div", {className: "mov-logo"}, 
+                React.createElement("img", {src: "./static/img/logoMovie.png"})
+            ), 
+            React.createElement("div", null, 
+                React.createElement("div", {className: "title-level-1"}, 
+                            data.title
+                ), 
+                React.createElement("div", {className: "title-level-2"}, 
+                            data.genreIds
+                ), 
+                React.createElement("div", {className: "title-level-3"}, 
+                            data.released
+                )
+            )
         );
-        return searchResult;
     }
 });
 
@@ -2835,7 +2816,43 @@ module.exports =  React.createClass({displayName: "exports",
 });
 
 require.register("views/search-result/searchResult", function(exports, require, module) {
+/*global React, focusComponents*/
+var action = require('../../action/search/quickSearch');
+
+module.exports = React.createClass({displayName: "exports",
+    mixins: [focusComponents.page.search.searchResult.mixin],
+    actions: action,
+    store: new focus.store.SearchStore(),
+    render: function render() {
+        var qs = this.quickSearchComponent();
+        var summary = React.createElement("div", null);
+        if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
+            var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
+            var linkFilterResult = React.createElement("div", null);
+            if (this.state.totalRecords > 0) {
+                var criteria = this.refs.quickSearch.getValue();
+                if(criteria.scope.toLowerCase() !== 'all'){
+                    var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
+                    linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
+                        React.createElement("a", {href: url}, "Filter result   ", 
+                            React.createElement("img", {src: "./static/img/arrow-right-16.png"})
+                        )
+                    );
+                }
+            }
+            summary = React.createElement("div", {className: "summary"}, 
+                                        resultsContent, 
+                                        linkFilterResult
+            );
+        }
+        var list = this.listComponent();
+        var search = React.createElement("div", {className: "search-part"}, " ", qs, " ", summary, " ", list)
+        var lineResumeContent = React.createElement("div", {id: "lineResume"});
+        var root = React.createElement('div', {className: 'search-panel'}, search, lineResumeContent);
+        return root;
+    }
 
 });
 
-;
+});
+
