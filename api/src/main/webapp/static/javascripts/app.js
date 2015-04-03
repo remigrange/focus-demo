@@ -2573,7 +2573,7 @@ var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
 var Title = focus.components.common.title.component;
 var MovieCard = require('./movieCard');
-var FormList = focus.components.common.list; //require('../commons/formList');
+var FormList = focus.components.common.list;
 var line = React.createClass({displayName: "line",
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2867,14 +2867,17 @@ module.exports = React.createClass({displayName: "exports",
             var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
             var linkFilterResult = React.createElement("div", null);
             if (this.state.totalRecords > 0) {
-                var criteria = this.refs.quickSearch.getValue();
-                if(criteria.scope.toLowerCase() !== 'all'){
-                    var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
-                    linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
-                        React.createElement("a", {href: url}, "Filter result   ", 
-                            React.createElement("img", {src: "./static/img/arrow-right-16.png"})
-                        )
-                    );
+                var quickSearch = this.refs.quickSearch;
+                if(quickSearch !== null && quickSearch !== undefined){
+                    var criteria = this.refs.quickSearch.getValue();
+                    if(criteria.scope.toLowerCase() !== 'all'){
+                        var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
+                        linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
+                            React.createElement("a", {href: url}, "Filter result   ", 
+                                React.createElement("img", {src: "./static/img/arrow-right-16.png"})
+                            )
+                        );
+                    }
                 }
             }
             summary = React.createElement("div", {className: "summary"}, 

@@ -12,14 +12,17 @@ module.exports = React.createClass({
             var resultsContent = <div className='results'>{this.state.totalRecords} results </div>;
             var linkFilterResult = <div></div>;
             if (this.state.totalRecords > 0) {
-                var criteria = this.refs.quickSearch.getValue();
-                if(criteria.scope.toLowerCase() !== 'all'){
-                    var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
-                    linkFilterResult = <div className='linkFilterResult'>
-                        <a href={url}>Filter result&nbsp;&nbsp;&nbsp;
-                            <img src='./static/img/arrow-right-16.png'/>
-                        </a>
-                    </div>;
+                var quickSearch = this.refs.quickSearch;
+                if(quickSearch !== null && quickSearch !== undefined){
+                    var criteria = this.refs.quickSearch.getValue();
+                    if(criteria.scope.toLowerCase() !== 'all'){
+                        var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
+                        linkFilterResult = <div className='linkFilterResult'>
+                            <a href={url}>Filter result&nbsp;&nbsp;&nbsp;
+                                <img src='./static/img/arrow-right-16.png'/>
+                            </a>
+                        </div>;
+                    }
                 }
             }
             summary = <div className='summary'>
