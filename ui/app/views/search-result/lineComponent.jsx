@@ -5,11 +5,11 @@ module.exports = React.createClass({
         if(!data.movId){
             return <div className="item">
                 <div className="mov-logo" >
-                    <img src="./static/img/logoMovie.png"/>
+                    <img src="./static/img/pictoPeople.png"/>
                 </div>
                 <div>
                     <div className="title-level-1">
-                            {data.title}
+                            {data.peoName}
                     </div>
                 </div>
             </div>;

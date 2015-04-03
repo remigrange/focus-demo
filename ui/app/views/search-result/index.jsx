@@ -47,7 +47,7 @@ module.exports = React.createClass({
                 lineComponent = {Line}
                 onLineClick = {config.onLineClick}
                 operationList = {config.operationList}
-                scopeList = {config.scopeList}
+                scopeList = {config.scopes}
                 scope = {config.scope}
                 idField = {config.idField} />;
     }

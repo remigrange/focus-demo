@@ -47,6 +47,11 @@ module.exports = React.createClass({
             config.idField = 'movId';
         } else if(this.props.scope.toLowerCase() === 'people'){
             config.idField = 'peoId';
+            config.facetConfig = {};
+            config.orderableColumnList = [
+                {key: 'PEO_NAME', order: 'desc', label: 'Name desc'},
+                {key: 'PEO_NAME', order: 'asc', label: 'Name asc'}];
+            config.openedFacetList = {};
         }
         return <FilterResult
             facetConfig= {config.facetConfig}

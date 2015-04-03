@@ -9,7 +9,7 @@ module.exports = {
         }
         var critere = {
             criteria: {
-                scope: 'MOVIE',
+                scope: criteria.criteria.scope,
                 query: criteria.criteria.query
             },
             pageInfos: {

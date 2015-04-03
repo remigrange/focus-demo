@@ -318,7 +318,7 @@ module.exports = {
         }
         var critere = {
             criteria: {
-                scope: 'MOVIE',
+                scope: criteria.criteria.scope,
                 query: criteria.criteria.query
             },
             pageInfos: {
@@ -2080,6 +2080,11 @@ module.exports = React.createClass({displayName: "exports",
             config.idField = 'movId';
         } else if(this.props.scope.toLowerCase() === 'people'){
             config.idField = 'peoId';
+            config.facetConfig = {};
+            config.orderableColumnList = [
+                {key: 'PEO_NAME', order: 'desc', label: 'Name desc'},
+                {key: 'PEO_NAME', order: 'asc', label: 'Name asc'}];
+            config.openedFacetList = {};
         }
         return React.createElement(FilterResult, {
             facetConfig: config.facetConfig, 
@@ -2107,11 +2112,11 @@ module.exports = React.createClass({displayName: "exports",
         if(!data.movId){
             return React.createElement("div", {className: "item"}, 
                 React.createElement("div", {className: "mov-logo"}, 
-                    React.createElement("img", {src: "./static/img/logoMovie.png"})
+                    React.createElement("img", {src: "./static/img/pictoPeople.png"})
                 ), 
                 React.createElement("div", null, 
                     React.createElement("div", {className: "title-level-1"}, 
-                            data.title
+                            data.peoName
                     )
                 )
             );
@@ -2694,7 +2699,7 @@ module.exports = React.createClass({displayName: "exports",
                 lineComponent: Line, 
                 onLineClick: config.onLineClick, 
                 operationList: config.operationList, 
-                scopeList: config.scopeList, 
+                scopeList: config.scopes, 
                 scope: config.scope, 
                 idField: config.idField});
     }
@@ -2710,11 +2715,11 @@ module.exports = React.createClass({displayName: "exports",
         if(!data.movId){
             return React.createElement("div", {className: "item"}, 
                 React.createElement("div", {className: "mov-logo"}, 
-                    React.createElement("img", {src: "./static/img/logoMovie.png"})
+                    React.createElement("img", {src: "./static/img/pictoPeople.png"})
                 ), 
                 React.createElement("div", null, 
                     React.createElement("div", {className: "title-level-1"}, 
-                            data.title
+                            data.peoName
                     )
                 )
             );
