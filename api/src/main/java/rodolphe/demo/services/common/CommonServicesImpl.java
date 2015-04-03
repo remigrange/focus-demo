@@ -13,7 +13,6 @@ import io.vertigo.vega.rest.model.UiListState;
 import javax.inject.Inject;
 
 import rodolphe.demo.domain.common.SearchCriteria;
-import rodolphe.demo.domain.common.SearchRet;
 import rodolphe.demo.domain.common.SelectedFacet;
 import rodolphe.demo.domain.masterdata.CodeScope;
 import rodolphe.demo.domain.movies.MovieCriteria;
@@ -66,29 +65,35 @@ public class CommonServicesImpl implements CommonServices {
                     .getMoviesByCriteria(movieCrit, uiListState, clusteringFacetName, facetSel);
             final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices
                     .getPeopleByCriteria(peopleCrit, uiListState, clusteringFacetName, facetSel);
+            final UiContext result = new UiContext();
+            result.put("Movies", movies.getDtList());
+            result.put("People", people.getDtList());
+            uiContext.put("list", result);
             uiContext.put("totalRecords", movies.getCount() + people.getCount());
-            // final ui
-            final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
-            final SearchRet searchRet = new SearchRet();
-            searchRet.setType(CodeScope.MOVIE.name());
-            for (final MovieResult mov : movies.getDtList()) {
-                searchRet.setField1(String.valueOf(mov.getMovId()));
-                searchRet.setField2(mov.getTitle());
-                if (mov.getReleased() != null) {
-                    searchRet.setField3(mov.getReleased().toString());
-                }
-                searchRet.setField4(mov.getGenreIds());
-                ret.add(searchRet);
-            }
-            searchRet.setType(CodeScope.PEOPLE.name());
-            for (final PeopleResult peo : people.getDtList()) {
-                searchRet.setField1(String.valueOf(peo.getPeoId()));
-                searchRet.setField2(peo.getPeoName());
-                searchRet.setField3(peo.getTitCd());
-                searchRet.setField4(peo.getImdbid());
-                ret.add(searchRet);
-            }
-            return ret;
+            /*
+             * final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
+             * final SearchRet searchRet = new SearchRet();
+             * searchRet.setType(CodeScope.MOVIE.name());
+             * for (final MovieResult mov : movies.getDtList()) {
+             * searchRet.setField1(String.valueOf(mov.getMovId()));
+             * searchRet.setField2(mov.getTitle());
+             * if (mov.getReleased() != null) {
+             * searchRet.setField3(mov.getReleased().toString());
+             * }
+             * searchRet.setField4(mov.getGenreIds());
+             * ret.add(searchRet);
+             * }
+             * searchRet.setType(CodeScope.PEOPLE.name());
+             * for (final PeopleResult peo : people.getDtList()) {
+             * searchRet.setField1(String.valueOf(peo.getPeoId()));
+             * searchRet.setField2(peo.getPeoName());
+             * searchRet.setField3(peo.getTitCd());
+             * searchRet.setField4(peo.getImdbid());
+             * ret.add(searchRet);
+             * }
+             * return ret;
+             */
+            return uiContext;
         }
     }
 

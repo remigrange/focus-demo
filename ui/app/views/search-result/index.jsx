@@ -38,7 +38,8 @@ var config = {
         {code: 'PEOPLE', label: 'PEOPLE'}
     ],
     scope: 'ALL',
-    idField: 'movId'
+    idField: 'movId',
+    groupMaxRows: 3
 };
 
 module.exports = React.createClass({
@@ -49,6 +50,7 @@ module.exports = React.createClass({
                 operationList = {config.operationList}
                 scopeList = {config.scopes}
                 scope = {config.scope}
-                idField = {config.idField} />;
+                idField = {config.idField}
+                groupMaxRows= {config.groupMaxRows}/>;
     }
 });

@@ -2690,7 +2690,8 @@ var config = {
         {code: 'PEOPLE', label: 'PEOPLE'}
     ],
     scope: 'ALL',
-    idField: 'movId'
+    idField: 'movId',
+    groupMaxRows: 3
 };
 
 module.exports = React.createClass({displayName: "exports",
@@ -2701,7 +2702,8 @@ module.exports = React.createClass({displayName: "exports",
                 operationList: config.operationList, 
                 scopeList: config.scopes, 
                 scope: config.scope, 
-                idField: config.idField});
+                idField: config.idField, 
+                groupMaxRows: config.groupMaxRows});
     }
 });
 
@@ -2855,6 +2857,15 @@ module.exports = React.createClass({displayName: "exports",
         var lineResumeContent = React.createElement("div", {id: "lineResume"});
         var root = React.createElement('div', {className: 'search-panel'}, search, lineResumeContent);
         return root;
+    },
+    renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
+        var title = React.createElement(focusComponents.common.title.component, { title: groupKey });
+        var showMoreButton = React.createElement(focusComponents.common.button.action.component, { handleOnClick: this.changeGroupByMaxRows(groupKey, maxRows + 3), label: 'Show more' });
+        return React.createElement( 'div', { className: 'listResultContainer panel' },
+            title,
+            this.renderSimpleList(groupKey, list, maxRows),
+            showMoreButton);
+
     }
 
 });

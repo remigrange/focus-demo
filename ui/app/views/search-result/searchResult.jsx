@@ -32,6 +32,15 @@ module.exports = React.createClass({
         var lineResumeContent = <div id='lineResume'></div>;
         var root = React.createElement('div', {className: 'search-panel'}, search, lineResumeContent);
         return root;
+    },
+    renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
+        var title = React.createElement(focusComponents.common.title.component, { title: groupKey });
+        var showMoreButton = React.createElement(focusComponents.common.button.action.component, { handleOnClick: this.changeGroupByMaxRows(groupKey, maxRows + 3), label: 'Show more' });
+        return React.createElement( 'div', { className: 'listResultContainer panel' },
+            title,
+            this.renderSimpleList(groupKey, list, maxRows),
+            showMoreButton);
+
     }
 
 });
