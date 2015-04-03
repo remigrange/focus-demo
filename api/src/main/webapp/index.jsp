@@ -14,25 +14,7 @@
     <meta name="author" content="Klee Group">
     <title>Rodolphe Demo</title>
     <!--link rel="icon" type="image/png" href="static/images/favicon.png"/-->
-   
-
-    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js" ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.1/react.js"></script>
-    
-
-    <!--Material design -->
-<!-- Material degign-->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/material-wfont.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/material.min.css">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/ripples.min.css">
-  <script src="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/js/material.min.js"></script>
-  <script src="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/js/ripples.min.js"></script>
-
-    <!-- End material desgn-->
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.1/react.js"></script>  
     <link rel="stylesheet" href="static/stylesheets/app.css">
     <script src='static/javascripts/vendor.js'></script>
     <script src='static/javascripts/app.js'></script>

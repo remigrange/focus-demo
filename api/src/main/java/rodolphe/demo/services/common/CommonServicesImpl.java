@@ -70,29 +70,6 @@ public class CommonServicesImpl implements CommonServices {
             result.put("People", people.getDtList());
             uiContext.put("list", result);
             uiContext.put("totalRecords", movies.getCount() + people.getCount());
-            /*
-             * final DtList<SearchRet> ret = new DtList<>(SearchRet.class);
-             * final SearchRet searchRet = new SearchRet();
-             * searchRet.setType(CodeScope.MOVIE.name());
-             * for (final MovieResult mov : movies.getDtList()) {
-             * searchRet.setField1(String.valueOf(mov.getMovId()));
-             * searchRet.setField2(mov.getTitle());
-             * if (mov.getReleased() != null) {
-             * searchRet.setField3(mov.getReleased().toString());
-             * }
-             * searchRet.setField4(mov.getGenreIds());
-             * ret.add(searchRet);
-             * }
-             * searchRet.setType(CodeScope.PEOPLE.name());
-             * for (final PeopleResult peo : people.getDtList()) {
-             * searchRet.setField1(String.valueOf(peo.getPeoId()));
-             * searchRet.setField2(peo.getPeoName());
-             * searchRet.setField3(peo.getTitCd());
-             * searchRet.setField4(peo.getImdbid());
-             * ret.add(searchRet);
-             * }
-             * return ret;
-             */
             return uiContext;
         }
     }
