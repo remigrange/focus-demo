@@ -18,16 +18,11 @@ var config = {
         Backbone.history.navigate(url, true);
     },
     operationList: [
-        {label: 'testt', action: function(data) {
+        {label: '', action: function(data) {
             focus.application.render(lineResume, '#lineResume',
              {
              props: {
-             title: data.title,
-             description: data.description,
-             released: data.released,
-             countryIds: data.countryIds,
-             languageIds: data.languageIds,
-             runtime: this.runtime
+             data: data
              }
              });
         }, style: {className: 'preview'}, priority: 1}

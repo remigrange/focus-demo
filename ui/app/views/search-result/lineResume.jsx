@@ -3,27 +3,33 @@ var Block = focus.components.common.block.component;
 var Label = focus.components.common.label.component;
 module.exports = React.createClass({
     render: function renderMovieResume() {
+        $('.search-part').removeClass('search-part-preview');
+        $('.search-part').toggleClass('search-part-preview');
+        $('#lineResume').removeClass('line-preview-none');
+        var movieLink = '#movie/' + this.props.data.movId;
+        var peopleLink = '#people/' + this.props.data.peopId;
         return (
-            <Block style={{className: 'slideInRight animated panel-default'}}>
+            <Block style={{className: 'slideInRight animated line-preview'}}>
                 <div className ="movie-lineResume">
                     <div className="movie-resume-logo" >
                         <img src="./static/img/logoMovie.png"/>
                     </div>
                     <div className="movie-info">
                         <div className="title-level-2">
-                             {React.createElement(Label, {name: "title", value: this.props.title})}
+                            <div >{this.props.data.title}</div>
                         </div>
                         <div className="title-level-3">
-                                {this.props.imdbId}
+                                {this.props.data.imdbId}
                         </div>
                     </div>
-                    <div className="movie-link-detailed-sheet">
-                        <a href="#">Detailed sheet</a>
+                    <div className="movie-link-detailed-sheet" >
+                        <a href={movieLink}>Detailed sheet <img src='./static/img/arrow-right-16.png'/></a>
+                        <img src='./static/img/cross.svg' onClick = {this._handleOnClickClose}/>
                     </div>
                 </div>
                 <div className="movie-descrition" >
                     <div className="container-title">Storyline</div>
-                    <div >{this.props.description}</div>
+                    <div >{this.props.data.description}</div>
                 </div>
 
                 <div className="movie-details" >
@@ -33,7 +39,7 @@ module.exports = React.createClass({
                             <div>Country</div>
                         </div>
                         <div className="details-label-value">
-                            <div>{this.props.countryIds}</div>
+                            <div>{this.props.data.countryIds}</div>
                         </div>
                     </div>
 
@@ -42,7 +48,7 @@ module.exports = React.createClass({
                             <div>Language</div>
                         </div>
                         <div className="details-label-value">
-                            <div>{this.props.languageIds}</div>
+                            <div>{this.props.data.languageIds}</div>
                         </div>
                     </div>
                     <div className="movie-detail-line">
@@ -50,7 +56,7 @@ module.exports = React.createClass({
                             <div>Release date</div>
                         </div>
                         <div className="details-label-value">
-                            <div>{this.props.released}</div>
+                            <div>{this.props.data.released}</div>
                         </div>
                     </div>
                     <div className="movie-detail-line">
@@ -58,12 +64,20 @@ module.exports = React.createClass({
                             <div>Runtime</div>
                         </div>
                         <div className="details-label-value">
-                            <div>{this.props.runtime}</div>
+                            <div>{this.props.data.runtime}</div>
                         </div>
                     </div>
                 </div>
 
             </Block>
         );
+    },
+    /**
+     * Handle click on close img.
+     * @private
+     */
+    _handleOnClickClose: function(){
+        $('.search-part').removeClass('search-part-preview');
+        $('#lineResume').addClass('line-preview-none');
     }
 });
