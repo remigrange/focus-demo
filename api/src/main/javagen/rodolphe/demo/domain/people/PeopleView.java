@@ -19,9 +19,10 @@ public final class PeopleView implements DtObject {
 	private String firstName;
 	private String titCd;
 	private String peoName;
+	private String peoNameSortOnly;
 	private String imdbid;
-	private Long rank;
 	private String professions;
+	private Long rank;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -120,6 +121,25 @@ public final class PeopleView implements DtObject {
 
 	/**
 	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Name'. 
+	 * @return String peoNameSortOnly 
+	 */
+	@Field(domain = "DO_COMMENTAIRE_NOT_ANALYZED", persistent = false, label = "Name")
+	public String getPeoNameSortOnly() {
+		return peoNameSortOnly;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Name'.
+	 * @param peoNameSortOnly String 
+	 */
+	public void setPeoNameSortOnly(final String peoNameSortOnly) {
+		this.peoNameSortOnly = peoNameSortOnly;
+	}
+
+	/**
+	 * Champ : DATA.
 	 * Récupère la valeur de la propriété 'Id imdb'. 
 	 * @return String imdbid 
 	 */
@@ -139,25 +159,6 @@ public final class PeopleView implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'rank'. 
-	 * @return Long rank <b>Obligatoire</b>
-	 */
-	@Field(domain = "DO_ID", notNull = true, persistent = false, label = "rank")
-	public Long getRank() {
-		return rank;
-	}
-
-	/**
-	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'rank'.
-	 * @param rank Long <b>Obligatoire</b>
-	 */
-	public void setRank(final Long rank) {
-		this.rank = rank;
-	}
-
-	/**
-	 * Champ : DATA.
 	 * Récupère la valeur de la propriété 'People's professions'. 
 	 * @return String professions 
 	 */
@@ -173,6 +174,25 @@ public final class PeopleView implements DtObject {
 	 */
 	public void setProfessions(final String professions) {
 		this.professions = professions;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'rank'. 
+	 * @return Long rank <b>Obligatoire</b>
+	 */
+	@Field(domain = "DO_ID", notNull = true, persistent = false, label = "rank")
+	public Long getRank() {
+		return rank;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'rank'.
+	 * @param rank Long <b>Obligatoire</b>
+	 */
+	public void setRank(final Long rank) {
+		this.rank = rank;
 	}
 
 	//Aucune Association déclarée

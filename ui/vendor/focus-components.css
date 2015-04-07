@@ -172,6 +172,7 @@ div.qs-quick-search {
 .action-bar .facet-container {
   width: 400px; }
 
+
 /* Style for the list component*/
 /*variables*/
 /*styles*/
@@ -216,7 +217,6 @@ ul.selection-list {
     ul.selection-list li.sl-button a, ul.selection-list li.sl-button button {
       position: absolute;
       right: 0px; }
-
 
 .print {
   background: url("../img/print.svg") no-repeat center; }

@@ -15,6 +15,7 @@
     <title>Rodolphe Demo</title>
     <!--link rel="icon" type="image/png" href="static/images/favicon.png"/-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.1/react.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/0.4.0/Showdown.js"></script>
     <link rel="stylesheet" href="static/stylesheets/app.css">
     <script src='static/javascripts/vendor.js'></script>
     <script src='static/javascripts/app.js'></script>

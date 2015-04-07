@@ -7,6 +7,7 @@ import io.vertigo.dynamo.domain.metamodel.DtFieldName;
 import io.vertigo.util.StringUtil;
 import rodolphe.demo.domain.CodeEnum;
 import rodolphe.demo.domain.DtDefinitions.MovieIndexFields;
+import rodolphe.demo.domain.DtDefinitions.PeopleIndexFields;
 
 /**
  * Enum of the various available facets.
@@ -22,7 +23,11 @@ public enum FacetConst implements CodeEnum {
     /** Movie facet associated with Language. */
     FCT_MOVIE_LANGUAGE(MovieIndexFields.LANGUAGE_IDS, "Language"),
     /** Movie facet associated with Country. */
-    FCT_MOVIE_COUNTRY(MovieIndexFields.COUNTRY_IDS, "Country");
+    FCT_MOVIE_COUNTRY(MovieIndexFields.COUNTRY_IDS, "Country"),
+    /** People facet associated with title. */
+    FCT_PEOPLE_TITLE(PeopleIndexFields.TIT_CD, "Title"),
+    /** People facet associated with profession. */
+    FCT_PEOPLE_PROFESSION(PeopleIndexFields.PROFESSIONS, "Profession");
 
     private final DtFieldName field;
     private final String facetName;

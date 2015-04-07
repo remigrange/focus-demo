@@ -54,7 +54,7 @@ public class PeopleServicesImpl implements PeopleServices {
             final PeopleCriteria crit, final UiListState uiListState, final String clusteringFacetName,
             final FacetSelection... selection) {
         final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
-                FacetedSearchConst.QRY_PEOPLE_WO_FCT.getQuery());
+                FacetedSearchConst.QRY_PEOPLE_WITH_FCT.getQuery());
         criteria.setCriteria(crit);
         for (final FacetSelection sel : selection) {
             criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());

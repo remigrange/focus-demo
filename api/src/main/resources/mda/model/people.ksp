@@ -7,9 +7,10 @@ create DtDefinition DT_PEOPLE_VIEW {
 	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
 	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
 	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
+	field PEO_NAME_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Name" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
-	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 	field PROFESSIONS {domain: DO_MULTI_VALUES_FIELD label: "People's professions" notNull:"false"}
+	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
 
 create DtDefinition DT_PEOPLE_CRITERIA {
@@ -29,6 +30,8 @@ create DtDefinition DT_PEOPLE_INDEX {
 	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
 	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field PEO_NAME_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Name" notNull:"false"}
+	field PROFESSIONS {domain: DO_MULTI_VALUES_FIELD label: "People's professions" notNull:"false"}
 	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
 
@@ -40,6 +43,7 @@ create DtDefinition DT_PEOPLE_RESULT {
 	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
 	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field PROFESSIONS {domain: DO_MULTI_VALUES_FIELD label: "People's professions" notNull:"false"}
 	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
 

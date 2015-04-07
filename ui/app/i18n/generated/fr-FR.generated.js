@@ -162,6 +162,8 @@ module.exports = {
         "titCd" : "Title",
         "peoName" : "Name",
         "imdbid" : "Id imdb",
+        "peoNameSortOnly" : "Name",
+        "professions" : "People's professions",
         "rank" : "rank"
     },
     "peopleResult": {
@@ -171,6 +173,7 @@ module.exports = {
         "titCd" : "Title",
         "peoName" : "Name",
         "imdbid" : "Id imdb",
+        "professions" : "People's professions",
         "rank" : "rank"
     },
     "peopleView": {
@@ -179,9 +182,10 @@ module.exports = {
         "firstName" : "First Name",
         "titCd" : "Title",
         "peoName" : "Name",
+        "peoNameSortOnly" : "Name",
         "imdbid" : "Id imdb",
-        "rank" : "rank",
-        "professions" : "People's professions"
+        "professions" : "People's professions",
+        "rank" : "rank"
     },
     "rolePeople": {
         "rlpId" : "RLP_ID",

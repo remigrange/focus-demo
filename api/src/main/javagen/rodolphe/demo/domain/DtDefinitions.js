@@ -518,6 +518,14 @@ module.exports = {
 				"domain": "DO_LIBELLE_100",
 				"required": false
 			},		
+			"peoNameSortOnly": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"required": false
+			},		
+			"professions": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
@@ -548,6 +556,10 @@ module.exports = {
 				"domain": "DO_LIBELLE_100",
 				"required": false
 			},		
+			"professions": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
@@ -574,17 +586,21 @@ module.exports = {
 				"domain": "DO_LIBELLE_250",
 				"required": false
 			},		
+			"peoNameSortOnly": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"required": false
+			},		
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"professions": {
+				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
 			},		
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
-			},		
-			"professions": {
-				"domain": "DO_MULTI_VALUES_FIELD",
-				"required": false
 			}		
 	},
 	"rolePeople": {

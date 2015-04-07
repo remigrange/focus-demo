@@ -47,11 +47,14 @@ module.exports = React.createClass({
             config.idField = 'movId';
         } else if(this.props.scope.toLowerCase() === 'people'){
             config.idField = 'peoId';
-            config.facetConfig = {};
+            config.facetConfig = {
+                Profession: 'text',
+                Title: 'text'
+            };
+            config.openedFacetList = {Title: true};
             config.orderableColumnList = [
-                {key: 'PEO_NAME', order: 'desc', label: 'Name desc'},
-                {key: 'PEO_NAME', order: 'asc', label: 'Name asc'}];
-            config.openedFacetList = {};
+                {key: 'PEO_NAME_SORT_ONLY', order: 'desc', label: 'Name desc'},
+                {key: 'PEO_NAME_SORT_ONLY', order: 'asc', label: 'Name asc'}];
         }
         return <FilterResult
             facetConfig= {config.facetConfig}

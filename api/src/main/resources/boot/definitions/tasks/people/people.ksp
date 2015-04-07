@@ -21,9 +21,18 @@ create Task TK_GET_PEOPLE_VIEW {
     			From
     				(
     				Select 
-    					peo_id, last_name, first_name, imdbid, tit_cd, peo_name, peo_id as rank
+    					peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name, peo.peo_name as peo_name_sort_only, 
+    					string_agg(DISTINCT rolem.label, '|') as PROFESSIONS, peo.peo_id as rank
     				From
-    					people
+    					people peo
+    				inner join ( select peo_id from people Where peo_id >= #MIN_RANK# order by peo_id limit <%= maxRows %>) sel on sel.peo_id = peo.peo_id
+					
+					left join role_people rolep on rolep.peo_id = peo.peo_id
+					
+					left join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd
+					
+					group by 
+    					peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name,rank
     				) v
     			Where
     				v.rank >= #MIN_RANK#
@@ -39,11 +48,20 @@ create Task TK_GET_PEOPLE_VIEW {
 create Task TK_GET_PEOPLE_VIEW_BY_PEO_ID {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
     request : " Select 
-    				peo_id, last_name, first_name, imdbid, tit_cd, peo_name, peo_id as rank
+    				peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name, peo.peo_name as peo_name_sort_only, 
+    				string_agg(DISTINCT rolem.label, '|') as PROFESSIONS, peo.peo_id as rank
     			From
-    				people
+    				people peo
+    				
+    			left join role_people rolep on rolep.peo_id = peo.peo_id
+					
+				left join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd
+				
     			Where
-    				peo_id = #PEOP_ID#
+    				peo.peo_id = #PEOP_ID#
+    			
+    			group by 
+    					peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name,rank
      "
     attribute PEOP_ID {domain : DO_ID notNull:"true" inOut :"in"}
     attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}

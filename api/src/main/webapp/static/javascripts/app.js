@@ -1179,6 +1179,14 @@ module.exports = {
 				"domain": "DO_LIBELLE_100",
 				"required": false
 			},		
+			"peoNameSortOnly": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"required": false
+			},		
+			"professions": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
@@ -1209,6 +1217,10 @@ module.exports = {
 				"domain": "DO_LIBELLE_100",
 				"required": false
 			},		
+			"professions": {
+				"domain": "DO_MULTI_VALUES_FIELD",
+				"required": false
+			},		
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
@@ -1235,17 +1247,21 @@ module.exports = {
 				"domain": "DO_LIBELLE_250",
 				"required": false
 			},		
+			"peoNameSortOnly": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"required": false
+			},		
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"professions": {
+				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
 			},		
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
-			},		
-			"professions": {
-				"domain": "DO_MULTI_VALUES_FIELD",
-				"required": false
 			}		
 	},
 	"rolePeople": {
@@ -1591,6 +1607,8 @@ module.exports = {
         "titCd" : "Title",
         "peoName" : "Name",
         "imdbid" : "Id imdb",
+        "peoNameSortOnly" : "Name",
+        "professions" : "People's professions",
         "rank" : "rank"
     },
     "peopleResult": {
@@ -1600,6 +1618,7 @@ module.exports = {
         "titCd" : "Title",
         "peoName" : "Name",
         "imdbid" : "Id imdb",
+        "professions" : "People's professions",
         "rank" : "rank"
     },
     "peopleView": {
@@ -1608,9 +1627,10 @@ module.exports = {
         "firstName" : "First Name",
         "titCd" : "Title",
         "peoName" : "Name",
+        "peoNameSortOnly" : "Name",
         "imdbid" : "Id imdb",
-        "rank" : "rank",
-        "professions" : "People's professions"
+        "professions" : "People's professions",
+        "rank" : "rank"
     },
     "rolePeople": {
         "rlpId" : "RLP_ID",
@@ -2080,11 +2100,14 @@ module.exports = React.createClass({displayName: "exports",
             config.idField = 'movId';
         } else if(this.props.scope.toLowerCase() === 'people'){
             config.idField = 'peoId';
-            config.facetConfig = {};
+            config.facetConfig = {
+                Profession: 'text',
+                Title: 'text'
+            };
+            config.openedFacetList = {Title: true};
             config.orderableColumnList = [
-                {key: 'PEO_NAME', order: 'desc', label: 'Name desc'},
-                {key: 'PEO_NAME', order: 'asc', label: 'Name asc'}];
-            config.openedFacetList = {};
+                {key: 'PEO_NAME_SORT_ONLY', order: 'desc', label: 'Name desc'},
+                {key: 'PEO_NAME_SORT_ONLY', order: 'asc', label: 'Name asc'}];
         }
         return React.createElement(FilterResult, {
             facetConfig: config.facetConfig, 

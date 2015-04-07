@@ -7,6 +7,7 @@ import io.vertigo.core.Home;
 import io.vertigo.dynamo.collections.metamodel.FacetedQueryDefinition;
 import rodolphe.demo.domain.CodeEnum;
 import rodolphe.demo.domain.movies.MovieIndex;
+import rodolphe.demo.domain.people.PeopleIndex;
 
 /**
  * Enum of the various searches. With or Without facets.
@@ -20,7 +21,9 @@ public enum FacetedSearchConst implements CodeEnum {
     QRY_MOVIE_WITH_FCT(MovieIndex.class, FacetConst.FCT_MOVIE_COUNTRY, FacetConst.FCT_MOVIE_GENRE,
             FacetConst.FCT_MOVIE_LANGUAGE),
     /** People without facets. */
-    QRY_PEOPLE_WO_FCT();
+    QRY_PEOPLE_WO_FCT(),
+    /** People with facets. */
+    QRY_PEOPLE_WITH_FCT(PeopleIndex.class, FacetConst.FCT_PEOPLE_TITLE, FacetConst.FCT_PEOPLE_PROFESSION);
 
     private final FacetConst[] facetConstTab;
     private final Class indexClassname;

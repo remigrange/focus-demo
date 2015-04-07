@@ -439,6 +439,10 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		PEO_NAME,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
+		/** Propriété 'Name'. */
+		PEO_NAME_SORT_ONLY,
+		/** Propriété 'People's professions'. */
+		PROFESSIONS,
 		/** Propriété 'rank'. */
 		RANK,
 	}
@@ -459,6 +463,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		PEO_NAME,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
+		/** Propriété 'People's professions'. */
+		PROFESSIONS,
 		/** Propriété 'rank'. */
 		RANK,
 	}
@@ -477,12 +483,14 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		TIT_CD,
 		/** Propriété 'Name'. */
 		PEO_NAME,
+		/** Propriété 'Name'. */
+		PEO_NAME_SORT_ONLY,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
-		/** Propriété 'rank'. */
-		RANK,
 		/** Propriété 'People's professions'. */
 		PROFESSIONS,
+		/** Propriété 'rank'. */
+		RANK,
 	}
 
 	/**

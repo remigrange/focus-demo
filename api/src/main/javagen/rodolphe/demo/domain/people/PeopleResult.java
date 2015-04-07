@@ -20,6 +20,7 @@ public final class PeopleResult implements DtObject {
 	private String titCd;
 	private String peoName;
 	private String imdbid;
+	private String professions;
 	private Long rank;
 
 	/**
@@ -134,6 +135,25 @@ public final class PeopleResult implements DtObject {
 	 */
 	public void setImdbid(final String imdbid) {
 		this.imdbid = imdbid;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'People's professions'. 
+	 * @return String professions 
+	 */
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "People's professions")
+	public String getProfessions() {
+		return professions;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'People's professions'.
+	 * @param professions String 
+	 */
+	public void setProfessions(final String professions) {
+		this.professions = professions;
 	}
 
 	/**
