@@ -23,12 +23,6 @@
 </head>
 <body>
 	<div id="leftMenu">
-		<div id="brand">
-			&nbsp;
-		</div>
-		<ul>
-			<li><a href="#search/quick"><img src="static/img/search.png"/></a></li>
-		</ul>
 	</div>
 	<div id="pageContent">
 		<div id="header" class="affix"></div>

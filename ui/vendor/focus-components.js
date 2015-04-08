@@ -139,6 +139,9 @@ var menuMixin = {
   /** @inheriteddoc */
   render: function render() {
     var className = "menu menu-" + this.props.direction + " menu-" + this.props.position + " menu-" + (this.state.open ? "open" : "");
+    if (this.props.style.className !== undefined && this.props.style.className !== null) {
+      className = className + " " + this.props.style.className;
+    }
     return React.createElement(
       "nav",
       { className: className },

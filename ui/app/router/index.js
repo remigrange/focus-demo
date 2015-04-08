@@ -8,6 +8,13 @@ var render = focus.application.render;
 
 var MenuView = require('../views/menu');
 
+var renderMenu = function(){
+  render(MenuView, '#header',
+    {props: {position: 'top', direction: 'horizontal', title: 'Focus', reference: 'menuTop', links: [{url: '#', name: 'Home'}], style: {className: 'header-menu'}}});
+  render(MenuView, '#leftMenu',
+    {props: {position: 'left', direction: 'vertical', title: '', reference: 'menuLeft', links: [{url: '#search/quick', name: '', img: 'static/img/search.png'}], style: {className: 'left-menu'}}});
+};
+
 var AppRouter = Router.extend({
   routes: {
     '': 'home',
@@ -19,7 +26,7 @@ var AppRouter = Router.extend({
   home: function handleHomeRoute() {
     console.log('ROUTE: HOME');
     var HomeView = require('../views/home');
-    render(MenuView, '#header');
+    renderMenu();
     render(HomeView, '#page');
   },
   movie: function handleMovieRoute(id) {
@@ -30,6 +37,7 @@ var AppRouter = Router.extend({
   people: function handlePeopleRoute(id) {
     console.log('ROUTE: PEOPLE');
     var PeopleDetailView = require('../views/people');
+    renderMenu();
     render(PeopleDetailView, '#page', {props: {id: id}});
   },
   filterResult: function handleFilterResult(scope, query) {
@@ -43,13 +51,14 @@ var AppRouter = Router.extend({
       query = '';
     }
     var FilterResultView = require('../views/filter-result');
+    renderMenu();
     render(FilterResultView, '#page', {props: {scope: scope, query: query}});
   },
 
   searchResult: function handleSearchResult() {
     console.log('ROUTE: SEARCH RESULT');
     var SearchResultView = require('../views/search-result');
-
+    renderMenu();
     render(SearchResultView, '#page');
   }
 });

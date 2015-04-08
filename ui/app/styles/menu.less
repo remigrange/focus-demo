@@ -3,30 +3,44 @@
 .menu-horizontal {
   height: 60px;
 }
-.menu {
+
+.menu-vertical {
+  width: 80px;
+}
+.header-menu {
   background: #3ABAAE;
 }
 
-.menu h3 {
+.header-menu h3 {
   color: #FFFFFF;
   font-size: 1.9em;
   padding: 10px;
   margin: 0;
   font-weight: 300;
   background: #3ABAAE;
-}
-.menu-horizontal h3 {
   width: @sidebar-width;
 }
 
-.menu-horizontal a {
+.header-menu a,
+.left-menu a{
   border-left: none;//1px solid #009587;
+  border-bottom: none;//1px solid #009587;
   width: auto;
   padding: 10px 20px;
   text-decoration: none;
   font-size: 20px;
   font-weight: bold;
 }
-.menu a:hover {
+.header-menu a:hover,
+.left-menu a:hover {
   background: #FFFFFF;
+}
+
+.left-menu {
+  background: #C0D1CF;
+  padding-top: 60px;
+}
+
+.left-menu h3 {
+  display: none;
 }
