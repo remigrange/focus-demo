@@ -23,40 +23,92 @@ module.exports = {
   application: require("./application")
 };
 
-},{"./application":3,"./common":21,"./list":40,"./message":49,"./package.json":111,"./page":112,"./search":120}],2:[function(require,module,exports){
-"use strict";
-
-module.exports = {};
-
-},{}],3:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-  bar: require("./bar"),
-  menu: require("./menu")
-};
-
-},{"./bar":2,"./menu":4}],4:[function(require,module,exports){
+},{"./application":3,"./common":22,"./list":45,"./message":54,"./package.json":116,"./page":117,"./search":124}],2:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+//var type = require('focus').component.types;
 
-var menuMixin = {
+var barMixin = {
   /** @inheritedProps*/
   getDefaultProps: function getMenuDefaultProps() {
     return {
-      direction: "vertical", //horizontal
-      position: "left", // top, bottom, right, left
-      links: [],
-      open: false
+      open: true,
+      scrollTargetSelector: "body"
     };
   },
   /** @inheritedProps*/
   getInitialState: function getMenuDefaultState() {
     return {
       open: this.props.open
+    };
+  },
+  /**
+   * Toggle the state of the menu.
+   */
+  toggle: function toggleOpenMenu() {
+    this.setState({ open: !this.state.open });
+  },
+  scrollListener: function scrollListener(event) {
+    console.log("scroll", event);
+    //React.findDOMNode
+  },
+  /**
+   * Attach scroll listener on the component.
+   */
+  attachScrollListener: function attachScrollListener() {
+    if (!this.props.hasMoreData) {
+      return;
+    }
+    document.querySelector(this.props.scrollTargetSelector).addEventListener("scroll", this.scrollListener);
+    document.querySelector(this.props.scrollTargetSelector).addEventListener("resize", this.scrollListener);
+  },
+
+  /**
+   * detach scroll listener on the component
+   */
+  detachScrollListener: function detachScrollListener() {
+    document.querySelector(this.props.scrollTargetSelector).removeEventListener("scroll", this.scrollListener);
+    document.querySelector(this.props.scrollTargetSelector).removeEventListener("resize", this.scrollListener);
+  },
+  /** @inheriteddoc */
+  render: function render() {
+    var className = "bar bar-" + (this.state.open ? "open" : "");
+    return React.createElement(
+      "nav",
+      { className: className },
+      this.state.open ? this._renderLargeContent() : this._renderMinimalContent()
+    );
+  }
+};
+
+module.exports = builder(barMixin);
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+  bar: require("./bar"),
+  menu: require("./menu"),
+  popin: require("./popin")
+};
+
+},{"./bar":2,"./menu":4,"./popin":6}],4:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var React = window.React;
+var type = window.focus.component.types;
+var PopinProperties = require("../mixin/popin-behaviour").mixin;
+
+var menuMixin = {
+  mixins: [PopinProperties],
+
+  /** @inheritedProps*/
+  getDefaultProps: function getMenuDefaultProps() {
+    return {
+      links: []
     };
   },
   /**
@@ -77,25 +129,184 @@ var menuMixin = {
       );
     });
   },
+  renderTitle: function renderTitle() {
+    return React.createElement(
+      "h3",
+      null,
+      this.props.title
+    );
+  },
   /** @inheriteddoc */
   render: function render() {
     var className = "menu menu-" + this.props.direction + " menu-" + this.props.position + " menu-" + (this.state.open ? "open" : "");
     return React.createElement(
       "nav",
       { className: className },
-      React.createElement(
-        "h3",
-        null,
-        this.props.title
-      ),
-      this.renderLinks()
+      this.renderTitle(),
+      this.renderContent()
     );
   }
 };
 
 module.exports = builder(menuMixin);
 
-},{}],5:[function(require,module,exports){
+},{"../mixin/popin-behaviour":5}],5:[function(require,module,exports){
+"use strict";
+
+/**
+ * Mixin used in order to create a popin or a menu.
+ * @type {Object}
+ */
+var PopinProperties = {
+
+  /** @inheritedProps
+   *  Default properties.
+   * @returns {{direction: string, position: string, links: Array, open: boolean, style: {}}} properties
+   */
+  getDefaultProps: function getMenuDefaultProps() {
+    return {
+      direction: "vertical", //horizontal
+      position: "left", // top, bottom, right, left
+      open: false,
+      style: {}
+    };
+  },
+  /** @inheritedProps
+   * Initial state.
+   * @returns {{open: *}} initial state
+   */
+  getInitialState: function getDefaultState() {
+    return {
+      open: this.props.open
+    };
+  }
+};
+
+module.exports = { mixin: PopinProperties };
+
+},{}],6:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var PopinProperties = require("../mixin/popin-behaviour").mixin;
+
+/**
+ * Popin mixin
+ * @type {object}
+ */
+var popinMixin = {
+    mixins: [PopinProperties],
+    /**
+     * Display name.
+     */
+    displayName: "popin",
+
+    /**
+     * Default propos.
+     * @returns {object} Default props.
+     */
+    getDefaultProps: function getDefaultProps() {
+        return {
+            //animation: 'right', // right, left, up, down
+            type: "full", // full, centered
+            //  displaySelector: undefined, // Html selector of the element wich open/close the modal when click on it.
+            contentLoadingFunction: undefined // Function wich returns the content of the modal.
+        };
+    },
+    /**
+     * Declare the open action.
+     */
+    componentDidMount: function popinDidMount() {
+        var source = document.querySelector(this.props.displaySelector);
+        var currentView = this;
+        source.onclick = function () {
+            currentView.setState({ open: !currentView.state.open });
+        };
+    },
+
+    /**
+     * Open the modal.
+     */
+    openModal: function openModal() {
+        this.setState({ open: true });
+    },
+    /**
+     * Close the modal.
+     */
+    closeModal: function closeModal() {
+        this.setState({ open: false });
+    },
+
+    /**
+     * Css class of modal.
+     * @returns {string} css classes.
+     * @private
+     */
+    _getModalCss: function _getModalCss() {
+        var cssClass = "popin animated float:right;";
+        switch (this.props.position) {
+            case "right":
+                cssClass += " bounceInRight right";
+                break;
+            case "left":
+                cssClass += " bounceInLeft left";
+                break;
+            case "down":
+                cssClass += " bounceInDown down";
+                break;
+            case "up":
+                cssClass += " bounceInUp up";
+                break;
+        }
+        return cssClass;
+    },
+    /**
+     * Content css class.
+     * @returns {string} css classes.
+     * @private
+     */
+    _getModalContentCss: function _getModalContentCss() {
+        var cssClass = "modal-content";
+        switch (this.props.type) {
+            case "full":
+                cssClass += " full";
+                break;
+            case "centered":
+                cssClass += " centered";
+                break;
+        }
+        return cssClass;
+    },
+
+    /**
+     * Render the component.
+     * @returns {JSX} Html code.
+     */
+    render: function renderPopin() {
+        if (!this.state.open) {
+            return React.createElement("div", null);
+        }
+        return React.createElement(
+            "span",
+            { className: this._getModalCss() },
+            React.createElement(
+                "div",
+                { className: this._getModalContentCss() },
+                this.renderPopinHeader(this),
+                React.createElement(
+                    "div",
+                    { className: "modal-body" },
+                    this.renderContent(this)
+                ),
+                this.renderPopinFooter(this)
+            )
+        );
+    }
+};
+
+module.exports = builder(popinMixin);
+
+},{"../mixin/popin-behaviour":5}],7:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -137,7 +348,7 @@ var blockMixin = {
 };
 module.exports = builder(blockMixin);
 
-},{"../i18n":18,"../title":36}],6:[function(require,module,exports){
+},{"../i18n":19,"../title":41}],8:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -202,14 +413,14 @@ var buttonMixin = {
 
 module.exports = builder(buttonMixin);
 
-},{"../../img":20}],7:[function(require,module,exports){
+},{"../../img":21}],9:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	action: require("./action")
 };
 
-},{"./action":6}],8:[function(require,module,exports){
+},{"./action":8}],10:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -262,7 +473,7 @@ var displayTextMixin = {
 
 module.exports = builder(displayTextMixin);
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -285,11 +496,6 @@ var FieldMixin = {
        */
       isEdit: true,
       /**
-       * Size of the label in the grid system.
-       * @type {Number}
-       */
-      labelSize: 3,
-      /**
        * HTML input type.
        * @type {String}
        */
@@ -308,8 +514,7 @@ var FieldMixin = {
   },
   /** @inheritdoc */
   propTypes: {
-    hasLabel: type("bool"),
-    labelSize: type("number"),
+    isEdit: type("bool"),
     type: type("string"),
     name: type("string"),
     value: type(["string", "number"])
@@ -340,15 +545,18 @@ var FieldMixin = {
 };
 module.exports = builder(FieldMixin);
 
-},{"./mixin/built-in-components":10,"./mixin/validation-behaviour":11,"./mixin/value-behaviour":12}],10:[function(require,module,exports){
+},{"./mixin/built-in-components":12,"./mixin/validation-behaviour":13,"./mixin/value-behaviour":14}],12:[function(require,module,exports){
 "use strict";
 
 var InputText = require("../../input/text").component;
 var DisplayText = require("../../display/text").component;
 var SelectClassic = require("../../select/classic").component;
 var Label = require("../../label").component;
+var fieldGridBehaviourMixin = require("../../mixin/field-grid-behaviour");
+var type = window.focus.component.types;
 
 var fieldBuiltInComponentsMixin = {
+  mixins: [fieldGridBehaviourMixin],
   /** @inheriteDoc */
   getDefaultProps: function getDefaultPropsBuiltInComponents() {
     return {
@@ -384,16 +592,26 @@ var fieldBuiltInComponentsMixin = {
       DisplayComponent: DisplayText
     };
   },
+  /** @inheriteDoc */
+  propTypes: {
+    hasLabel: type("bool"),
+    labelSize: type("number"),
+    FieldComponent: type("object"),
+    InputLabelComponent: type("object"),
+    InputComponent: type("object"),
+    SelectComponent: type("object"),
+    DisplayComponent: type("object")
+  },
   /**
    * Render the label part of the component.
-   * @return {[type]} [description]
+   * @returns {[type]} [description]
    */
   label: function fieldLabel() {
     if (this.props.FieldComponent || this.props.InputLabelComponent) {
-      return;
+      return undefined;
     }
     if (this.props.hasLabel) {
-      var labelClassName = "control-label col-sm-" + this.props.labelSize;
+      var labelClassName = this._getLabelGridClassName();
       return React.createElement(Label, {
         style: { className: labelClassName },
         name: this.props.name,
@@ -409,7 +627,7 @@ var fieldBuiltInComponentsMixin = {
     if (this.props.FieldComponent || this.props.InputLabelComponent) {
       return this.renderFieldComponent();
     }
-    var inputClassName = "form-control col-sm-" + (12 - this.props.labelSize);
+    var inputClassName = "form-control " + this._getContentGridClassName();
     return React.createElement(
       "div",
       { className: "input-group" },
@@ -432,7 +650,7 @@ var fieldBuiltInComponentsMixin = {
     if (this.props.FieldComponent || this.props.InputLabelComponent) {
       return this.renderFieldComponent();
     }
-    var selectClassName = "form-control col-sm-" + (12 - this.props.labelSize);
+    var selectClassName = "form-control " + this._getContentGridClassName();
     return React.createElement(
       "div",
       { className: "input-group" },
@@ -456,7 +674,7 @@ var fieldBuiltInComponentsMixin = {
     if (this.props.FieldComponent || this.props.InputLabelComponent) {
       return this.renderFieldComponent();
     }
-    var selectClassName = "form-control col-sm-" + (12 - this.props.labelSize);
+    var selectClassName = "form-control " + this._getContentGridClassName();
     return React.createElement(
       "div",
       { className: "input-group" },
@@ -506,7 +724,7 @@ var fieldBuiltInComponentsMixin = {
       );
     }
   },
-  /** 
+  /**
    * Render the field component if it is overriden in the component definition.
    */
   renderFieldComponent: function renderFieldComponent() {
@@ -518,6 +736,7 @@ var fieldBuiltInComponentsMixin = {
       value: this.state.value,
       type: this.props.type,
       style: this.props.style.input,
+      labelSize: this.props.labelSize,
       error: this.state.error,
       help: this.props.help,
       onChange: this.onInputChange,
@@ -528,7 +747,7 @@ var fieldBuiltInComponentsMixin = {
 
 module.exports = fieldBuiltInComponentsMixin;
 
-},{"../../display/text":8,"../../input/text":26,"../../label":29,"../../select/classic":33}],11:[function(require,module,exports){
+},{"../../display/text":10,"../../input/text":27,"../../label":30,"../../mixin/field-grid-behaviour":34,"../../select/classic":38}],13:[function(require,module,exports){
 "use strict";
 
 var validationMixin = {
@@ -568,7 +787,7 @@ var validationMixin = {
 };
 module.exports = validationMixin;
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 var valueBehaviourMixin = {
@@ -603,7 +822,7 @@ var valueBehaviourMixin = {
 
 module.exports = valueBehaviourMixin;
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -611,19 +830,23 @@ var _defineProperty = function (obj, key, value) { return Object.defineProperty(
 var builder = window.focus.component.builder;
 var React = window.React;
 var assign = require("object-assign");
-var getEntityDefinition = window.focus.definition.entity.builder.getEntityInformations;
-var builtInComponents = require("./mixin/built-in-components");
+var isEmpty = require("lodash/lang/isEmpty");
+
+// Common mixins.
+var definitionMixin = require("../mixin/definition");
+var builtInComponents = require("../mixin/built-in-components");
+
+//Form mixins.
 var referenceBehaviour = require("./mixin/reference-behaviour");
 var storeBehaviour = require("./mixin/store-behaviour");
 var actionBehaviour = require("./mixin/action-behaviour");
 
-var isEmpty = require("lodash/lang/isEmpty");
 /**
  * Mixin to create a block for the rendering.
  * @type {Object}
  */
 var formMixin = {
-  mixins: [referenceBehaviour, storeBehaviour, actionBehaviour, builtInComponents],
+  mixins: [definitionMixin, referenceBehaviour, storeBehaviour, actionBehaviour, builtInComponents],
   /** @inheritdoc */
   getDefaultProps: function getFormDefaultProps() {
     return {
@@ -667,14 +890,8 @@ var formMixin = {
     this._loadReference();
   },
   /** @inheritdoc */
-  componentWillMount: function formWillMount() {
-    this._buildDefinition();
-    this._buildReference();
-  },
-  /** @inheritdoc */
   componentDidMount: function formDidMount() {
     //Build the definitions.
-    this._registerListeners();
     if (this.registerListeners) {
       this.registerListeners();
     }
@@ -684,20 +901,11 @@ var formMixin = {
   },
   /** @inheritdoc */
   componentWillUnmount: function formWillMount() {
-    this._unRegisterListeners();
     if (this.unregisterListeners) {
       this.unregisterListeners();
     }
   },
-  /**
-   * Build the entity definition givent the path of the definition.
-   */
-  _buildDefinition: function buildFormDefinition() {
-    if (!this.definitionPath) {
-      throw new Error("the definition path should be defined to know the domain of your entity property.");
-    }
-    this.definition = getEntityDefinition(this.definitionPath, this.additionalDefinition);
-  },
+
   /**
    * Validate the form information by information.
    * In case of errors the state is modified.
@@ -782,7 +990,7 @@ var formMixin = {
 
 module.exports = builder(formMixin);
 
-},{"./mixin/action-behaviour":14,"./mixin/built-in-components":15,"./mixin/reference-behaviour":16,"./mixin/store-behaviour":17,"lodash/lang/isEmpty":93,"object-assign":108}],14:[function(require,module,exports){
+},{"../mixin/built-in-components":32,"../mixin/definition":33,"./mixin/action-behaviour":16,"./mixin/reference-behaviour":17,"./mixin/store-behaviour":18,"lodash/lang/isEmpty":98,"object-assign":113}],16:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -823,153 +1031,7 @@ var actionMixin = {
 
 module.exports = actionMixin;
 
-},{"object-assign":108}],15:[function(require,module,exports){
-"use strict";
-
-var React = window.React;
-var Field = require("../../field").component;
-var Button = require("../../button/action").component;
-var List = require("../../list");
-module.exports = {
-  /**
-   * Create a field for the given property metadata.
-   * @param {string} name - property name.
-   * @param {object} options - An object which contains all options for the built of the field.
-   * @returns {object} - A React Field.
-   */
-  fieldFor: function fieldFor(name, options) {
-    var def = this.definition && this.definition[name] ? this.definition[name] : {};
-    options = options || {};
-    var isEdit = options.isEdit !== undefined ? options.isEdit : this.state.isEdit;
-    //Maybe allow to overrife fieldFor here such as def.fieldFor?.
-    return React.createElement(Field, {
-      name: "" + this.definitionPath + "." + name,
-      ref: name,
-      value: this.state[name],
-      error: this.state.error ? this.state.error[name] : undefined,
-      validator: def.validator,
-      FieldComponent: def.FieldComponent,
-      InputLabelComponent: def.InputLabelComponent,
-      InputComponent: def.InputComponent,
-      isEdit: isEdit,
-      formatter: def.formatter
-    });
-  },
-  /**
-   * Select component for the component.
-   * @param {string} name - property name.
-   * @param {string} listName - list name.
-   * @param {object} options - options object.
-   * @returns {object} - A React Field.
-   */
-  selectFor: function selectFor(name, listName, options) {
-    options = options || {};
-    var def = this.definition && this.definition[name] ? this.definition[name] : {};
-    listName = listName || def.listName;
-    var isEdit = options.idEdit || true;
-    //Check listName
-
-    return React.createElement(Field, {
-      name: name,
-      ref: name,
-      value: this.state[name],
-      error: this.state.error ? this.state.error[name] : undefined,
-      validator: def.validator,
-      values: this.state.reference[listName], //Options to be rendered.
-      FieldComponent: def.FieldComponent,
-      InputLabelComponent: def.InputLabelComponent,
-      isEdit: isEdit
-    });
-  },
-  /**
-   * Display a field.
-   * @param {string} name - property name.
-   * @param {object} options - options object.
-   * @returns {object} - A React Field.
-   */
-  displayFor: function displayFor(name, options) {
-    options = options || {};
-    var def = this.definition && this.definition[name] ? this.definition[name] : {};
-    var listName = options.listName || def.listName;
-    return React.createElement(Field, {
-      name: name,
-      ref: name,
-      value: this.state[name],
-      values: this.state.reference ? this.state.reference[listName] : undefined, //Options to be rendered.
-      FieldComponent: def.FieldComponent,
-      InputLabelComponent: def.InputLabelComponent,
-      isEdit: false
-    });
-  },
-  /**
-   * Display a list component.
-   * @param {string} name - Property name.
-   * @param {object} options - Options object.
-   * @returns {object} - The react component for the line.
-   */
-  listFor: function listFor(name, options) {
-    options = options || {};
-    return React.createElement(List, {
-      data: this.state[name],
-      line: options.LineComponent || this.props.LineComponent || this.LineComponent,
-      perPage: options.perPage || 5
-    });
-  },
-  /**
-   * Button delete generation.
-   * @returns {object} - A Reacte button.
-   */
-  buttonDelete: function buttonDelete() {
-    return React.createElement(Button, {
-      label: "delete",
-      type: "button",
-      css: "delete"
-    });
-  },
-  buttonEdit: function buttonEdit() {
-    var form = this;
-    return React.createElement(Button, {
-      label: "edit",
-      type: "button",
-      css: "edit",
-      handleOnClick: function handleOnClickEdit() {
-        form.setState({ isEdit: !form.state.isEdit });
-      }
-    });
-  },
-  buttonCancel: function buttonCancel() {
-    var form = this;
-    return React.createElement(Button, {
-      label: "cancel",
-      type: "button",
-      css: "cancel",
-      handleOnClick: function handleOnClickCancel() {
-        console.log("cancel");
-        form.setState({ isEdit: !form.state.isEdit });
-      }
-    });
-  },
-  /**
-   * Button save generation.
-   * @returns {object} - A React button.
-   */
-  buttonSave: function buttonSave() {
-    var form = this;
-
-    return React.createElement(Button, {
-      label: "save",
-      type: "submit",
-      css: "primary" });
-  } };
-
-/*handleOnClick: function(e){
-  if(form.validate()){
-    form.action.save(form._getEntity());
-  }
-  return;
-}*/
-
-},{"../../button/action":6,"../../field":9,"../../list":30}],16:[function(require,module,exports){
+},{"object-assign":113}],17:[function(require,module,exports){
 "use strict";
 
 //focus.reference.builder.loadListByName('papas').then(function(data){focus.dispatcher.dispatch({action: {type: "update",data: {papas: data}}})})
@@ -1026,12 +1088,16 @@ var referenceMixin = {
   _buildReference: function buildReference() {
     this._buildReferenceStoreConfig();
     this._buildReferenceActions();
+  },
+  /** @inheritdoc */
+  componentWillMount: function formWillMount() {
+    this._buildReference();
   }
 };
 
 module.exports = referenceMixin;
 
-},{"lodash/lang/isEmpty":93}],17:[function(require,module,exports){
+},{"lodash/lang/isEmpty":98}],18:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -1097,7 +1163,7 @@ var storeMixin = {
   /**
   * Unregister all the listeners related to the page.
   */
-  _unRegisterListeners: function _unRegisterListeners() {
+  _unRegisterListeners: function unregisterListener() {
     var _this = this;
 
     if (this.stores) {
@@ -1107,19 +1173,28 @@ var storeMixin = {
         });
       });
     }
+  },
+  /** @inheritdoc */
+  componentDidMount: function storeBehaviourDidMount() {
+    //Build the definitions.
+    this._registerListeners();
+  },
+  /** @inheritdoc */
+  componentWillUnmount: function storeBehaviourWillUnmount() {
+    this._unRegisterListeners();
   }
 };
 
 module.exports = storeMixin;
 
-},{"lodash/lang/isArray":92,"lodash/string/capitalize":102,"object-assign":108}],18:[function(require,module,exports){
+},{"lodash/lang/isArray":97,"lodash/string/capitalize":107,"object-assign":113}],19:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   mixin: require("./mixin")
 };
 
-},{"./mixin":19}],19:[function(require,module,exports){
+},{"./mixin":20}],20:[function(require,module,exports){
 "use strict";
 
 /*global window*/
@@ -1138,7 +1213,7 @@ module.exports = {
     }
 };
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1175,7 +1250,7 @@ var imgMixin = {
 
 module.exports = builder(imgMixin);
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -1192,10 +1267,11 @@ module.exports = {
   stickyNavigation: require("./sticky-navigation"),
   title: require("./title"),
   topicDisplayer: require("./topic-displayer"),
-  list: require("./list")
+  list: require("./list"),
+  mixin: require("./mixin")
 };
 
-},{"./block":5,"./button":7,"./field":9,"./form":13,"./img":20,"./input":24,"./label":29,"./list":30,"./panel":31,"./select":34,"./select-action":32,"./sticky-navigation":35,"./title":36,"./topic-displayer":37}],22:[function(require,module,exports){
+},{"./block":7,"./button":9,"./field":11,"./form":15,"./img":21,"./input":25,"./label":30,"./list":31,"./mixin":35,"./panel":36,"./select":39,"./select-action":37,"./sticky-navigation":40,"./title":41,"./topic-displayer":42}],23:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -1207,8 +1283,10 @@ module.exports = {
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
+var fieldGridBehaviourMixin = require("../../mixin/field-grid-behaviour");
 
 var checkBoxMixin = {
+  mixins: [fieldGridBehaviourMixin],
   /**
    * Get the checkbox default attributes.
    */
@@ -1243,9 +1321,17 @@ var checkBoxMixin = {
   },
   /**
    * Get the value from the input in  the DOM.
+   * @returns The DOM node value.
    */
   getValue: function getValue() {
     return this.getDOMNode().value;
+  },
+  /**
+   * Build the label class name.
+   * @returns The label classame with the grid informations.
+   */
+  _labelClassName: function labelClassName() {
+    return "" + this._getContentOffsetClassName() + " " + this._getContentGridClassName();
   },
   /**
    * Render the Checkbox HTML.
@@ -1257,10 +1343,8 @@ var checkBoxMixin = {
       { className: "checkbox" },
       React.createElement(
         "label",
-        null,
+        { className: this._labelClassName() },
         React.createElement("input", { ref: "checkbox", checked: this.state.isChecked, onChange: this._onChange, type: "checkbox" }),
-        React.createElement("span", { className: "ripple" }),
-        React.createElement("span", { className: "check" }),
         this.props.label ? this.props.label : ""
       )
     );
@@ -1275,7 +1359,7 @@ var checkBoxMixin = {
 
 module.exports = builder(checkBoxMixin);
 
-},{}],23:[function(require,module,exports){
+},{"../../mixin/field-grid-behaviour":34}],24:[function(require,module,exports){
 "use strict";
 
 var jQuery = window.jQuery;
@@ -1309,7 +1393,7 @@ var inputDateMixin = {
 
 module.exports = builder(inputDateMixin);
 
-},{"../text":26}],24:[function(require,module,exports){
+},{"../text":27}],25:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -1321,14 +1405,12 @@ module.exports = {
   markdown: require("./markdown")
 };
 
-},{"./checkbox":22,"./date":23,"./markdown":25,"./text":26,"./textarea":27,"./toggle":28}],25:[function(require,module,exports){
+},{"./checkbox":23,"./date":24,"./markdown":26,"./text":27,"./textarea":28,"./toggle":29}],26:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
 var builder = window.focus.component.builder;
 var React = window.React;
-
-var converter = new window.Showdown.converter();
 
 var markdownEditorMixin = {
   getInitialState: function getInitialState() {
@@ -1338,6 +1420,9 @@ var markdownEditorMixin = {
     this.setState({ value: this.refs.textarea.getDOMNode().value });
   },
   render: function render() {
+    var converter = window.Showdown ? function (data) {
+      console.warn("showdown should be imported/");return data;
+    } : new window.Showdown.converter();
     return React.createElement(
       "div",
       { className: "MarkdownEditor" },
@@ -1357,7 +1442,7 @@ var markdownEditorMixin = {
 
 module.exports = builder(markdownEditorMixin);
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -1436,7 +1521,7 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -1530,7 +1615,7 @@ var textAreaMixin = {
 
 module.exports = builder(textAreaMixin);
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -1542,8 +1627,10 @@ module.exports = builder(textAreaMixin);
 var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
+var fieldGridBehaviourMixin = require("../../mixin/field-grid-behaviour");
 
 var toggleMixin = {
+  mixins: [fieldGridBehaviourMixin],
   /**
    * Get the checkbox default attributes.
    */
@@ -1576,6 +1663,9 @@ var toggleMixin = {
       this.props.onChange(event);
     }
   },
+  _labelClassName: function labelClassName() {
+    return "" + this._getContentGridClassName();
+  },
   /**
    * Get the value from the input in  the DOM.
    */
@@ -1589,11 +1679,15 @@ var toggleMixin = {
   render: function renderToggle() {
     return React.createElement(
       "div",
-      { className: "togglebutton" },
+      { className: "togglebutton form-group" },
       React.createElement(
         "label",
-        null,
-        this.props.label ? this.props.label : "",
+        { className: this._getLabelGridClassName() },
+        this.props.label ? this.props.label : ""
+      ),
+      React.createElement(
+        "label",
+        { className: this._labelClassName() },
         React.createElement("input", { ref: "checkbox", checked: this.state.isChecked, onChange: this._onChange, type: "checkbox" })
       )
     );
@@ -1608,7 +1702,7 @@ var toggleMixin = {
 
 module.exports = builder(toggleMixin);
 
-},{}],29:[function(require,module,exports){
+},{"../../mixin/field-grid-behaviour":34}],30:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1637,7 +1731,7 @@ var labelMixin = {
 
 module.exports = builder(labelMixin);
 
-},{"../i18n/mixin":19}],30:[function(require,module,exports){
+},{"../i18n/mixin":20}],31:[function(require,module,exports){
 "use strict";
 
 //var SelectionList = focus.components.list.selection.list.component;
@@ -1670,7 +1764,8 @@ module.exports = React.createClass({
   /** @inheritdoc */
   getDefaultProps: function getDefaultProps() {
     return {
-      data: []
+      data: [],
+      reference: {}
     };
   },
   /** @inheritdoc */
@@ -1692,11 +1787,291 @@ module.exports = React.createClass({
   render: function renderFormList() {
     var data = this.props.data || [];
     var hasMoreData = data.length > (this.state.maxElements ? this.state.maxElements : this.props.perPage);
-    return React.createElement(MySelectionList, { data: this.getDataToUse(), hasMoreData: hasMoreData, lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage });
+    return React.createElement(MySelectionList, { data: this.getDataToUse(), hasMoreData: hasMoreData, reference: this.props.reference, lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage });
   }
 });
 
-},{"../../list/selection/list":44,"../button/action":6,"object-assign":108}],31:[function(require,module,exports){
+},{"../../list/selection/list":49,"../button/action":8,"object-assign":113}],32:[function(require,module,exports){
+"use strict";
+
+var React = window.React;
+var Field = require("../field").component;
+var Text = require("../display/text").component;
+var Button = require("../button/action").component;
+var List = require("../list");
+var assign = require("object-assign");
+module.exports = {
+  /**
+   * Build the field properties.
+   * @param {string} name - property name.
+   * @param {object} options - An object which contains all options for the built of the field
+   * @param {object} context - Function context, this by default.
+   */
+  _buildFieldProps: function buildFieldProps(name, options, context) {
+    options = options || {};
+    context = context || this;
+    //Properties.
+    var isEdit = options.isEdit !== undefined ? options.isEdit : context.state.isEdit;
+    var def = context.definition && context.definition[name] ? context.definition[name] : {};
+    var listName = options.listName || def.listName;
+    //Build a container for the props.
+    var propsContainer = {
+      name: "" + this.definitionPath + "." + name,
+      ref: name,
+      value: context.state[name],
+      error: context.state.error ? context.state.error[name] : undefined,
+      //Mode
+      isEdit: isEdit,
+      //Style
+      style: options.style,
+      //Methods
+      validator: def.validator,
+      formatter: def.formatter,
+      //component: {Field: def.FieldComponent, LabelAndInput: def.LabelAndInputComponent, Input: def.InputComponent, Display: def.DisplayComponent, Text: def.TextComponent}
+      FieldComponent: def.FieldComponent,
+      InputLabelComponent: def.InputLabelComponent,
+      InputComponent: def.InputComponent,
+      TextComponent: def.TextComponent,
+      DisplayComponent: def.DisplayComponent
+    };
+    // Values list.
+    var refContainer = options.refContainer || this.state;
+    if (context[refContainer].reference && context[refContainer].reference[listName]) {
+      assign(propsContainer, { values: context[refContainer].reference[listName] });
+    }
+    return propsContainer;
+  },
+  /**
+   * Create a field for the given property metadata.
+   * @param {string} name - property name.
+   * @param {object} options - An object which contains all options for the built of the field.
+   * @returns {object} - A React Field.
+   */
+  fieldFor: function fieldFor(name, options) {
+    var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    options = options || {};
+    var isEdit = options.isEdit !== undefined ? options.isEdit : this.state.isEdit;
+    //Maybe allow to overrife fieldFor here such as def.fieldFor?.
+    return React.createElement(Field, {
+      name: "" + this.definitionPath + "." + name,
+      ref: name,
+      value: this.state[name],
+      error: this.state.error ? this.state.error[name] : undefined,
+      validator: def.validator,
+      FieldComponent: def.FieldComponent,
+      InputLabelComponent: def.InputLabelComponent,
+      InputComponent: def.InputComponent,
+      isEdit: isEdit,
+      formatter: def.formatter
+    });
+  },
+  /**
+   * Select component for the component.
+   * @param {string} name - property name.
+   * @param {string} listName - list name.
+   * @param {object} options - options object.
+   * @returns {object} - A React Field.
+   */
+  selectFor: function selectFor(name, listName, options) {
+    options = options || {};
+    var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    listName = listName || def.listName;
+    var isEdit = options.idEdit || true;
+    //Check listName
+
+    return React.createElement(Field, {
+      name: name,
+      ref: name,
+      value: this.state[name],
+      error: this.state.error ? this.state.error[name] : undefined,
+      validator: def.validator,
+      values: this.state.reference[listName], //Options to be rendered.
+      FieldComponent: def.FieldComponent,
+      InputLabelComponent: def.InputLabelComponent,
+      isEdit: isEdit
+    });
+  },
+  /**
+   * Display a field.
+   * @param {string} name - property name.
+   * @param {object} options - options object.
+   * @returns {object} - A React Field.
+   */
+  displayFor: function displayFor(name, options) {
+    options = options || {};
+    var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    var listName = options.listName || def.listName;
+    var refContainer = options.refContainer || this.state.reference;
+    return React.createElement(Field, {
+      name: name,
+      ref: name,
+      value: this.state[name],
+      values: refContainer ? refContainer[listName] : undefined, //Options to be rendered.
+      FieldComponent: def.FieldComponent,
+      InputLabelComponent: def.InputLabelComponent,
+      isEdit: false
+    });
+  },
+  /**
+   * Display the text for a given property.
+   * @param {string} name  - property name.
+   * @param {object} options - Option object
+   * @returns {object} - A React component.
+   */
+  textFor: function textFor(name, options) {
+    options = options || {};
+    var def = this.definition && this.definition[name] ? this.definition[name] : {};
+    return React.createElement(Text, {
+      name: options.name || "" + this.definitionPath + "." + name,
+      style: options.style,
+      FieldComponent: def.FieldComponent,
+      formatter: options.formatter || def.formatter,
+      value: this.state[name]
+    });
+  },
+  /**
+   * Display a list component.
+   * @param {string} name - Property name.
+   * @param {object} options - Options object.
+   * @returns {object} - The react component for the line.
+   */
+  listFor: function listFor(name, options) {
+    options = options || {};
+    return React.createElement(List, {
+      data: this.state[name],
+      line: options.LineComponent || this.props.LineComponent || this.LineComponent,
+      perPage: options.perPage || 5,
+      reference: options.reference
+    });
+  },
+  /**
+   * Button delete generation.
+   * @returns {object} - A Reacte button.
+   */
+  buttonDelete: function buttonDelete() {
+    return React.createElement(Button, {
+      label: "delete",
+      type: "button",
+      css: "delete"
+    });
+  },
+  buttonEdit: function buttonEdit() {
+    var form = this;
+    return React.createElement(Button, {
+      label: "edit",
+      type: "button",
+      css: "edit",
+      handleOnClick: function handleOnClickEdit() {
+        form.setState({ isEdit: !form.state.isEdit });
+      }
+    });
+  },
+  buttonCancel: function buttonCancel() {
+    var form = this;
+    return React.createElement(Button, {
+      label: "cancel",
+      type: "button",
+      css: "cancel",
+      handleOnClick: function handleOnClickCancel() {
+        console.log("cancel");
+        form.setState({ isEdit: !form.state.isEdit });
+      }
+    });
+  },
+  /**
+   * Button save generation.
+   * @returns {object} - A React button.
+   */
+  buttonSave: function buttonSave() {
+    //var form = this;
+    return React.createElement(Button, {
+      label: "save",
+      type: "submit",
+      css: "primary"
+      /*,handleOnClick: function(e){
+        if(form.validate()){
+          form.action.save(form._getEntity());
+        }
+        return;
+      }*/
+    });
+  } };
+
+},{"../button/action":8,"../display/text":10,"../field":11,"../list":31,"object-assign":113}],33:[function(require,module,exports){
+"use strict";
+
+//Dependencies.
+/**
+ * Accessor on the entity informations.
+ * @type {function} - Get the entity definition for a given key.
+ */
+var getEntityDefinition = window.focus.definition.entity.builder.getEntityInformations;
+
+var definitionMixin = {
+  /**
+   * Build the entity definition givent the path of the definition.
+   */
+  _buildDefinition: function buildFormDefinition() {
+    if (!this.definitionPath) {
+      throw new Error("the definition path should be defined to know the domain of your entity property.");
+    }
+    this.definition = getEntityDefinition(this.definitionPath, this.additionalDefinition);
+  },
+  /** @inheritdoc */
+  componentWillMount: function definitionWillMount() {
+    this._buildDefinition();
+  }
+};
+
+module.exports = definitionMixin;
+
+},{}],34:[function(require,module,exports){
+"use strict";
+
+var gridSize = 12;
+
+var fieldGridBehaviourMixin = {
+  getDefaultProps: function getDefaultProps() {
+    return {
+      /**
+       * Size of the label in the grid system.
+       * @type {Number}
+       */
+      labelSize: 2
+    };
+  },
+  /**
+   * Get the label gridClass.
+   * @returns {string} - The label gridSize.
+   */
+  _getLabelGridClassName: function getLabelClassName() {
+    return "col-sm-" + this.props.labelSize;
+  },
+  /**
+   * Get the content class Name.
+   * @returns {string} - The content gridSize.
+   */
+  _getContentGridClassName: function getContentClassName() {
+    return "col-sm-" + (gridSize - this.props.labelSize);
+  },
+  /**
+   * Get the content offset className.
+   * @returns {string} - The label gridSize.
+   */
+  _getContentOffsetClassName: function getContentOffsetClassName() {
+    return "col-sm-offset-" + this.props.labelSize;
+  }
+};
+module.exports = fieldGridBehaviourMixin;
+
+},{}],35:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+  definition: require("./definition")
+};
+
+},{"./definition":33}],36:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -1743,7 +2118,7 @@ var panelMixin = {
 };
 module.exports = builder(panelMixin);
 
-},{}],32:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1853,7 +2228,7 @@ var selectActionMixin = {
 
 module.exports = builder(selectActionMixin);
 
-},{"../img":20}],33:[function(require,module,exports){
+},{"../img":21}],38:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -1950,14 +2325,14 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],34:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   classic: require("./classic")
 };
 
-},{"./classic":33}],35:[function(require,module,exports){
+},{"./classic":38}],40:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2068,7 +2443,7 @@ var stickyNavigationMixin = {
 
 module.exports = builder(stickyNavigationMixin);
 
-},{}],36:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2107,7 +2482,7 @@ var titleMixin = {
 
 module.exports = builder(titleMixin);
 
-},{}],37:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2174,7 +2549,7 @@ var topicDisplayerMixin = {
 
 module.exports = builder(topicDisplayerMixin);
 
-},{}],38:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2349,7 +2724,7 @@ var actionBarMixin = {
 
 module.exports = builder(actionBarMixin);
 
-},{"../../common/select-action":32,"../../common/topic-displayer":37,"../action-contextual":39}],39:[function(require,module,exports){
+},{"../../common/select-action":37,"../../common/topic-displayer":42,"../action-contextual":44}],44:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2432,7 +2807,7 @@ var actionContextualMixin = {
 
 module.exports = builder(actionContextualMixin);
 
-},{"../../common/button/action":6,"../../common/select-action":32}],40:[function(require,module,exports){
+},{"../../common/button/action":8,"../../common/select-action":37}],45:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2443,7 +2818,7 @@ module.exports = {
 	timeline: require("./timeline")
 };
 
-},{"./action-bar":38,"./action-contextual":39,"./selection":41,"./summary":45,"./timeline":46}],41:[function(require,module,exports){
+},{"./action-bar":43,"./action-contextual":44,"./selection":46,"./summary":50,"./timeline":51}],46:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2451,7 +2826,7 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":43,"./list":44}],42:[function(require,module,exports){
+},{"./line":48,"./list":49}],47:[function(require,module,exports){
 "use strict";
 
 var topOfElement = (function (_topOfElement) {
@@ -2565,7 +2940,7 @@ var InfiniteScrollMixin = {
 
 module.exports = { mixin: InfiniteScrollMixin };
 
-},{}],43:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2733,7 +3108,7 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{"../../common/input/checkbox":22,"../action-contextual":39}],44:[function(require,module,exports){
+},{"../../common/input/checkbox":23,"../action-contextual":44}],49:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2905,7 +3280,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"../../common/button/action":6,"./infinite-scroll":42,"./line":43}],45:[function(require,module,exports){
+},{"../../common/button/action":8,"./infinite-scroll":47,"./line":48}],50:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -2977,7 +3352,7 @@ var listSummaryMixin = {
 
 module.exports = builder(listSummaryMixin);
 
-},{"../../common/button/action":6,"../../common/i18n/mixin":19,"../../common/topic-displayer":37}],46:[function(require,module,exports){
+},{"../../common/button/action":8,"../../common/i18n/mixin":20,"../../common/topic-displayer":42}],51:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2985,7 +3360,7 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":47,"./list":48}],47:[function(require,module,exports){
+},{"./line":52,"./list":53}],52:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -3088,7 +3463,7 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{}],48:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -3159,7 +3534,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"./line":47,"uuid":110}],49:[function(require,module,exports){
+},{"./line":52,"uuid":115}],54:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -3220,7 +3595,7 @@ var messageMixin = {
 };
 module.exports = builder(messageMixin);
 
-},{}],50:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback');
 
 /**
@@ -3286,7 +3661,7 @@ function findIndex(array, predicate, thisArg) {
 
 module.exports = findIndex;
 
-},{"../internal/baseCallback":54}],51:[function(require,module,exports){
+},{"../internal/baseCallback":59}],56:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
     baseFind = require('../internal/baseFind'),
@@ -3354,7 +3729,7 @@ function find(collection, predicate, thisArg) {
 
 module.exports = find;
 
-},{"../array/findIndex":50,"../internal/baseCallback":54,"../internal/baseEach":56,"../internal/baseFind":57,"../lang/isArray":92}],52:[function(require,module,exports){
+},{"../array/findIndex":55,"../internal/baseCallback":59,"../internal/baseEach":61,"../internal/baseFind":62,"../lang/isArray":97}],57:[function(require,module,exports){
 (function (global){
 var cachePush = require('./cachePush'),
     isNative = require('../lang/isNative');
@@ -3387,7 +3762,7 @@ SetCache.prototype.push = cachePush;
 module.exports = SetCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":95,"./cachePush":74}],53:[function(require,module,exports){
+},{"../lang/isNative":100,"./cachePush":79}],58:[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for callback
  * shorthands or `this` binding.
@@ -3410,7 +3785,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],54:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 var baseMatches = require('./baseMatches'),
     baseMatchesProperty = require('./baseMatchesProperty'),
     baseProperty = require('./baseProperty'),
@@ -3448,7 +3823,7 @@ function baseCallback(func, thisArg, argCount) {
 
 module.exports = baseCallback;
 
-},{"../utility/identity":107,"./baseMatches":67,"./baseMatchesProperty":68,"./baseProperty":69,"./bindCallback":72,"./isBindable":80}],55:[function(require,module,exports){
+},{"../utility/identity":112,"./baseMatches":72,"./baseMatchesProperty":73,"./baseProperty":74,"./bindCallback":77,"./isBindable":85}],60:[function(require,module,exports){
 var baseIndexOf = require('./baseIndexOf'),
     cacheIndexOf = require('./cacheIndexOf'),
     createCache = require('./createCache');
@@ -3502,7 +3877,7 @@ function baseDifference(array, values) {
 
 module.exports = baseDifference;
 
-},{"./baseIndexOf":62,"./cacheIndexOf":73,"./createCache":75}],56:[function(require,module,exports){
+},{"./baseIndexOf":67,"./cacheIndexOf":78,"./createCache":80}],61:[function(require,module,exports){
 var baseForOwn = require('./baseForOwn'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -3534,7 +3909,7 @@ function baseEach(collection, iteratee) {
 
 module.exports = baseEach;
 
-},{"./baseForOwn":61,"./isLength":83,"./toObject":90}],57:[function(require,module,exports){
+},{"./baseForOwn":66,"./isLength":88,"./toObject":95}],62:[function(require,module,exports){
 /**
  * The base implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
  * without support for callback shorthands and `this` binding, which iterates
@@ -3561,7 +3936,7 @@ function baseFind(collection, predicate, eachFunc, retKey) {
 
 module.exports = baseFind;
 
-},{}],58:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isLength = require('./isLength'),
@@ -3608,7 +3983,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
 
 module.exports = baseFlatten;
 
-},{"../lang/isArguments":91,"../lang/isArray":92,"./isLength":83,"./isObjectLike":84}],59:[function(require,module,exports){
+},{"../lang/isArguments":96,"../lang/isArray":97,"./isLength":88,"./isObjectLike":89}],64:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -3640,7 +4015,7 @@ function baseFor(object, iteratee, keysFunc) {
 
 module.exports = baseFor;
 
-},{"./toObject":90}],60:[function(require,module,exports){
+},{"./toObject":95}],65:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keysIn = require('../object/keysIn');
 
@@ -3659,7 +4034,7 @@ function baseForIn(object, iteratee) {
 
 module.exports = baseForIn;
 
-},{"../object/keysIn":100,"./baseFor":59}],61:[function(require,module,exports){
+},{"../object/keysIn":105,"./baseFor":64}],66:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keys = require('../object/keys');
 
@@ -3678,7 +4053,7 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"../object/keys":99,"./baseFor":59}],62:[function(require,module,exports){
+},{"../object/keys":104,"./baseFor":64}],67:[function(require,module,exports){
 var indexOfNaN = require('./indexOfNaN');
 
 /**
@@ -3707,7 +4082,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./indexOfNaN":79}],63:[function(require,module,exports){
+},{"./indexOfNaN":84}],68:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep');
 
 /**
@@ -3743,7 +4118,7 @@ function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"./baseIsEqualDeep":64}],64:[function(require,module,exports){
+},{"./baseIsEqualDeep":69}],69:[function(require,module,exports){
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -3846,7 +4221,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, 
 
 module.exports = baseIsEqualDeep;
 
-},{"../lang/isArray":92,"../lang/isTypedArray":98,"./equalArrays":76,"./equalByTag":77,"./equalObjects":78}],65:[function(require,module,exports){
+},{"../lang/isArray":97,"../lang/isTypedArray":103,"./equalArrays":81,"./equalByTag":82,"./equalObjects":83}],70:[function(require,module,exports){
 /**
  * The base implementation of `_.isFunction` without support for environments
  * with incorrect `typeof` results.
@@ -3863,7 +4238,7 @@ function baseIsFunction(value) {
 
 module.exports = baseIsFunction;
 
-},{}],66:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual');
 
 /** Used for native method references. */
@@ -3923,7 +4298,7 @@ function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./baseIsEqual":63}],67:[function(require,module,exports){
+},{"./baseIsEqual":68}],72:[function(require,module,exports){
 var baseIsMatch = require('./baseIsMatch'),
     isStrictComparable = require('./isStrictComparable'),
     keys = require('../object/keys');
@@ -3970,7 +4345,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"../object/keys":99,"./baseIsMatch":66,"./isStrictComparable":85}],68:[function(require,module,exports){
+},{"../object/keys":104,"./baseIsMatch":71,"./isStrictComparable":90}],73:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual'),
     isStrictComparable = require('./isStrictComparable');
 
@@ -3996,7 +4371,7 @@ function baseMatchesProperty(key, value) {
 
 module.exports = baseMatchesProperty;
 
-},{"./baseIsEqual":63,"./isStrictComparable":85}],69:[function(require,module,exports){
+},{"./baseIsEqual":68,"./isStrictComparable":90}],74:[function(require,module,exports){
 /**
  * The base implementation of `_.property` which does not coerce `key` to a string.
  *
@@ -4012,7 +4387,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],70:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 var identity = require('../utility/identity'),
     metaMap = require('./metaMap');
 
@@ -4031,7 +4406,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"../utility/identity":107,"./metaMap":86}],71:[function(require,module,exports){
+},{"../utility/identity":112,"./metaMap":91}],76:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -4049,7 +4424,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],72:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 var identity = require('../utility/identity');
 
 /**
@@ -4090,7 +4465,7 @@ function bindCallback(func, thisArg, argCount) {
 
 module.exports = bindCallback;
 
-},{"../utility/identity":107}],73:[function(require,module,exports){
+},{"../utility/identity":112}],78:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -4111,7 +4486,7 @@ function cacheIndexOf(cache, value) {
 
 module.exports = cacheIndexOf;
 
-},{"../lang/isObject":96}],74:[function(require,module,exports){
+},{"../lang/isObject":101}],79:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -4133,7 +4508,7 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"../lang/isObject":96}],75:[function(require,module,exports){
+},{"../lang/isObject":101}],80:[function(require,module,exports){
 (function (global){
 var SetCache = require('./SetCache'),
     constant = require('../utility/constant'),
@@ -4159,7 +4534,7 @@ var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
 module.exports = createCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":95,"../utility/constant":106,"./SetCache":52}],76:[function(require,module,exports){
+},{"../lang/isNative":100,"../utility/constant":111,"./SetCache":57}],81:[function(require,module,exports){
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
  * partial deep comparisons.
@@ -4215,7 +4590,7 @@ function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stack
 
 module.exports = equalArrays;
 
-},{}],77:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 /** `Object#toString` result references. */
 var boolTag = '[object Boolean]',
     dateTag = '[object Date]',
@@ -4266,7 +4641,7 @@ function equalByTag(object, other, tag) {
 
 module.exports = equalByTag;
 
-},{}],78:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 var keys = require('../object/keys');
 
 /** Used for native method references. */
@@ -4340,7 +4715,7 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
 
 module.exports = equalObjects;
 
-},{"../object/keys":99}],79:[function(require,module,exports){
+},{"../object/keys":104}],84:[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
  * If `fromRight` is provided elements of `array` are iterated from right to left.
@@ -4366,7 +4741,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = indexOfNaN;
 
-},{}],80:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     isNative = require('../lang/isNative'),
     support = require('../support');
@@ -4406,7 +4781,7 @@ function isBindable(func) {
 
 module.exports = isBindable;
 
-},{"../lang/isNative":95,"../support":105,"./baseSetData":70}],81:[function(require,module,exports){
+},{"../lang/isNative":100,"../support":110,"./baseSetData":75}],86:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -4430,7 +4805,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],82:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -4464,7 +4839,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":96,"./isIndex":81,"./isLength":83}],83:[function(require,module,exports){
+},{"../lang/isObject":101,"./isIndex":86,"./isLength":88}],88:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -4489,7 +4864,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],84:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -4503,7 +4878,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],85:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -4520,7 +4895,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"../lang/isObject":96}],86:[function(require,module,exports){
+},{"../lang/isObject":101}],91:[function(require,module,exports){
 (function (global){
 var isNative = require('../lang/isNative');
 
@@ -4533,7 +4908,7 @@ var metaMap = WeakMap && new WeakMap;
 module.exports = metaMap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":95}],87:[function(require,module,exports){
+},{"../lang/isNative":100}],92:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -4563,7 +4938,7 @@ function pickByArray(object, props) {
 
 module.exports = pickByArray;
 
-},{"./toObject":90}],88:[function(require,module,exports){
+},{"./toObject":95}],93:[function(require,module,exports){
 var baseForIn = require('./baseForIn');
 
 /**
@@ -4587,7 +4962,7 @@ function pickByCallback(object, predicate) {
 
 module.exports = pickByCallback;
 
-},{"./baseForIn":60}],89:[function(require,module,exports){
+},{"./baseForIn":65}],94:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -4631,7 +5006,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":91,"../lang/isArray":92,"../object/keysIn":100,"../support":105,"./isIndex":81,"./isLength":83}],90:[function(require,module,exports){
+},{"../lang/isArguments":96,"../lang/isArray":97,"../object/keysIn":105,"../support":110,"./isIndex":86,"./isLength":88}],95:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -4647,7 +5022,7 @@ function toObject(value) {
 
 module.exports = toObject;
 
-},{"../lang/isObject":96}],91:[function(require,module,exports){
+},{"../lang/isObject":101}],96:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -4687,7 +5062,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":83,"../internal/isObjectLike":84}],92:[function(require,module,exports){
+},{"../internal/isLength":88,"../internal/isObjectLike":89}],97:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -4730,7 +5105,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":83,"../internal/isObjectLike":84,"./isNative":95}],93:[function(require,module,exports){
+},{"../internal/isLength":88,"../internal/isObjectLike":89,"./isNative":100}],98:[function(require,module,exports){
 var isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isFunction = require('./isFunction'),
@@ -4780,7 +5155,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"../internal/isLength":83,"../internal/isObjectLike":84,"../object/keys":99,"./isArguments":91,"./isArray":92,"./isFunction":94,"./isString":97}],94:[function(require,module,exports){
+},{"../internal/isLength":88,"../internal/isObjectLike":89,"../object/keys":104,"./isArguments":96,"./isArray":97,"./isFunction":99,"./isString":102}],99:[function(require,module,exports){
 (function (global){
 var baseIsFunction = require('../internal/baseIsFunction'),
     isNative = require('./isNative');
@@ -4827,7 +5202,7 @@ var isFunction = !(baseIsFunction(/x/) || (Uint8Array && !baseIsFunction(Uint8Ar
 module.exports = isFunction;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../internal/baseIsFunction":65,"./isNative":95}],95:[function(require,module,exports){
+},{"../internal/baseIsFunction":70,"./isNative":100}],100:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -4884,7 +5259,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":84,"../string/escapeRegExp":103}],96:[function(require,module,exports){
+},{"../internal/isObjectLike":89,"../string/escapeRegExp":108}],101:[function(require,module,exports){
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -4916,7 +5291,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],97:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -4954,7 +5329,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"../internal/isObjectLike":84}],98:[function(require,module,exports){
+},{"../internal/isObjectLike":89}],103:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -5031,7 +5406,7 @@ function isTypedArray(value) {
 
 module.exports = isTypedArray;
 
-},{"../internal/isLength":83,"../internal/isObjectLike":84}],99:[function(require,module,exports){
+},{"../internal/isLength":88,"../internal/isObjectLike":89}],104:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -5081,7 +5456,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":83,"../internal/shimKeys":89,"../lang/isNative":95,"../lang/isObject":96}],100:[function(require,module,exports){
+},{"../internal/isLength":88,"../internal/shimKeys":94,"../lang/isNative":100,"../lang/isObject":101}],105:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -5148,7 +5523,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":81,"../internal/isLength":83,"../lang/isArguments":91,"../lang/isArray":92,"../lang/isObject":96,"../support":105}],101:[function(require,module,exports){
+},{"../internal/isIndex":86,"../internal/isLength":88,"../lang/isArguments":96,"../lang/isArray":97,"../lang/isObject":101,"../support":110}],106:[function(require,module,exports){
 var arrayMap = require('../internal/arrayMap'),
     baseDifference = require('../internal/baseDifference'),
     baseFlatten = require('../internal/baseFlatten'),
@@ -5201,7 +5576,7 @@ function omit(object, predicate, thisArg) {
 
 module.exports = omit;
 
-},{"../internal/arrayMap":53,"../internal/baseDifference":55,"../internal/baseFlatten":58,"../internal/bindCallback":72,"../internal/pickByArray":87,"../internal/pickByCallback":88,"./keysIn":100}],102:[function(require,module,exports){
+},{"../internal/arrayMap":58,"../internal/baseDifference":60,"../internal/baseFlatten":63,"../internal/bindCallback":77,"../internal/pickByArray":92,"../internal/pickByCallback":93,"./keysIn":105}],107:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -5224,7 +5599,7 @@ function capitalize(string) {
 
 module.exports = capitalize;
 
-},{"../internal/baseToString":71}],103:[function(require,module,exports){
+},{"../internal/baseToString":76}],108:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -5258,7 +5633,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":71}],104:[function(require,module,exports){
+},{"../internal/baseToString":76}],109:[function(require,module,exports){
 var baseToString = require('../internal/baseToString'),
     isIterateeCall = require('../internal/isIterateeCall');
 
@@ -5298,7 +5673,7 @@ function words(string, pattern, guard) {
 
 module.exports = words;
 
-},{"../internal/baseToString":71,"../internal/isIterateeCall":82}],105:[function(require,module,exports){
+},{"../internal/baseToString":76,"../internal/isIterateeCall":87}],110:[function(require,module,exports){
 (function (global){
 var isNative = require('./lang/isNative');
 
@@ -5377,7 +5752,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":95}],106:[function(require,module,exports){
+},{"./lang/isNative":100}],111:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -5402,7 +5777,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],107:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 /**
  * This method returns the first argument provided to it.
  *
@@ -5424,7 +5799,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],108:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -5452,7 +5827,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],109:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 (function (global){
 
 var rng;
@@ -5487,7 +5862,7 @@ module.exports = rng;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],110:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 //     uuid.js
 //
 //     Copyright (c) 2010-2012 Robert Kieffer
@@ -5672,7 +6047,7 @@ uuid.unparse = unparse;
 
 module.exports = uuid;
 
-},{"./rng":109}],111:[function(require,module,exports){
+},{"./rng":114}],116:[function(require,module,exports){
 module.exports={
   "name": "focus-components",
   "version": "0.1.0",
@@ -5812,7 +6187,7 @@ module.exports={
     },
     {
       "name": "popin",
-      "path": "page/popin"
+      "path": "application/popin"
     },
     {
       "name": "message",
@@ -5872,146 +6247,14 @@ module.exports={
   }
 }
 
-},{}],112:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 "use strict";
 
 module.exports = {
-  search: require("./search"),
-  popin: require("./popin")
+  search: require("./search")
 };
 
-},{"./popin":113,"./search":118}],113:[function(require,module,exports){
-"use strict";
-
-var builder = window.focus.component.builder;
-
-/**
- * Popin mixin
- * @type {object}
- */
-var popinMixin = {
-
-    /**
-     * Display name.
-     */
-    displayName: "popin",
-
-    /**
-     * Default propos.
-     * @returns {object} Default props.
-     */
-    getDefaultProps: function getDefaultProps() {
-        return {
-            animation: "right", // right, left, up, down
-            type: "full", // full, centered
-            displaySelector: undefined, // Html selector of the element wich open/close the modal when click on it.
-            contentLoadingFunction: undefined // Function wich returns the content of the modal.
-        };
-    },
-
-    /**
-     * Initial state.
-     * @returns {object} Initial state values
-     */
-    getInitialState: function getInitialState() {
-        return {
-            isDisplayed: false // True if modal is displayed
-        };
-    },
-    /**
-     * Declare the open action.
-     */
-    componentDidMount: function popinDidMount() {
-        var source = document.querySelector(this.props.displaySelector);
-        var currentView = this;
-        source.onclick = function () {
-            currentView.setState({ isDisplayed: !currentView.state.isDisplayed });
-        };
-    },
-
-    /**
-     * Open the modal.
-     */
-    openModal: function openModal() {
-        this.setState({ isDisplayed: true });
-    },
-    /**
-     * Close the modal.
-     */
-    closeModal: function closeModal() {
-        this.setState({ isDisplayed: false });
-    },
-
-    /**
-     * Css class of modal.
-     * @returns {string} css classes.
-     * @private
-     */
-    _getModalCss: function _getModalCss() {
-        var cssClass = "popin animated float:right;";
-        switch (this.props.animation) {
-            case "right":
-                cssClass += " bounceInRight right";
-                break;
-            case "left":
-                cssClass += " bounceInLeft left";
-                break;
-            case "down":
-                cssClass += " bounceInDown down";
-                break;
-            case "up":
-                cssClass += " bounceInUp up";
-                break;
-        }
-        return cssClass;
-    },
-    /**
-     * Content css class.
-     * @returns {string} css classes.
-     * @private
-     */
-    _getModalContentCss: function _getModalContentCss() {
-        var cssClass = "modal-content";
-        switch (this.props.type) {
-            case "full":
-                cssClass += " full";
-                break;
-            case "centered":
-                cssClass += " centered";
-                break;
-        }
-        return cssClass;
-    },
-
-    /**
-     * Render the component.
-     * @returns {JSX} Html code.
-     */
-    render: function renderPopin() {
-        if (!this.state.isDisplayed) {
-            return React.createElement("div", null);
-        }
-        return React.createElement(
-            "span",
-            { className: this._getModalCss() },
-            React.createElement(
-                "div",
-                { className: this._getModalContentCss() },
-                this.renderPopinHeader(this),
-                React.createElement(
-                    "div",
-                    { className: "modal-body" },
-                    this.renderContent(this)
-                ),
-                this.renderPopinFooter(this)
-            )
-        );
-    }
-};
-
-module.exports = builder(popinMixin);
-
-},{}],114:[function(require,module,exports){
+},{"./search":122}],118:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -6065,7 +6308,7 @@ var groupByComponent = {
 
 module.exports = builder(groupByComponent);
 
-},{}],115:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 "use strict";
 
 var isArray = require("lodash/lang/isArray");
@@ -6120,7 +6363,7 @@ var GroupByMixin = {
 
 module.exports = { mixin: GroupByMixin };
 
-},{"./group-by-component":114,"lodash/lang/isArray":92}],116:[function(require,module,exports){
+},{"./group-by-component":118,"lodash/lang/isArray":97}],120:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -6206,7 +6449,7 @@ var InfiniteScrollPageMixin = {
 
 module.exports = { mixin: InfiniteScrollPageMixin };
 
-},{"object-assign":108}],117:[function(require,module,exports){
+},{"object-assign":113}],121:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -6554,7 +6797,7 @@ var searchFilterResultMixin = {
 
 module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../list/action-bar/index":38,"../../../list/selection":41,"../../../list/summary/index":45,"../../../search/live-filter/index":121,"../common-mixin/group-by-mixin":115,"../common-mixin/infinite-scroll-page-mixin":116,"object-assign":108}],118:[function(require,module,exports){
+},{"../../../list/action-bar/index":43,"../../../list/selection":46,"../../../list/summary/index":50,"../../../search/live-filter/index":125,"../common-mixin/group-by-mixin":119,"../common-mixin/infinite-scroll-page-mixin":120,"object-assign":113}],122:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -6562,7 +6805,7 @@ module.exports = {
     searchResult: require("./search-result")
 };
 
-},{"./filter-result":117,"./search-result":119}],119:[function(require,module,exports){
+},{"./filter-result":121,"./search-result":123}],123:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -6625,6 +6868,10 @@ var searchMixin = {
             isAllSelected: false,
             selected: []
         };
+    },
+
+    getCriteria: function getCriteria() {
+        return this.refs.quickSearch.getValue();
     },
 
     /**
@@ -6737,7 +6984,7 @@ var searchMixin = {
 
 module.exports = builder(searchMixin, true);
 
-},{"../../../list/selection":41,"../../../search/quick-search":124,"../common-mixin/group-by-mixin":115,"../common-mixin/infinite-scroll-page-mixin":116,"object-assign":108}],120:[function(require,module,exports){
+},{"../../../list/selection":46,"../../../search/quick-search":128,"../common-mixin/group-by-mixin":119,"../common-mixin/infinite-scroll-page-mixin":120,"object-assign":113}],124:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -6745,7 +6992,7 @@ module.exports = {
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":121,"./quick-search":124}],121:[function(require,module,exports){
+},{"./live-filter":125,"./quick-search":128}],125:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -6909,7 +7156,7 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/i18n/mixin":19,"../../common/img":20,"./live-filter-facet":123,"lodash/object/omit":101,"object-assign":108}],122:[function(require,module,exports){
+},{"../../common/i18n/mixin":20,"../../common/img":21,"./live-filter-facet":127,"lodash/object/omit":106,"object-assign":113}],126:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -6957,7 +7204,7 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],123:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -7114,12 +7361,12 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":122}],124:[function(require,module,exports){
+},{"./live-filter-data":126}],128:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":125}],125:[function(require,module,exports){
+},{"./input":129}],129:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -7224,7 +7471,7 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":126,"lodash/string/words":104}],126:[function(require,module,exports){
+},{"./scope":130,"lodash/string/words":109}],130:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -7385,5 +7632,5 @@ var scopeMixin = {
 
 module.exports = builder(scopeMixin);
 
-},{"lodash/collection/find":51,"uuid":110}]},{},[1])(1)
+},{"lodash/collection/find":56,"uuid":115}]},{},[1])(1)
 });

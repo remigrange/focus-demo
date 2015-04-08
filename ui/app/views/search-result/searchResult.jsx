@@ -12,9 +12,8 @@ module.exports = React.createClass({
             var resultsContent = <div className='results'>{this.state.totalRecords} results </div>;
             var linkFilterResult = <div></div>;
             if (this.state.totalRecords > 0) {
-                var quickSearch = this.refs.quickSearch;
-                if(quickSearch !== null && quickSearch !== undefined){
-                    var criteria = this.refs.quickSearch.getValue();
+              var criteria = this.getCriteria();
+                if(criteria !== null && criteria !== undefined){
                     if(criteria.scope.toLowerCase() !== 'all'){
                         var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
                         linkFilterResult = <div className='linkFilterResult'>
@@ -39,8 +38,32 @@ module.exports = React.createClass({
     renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
         var title = React.createElement(focusComponents.common.title.component, { title: groupKey });
         var showMoreButton = React.createElement(focusComponents.common.button.action.component, { handleOnClick: this.changeGroupByMaxRows(groupKey, maxRows + 3), label: 'Show more' });
+        var summary = <div></div>;
+        var count = <div>list.length items</div>;
+        if(list.length > 3){
+            count = <div className='count-results'>
+                        <span> {list.length} items </span>
+                        <div> Three most relevents </div>
+                    </div>;
+        }
+        var linkFilterResult = <div></div>;
+        var criteria = this.getCriteria();
+        var scope = 'PEOPLE';
+        if(groupKey.toLowerCase().indexOf('movie') >= 0){
+            scope = 'MOVIE';
+        }
+        if(list.length > 0){
+            var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
+            linkFilterResult = <div className='linkAdvancedSearch'>
+                <a href={url}>Advanced search&nbsp;&nbsp;&nbsp;
+                    <img src='./static/img/arrow-right-16.png'/>
+                </a>
+            </div>;
+        }
+        summary = <div>{count} {linkFilterResult}</div>
         return React.createElement( 'div', { className: 'listResultContainer panel' },
             title,
+            summary,
             this.renderSimpleList(groupKey, list, maxRows),
             showMoreButton);
 

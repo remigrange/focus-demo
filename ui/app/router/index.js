@@ -1,3 +1,4 @@
+/*global Backbone, focus, focusComponents */
 //Dependencies.
 var Router = Backbone.Router;
 var render = focus.application.render;
@@ -5,6 +6,7 @@ var render = focus.application.render;
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
 
+var MenuView = require('../views/menu');
 
 var AppRouter = Router.extend({
   routes: {
@@ -17,6 +19,7 @@ var AppRouter = Router.extend({
   home: function handleHomeRoute() {
     console.log('ROUTE: HOME');
     var HomeView = require('../views/home');
+    render(MenuView, '#header');
     render(HomeView, '#page');
   },
   movie: function handleMovieRoute(id) {
@@ -46,6 +49,7 @@ var AppRouter = Router.extend({
   searchResult: function handleSearchResult() {
     console.log('ROUTE: SEARCH RESULT');
     var SearchResultView = require('../views/search-result');
+
     render(SearchResultView, '#page');
   }
 });

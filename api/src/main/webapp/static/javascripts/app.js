@@ -1832,6 +1832,7 @@ module.exports = {
 });
 
 require.register("router/index", function(exports, require, module) {
+/*global Backbone, focus, focusComponents */
 //Dependencies.
 var Router = Backbone.Router;
 var render = focus.application.render;
@@ -1839,6 +1840,7 @@ var render = focus.application.render;
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
 
+var MenuView = require('../views/menu');
 
 var AppRouter = Router.extend({
   routes: {
@@ -1851,6 +1853,7 @@ var AppRouter = Router.extend({
   home: function handleHomeRoute() {
     console.log('ROUTE: HOME');
     var HomeView = require('../views/home');
+    render(MenuView, '#header');
     render(HomeView, '#page');
   },
   movie: function handleMovieRoute(id) {
@@ -1880,6 +1883,7 @@ var AppRouter = Router.extend({
   searchResult: function handleSearchResult() {
     console.log('ROUTE: SEARCH RESULT');
     var SearchResultView = require('../views/search-result');
+
     render(SearchResultView, '#page');
   }
 });
@@ -2171,6 +2175,33 @@ module.exports = React.createClass({displayName: "exports",
     render: function () {
         return React.createElement("h3", {className: "welcome-title"}, "Bienvenue à la formation FOCUS");
     }
+});
+
+});
+
+require.register("views/menu/index", function(exports, require, module) {
+/*global focusComponents, React */
+//Define menu.
+var menuMixin = focusComponents.application.menu.mixin;
+var Menu = React.createClass({displayName: "Menu",
+  mixins: [menuMixin],
+  renderContent: function renderMenuContent() {
+    return this.renderLinks();
+  }
+});
+
+module.exports = React.createClass({displayName: "exports",
+  render: function renderPeopleView() {
+    return (
+      React.createElement(Menu, {
+        open: true, 
+        position: "top", 
+        direction: "horizontal", 
+        title: "Focus", 
+        links: [{url: '#', name: 'Home'}], 
+        ref: "menuTop"}
+      ));
+  }
 });
 
 });
@@ -2890,9 +2921,8 @@ module.exports = React.createClass({displayName: "exports",
             var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
             var linkFilterResult = React.createElement("div", null);
             if (this.state.totalRecords > 0) {
-                var quickSearch = this.refs.quickSearch;
-                if(quickSearch !== null && quickSearch !== undefined){
-                    var criteria = this.refs.quickSearch.getValue();
+              var criteria = this.getCriteria();
+                if(criteria !== null && criteria !== undefined){
                     if(criteria.scope.toLowerCase() !== 'all'){
                         var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
                         linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
@@ -2917,8 +2947,32 @@ module.exports = React.createClass({displayName: "exports",
     renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
         var title = React.createElement(focusComponents.common.title.component, { title: groupKey });
         var showMoreButton = React.createElement(focusComponents.common.button.action.component, { handleOnClick: this.changeGroupByMaxRows(groupKey, maxRows + 3), label: 'Show more' });
+        var summary = React.createElement("div", null);
+        var count = React.createElement("div", null, "list.length items");
+        if(list.length > 3){
+            count = React.createElement("div", {className: "count-results"}, 
+                        React.createElement("span", null, " ", list.length, " items "), 
+                        React.createElement("div", null, " Three most relevents ")
+                    );
+        }
+        var linkFilterResult = React.createElement("div", null);
+        var criteria = this.getCriteria();
+        var scope = 'PEOPLE';
+        if(groupKey.toLowerCase().indexOf('movie') >= 0){
+            scope = 'MOVIE';
+        }
+        if(list.length > 0){
+            var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
+            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, 
+                React.createElement("a", {href: url}, "Advanced search   ", 
+                    React.createElement("img", {src: "./static/img/arrow-right-16.png"})
+                )
+            );
+        }
+        summary = React.createElement("div", null, count, " ", linkFilterResult)
         return React.createElement( 'div', { className: 'listResultContainer panel' },
             title,
+            summary,
             this.renderSimpleList(groupKey, list, maxRows),
             showMoreButton);
 
