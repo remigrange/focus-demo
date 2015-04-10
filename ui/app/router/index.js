@@ -18,6 +18,7 @@ var renderMenu = function(){
 var AppRouter = Router.extend({
   routes: {
     '': 'home',
+    'home': 'home',
     'search/advanced/scope/:scope/query/:query': 'filterResult',
     'search/quick': 'searchResult',
     'movie/:id': 'movie',
@@ -27,7 +28,7 @@ var AppRouter = Router.extend({
     console.log('ROUTE: HOME');
     var HomeView = require('../views/home');
     renderMenu();
-    render(HomeView, '#page');
+    render(HomeView, '#page', {props: {position: 'left', open: true, style: {className: 'home-popin'}}});
   },
   movie: function handleMovieRoute(id) {
     console.log('ROUTE: MOVIE');

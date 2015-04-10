@@ -1852,6 +1852,7 @@ var renderMenu = function(){
 var AppRouter = Router.extend({
   routes: {
     '': 'home',
+    'home': 'home',
     'search/advanced/scope/:scope/query/:query': 'filterResult',
     'search/quick': 'searchResult',
     'movie/:id': 'movie',
@@ -1861,7 +1862,7 @@ var AppRouter = Router.extend({
     console.log('ROUTE: HOME');
     var HomeView = require('../views/home');
     renderMenu();
-    render(HomeView, '#page');
+    render(HomeView, '#page', {props: {position: 'left', open: true, style: {className: 'home-popin'}}});
   },
   movie: function handleMovieRoute(id) {
     console.log('ROUTE: MOVIE');
@@ -2179,11 +2180,25 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 require.register("views/home/index", function(exports, require, module) {
-/* global React */
+/* global React, focusComponents */
 module.exports = React.createClass({displayName: "exports",
-    render: function () {
-        return React.createElement("h3", {className: "welcome-title"}, "Bienvenue à la formation FOCUS");
-    }
+  mixins: [focusComponents.application.popin.mixin],
+  renderPopinHeader: function (popin) {
+    return React.createElement('div', null,
+      React.createElement('div', {className: 'home-popin-header'
+      }, 'Welcome page popin')
+    );
+  },
+  renderPopinFooter: function renderPopinFooter(popin) {
+    return React.createElement('div', null, '');
+
+  },
+  renderContent: function (popin) {
+    return React.createElement('div', {className: 'welcome-title'}, 'Bienvenue à la formation FOCUS');
+  }
+  /*render: function () {
+    return <h3 className="welcome-title">Bienvenue à la formation FOCUS</h3>;
+  }*/
 });
 
 });

@@ -138,7 +138,6 @@ div.qs-quick-search {
 .qs-scope-none {
   background: url('../img/qs-none.svg') no-repeat center center; }
 
-
 .checkbox-unchecked {
   background: url("../img/checkbox-unchecked.svg") no-repeat center; }
 
@@ -172,6 +171,7 @@ div.qs-quick-search {
   border-left: solid 2px; }
 .action-bar .facet-container {
   width: 400px; }
+
 
 /* Style for the list component*/
 /*variables*/
@@ -347,6 +347,77 @@ ul.selection-list {
 .timeline-body > p + p {
   margin-top: 5px; }
 
+form.form-edit {
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgba(240, 89, 100, 0.65);
+  background-color: rgba(137, 108, 108, 0.14); }
+
+.icon {
+  float: left;
+  width: 40px;
+  height: 40px;
+  cursor: pointer; }
+
+.dots-three-vertical {
+  background: url("../img/dots-three-vertical.svg") no-repeat center; }
+
+.select-action li.selected a {
+  font-weight: bold; }
+
+.sticky-navigation li.active {
+  font-weight: bold; }
+
+.topic-displayer .topic {
+  background: url("../img/cross.svg") no-repeat right center; }
+
+nav.bar {
+  width: 100%;
+  min-height: 64px;
+  background-color: #00bcd4;
+  z-index: 5;
+  position: fixed;
+  height: 64px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: stretch;
+  flex-wrap: wrap; }
+  nav.bar.bar-tall {
+    min-height: 250px;
+    background-color: #2600D4;
+    color: white;
+    -webkit-transition: min-height 0.5s;
+    -moz-transition: min-height 0.5s;
+    -ms-transition: min-height 0.5s;
+    -o-transition: min-height 0.5s;
+    transition: min-height 0.5s; }
+  nav.bar.bar-medium {
+    min-height: 150px;
+    background-color: #0073D4;
+    color: white;
+    -webkit-transition: min-height 0.5s;
+    -moz-transition: min-height 0.5s;
+    -ms-transition: min-height 0.5s;
+    -o-transition: min-height 0.5s;
+    transition: min-height 0.5s; }
+  nav.bar.bar-small {
+    min-height: 64px;
+    -webkit-transition: min-height 0.5s;
+    -moz-transition: min-height 0.5s;
+    -ms-transition: min-height 0.5s;
+    -o-transition: min-height 0.5s;
+    transition: min-height 0.5s; }
+
+.btns-confirmation-popin {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 0 20px 10px 0; }
+
+.btn-confirmation-popin-close {
+  margin-right: 20px !important; }
+
 
 /* General styles for all menus */
 .menu {
@@ -471,42 +542,68 @@ ul.selection-list {
 .popin {
   position: fixed; }
   .popin .full {
-    min-height: 100vh;
-    min-width: 50vw; }
+    min-height: 600px;
+    min-width: 900px; }
   .popin .centered {
-    height: 80vh; }
+    min-height: 500px;
+    min-width: 800px; }
 
 .popin.left {
   top: 0px;
-  left: 0px; }
+  left: 0px;
+  margin: 10px 0 0 10px; }
 
 .popin.right {
   top: 0px;
-  right: 0px; }
+  right: 0px;
+  margin: 10px 10px 0 0; }
 
-form.form-edit {
-  border-style: solid;
-  border-width: 2px;
-  border-color: rgba(240, 89, 100, 0.65);
-  background-color: rgba(137, 108, 108, 0.14); }
+.popin.down {
+  right: 25%;
+  margin: 10px 10px 0 0; }
 
-.icon {
+.popin.up {
+  right: 25%;
+  margin: 10px 10px 0 0; }
+
+.popin-close-btn {
+  background-image: url("../img/cross-popin.svg");
+  background-repeat: no-repeat;
+  width: 27px;
+  height: 27px;
+  background-position: left 3px top 3px;
+  background-color: #606060;
+  border-radius: 15px;
+  cursor: pointer;
+  z-index: 1050;
+  position: relative; }
+
+.popin-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.7); }
+
+.popin-close-btn.left {
   float: left;
-  width: 40px;
-  height: 40px;
-  cursor: pointer; }
+  margin-top: -10px;
+  margin-left: -10px; }
 
-.dots-three-vertical {
-  background: url("../img/dots-three-vertical.svg") no-repeat center; }
+.popin-close-btn.right {
+  float: right;
+  margin-top: -10px;
+  margin-right: -10px; }
 
-.select-action li.selected a {
-  font-weight: bold; }
+.btn-close-right, .btn-close-left {
+  z-index: 1001; }
 
-.sticky-navigation li.active {
-  font-weight: bold; }
-
-.topic-displayer .topic {
-  background: url("../img/cross.svg") no-repeat right center; }
+.popin-layer {
+  overflow: auto;
+  overflow-y: auto;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute; }
 
 .liveFilterContainer {
   padding-right: 10px; }
