@@ -1894,7 +1894,7 @@ var AppRouter = Router.extend({
     console.log('ROUTE: SEARCH RESULT');
     var SearchResultView = require('../views/search-result');
     renderMenu();
-    render(SearchResultView, '#page');
+    render(SearchResultView, '#page', {props: {position: 'left', open: true, displaySelector: 'a[href="#search/quick"]', style: {className: 'quick-search-popin'}}});
   }
 });
 module.exports = new AppRouter();
@@ -2145,6 +2145,7 @@ require.register("views/filter-result/lineComponent", function(exports, require,
 /*global React, focusComponents */
 module.exports = React.createClass({displayName: "exports",
     mixins: [focusComponents.list.selection.line.mixin],
+    definitionPath: "movie",
     renderLineContent: function (data) {
         if(!data.movId){
             return React.createElement("div", {className: "item"}, 
@@ -2744,48 +2745,72 @@ var Line = require('./lineComponent');
 
 //Configuration des props du composant de vue de recherche.
 var config = {
-    onLineClick: function onLineClick(data) {
-        var url = '';
-        if(data.movId !== undefined && data.movId !== null){
-            url = '#movie/' + data.movId;
-        } else {
-            if(data.peoId !== undefined && data.peoId !== null){
-                url = '#people/' + data.peoId;
-            }
-        }
-        Backbone.history.navigate(url, true);
-    },
-    operationList: [
-        {label: '', action: function(data) {
-            focus.application.render(lineResume, '#lineResume',
-             {
-             props: {
-             data: data
-             }
-             });
-        }, style: {className: 'preview'}, priority: 1}
-    ],
-    scopes: [
-        {code: 'ALL', label: 'ALL'},
-        {code: 'MOVIE', label: 'MOVIE'},
-        {code: 'PEOPLE', label: 'PEOPLE'}
-    ],
-    scope: 'ALL',
-    idField: 'movId',
-    groupMaxRows: 3
+  onLineClick: function onLineClick(data) {
+    var url = '';
+    if (data.movId !== undefined && data.movId !== null) {
+      url = '#movie/' + data.movId;
+    } else {
+      if (data.peoId !== undefined && data.peoId !== null) {
+        url = '#people/' + data.peoId;
+      }
+    }
+    Backbone.history.navigate(url, true);
+  },
+  operationList: [
+    {
+      label: '', action: function (data) {
+      focus.application.render(lineResume, '#lineResume',
+        {
+          props: {
+            data: data
+          }
+        });
+    }, style: {className: 'preview'}, priority: 1
+    }
+  ],
+  scopes: [
+    {code: 'ALL', label: 'ALL'},
+    {code: 'MOVIE', label: 'MOVIE'},
+    {code: 'PEOPLE', label: 'PEOPLE'}
+  ],
+  scope: 'ALL',
+  idField: 'movId',
+  groupMaxRows: 3
 };
 
 module.exports = React.createClass({displayName: "exports",
-    render: function () {
-       return React.createElement(SearchResult, {
-                lineComponent: Line, 
-                onLineClick: config.onLineClick, 
-                operationList: config.operationList, 
-                scopeList: config.scopes, 
-                scope: config.scope, 
-                idField: config.idField, 
-                groupMaxRows: config.groupMaxRows});
-    }
+  mixins: [focusComponents.application.popin.mixin],
+  renderPopinHeader: function (popin) {
+    return React.createElement('div', null,
+      React.createElement('div', {
+        className: ''
+      }, '')
+    );
+  },
+  renderPopinFooter: function renderPopinFooter(popin) {
+    return React.createElement('div', null, '');
+
+  },
+  renderContent: function (popin) {
+    return React.createElement(SearchResult, {
+      lineComponent: Line, 
+      onLineClick: config.onLineClick, 
+      operationList: config.operationList, 
+      scopeList: config.scopes, 
+      scope: config.scope, 
+      idField: config.idField, 
+      groupMaxRows: config.groupMaxRows});
+  }
+  /* render: function () {
+   return <SearchResult
+   lineComponent = {Line}
+   onLineClick = {config.onLineClick}
+   operationList = {config.operationList}
+   scopeList = {config.scopes}
+   scope = {config.scope}
+   idField = {config.idField}
+   groupMaxRows= {config.groupMaxRows}/>;
+   }*/
 });
 
 });
@@ -2794,6 +2819,7 @@ require.register("views/search-result/lineComponent", function(exports, require,
 /*global React, focusComponents */
 module.exports = React.createClass({displayName: "exports",
     mixins: [focusComponents.list.selection.line.mixin],
+    definitionPath: "movie",
     renderLineContent: function (data) {
         if(!data.movId){
             return React.createElement("div", {className: "item"}, 
@@ -2954,7 +2980,7 @@ module.exports = React.createClass({displayName: "exports",
             var linkFilterResult = React.createElement("div", null);
             if (this.state.totalRecords > 0) {
               var criteria = this.getCriteria();
-                if(criteria !== null && criteria !== undefined){
+                if(criteria.scope !== null && criteria.scope !== undefined){
                     if(criteria.scope.toLowerCase() !== 'all'){
                         var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
                         linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 

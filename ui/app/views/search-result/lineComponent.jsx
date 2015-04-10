@@ -1,6 +1,7 @@
 /*global React, focusComponents */
 module.exports = React.createClass({
     mixins: [focusComponents.list.selection.line.mixin],
+    definitionPath: "movie",
     renderLineContent: function (data) {
         if(!data.movId){
             return <div className="item">

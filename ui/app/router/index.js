@@ -60,7 +60,7 @@ var AppRouter = Router.extend({
     console.log('ROUTE: SEARCH RESULT');
     var SearchResultView = require('../views/search-result');
     renderMenu();
-    render(SearchResultView, '#page');
+    render(SearchResultView, '#page', {props: {position: 'left', open: true, displaySelector: 'a[href="#search/quick"]', style: {className: 'quick-search-popin'}}});
   }
 });
 module.exports = new AppRouter();

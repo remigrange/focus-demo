@@ -13,7 +13,7 @@ module.exports = React.createClass({
             var linkFilterResult = <div></div>;
             if (this.state.totalRecords > 0) {
               var criteria = this.getCriteria();
-                if(criteria !== null && criteria !== undefined){
+                if(criteria.scope !== null && criteria.scope !== undefined){
                     if(criteria.scope.toLowerCase() !== 'all'){
                         var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
                         linkFilterResult = <div className='linkFilterResult'>
