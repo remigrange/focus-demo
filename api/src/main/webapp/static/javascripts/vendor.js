@@ -21224,6 +21224,7 @@ module.exports = builder(barMixin);
 var builder = window.focus.component.builder;
 var popin = require("../popin").mixin;
 var Button = require("../../common/button/action").component;
+var type = window.focus.component.types;
 
 /**
  * Popin mixin
@@ -21236,10 +21237,7 @@ var popinMixin = {
    */
   displayName: "confirmation-popin",
 
-  /**
-   * Default propos.
-   * @returns {object} Default props.
-   */
+  /** @inheritdoc */
   getDefaultProps: function getDefaultProps() {
     return {
       btnClose: "Cancel",
@@ -21247,21 +21245,30 @@ var popinMixin = {
     };
   },
 
+  /** @inheritdoc */
+  propTypes: {
+    btnClose: type("string"),
+    btnConfirm: type("string")
+  },
+
   /**
-   * Open the modal.
+   * Confirmation action
    */
   _handleConfirm: function openModal() {
     this.closeModal();
     this.handleClikOnOk();
   },
   /**
-   * Close the modal.
+   * Cancel action
    */
   _handleCancel: function closeModal() {
     this.closeModal();
     this.handleClikOnCancel();
   },
-
+  /**
+   * Render the footer content.
+   * @returns {XML} - footer content
+   */
   renderPopinFooter: function renderPopinFooter() {
     var closeStyle = {
       className: "confirmation-popin-close"
@@ -21326,6 +21333,10 @@ var menuMixin = {
       );
     });
   },
+  /**
+   * Render the title content
+   * @returns {XML} - title content
+   */
   renderTitle: function renderTitle() {
     return React.createElement(
       "h3",
@@ -21355,14 +21366,10 @@ module.exports = builder(menuMixin);
 
 /**
  * Mixin used in order to create a popin or a menu.
- * @type {Object}
+ * @type {Object} - popin behavour mixin
  */
 var PopinProperties = {
-
-  /** @inheritedProps
-   *  Default properties.
-   * @returns {{direction: string, position: string, links: Array, open: boolean, style: {}}} properties
-   */
+  /** @inheritdoc */
   getDefaultProps: function getMenuDefaultProps() {
     return {
       direction: "vertical", //horizontal
@@ -21371,10 +21378,7 @@ var PopinProperties = {
       style: {}
     };
   },
-  /** @inheritedProps
-   * Initial state.
-   * @returns {{open: *}} initial state
-   */
+  /** @inheritdoc */
   getInitialState: function getDefaultState() {
     return {
       open: this.props.open
@@ -21389,6 +21393,7 @@ module.exports = { mixin: PopinProperties };
 
 var builder = window.focus.component.builder;
 var popinProperties = require("../mixin/popin-behaviour").mixin;
+var type = window.focus.component.types;
 
 /**
  * Popin mixin
@@ -21401,10 +21406,7 @@ var popinMixin = {
    */
   displayName: "popin",
 
-  /**
-   * Default propos.
-   * @returns {object} Default props.
-   */
+  /** @inheritdoc */
   getDefaultProps: function getDefaultProps() {
     return {
       type: "full", // full, centered
@@ -21412,15 +21414,22 @@ var popinMixin = {
       contentLoadingFunction: undefined // Function wich returns the content of the modal.
     };
   },
-  /**
-   * Declare the open action.
-   */
+
+  /** @inheritdoc */
+  propTypes: {
+    type: type("string"),
+    contentLoadingFunction: type("string")
+  },
+
+  /** @inheritdoc */
   componentDidMount: function popinDidMount() {
     var source = document.querySelector(this.props.displaySelector);
     var currentView = this;
-    source.onclick = function () {
-      currentView.setState({ open: !currentView.state.open });
-    };
+    if (source !== undefined && source !== null) {
+      source.onclick = function () {
+        currentView.setState({ open: !currentView.state.open });
+      };
+    }
   },
 
   /**
@@ -21430,7 +21439,7 @@ var popinMixin = {
     this.setState({ open: true });
   },
   /**
-   * Close the modal.
+   * Close the modal
    */
   closeModal: function closeModal() {
     this.setState({ open: false });
@@ -21466,7 +21475,7 @@ var popinMixin = {
 
   /**
    * Css class of close btn.
-   * @returns {string} css classes.
+   * @returns {string} - css classes.
    * @private
    */
   _getCloseBtnCss: function _getCloseBtnCss() {
@@ -21482,7 +21491,7 @@ var popinMixin = {
   },
   /**
    * Content css class.
-   * @returns {string} css classes.
+   * @returns {string} - css classes.
    * @private
    */
   _getModalContentCss: function _getModalContentCss() {
@@ -21500,7 +21509,7 @@ var popinMixin = {
 
   /**
    * Render the component.
-   * @returns {JSX} Html code.
+   * @returns {JSX} - Html code.
    */
   render: function renderPopin() {
     if (!this.state.open) {
@@ -21755,7 +21764,7 @@ var FieldMixin = {
   */
   _className: function _className() {
     var stateClass = this.state.error ? "has-feedback has-error" : "";
-    return "form-group " + stateClass;
+    return "form-group " + stateClass + " " + this.props.style.className;
   },
 
   render: function renderField() {
@@ -24104,7 +24113,7 @@ var React = window.React;
 var fielBehaviourMixin = require("../../common/mixin/field-component-behaviour");
 var assign = require("object-assign");
 var Field = require("../../common/field").component;
-//TODO gestion du refContainer a passer au buildFieldProps
+
 var builtInComponentsMixin = {
     mixins: [fielBehaviourMixin],
 
@@ -24118,7 +24127,8 @@ var builtInComponentsMixin = {
         options = assign({}, {
             isEdit: this.props.isEdit,
             hasLabel: false,
-            value: this.props.data[name]
+            value: this.props.data[name],
+            refContainer: this.props.reference
         }, options);
 
         var fieldProps = this._buildFieldProps(name, options, this);
@@ -24135,7 +24145,8 @@ var builtInComponentsMixin = {
         options = assign({}, {
             isEdit: false,
             hasLabel: false,
-            value: this.props.data[name]
+            value: this.props.data[name],
+            refContainer: this.props.reference
         }, options);
 
         var fieldProps = this._buildFieldProps(name, options, this);

@@ -14,7 +14,4 @@ module.exports = React.createClass({
   renderContent: function (popin) {
     return React.createElement('div', {className: 'welcome-title'}, 'Bienvenue à la formation FOCUS');
   }
-  /*render: function () {
-    return <h3 className="welcome-title">Bienvenue à la formation FOCUS</h3>;
-  }*/
 });
