@@ -23,7 +23,121 @@ module.exports = {
   application: require("./application")
 };
 
-},{"./application":4,"./common":23,"./list":48,"./message":58,"./package.json":192,"./page":193,"./search":200}],2:[function(require,module,exports){
+},{"./application":5,"./common":24,"./list":49,"./message":59,"./package.json":193,"./page":194,"./search":201}],2:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var React = window.React;
+var applicationStore = window.focus.application.builtInStore();
+
+var cartridgeMixin = {
+  getDefaultProps: function getCartridgeDefaultProps() {
+    return {
+      style: {}
+    };
+  },
+  /** @inheriteddoc */
+  getInitialState: function getCartridgeInitialState() {
+    return this._getStateFromStore();
+  },
+  /** @inheriteddoc */
+  componentWillMount: function cartridgeWillMount() {
+    applicationStore.addCartridgeComponentChangeListener(this._handleComponentChange);
+  },
+  /** @inheriteddoc */
+  componentWillUnMount: function cartridgeWillUnMount() {
+    applicationStore.removeCartridgeComponentChangeListener(this._onComponentChange);
+  },
+  _getStateFromStore: function getCartridgeStateFromStore() {
+    return { cartridgeComponent: applicationStore.getCartridgeComponent() || React.DOM.div };
+  },
+  _handleComponentChange: function _handleComponentChange() {
+    this.setState(this._getStateFromStore());
+  },
+  /** @inheriteddoc */
+  render: function renderCartridge() {
+    var className = "cartridge " + this.props.style.className;
+    return React.createElement(
+      "div",
+      { className: className, "data-focus-cartridge": true },
+      React.createElement(this.state.cartridgeComponent, null)
+    );
+  }
+};
+
+module.exports = builder(cartridgeMixin);
+
+},{}],3:[function(require,module,exports){
+"use strict";
+
+var builder = window.focus.component.builder;
+var popin = require("../popin").mixin;
+var Button = require("../../common/button/action").component;
+var type = window.focus.component.types;
+
+/**
+ * Popin mixin
+ * @type {object}
+ */
+var popinMixin = {
+  mixins: [popin],
+  /**
+   * Display name.
+   */
+  displayName: "confirmation-popin",
+
+  /** @inheritdoc */
+  getDefaultProps: function getDefaultProps() {
+    return {
+      btnClose: "Cancel",
+      btnConfirm: "Ok"
+    };
+  },
+
+  /** @inheritdoc */
+  propTypes: {
+    btnClose: type("string"),
+    btnConfirm: type("string")
+  },
+
+  /**
+   * Confirmation action
+   */
+  _handleConfirm: function openModal() {
+    this.closeModal();
+    this.handleClikOnOk();
+  },
+  /**
+   * Cancel action
+   */
+  _handleCancel: function closeModal() {
+    this.closeModal();
+    this.handleClikOnCancel();
+  },
+  /**
+   * Render the footer content.
+   * @returns {XML} - footer content
+   */
+  renderPopinFooter: function renderPopinFooter() {
+    var closeStyle = {
+      className: "confirmation-popin-close"
+    };
+    var confirmStyle = {
+      className: "confirmation-popin-confirm btn-primary"
+    };
+    return React.createElement(
+      "div",
+      { className: "btns-confirmation-popin" },
+      React.createElement(Button, { handleOnClick: this._handleCancel, label: this.props.btnClose, style: closeStyle }),
+      React.createElement(Button, { handleOnClick: this._handleConfirm, label: this.props.btnConfirm, style: confirmStyle })
+    );
+  }
+
+};
+
+module.exports = builder(popinMixin);
+
+},{"../../common/button/action":10,"../popin":8}],4:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -35,7 +149,7 @@ var _require = require("lodash/collection");
 var pluck = _require.pluck;
 var sortBy = _require.sortBy;
 
-var barMixin = {
+var headerMixin = {
   /** @inheriteddoc */
   getDefaultProps: function getMenuDefaultProps() {
     return {
@@ -204,98 +318,29 @@ var barMixin = {
   },
   /** @inheriteddoc */
   render: function renderBar() {
-    var className = "bar bar-" + this.state.size + " " + this.props.style.className;
+    var className = "header header-" + this.state.size + " " + this.props.style.className;
     return React.createElement(
-      "nav",
-      { className: className },
+      "header",
+      { className: className, "data-focus-header": true },
       this.props.children
     );
   }
 };
 
-module.exports = builder(barMixin);
+module.exports = builder(headerMixin);
 
-},{"lodash/collection":60}],3:[function(require,module,exports){
-"use strict";
-
-var builder = window.focus.component.builder;
-var popin = require("../popin").mixin;
-var Button = require("../../common/button/action").component;
-var type = window.focus.component.types;
-
-/**
- * Popin mixin
- * @type {object}
- */
-var popinMixin = {
-  mixins: [popin],
-  /**
-   * Display name.
-   */
-  displayName: "confirmation-popin",
-
-  /** @inheritdoc */
-  getDefaultProps: function getDefaultProps() {
-    return {
-      btnClose: "Cancel",
-      btnConfirm: "Ok"
-    };
-  },
-
-  /** @inheritdoc */
-  propTypes: {
-    btnClose: type("string"),
-    btnConfirm: type("string")
-  },
-
-  /**
-   * Confirmation action
-   */
-  _handleConfirm: function openModal() {
-    this.closeModal();
-    this.handleClikOnOk();
-  },
-  /**
-   * Cancel action
-   */
-  _handleCancel: function closeModal() {
-    this.closeModal();
-    this.handleClikOnCancel();
-  },
-  /**
-   * Render the footer content.
-   * @returns {XML} - footer content
-   */
-  renderPopinFooter: function renderPopinFooter() {
-    var closeStyle = {
-      className: "confirmation-popin-close"
-    };
-    var confirmStyle = {
-      className: "confirmation-popin-confirm btn-primary"
-    };
-    return React.createElement(
-      "div",
-      { className: "btns-confirmation-popin" },
-      React.createElement(Button, { handleOnClick: this._handleCancel, label: this.props.btnClose, style: closeStyle }),
-      React.createElement(Button, { handleOnClick: this._handleConfirm, label: this.props.btnConfirm, style: confirmStyle })
-    );
-  }
-
-};
-
-module.exports = builder(popinMixin);
-
-},{"../../common/button/action":9,"../popin":7}],4:[function(require,module,exports){
+},{"lodash/collection":61}],5:[function(require,module,exports){
 "use strict";
 
 module.exports = {
-  bar: require("./bar"),
+  header: require("./header"),
+  cartridge: require("./cartridge"),
   menu: require("./menu"),
   popin: require("./popin"),
   confirmationPopin: require("./confirmation-popin")
 };
 
-},{"./bar":2,"./confirmation-popin":3,"./menu":5,"./popin":7}],5:[function(require,module,exports){
+},{"./cartridge":2,"./confirmation-popin":3,"./header":4,"./menu":6,"./popin":8}],6:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -330,17 +375,6 @@ var menuMixin = {
       );
     });
   },
-  /**
-   * Render the title content
-   * @returns {XML} - title content
-   */
-  renderTitle: function renderTitle() {
-    return React.createElement(
-      "h3",
-      null,
-      this.props.title
-    );
-  },
   /** @inheriteddoc */
   render: function render() {
     var className = "menu menu-" + this.props.direction + " menu-" + this.props.position + " menu-" + (this.state.open ? "open" : "");
@@ -358,7 +392,7 @@ var menuMixin = {
 
 module.exports = builder(menuMixin);
 
-},{"../mixin/popin-behaviour":6}],6:[function(require,module,exports){
+},{"../mixin/popin-behaviour":7}],7:[function(require,module,exports){
 "use strict";
 
 /**
@@ -385,7 +419,7 @@ var PopinProperties = {
 
 module.exports = { mixin: PopinProperties };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -538,7 +572,7 @@ var popinMixin = {
 
 module.exports = builder(popinMixin);
 
-},{"../mixin/popin-behaviour":6}],8:[function(require,module,exports){
+},{"../mixin/popin-behaviour":7}],9:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -580,7 +614,7 @@ var blockMixin = {
 };
 module.exports = builder(blockMixin);
 
-},{"../i18n":20,"../title":44}],9:[function(require,module,exports){
+},{"../i18n":21,"../title":45}],10:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -645,14 +679,14 @@ var buttonMixin = {
 
 module.exports = builder(buttonMixin);
 
-},{"../../img":22}],10:[function(require,module,exports){
+},{"../../img":23}],11:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	action: require("./action")
 };
 
-},{"./action":9}],11:[function(require,module,exports){
+},{"./action":10}],12:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -705,7 +739,7 @@ var displayTextMixin = {
 
 module.exports = builder(displayTextMixin);
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -777,7 +811,7 @@ var FieldMixin = {
 };
 module.exports = builder(FieldMixin);
 
-},{"./mixin/built-in-components":13,"./mixin/validation-behaviour":14,"./mixin/value-behaviour":15}],13:[function(require,module,exports){
+},{"./mixin/built-in-components":14,"./mixin/validation-behaviour":15,"./mixin/value-behaviour":16}],14:[function(require,module,exports){
 "use strict";
 
 var InputText = require("../../input/text").component;
@@ -979,7 +1013,7 @@ var fieldBuiltInComponentsMixin = {
 
 module.exports = fieldBuiltInComponentsMixin;
 
-},{"../../display/text":11,"../../input/text":28,"../../label":31,"../../mixin/field-grid-behaviour":36,"../../select/classic":41}],14:[function(require,module,exports){
+},{"../../display/text":12,"../../input/text":29,"../../label":32,"../../mixin/field-grid-behaviour":37,"../../select/classic":42}],15:[function(require,module,exports){
 "use strict";
 
 var validationMixin = {
@@ -1019,7 +1053,7 @@ var validationMixin = {
 };
 module.exports = validationMixin;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 var valueBehaviourMixin = {
@@ -1054,7 +1088,7 @@ var valueBehaviourMixin = {
 
 module.exports = valueBehaviourMixin;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -1066,6 +1100,7 @@ var isEmpty = require("lodash/lang/isEmpty");
 
 // Common mixins.
 var definitionMixin = require("../mixin/definition");
+//var fieldComponentBehaviour = require('../mixin/field-component-behaviour');
 var builtInComponents = require("../mixin/built-in-components");
 
 //Form mixins.
@@ -1222,7 +1257,7 @@ var formMixin = {
 
 module.exports = builder(formMixin);
 
-},{"../mixin/built-in-components":33,"../mixin/definition":34,"./mixin/action-behaviour":17,"./mixin/reference-behaviour":18,"./mixin/store-behaviour":19,"lodash/lang/isEmpty":173,"object-assign":189}],17:[function(require,module,exports){
+},{"../mixin/built-in-components":34,"../mixin/definition":35,"./mixin/action-behaviour":18,"./mixin/reference-behaviour":19,"./mixin/store-behaviour":20,"lodash/lang/isEmpty":174,"object-assign":190}],18:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -1263,7 +1298,7 @@ var actionMixin = {
 
 module.exports = actionMixin;
 
-},{"object-assign":189}],18:[function(require,module,exports){
+},{"object-assign":190}],19:[function(require,module,exports){
 "use strict";
 
 //focus.reference.builder.loadListByName('papas').then(function(data){focus.dispatcher.dispatch({action: {type: "update",data: {papas: data}}})})
@@ -1329,7 +1364,7 @@ var referenceMixin = {
 
 module.exports = referenceMixin;
 
-},{"lodash/lang/isEmpty":173}],19:[function(require,module,exports){
+},{"lodash/lang/isEmpty":174}],20:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -1381,7 +1416,7 @@ var storeMixin = {
   /**
    * Register all the listeners related to the page.
    */
-  _registerListeners: function _registerListeners() {
+  _registerListeners: function registerStoreListeners() {
     var _this = this;
 
     if (this.stores) {
@@ -1407,7 +1442,8 @@ var storeMixin = {
     }
   },
   /** @inheritdoc */
-  componentDidMount: function storeBehaviourDidMount() {
+  componentWillMount: function storeBehaviourWillMount() {
+    //These listeners are registered before the mounting because they are not correlated to the DOM.
     //Build the definitions.
     this._registerListeners();
   },
@@ -1419,14 +1455,14 @@ var storeMixin = {
 
 module.exports = storeMixin;
 
-},{"lodash/lang/isArray":172,"lodash/string/capitalize":183,"object-assign":189}],20:[function(require,module,exports){
+},{"lodash/lang/isArray":173,"lodash/string/capitalize":184,"object-assign":190}],21:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   mixin: require("./mixin")
 };
 
-},{"./mixin":21}],21:[function(require,module,exports){
+},{"./mixin":22}],22:[function(require,module,exports){
 "use strict";
 
 /*global window*/
@@ -1445,7 +1481,7 @@ module.exports = {
     }
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1482,7 +1518,7 @@ var imgMixin = {
 
 module.exports = builder(imgMixin);
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -1503,10 +1539,11 @@ module.exports = {
   mixin: require("./mixin")
 };
 
-},{"./block":8,"./button":10,"./field":12,"./form":16,"./img":22,"./input":26,"./label":31,"./list":32,"./mixin":37,"./panel":39,"./select":42,"./select-action":40,"./sticky-navigation":43,"./title":44,"./topic-displayer":45}],24:[function(require,module,exports){
+},{"./block":9,"./button":11,"./field":13,"./form":17,"./img":23,"./input":27,"./label":32,"./list":33,"./mixin":38,"./panel":40,"./select":43,"./select-action":41,"./sticky-navigation":44,"./title":45,"./topic-displayer":46}],25:[function(require,module,exports){
 "use strict";
 
 //Target
+//http://codepen.io/Sambego/pen/zDLxe
 /*
 <label>
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
@@ -1516,6 +1553,7 @@ var builder = window.focus.component.builder;
 var React = window.React;
 var type = window.focus.component.types;
 var fieldGridBehaviourMixin = require("../../mixin/field-grid-behaviour");
+var jQuery = window.jQuery;
 
 var checkBoxMixin = {
   mixins: [fieldGridBehaviourMixin],
@@ -1556,15 +1594,25 @@ var checkBoxMixin = {
    * @returns The DOM node value.
    */
   getValue: function getValue() {
-    return this.getDOMNode().value;
+    return React.findDOMNode(this).value;
   },
   /**
    * Build the label class name.
    * @returns The label classame with the grid informations.
    */
   _labelClassName: function labelClassName() {
-    return "" + this._getContentOffsetClassName() + " " + this._getContentGridClassName();
+    return "paper-cb-label " + this._getContentOffsetClassName() + " " + this._getContentGridClassName();
   },
+  /*  componentDidMount: function(){
+      if(jQuery.material && jQuery.material.init){
+        jQuery.material.init();
+      }
+    },
+    componentDidUpdate: function(){
+      if(jQuery.material && jQuery.material.init){
+        jQuery.material.init();
+      }
+    },*/
   /**
    * Render the Checkbox HTML.
    * @return {VirtualDOM} - The virtual DOM of the checkbox.
@@ -1572,11 +1620,11 @@ var checkBoxMixin = {
   render: function renderCheckBox() {
     return React.createElement(
       "div",
-      { className: "checkbox" },
+      { className: "paper-cb" },
       React.createElement(
         "label",
         { className: this._labelClassName() },
-        React.createElement("input", { ref: "checkbox", checked: this.state.isChecked, onChange: this._onChange, type: "checkbox" }),
+        React.createElement("input", { ref: "checkbox", checked: this.state.isChecked, onChange: this._onChange, type: "checkbox", className: "paper-cbx" }),
         this.props.label ? this.props.label : ""
       )
     );
@@ -1591,7 +1639,7 @@ var checkBoxMixin = {
 
 module.exports = builder(checkBoxMixin);
 
-},{"../../mixin/field-grid-behaviour":36}],25:[function(require,module,exports){
+},{"../../mixin/field-grid-behaviour":37}],26:[function(require,module,exports){
 "use strict";
 
 var jQuery = window.jQuery;
@@ -1610,22 +1658,23 @@ var inputDateMixin = {
   mixins: [inputTextMixin],
   /** @inheritdoc */
   componentDidMount: function inputDateDidMount() {
+    if (!jQuery.fn.daterangepicker) {
+      console.warn("The jquery daterangepicker plugin should be loaded: see https://github.com/dangrossman/bootstrap-daterangepicker.");
+    }
     var component = this;
-    jQuery(this.getDOMNode()).pickadate({
-      /**
-       * Handler called when the date change its value.
-       * @param {object} context - The event triggered by the plugin.
-       */
-      onSet: function onSetDate(context) {
-        component._handleOnChange(context);
-      }
+    jQuery(React.findDOMNode(this)).daterangepicker({
+      singleDatePicker: true,
+      showDropdowns: true
+    }, function (start) {
+      ///*, end, label*/
+      component.setState({ value: start.format("L") });
     });
   }
 };
 
 module.exports = builder(inputDateMixin);
 
-},{"../text":28}],26:[function(require,module,exports){
+},{"../text":29}],27:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -1637,7 +1686,7 @@ module.exports = {
   markdown: require("./markdown")
 };
 
-},{"./checkbox":24,"./date":25,"./markdown":27,"./text":28,"./textarea":29,"./toggle":30}],27:[function(require,module,exports){
+},{"./checkbox":25,"./date":26,"./markdown":28,"./text":29,"./textarea":30,"./toggle":31}],28:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -1645,13 +1694,24 @@ var builder = window.focus.component.builder;
 var React = window.React;
 
 var markdownEditorMixin = {
-  getInitialState: function getInitialState() {
+  /** @inherideddoc */
+  getInitialState: function getMarkdownInitialState() {
     return { value: this.props.value };
   },
-  handleChange: function handleChange() {
-    this.setState({ value: this.refs.textarea.getDOMNode().value });
+  /** @inherideddoc */
+  componentDidMount: function markdownComponentDidMount() {
+    if (!window.Showdown) {
+      console.warn("The showdown library should be imported. See https://github.com/showdownjs/showdown");
+    }
   },
-  render: function render() {
+  /**
+   * Handle the change of the value.
+   */
+  handleChange: function handleMarkdownChange() {
+    this.setState({ value: React.findDOMNode(this.refs.textarea).value });
+  },
+  /** @inherideddoc */
+  render: function renderMarkdownComponent() {
     var converter = window.Showdown ? function (data) {
       console.warn("showdown should be imported/");return data;
     } : new window.Showdown.converter();
@@ -1674,7 +1734,7 @@ var markdownEditorMixin = {
 
 module.exports = builder(markdownEditorMixin);
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -1753,7 +1813,7 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -1847,7 +1907,7 @@ var textAreaMixin = {
 
 module.exports = builder(textAreaMixin);
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -1934,7 +1994,7 @@ var toggleMixin = {
 
 module.exports = builder(toggleMixin);
 
-},{"../../mixin/field-grid-behaviour":36}],31:[function(require,module,exports){
+},{"../../mixin/field-grid-behaviour":37}],32:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -1963,7 +2023,7 @@ var labelMixin = {
 
 module.exports = builder(labelMixin);
 
-},{"../i18n/mixin":21}],32:[function(require,module,exports){
+},{"../i18n/mixin":22}],33:[function(require,module,exports){
 "use strict";
 
 //var SelectionList = focus.components.list.selection.list.component;
@@ -2015,15 +2075,26 @@ module.exports = React.createClass({
     }
     return this.props.data.slice(0, this.state.maxElements ? this.state.maxElements : this.props.perPage);
   },
+  getReference: function getReference() {
+    return this.state.reference || this.props.reference;
+  },
   /** @inheritdoc */
   render: function renderFormList() {
     var data = this.props.data || [];
     var hasMoreData = data.length > (this.state.maxElements ? this.state.maxElements : this.props.perPage);
-    return React.createElement(MySelectionList, { data: this.getDataToUse(), hasMoreData: hasMoreData, reference: this.props.reference, lineComponent: this.props.line, isSelection: false, isManualFetch: true, fetchNextPage: this.fetchNextPage });
+    return React.createElement(MySelectionList, {
+      data: this.getDataToUse(),
+      hasMoreData: hasMoreData,
+      lineComponent: this.props.line,
+      isSelection: false,
+      isManualFetch: true,
+      fetchNextPage: this.fetchNextPage,
+      reference: this.getReference()
+    });
   }
 });
 
-},{"../../list/selection/list":53,"../button/action":9,"object-assign":189}],33:[function(require,module,exports){
+},{"../../list/selection/list":54,"../button/action":10,"object-assign":190}],34:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -2031,7 +2102,10 @@ var Field = require("../field").component;
 var Text = require("../display/text").component;
 var Button = require("../button/action").component;
 var List = require("../list");
+var fieldComponentBehaviour = require("./field-component-behaviour");
+var assign = require("object-assign");
 module.exports = {
+  mixins: [fieldComponentBehaviour],
   /**
    * Create a field for the given property metadata.
    * @param {string} name - property name.
@@ -2039,22 +2113,12 @@ module.exports = {
    * @returns {object} - A React Field.
    */
   fieldFor: function fieldFor(name, options) {
-    var def = this.definition && this.definition[name] ? this.definition[name] : {};
-    options = options || {};
-    var isEdit = options.isEdit !== undefined ? options.isEdit : this.state.isEdit;
-    //Maybe allow to overrife fieldFor here such as def.fieldFor?.
-    return React.createElement(Field, {
-      name: "" + this.definitionPath + "." + name,
-      ref: name,
-      value: this.state[name],
-      error: this.state.error ? this.state.error[name] : undefined,
-      validator: def.validator,
-      FieldComponent: def.FieldComponent,
-      InputLabelComponent: def.InputLabelComponent,
-      InputComponent: def.InputComponent,
-      isEdit: isEdit,
-      formatter: def.formatter
-    });
+    options = assign({}, {
+      style: { className: "form-detail" }
+    }, options);
+
+    var fieldProps = this._buildFieldProps(name, options, this);
+    return React.createElement(Field, fieldProps);
   },
   /**
    * Select component for the component.
@@ -2065,22 +2129,9 @@ module.exports = {
    */
   selectFor: function selectFor(name, listName, options) {
     options = options || {};
-    var def = this.definition && this.definition[name] ? this.definition[name] : {};
-    listName = listName || def.listName;
-    var isEdit = options.idEdit || true;
-    //Check listName
-
-    return React.createElement(Field, {
-      name: name,
-      ref: name,
-      value: this.state[name],
-      error: this.state.error ? this.state.error[name] : undefined,
-      validator: def.validator,
-      values: this.state.reference[listName], //Options to be rendered.
-      FieldComponent: def.FieldComponent,
-      InputLabelComponent: def.InputLabelComponent,
-      isEdit: isEdit
-    });
+    options.listName = listName || options.listName;
+    var fieldProps = this._buildFieldProps(name, options, this);
+    return React.createElement(Field, fieldProps);
   },
   /**
    * Display a field.
@@ -2090,18 +2141,9 @@ module.exports = {
    */
   displayFor: function displayFor(name, options) {
     options = options || {};
-    var def = this.definition && this.definition[name] ? this.definition[name] : {};
-    var listName = options.listName || def.listName;
-    var refContainer = options.refContainer || this.state.reference;
-    return React.createElement(Field, {
-      name: name,
-      ref: name,
-      value: this.state[name],
-      values: refContainer ? refContainer[listName] : undefined, //Options to be rendered.
-      FieldComponent: def.FieldComponent,
-      InputLabelComponent: def.InputLabelComponent,
-      isEdit: false
-    });
+    options.isEdit = false;
+    var fieldProps = this._buildFieldProps(name, options, this);
+    return React.createElement(Field, fieldProps);
   },
   /**
    * Display the text for a given property.
@@ -2128,6 +2170,7 @@ module.exports = {
    */
   listFor: function listFor(name, options) {
     options = options || {};
+    options.reference = options.reference || this.state.reference;
     return React.createElement(List, {
       data: this.state[name],
       line: options.LineComponent || this.props.LineComponent || this.LineComponent,
@@ -2188,7 +2231,7 @@ module.exports = {
     });
   } };
 
-},{"../button/action":9,"../display/text":11,"../field":12,"../list":32}],34:[function(require,module,exports){
+},{"../button/action":10,"../display/text":12,"../field":13,"../list":33,"./field-component-behaviour":36,"object-assign":190}],35:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -2216,7 +2259,7 @@ var definitionMixin = {
 
 module.exports = definitionMixin;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -2247,7 +2290,7 @@ var fieldBehaviourMixin = {
     })();
     //Build a container for the props.
     var propsContainer = {
-      name: "" + this.definitionPath + "." + name,
+      name: options.name || "" + this.definitionPath + "." + name,
       ref: name,
       value: value,
       error: context.state.error ? context.state.error[name] : undefined,
@@ -2277,7 +2320,7 @@ var fieldBehaviourMixin = {
 
 module.exports = fieldBehaviourMixin;
 
-},{"object-assign":189}],36:[function(require,module,exports){
+},{"object-assign":190}],37:[function(require,module,exports){
 "use strict";
 
 var gridSize = 12;
@@ -2316,7 +2359,7 @@ var fieldGridBehaviourMixin = {
 };
 module.exports = fieldGridBehaviourMixin;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2326,7 +2369,7 @@ module.exports = {
   referenceProperty: require("./reference-property")
 };
 
-},{"./definition":34,"./field-component-behaviour":35,"./field-grid-behaviour":36,"./reference-property":38}],38:[function(require,module,exports){
+},{"./definition":35,"./field-component-behaviour":36,"./field-grid-behaviour":37,"./reference-property":39}],39:[function(require,module,exports){
 "use strict";
 
 var type = window.focus.component.types;
@@ -2356,7 +2399,7 @@ var referenceMixin = {
 };
 module.exports = referenceMixin;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -2403,7 +2446,7 @@ var panelMixin = {
 };
 module.exports = builder(panelMixin);
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2513,7 +2556,7 @@ var selectActionMixin = {
 
 module.exports = builder(selectActionMixin);
 
-},{"../img":22}],41:[function(require,module,exports){
+},{"../img":23}],42:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -2610,14 +2653,14 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   classic: require("./classic")
 };
 
-},{"./classic":41}],43:[function(require,module,exports){
+},{"./classic":42}],44:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2728,7 +2771,7 @@ var stickyNavigationMixin = {
 
 module.exports = builder(stickyNavigationMixin);
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2767,7 +2810,7 @@ var titleMixin = {
 
 module.exports = builder(titleMixin);
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -2834,7 +2877,7 @@ var topicDisplayerMixin = {
 
 module.exports = builder(topicDisplayerMixin);
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -3009,7 +3052,7 @@ var actionBarMixin = {
 
 module.exports = builder(actionBarMixin);
 
-},{"../../common/select-action":40,"../../common/topic-displayer":45,"../action-contextual":47}],47:[function(require,module,exports){
+},{"../../common/select-action":41,"../../common/topic-displayer":46,"../action-contextual":48}],48:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -3092,7 +3135,7 @@ var actionContextualMixin = {
 
 module.exports = builder(actionContextualMixin);
 
-},{"../../common/button/action":9,"../../common/select-action":40}],48:[function(require,module,exports){
+},{"../../common/button/action":10,"../../common/select-action":41}],49:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -3103,7 +3146,7 @@ module.exports = {
 	timeline: require("./timeline")
 };
 
-},{"./action-bar":46,"./action-contextual":47,"./selection":51,"./summary":54,"./timeline":55}],49:[function(require,module,exports){
+},{"./action-bar":47,"./action-contextual":48,"./selection":52,"./summary":55,"./timeline":56}],50:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -3120,7 +3163,7 @@ var builtInComponentsMixin = {
      * @param {object} options - An object which contains all options for the built of the field.
      * @returns {object} - A React Field.
      */
-    fieldFor: function fieldFor(name, options) {
+    fieldFor: function fieldForInLine(name, options) {
         options = assign({}, {
             isEdit: this.props.isEdit,
             hasLabel: false,
@@ -3132,14 +3175,25 @@ var builtInComponentsMixin = {
         var fieldProps = this._buildFieldProps(name, options, this);
         return React.createElement(Field, fieldProps);
     },
-
+    /**
+     * Add a select with a list name component It is a shortcut for the fieldComponent.
+     * @param {string} name         - The property name.
+     * @param {string} referenceKey - The list name in the references.
+     * @param {object} options - An object which contains all options for the built of the field.
+     * @returns {object} - A React Field.
+     */
+    selectFor: function selectForInLine(name, referenceKey, options) {
+        options = options || {};
+        options.listName = referenceKey;
+        return this.fieldFor(name, options);
+    },
     /**
      * Display a field.
      * @param {string} name - property name.
      * @param {object} options - options object.
      * @returns {object} - A React Field in display mode.
      */
-    displayFor: function displayFor(name, options) {
+    displayFor: function displayForInLine(name, options) {
         options = assign({}, {
             isEdit: false,
             hasLabel: false,
@@ -3155,7 +3209,7 @@ var builtInComponentsMixin = {
 
 module.exports = builtInComponentsMixin;
 
-},{"../../common/field":12,"../../common/mixin/field-component-behaviour":35,"object-assign":189}],50:[function(require,module,exports){
+},{"../../common/field":13,"../../common/mixin/field-component-behaviour":36,"object-assign":190}],51:[function(require,module,exports){
 "use strict";
 
 var topOfElement = (function (_topOfElement) {
@@ -3269,7 +3323,7 @@ var InfiniteScrollMixin = {
 
 module.exports = { mixin: InfiniteScrollMixin };
 
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -3277,7 +3331,7 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":52,"./list":53}],52:[function(require,module,exports){
+},{"./line":53,"./list":54}],53:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -3459,7 +3513,7 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{"../../common/i18n":20,"../../common/input/checkbox":24,"../../common/mixin/definition":34,"../../common/mixin/reference-property":38,"../action-contextual":47,"../mixin/built-in-components":49}],53:[function(require,module,exports){
+},{"../../common/i18n":21,"../../common/input/checkbox":25,"../../common/mixin/definition":35,"../../common/mixin/reference-property":39,"../action-contextual":48,"../mixin/built-in-components":50}],54:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -3637,7 +3691,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"../../common/button/action":9,"../../common/mixin/reference-property":38,"../mixin/infinite-scroll":50,"./line":52}],54:[function(require,module,exports){
+},{"../../common/button/action":10,"../../common/mixin/reference-property":39,"../mixin/infinite-scroll":51,"./line":53}],55:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -3709,7 +3763,7 @@ var listSummaryMixin = {
 
 module.exports = builder(listSummaryMixin);
 
-},{"../../common/button/action":9,"../../common/i18n/mixin":21,"../../common/topic-displayer":45}],55:[function(require,module,exports){
+},{"../../common/button/action":10,"../../common/i18n/mixin":22,"../../common/topic-displayer":46}],56:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -3717,7 +3771,7 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":56,"./list":57}],56:[function(require,module,exports){
+},{"./line":57,"./list":58}],57:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -3820,7 +3874,7 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -3891,7 +3945,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"./line":56,"uuid":191}],58:[function(require,module,exports){
+},{"./line":57,"uuid":192}],59:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -3952,7 +4006,7 @@ var messageMixin = {
 };
 module.exports = builder(messageMixin);
 
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback');
 
 /**
@@ -4018,7 +4072,7 @@ function findIndex(array, predicate, thisArg) {
 
 module.exports = findIndex;
 
-},{"../internal/baseCallback":113}],60:[function(require,module,exports){
+},{"../internal/baseCallback":114}],61:[function(require,module,exports){
 module.exports = {
   'all': require('./collection/all'),
   'any': require('./collection/any'),
@@ -4062,13 +4116,13 @@ module.exports = {
   'where': require('./collection/where')
 };
 
-},{"./collection/all":61,"./collection/any":62,"./collection/at":63,"./collection/collect":64,"./collection/contains":65,"./collection/countBy":66,"./collection/detect":67,"./collection/each":68,"./collection/eachRight":69,"./collection/every":70,"./collection/filter":71,"./collection/find":72,"./collection/findLast":73,"./collection/findWhere":74,"./collection/foldl":75,"./collection/foldr":76,"./collection/forEach":77,"./collection/forEachRight":78,"./collection/groupBy":79,"./collection/include":80,"./collection/includes":81,"./collection/indexBy":82,"./collection/inject":83,"./collection/invoke":84,"./collection/map":85,"./collection/max":86,"./collection/min":87,"./collection/partition":88,"./collection/pluck":89,"./collection/reduce":90,"./collection/reduceRight":91,"./collection/reject":92,"./collection/sample":93,"./collection/select":94,"./collection/shuffle":95,"./collection/size":96,"./collection/some":97,"./collection/sortBy":98,"./collection/sortByAll":99,"./collection/where":100}],61:[function(require,module,exports){
+},{"./collection/all":62,"./collection/any":63,"./collection/at":64,"./collection/collect":65,"./collection/contains":66,"./collection/countBy":67,"./collection/detect":68,"./collection/each":69,"./collection/eachRight":70,"./collection/every":71,"./collection/filter":72,"./collection/find":73,"./collection/findLast":74,"./collection/findWhere":75,"./collection/foldl":76,"./collection/foldr":77,"./collection/forEach":78,"./collection/forEachRight":79,"./collection/groupBy":80,"./collection/include":81,"./collection/includes":82,"./collection/indexBy":83,"./collection/inject":84,"./collection/invoke":85,"./collection/map":86,"./collection/max":87,"./collection/min":88,"./collection/partition":89,"./collection/pluck":90,"./collection/reduce":91,"./collection/reduceRight":92,"./collection/reject":93,"./collection/sample":94,"./collection/select":95,"./collection/shuffle":96,"./collection/size":97,"./collection/some":98,"./collection/sortBy":99,"./collection/sortByAll":100,"./collection/where":101}],62:[function(require,module,exports){
 module.exports = require('./every');
 
-},{"./every":70}],62:[function(require,module,exports){
+},{"./every":71}],63:[function(require,module,exports){
 module.exports = require('./some');
 
-},{"./some":97}],63:[function(require,module,exports){
+},{"./some":98}],64:[function(require,module,exports){
 var baseAt = require('../internal/baseAt'),
     baseFlatten = require('../internal/baseFlatten'),
     isLength = require('../internal/isLength'),
@@ -4104,13 +4158,13 @@ function at(collection) {
 
 module.exports = at;
 
-},{"../internal/baseAt":112,"../internal/baseFlatten":121,"../internal/isLength":162,"../internal/toIterable":169}],64:[function(require,module,exports){
+},{"../internal/baseAt":113,"../internal/baseFlatten":122,"../internal/isLength":163,"../internal/toIterable":170}],65:[function(require,module,exports){
 module.exports = require('./map');
 
-},{"./map":85}],65:[function(require,module,exports){
+},{"./map":86}],66:[function(require,module,exports){
 module.exports = require('./includes');
 
-},{"./includes":81}],66:[function(require,module,exports){
+},{"./includes":82}],67:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /** Used for native method references. */
@@ -4166,16 +4220,16 @@ var countBy = createAggregator(function(result, value, key) {
 
 module.exports = countBy;
 
-},{"../internal/createAggregator":151}],67:[function(require,module,exports){
+},{"../internal/createAggregator":152}],68:[function(require,module,exports){
 module.exports = require('./find');
 
-},{"./find":72}],68:[function(require,module,exports){
+},{"./find":73}],69:[function(require,module,exports){
 module.exports = require('./forEach');
 
-},{"./forEach":77}],69:[function(require,module,exports){
+},{"./forEach":78}],70:[function(require,module,exports){
 module.exports = require('./forEachRight');
 
-},{"./forEachRight":78}],70:[function(require,module,exports){
+},{"./forEachRight":79}],71:[function(require,module,exports){
 var arrayEvery = require('../internal/arrayEvery'),
     baseCallback = require('../internal/baseCallback'),
     baseEvery = require('../internal/baseEvery'),
@@ -4239,7 +4293,7 @@ function every(collection, predicate, thisArg) {
 
 module.exports = every;
 
-},{"../internal/arrayEvery":104,"../internal/baseCallback":113,"../internal/baseEvery":118,"../lang/isArray":172}],71:[function(require,module,exports){
+},{"../internal/arrayEvery":105,"../internal/baseCallback":114,"../internal/baseEvery":119,"../lang/isArray":173}],72:[function(require,module,exports){
 var arrayFilter = require('../internal/arrayFilter'),
     baseCallback = require('../internal/baseCallback'),
     baseFilter = require('../internal/baseFilter'),
@@ -4302,7 +4356,7 @@ function filter(collection, predicate, thisArg) {
 
 module.exports = filter;
 
-},{"../internal/arrayFilter":105,"../internal/baseCallback":113,"../internal/baseFilter":119,"../lang/isArray":172}],72:[function(require,module,exports){
+},{"../internal/arrayFilter":106,"../internal/baseCallback":114,"../internal/baseFilter":120,"../lang/isArray":173}],73:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
     baseFind = require('../internal/baseFind'),
@@ -4370,7 +4424,7 @@ function find(collection, predicate, thisArg) {
 
 module.exports = find;
 
-},{"../array/findIndex":59,"../internal/baseCallback":113,"../internal/baseEach":116,"../internal/baseFind":120,"../lang/isArray":172}],73:[function(require,module,exports){
+},{"../array/findIndex":60,"../internal/baseCallback":114,"../internal/baseEach":117,"../internal/baseFind":121,"../lang/isArray":173}],74:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEachRight = require('../internal/baseEachRight'),
     baseFind = require('../internal/baseFind');
@@ -4401,7 +4455,7 @@ function findLast(collection, predicate, thisArg) {
 
 module.exports = findLast;
 
-},{"../internal/baseCallback":113,"../internal/baseEachRight":117,"../internal/baseFind":120}],74:[function(require,module,exports){
+},{"../internal/baseCallback":114,"../internal/baseEachRight":118,"../internal/baseFind":121}],75:[function(require,module,exports){
 var baseMatches = require('../internal/baseMatches'),
     find = require('./find');
 
@@ -4440,13 +4494,13 @@ function findWhere(collection, source) {
 
 module.exports = findWhere;
 
-},{"../internal/baseMatches":134,"./find":72}],75:[function(require,module,exports){
+},{"../internal/baseMatches":135,"./find":73}],76:[function(require,module,exports){
 module.exports = require('./reduce');
 
-},{"./reduce":90}],76:[function(require,module,exports){
+},{"./reduce":91}],77:[function(require,module,exports){
 module.exports = require('./reduceRight');
 
-},{"./reduceRight":91}],77:[function(require,module,exports){
+},{"./reduceRight":92}],78:[function(require,module,exports){
 var arrayEach = require('../internal/arrayEach'),
     baseEach = require('../internal/baseEach'),
     bindCallback = require('../internal/bindCallback'),
@@ -4490,7 +4544,7 @@ function forEach(collection, iteratee, thisArg) {
 
 module.exports = forEach;
 
-},{"../internal/arrayEach":102,"../internal/baseEach":116,"../internal/bindCallback":145,"../lang/isArray":172}],78:[function(require,module,exports){
+},{"../internal/arrayEach":103,"../internal/baseEach":117,"../internal/bindCallback":146,"../lang/isArray":173}],79:[function(require,module,exports){
 var arrayEachRight = require('../internal/arrayEachRight'),
     baseEachRight = require('../internal/baseEachRight'),
     bindCallback = require('../internal/bindCallback'),
@@ -4523,7 +4577,7 @@ function forEachRight(collection, iteratee, thisArg) {
 
 module.exports = forEachRight;
 
-},{"../internal/arrayEachRight":103,"../internal/baseEachRight":117,"../internal/bindCallback":145,"../lang/isArray":172}],79:[function(require,module,exports){
+},{"../internal/arrayEachRight":104,"../internal/baseEachRight":118,"../internal/bindCallback":146,"../lang/isArray":173}],80:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /** Used for native method references. */
@@ -4584,9 +4638,9 @@ var groupBy = createAggregator(function(result, value, key) {
 
 module.exports = groupBy;
 
-},{"../internal/createAggregator":151}],80:[function(require,module,exports){
-arguments[4][65][0].apply(exports,arguments)
-},{"./includes":81,"dup":65}],81:[function(require,module,exports){
+},{"../internal/createAggregator":152}],81:[function(require,module,exports){
+arguments[4][66][0].apply(exports,arguments)
+},{"./includes":82,"dup":66}],82:[function(require,module,exports){
 var baseIndexOf = require('../internal/baseIndexOf'),
     isArray = require('../lang/isArray'),
     isLength = require('../internal/isLength'),
@@ -4649,7 +4703,7 @@ function includes(collection, target, fromIndex) {
 
 module.exports = includes;
 
-},{"../internal/baseIndexOf":127,"../internal/isLength":162,"../lang/isArray":172,"../lang/isString":177,"../object/values":182}],82:[function(require,module,exports){
+},{"../internal/baseIndexOf":128,"../internal/isLength":163,"../lang/isArray":173,"../lang/isString":178,"../object/values":183}],83:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /**
@@ -4704,9 +4758,9 @@ var indexBy = createAggregator(function(result, value, key) {
 
 module.exports = indexBy;
 
-},{"../internal/createAggregator":151}],83:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"./reduce":90,"dup":75}],84:[function(require,module,exports){
+},{"../internal/createAggregator":152}],84:[function(require,module,exports){
+arguments[4][76][0].apply(exports,arguments)
+},{"./reduce":91,"dup":76}],85:[function(require,module,exports){
 var baseInvoke = require('../internal/baseInvoke'),
     baseSlice = require('../internal/baseSlice');
 
@@ -4738,7 +4792,7 @@ function invoke(collection, methodName) {
 
 module.exports = invoke;
 
-},{"../internal/baseInvoke":128,"../internal/baseSlice":140}],85:[function(require,module,exports){
+},{"../internal/baseInvoke":129,"../internal/baseSlice":141}],86:[function(require,module,exports){
 var arrayMap = require('../internal/arrayMap'),
     baseCallback = require('../internal/baseCallback'),
     baseMap = require('../internal/baseMap'),
@@ -4808,7 +4862,7 @@ function map(collection, iteratee, thisArg) {
 
 module.exports = map;
 
-},{"../internal/arrayMap":106,"../internal/baseCallback":113,"../internal/baseMap":133,"../lang/isArray":172}],86:[function(require,module,exports){
+},{"../internal/arrayMap":107,"../internal/baseCallback":114,"../internal/baseMap":134,"../lang/isArray":173}],87:[function(require,module,exports){
 var arrayMax = require('../internal/arrayMax'),
     createExtremum = require('../internal/createExtremum');
 
@@ -4863,7 +4917,7 @@ var max = createExtremum(arrayMax);
 
 module.exports = max;
 
-},{"../internal/arrayMax":107,"../internal/createExtremum":153}],87:[function(require,module,exports){
+},{"../internal/arrayMax":108,"../internal/createExtremum":154}],88:[function(require,module,exports){
 var arrayMin = require('../internal/arrayMin'),
     createExtremum = require('../internal/createExtremum');
 
@@ -4918,7 +4972,7 @@ var min = createExtremum(arrayMin, true);
 
 module.exports = min;
 
-},{"../internal/arrayMin":108,"../internal/createExtremum":153}],88:[function(require,module,exports){
+},{"../internal/arrayMin":109,"../internal/createExtremum":154}],89:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /**
@@ -4986,7 +5040,7 @@ var partition = createAggregator(function(result, value, key) {
 
 module.exports = partition;
 
-},{"../internal/createAggregator":151}],89:[function(require,module,exports){
+},{"../internal/createAggregator":152}],90:[function(require,module,exports){
 var baseProperty = require('../internal/baseProperty'),
     map = require('./map');
 
@@ -5019,7 +5073,7 @@ function pluck(collection, key) {
 
 module.exports = pluck;
 
-},{"../internal/baseProperty":136,"./map":85}],90:[function(require,module,exports){
+},{"../internal/baseProperty":137,"./map":86}],91:[function(require,module,exports){
 var arrayReduce = require('../internal/arrayReduce'),
     baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
@@ -5069,7 +5123,7 @@ function reduce(collection, iteratee, accumulator, thisArg) {
 
 module.exports = reduce;
 
-},{"../internal/arrayReduce":109,"../internal/baseCallback":113,"../internal/baseEach":116,"../internal/baseReduce":138,"../lang/isArray":172}],91:[function(require,module,exports){
+},{"../internal/arrayReduce":110,"../internal/baseCallback":114,"../internal/baseEach":117,"../internal/baseReduce":139,"../lang/isArray":173}],92:[function(require,module,exports){
 var arrayReduceRight = require('../internal/arrayReduceRight'),
     baseCallback = require('../internal/baseCallback'),
     baseEachRight = require('../internal/baseEachRight'),
@@ -5105,7 +5159,7 @@ function reduceRight(collection, iteratee, accumulator, thisArg) {
 
 module.exports = reduceRight;
 
-},{"../internal/arrayReduceRight":110,"../internal/baseCallback":113,"../internal/baseEachRight":117,"../internal/baseReduce":138,"../lang/isArray":172}],92:[function(require,module,exports){
+},{"../internal/arrayReduceRight":111,"../internal/baseCallback":114,"../internal/baseEachRight":118,"../internal/baseReduce":139,"../lang/isArray":173}],93:[function(require,module,exports){
 var arrayFilter = require('../internal/arrayFilter'),
     baseCallback = require('../internal/baseCallback'),
     baseFilter = require('../internal/baseFilter'),
@@ -5168,7 +5222,7 @@ function reject(collection, predicate, thisArg) {
 
 module.exports = reject;
 
-},{"../internal/arrayFilter":105,"../internal/baseCallback":113,"../internal/baseFilter":119,"../lang/isArray":172}],93:[function(require,module,exports){
+},{"../internal/arrayFilter":106,"../internal/baseCallback":114,"../internal/baseFilter":120,"../lang/isArray":173}],94:[function(require,module,exports){
 var baseRandom = require('../internal/baseRandom'),
     isIterateeCall = require('../internal/isIterateeCall'),
     shuffle = require('./shuffle'),
@@ -5208,10 +5262,10 @@ function sample(collection, n, guard) {
 
 module.exports = sample;
 
-},{"../internal/baseRandom":137,"../internal/isIterateeCall":161,"../internal/toIterable":169,"./shuffle":95}],94:[function(require,module,exports){
+},{"../internal/baseRandom":138,"../internal/isIterateeCall":162,"../internal/toIterable":170,"./shuffle":96}],95:[function(require,module,exports){
 module.exports = require('./filter');
 
-},{"./filter":71}],95:[function(require,module,exports){
+},{"./filter":72}],96:[function(require,module,exports){
 var baseRandom = require('../internal/baseRandom'),
     toIterable = require('../internal/toIterable');
 
@@ -5249,7 +5303,7 @@ function shuffle(collection) {
 
 module.exports = shuffle;
 
-},{"../internal/baseRandom":137,"../internal/toIterable":169}],96:[function(require,module,exports){
+},{"../internal/baseRandom":138,"../internal/toIterable":170}],97:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     keys = require('../object/keys');
 
@@ -5280,7 +5334,7 @@ function size(collection) {
 
 module.exports = size;
 
-},{"../internal/isLength":162,"../object/keys":179}],97:[function(require,module,exports){
+},{"../internal/isLength":163,"../object/keys":180}],98:[function(require,module,exports){
 var arraySome = require('../internal/arraySome'),
     baseCallback = require('../internal/baseCallback'),
     baseSome = require('../internal/baseSome'),
@@ -5345,7 +5399,7 @@ function some(collection, predicate, thisArg) {
 
 module.exports = some;
 
-},{"../internal/arraySome":111,"../internal/baseCallback":113,"../internal/baseSome":141,"../lang/isArray":172}],98:[function(require,module,exports){
+},{"../internal/arraySome":112,"../internal/baseCallback":114,"../internal/baseSome":142,"../lang/isArray":173}],99:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
     baseSortBy = require('../internal/baseSortBy'),
@@ -5419,7 +5473,7 @@ function sortBy(collection, iteratee, thisArg) {
 
 module.exports = sortBy;
 
-},{"../internal/baseCallback":113,"../internal/baseEach":116,"../internal/baseSortBy":142,"../internal/compareAscending":149,"../internal/isIterateeCall":161,"../internal/isLength":162}],99:[function(require,module,exports){
+},{"../internal/baseCallback":114,"../internal/baseEach":117,"../internal/baseSortBy":143,"../internal/compareAscending":150,"../internal/isIterateeCall":162,"../internal/isLength":163}],100:[function(require,module,exports){
 var baseEach = require('../internal/baseEach'),
     baseFlatten = require('../internal/baseFlatten'),
     baseSortBy = require('../internal/baseSortBy'),
@@ -5474,7 +5528,7 @@ function sortByAll(collection) {
 
 module.exports = sortByAll;
 
-},{"../internal/baseEach":116,"../internal/baseFlatten":121,"../internal/baseSortBy":142,"../internal/compareMultipleAscending":150,"../internal/isIterateeCall":161,"../internal/isLength":162}],100:[function(require,module,exports){
+},{"../internal/baseEach":117,"../internal/baseFlatten":122,"../internal/baseSortBy":143,"../internal/compareMultipleAscending":151,"../internal/isIterateeCall":162,"../internal/isLength":163}],101:[function(require,module,exports){
 var baseMatches = require('../internal/baseMatches'),
     filter = require('./filter');
 
@@ -5513,7 +5567,7 @@ function where(collection, source) {
 
 module.exports = where;
 
-},{"../internal/baseMatches":134,"./filter":71}],101:[function(require,module,exports){
+},{"../internal/baseMatches":135,"./filter":72}],102:[function(require,module,exports){
 (function (global){
 var cachePush = require('./cachePush'),
     isNative = require('../lang/isNative');
@@ -5546,7 +5600,7 @@ SetCache.prototype.push = cachePush;
 module.exports = SetCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":175,"./cachePush":147}],102:[function(require,module,exports){
+},{"../lang/isNative":176,"./cachePush":148}],103:[function(require,module,exports){
 /**
  * A specialized version of `_.forEach` for arrays without support for callback
  * shorthands or `this` binding.
@@ -5570,7 +5624,7 @@ function arrayEach(array, iteratee) {
 
 module.exports = arrayEach;
 
-},{}],103:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 /**
  * A specialized version of `_.forEachRight` for arrays without support for
  * callback shorthands or `this` binding.
@@ -5593,7 +5647,7 @@ function arrayEachRight(array, iteratee) {
 
 module.exports = arrayEachRight;
 
-},{}],104:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 /**
  * A specialized version of `_.every` for arrays without support for callback
  * shorthands or `this` binding.
@@ -5618,7 +5672,7 @@ function arrayEvery(array, predicate) {
 
 module.exports = arrayEvery;
 
-},{}],105:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 /**
  * A specialized version of `_.filter` for arrays without support for callback
  * shorthands or `this` binding.
@@ -5645,7 +5699,7 @@ function arrayFilter(array, predicate) {
 
 module.exports = arrayFilter;
 
-},{}],106:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for callback
  * shorthands or `this` binding.
@@ -5668,7 +5722,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],107:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 /** Used as references for `-Infinity` and `Infinity`. */
 var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
 
@@ -5695,7 +5749,7 @@ function arrayMax(array) {
 
 module.exports = arrayMax;
 
-},{}],108:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 /** Used as references for `-Infinity` and `Infinity`. */
 var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
 
@@ -5722,7 +5776,7 @@ function arrayMin(array) {
 
 module.exports = arrayMin;
 
-},{}],109:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 /**
  * A specialized version of `_.reduce` for arrays without support for callback
  * shorthands or `this` binding.
@@ -5750,7 +5804,7 @@ function arrayReduce(array, iteratee, accumulator, initFromArray) {
 
 module.exports = arrayReduce;
 
-},{}],110:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 /**
  * A specialized version of `_.reduceRight` for arrays without support for
  * callback shorthands or `this` binding.
@@ -5776,7 +5830,7 @@ function arrayReduceRight(array, iteratee, accumulator, initFromArray) {
 
 module.exports = arrayReduceRight;
 
-},{}],111:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 /**
  * A specialized version of `_.some` for arrays without support for callback
  * shorthands or `this` binding.
@@ -5801,7 +5855,7 @@ function arraySome(array, predicate) {
 
 module.exports = arraySome;
 
-},{}],112:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength');
 
@@ -5835,7 +5889,7 @@ function baseAt(collection, props) {
 
 module.exports = baseAt;
 
-},{"./isIndex":160,"./isLength":162}],113:[function(require,module,exports){
+},{"./isIndex":161,"./isLength":163}],114:[function(require,module,exports){
 var baseMatches = require('./baseMatches'),
     baseMatchesProperty = require('./baseMatchesProperty'),
     baseProperty = require('./baseProperty'),
@@ -5873,7 +5927,7 @@ function baseCallback(func, thisArg, argCount) {
 
 module.exports = baseCallback;
 
-},{"../utility/identity":188,"./baseMatches":134,"./baseMatchesProperty":135,"./baseProperty":136,"./bindCallback":145,"./isBindable":159}],114:[function(require,module,exports){
+},{"../utility/identity":189,"./baseMatches":135,"./baseMatchesProperty":136,"./baseProperty":137,"./bindCallback":146,"./isBindable":160}],115:[function(require,module,exports){
 /**
  * The base implementation of `compareAscending` which compares values and
  * sorts them in ascending order without guaranteeing a stable sort.
@@ -5900,7 +5954,7 @@ function baseCompareAscending(value, other) {
 
 module.exports = baseCompareAscending;
 
-},{}],115:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 var baseIndexOf = require('./baseIndexOf'),
     cacheIndexOf = require('./cacheIndexOf'),
     createCache = require('./createCache');
@@ -5954,7 +6008,7 @@ function baseDifference(array, values) {
 
 module.exports = baseDifference;
 
-},{"./baseIndexOf":127,"./cacheIndexOf":146,"./createCache":152}],116:[function(require,module,exports){
+},{"./baseIndexOf":128,"./cacheIndexOf":147,"./createCache":153}],117:[function(require,module,exports){
 var baseForOwn = require('./baseForOwn'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -5986,7 +6040,7 @@ function baseEach(collection, iteratee) {
 
 module.exports = baseEach;
 
-},{"./baseForOwn":124,"./isLength":162,"./toObject":170}],117:[function(require,module,exports){
+},{"./baseForOwn":125,"./isLength":163,"./toObject":171}],118:[function(require,module,exports){
 var baseForOwnRight = require('./baseForOwnRight'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -6016,7 +6070,7 @@ function baseEachRight(collection, iteratee) {
 
 module.exports = baseEachRight;
 
-},{"./baseForOwnRight":125,"./isLength":162,"./toObject":170}],118:[function(require,module,exports){
+},{"./baseForOwnRight":126,"./isLength":163,"./toObject":171}],119:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -6040,7 +6094,7 @@ function baseEvery(collection, predicate) {
 
 module.exports = baseEvery;
 
-},{"./baseEach":116}],119:[function(require,module,exports){
+},{"./baseEach":117}],120:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -6064,7 +6118,7 @@ function baseFilter(collection, predicate) {
 
 module.exports = baseFilter;
 
-},{"./baseEach":116}],120:[function(require,module,exports){
+},{"./baseEach":117}],121:[function(require,module,exports){
 /**
  * The base implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
  * without support for callback shorthands and `this` binding, which iterates
@@ -6091,7 +6145,7 @@ function baseFind(collection, predicate, eachFunc, retKey) {
 
 module.exports = baseFind;
 
-},{}],121:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isLength = require('./isLength'),
@@ -6138,7 +6192,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
 
 module.exports = baseFlatten;
 
-},{"../lang/isArguments":171,"../lang/isArray":172,"./isLength":162,"./isObjectLike":163}],122:[function(require,module,exports){
+},{"../lang/isArguments":172,"../lang/isArray":173,"./isLength":163,"./isObjectLike":164}],123:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -6170,7 +6224,7 @@ function baseFor(object, iteratee, keysFunc) {
 
 module.exports = baseFor;
 
-},{"./toObject":170}],123:[function(require,module,exports){
+},{"./toObject":171}],124:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keysIn = require('../object/keysIn');
 
@@ -6189,7 +6243,7 @@ function baseForIn(object, iteratee) {
 
 module.exports = baseForIn;
 
-},{"../object/keysIn":180,"./baseFor":122}],124:[function(require,module,exports){
+},{"../object/keysIn":181,"./baseFor":123}],125:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keys = require('../object/keys');
 
@@ -6208,7 +6262,7 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"../object/keys":179,"./baseFor":122}],125:[function(require,module,exports){
+},{"../object/keys":180,"./baseFor":123}],126:[function(require,module,exports){
 var baseForRight = require('./baseForRight'),
     keys = require('../object/keys');
 
@@ -6227,7 +6281,7 @@ function baseForOwnRight(object, iteratee) {
 
 module.exports = baseForOwnRight;
 
-},{"../object/keys":179,"./baseForRight":126}],126:[function(require,module,exports){
+},{"../object/keys":180,"./baseForRight":127}],127:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -6256,7 +6310,7 @@ function baseForRight(object, iteratee, keysFunc) {
 
 module.exports = baseForRight;
 
-},{"./toObject":170}],127:[function(require,module,exports){
+},{"./toObject":171}],128:[function(require,module,exports){
 var indexOfNaN = require('./indexOfNaN');
 
 /**
@@ -6285,7 +6339,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./indexOfNaN":158}],128:[function(require,module,exports){
+},{"./indexOfNaN":159}],129:[function(require,module,exports){
 var baseEach = require('./baseEach'),
     isLength = require('./isLength');
 
@@ -6315,7 +6369,7 @@ function baseInvoke(collection, methodName, args) {
 
 module.exports = baseInvoke;
 
-},{"./baseEach":116,"./isLength":162}],129:[function(require,module,exports){
+},{"./baseEach":117,"./isLength":163}],130:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep');
 
 /**
@@ -6351,7 +6405,7 @@ function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"./baseIsEqualDeep":130}],130:[function(require,module,exports){
+},{"./baseIsEqualDeep":131}],131:[function(require,module,exports){
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -6454,7 +6508,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, 
 
 module.exports = baseIsEqualDeep;
 
-},{"../lang/isArray":172,"../lang/isTypedArray":178,"./equalArrays":154,"./equalByTag":155,"./equalObjects":156}],131:[function(require,module,exports){
+},{"../lang/isArray":173,"../lang/isTypedArray":179,"./equalArrays":155,"./equalByTag":156,"./equalObjects":157}],132:[function(require,module,exports){
 /**
  * The base implementation of `_.isFunction` without support for environments
  * with incorrect `typeof` results.
@@ -6471,7 +6525,7 @@ function baseIsFunction(value) {
 
 module.exports = baseIsFunction;
 
-},{}],132:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual');
 
 /** Used for native method references. */
@@ -6531,7 +6585,7 @@ function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./baseIsEqual":129}],133:[function(require,module,exports){
+},{"./baseIsEqual":130}],134:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -6553,7 +6607,7 @@ function baseMap(collection, iteratee) {
 
 module.exports = baseMap;
 
-},{"./baseEach":116}],134:[function(require,module,exports){
+},{"./baseEach":117}],135:[function(require,module,exports){
 var baseIsMatch = require('./baseIsMatch'),
     isStrictComparable = require('./isStrictComparable'),
     keys = require('../object/keys');
@@ -6600,7 +6654,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"../object/keys":179,"./baseIsMatch":132,"./isStrictComparable":164}],135:[function(require,module,exports){
+},{"../object/keys":180,"./baseIsMatch":133,"./isStrictComparable":165}],136:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual'),
     isStrictComparable = require('./isStrictComparable');
 
@@ -6626,7 +6680,7 @@ function baseMatchesProperty(key, value) {
 
 module.exports = baseMatchesProperty;
 
-},{"./baseIsEqual":129,"./isStrictComparable":164}],136:[function(require,module,exports){
+},{"./baseIsEqual":130,"./isStrictComparable":165}],137:[function(require,module,exports){
 /**
  * The base implementation of `_.property` which does not coerce `key` to a string.
  *
@@ -6642,7 +6696,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],137:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 /** Native method references. */
 var floor = Math.floor;
 
@@ -6664,7 +6718,7 @@ function baseRandom(min, max) {
 
 module.exports = baseRandom;
 
-},{}],138:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 /**
  * The base implementation of `_.reduce` and `_.reduceRight` without support
  * for callback shorthands or `this` binding, which iterates over `collection`
@@ -6690,7 +6744,7 @@ function baseReduce(collection, iteratee, accumulator, initFromCollection, eachF
 
 module.exports = baseReduce;
 
-},{}],139:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 var identity = require('../utility/identity'),
     metaMap = require('./metaMap');
 
@@ -6709,7 +6763,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"../utility/identity":188,"./metaMap":165}],140:[function(require,module,exports){
+},{"../utility/identity":189,"./metaMap":166}],141:[function(require,module,exports){
 /**
  * The base implementation of `_.slice` without an iteratee call guard.
  *
@@ -6743,7 +6797,7 @@ function baseSlice(array, start, end) {
 
 module.exports = baseSlice;
 
-},{}],141:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -6768,7 +6822,7 @@ function baseSome(collection, predicate) {
 
 module.exports = baseSome;
 
-},{"./baseEach":116}],142:[function(require,module,exports){
+},{"./baseEach":117}],143:[function(require,module,exports){
 /**
  * The base implementation of `_.sortBy` and `_.sortByAll` which uses `comparer`
  * to define the sort order of `array` and replaces criteria objects with their
@@ -6791,7 +6845,7 @@ function baseSortBy(array, comparer) {
 
 module.exports = baseSortBy;
 
-},{}],143:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -6809,7 +6863,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],144:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 /**
  * The base implementation of `_.values` and `_.valuesIn` which creates an
  * array of `object` property values corresponding to the property names
@@ -6833,7 +6887,7 @@ function baseValues(object, props) {
 
 module.exports = baseValues;
 
-},{}],145:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 var identity = require('../utility/identity');
 
 /**
@@ -6874,7 +6928,7 @@ function bindCallback(func, thisArg, argCount) {
 
 module.exports = bindCallback;
 
-},{"../utility/identity":188}],146:[function(require,module,exports){
+},{"../utility/identity":189}],147:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -6895,7 +6949,7 @@ function cacheIndexOf(cache, value) {
 
 module.exports = cacheIndexOf;
 
-},{"../lang/isObject":176}],147:[function(require,module,exports){
+},{"../lang/isObject":177}],148:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -6917,7 +6971,7 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"../lang/isObject":176}],148:[function(require,module,exports){
+},{"../lang/isObject":177}],149:[function(require,module,exports){
 /**
  * Used by `_.max` and `_.min` as the default callback for string values.
  *
@@ -6931,7 +6985,7 @@ function charAtCallback(string) {
 
 module.exports = charAtCallback;
 
-},{}],149:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 var baseCompareAscending = require('./baseCompareAscending');
 
 /**
@@ -6949,7 +7003,7 @@ function compareAscending(object, other) {
 
 module.exports = compareAscending;
 
-},{"./baseCompareAscending":114}],150:[function(require,module,exports){
+},{"./baseCompareAscending":115}],151:[function(require,module,exports){
 var baseCompareAscending = require('./baseCompareAscending');
 
 /**
@@ -6985,7 +7039,7 @@ function compareMultipleAscending(object, other) {
 
 module.exports = compareMultipleAscending;
 
-},{"./baseCompareAscending":114}],151:[function(require,module,exports){
+},{"./baseCompareAscending":115}],152:[function(require,module,exports){
 var baseCallback = require('./baseCallback'),
     baseEach = require('./baseEach'),
     isArray = require('../lang/isArray');
@@ -7024,7 +7078,7 @@ function createAggregator(setter, initializer) {
 
 module.exports = createAggregator;
 
-},{"../lang/isArray":172,"./baseCallback":113,"./baseEach":116}],152:[function(require,module,exports){
+},{"../lang/isArray":173,"./baseCallback":114,"./baseEach":117}],153:[function(require,module,exports){
 (function (global){
 var SetCache = require('./SetCache'),
     constant = require('../utility/constant'),
@@ -7050,7 +7104,7 @@ var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
 module.exports = createCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":175,"../utility/constant":187,"./SetCache":101}],153:[function(require,module,exports){
+},{"../lang/isNative":176,"../utility/constant":188,"./SetCache":102}],154:[function(require,module,exports){
 var baseCallback = require('./baseCallback'),
     charAtCallback = require('./charAtCallback'),
     extremumBy = require('./extremumBy'),
@@ -7090,7 +7144,7 @@ function createExtremum(arrayFunc, isMin) {
 
 module.exports = createExtremum;
 
-},{"../lang/isArray":172,"../lang/isString":177,"./baseCallback":113,"./charAtCallback":148,"./extremumBy":157,"./isIterateeCall":161,"./toIterable":169}],154:[function(require,module,exports){
+},{"../lang/isArray":173,"../lang/isString":178,"./baseCallback":114,"./charAtCallback":149,"./extremumBy":158,"./isIterateeCall":162,"./toIterable":170}],155:[function(require,module,exports){
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
  * partial deep comparisons.
@@ -7146,7 +7200,7 @@ function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stack
 
 module.exports = equalArrays;
 
-},{}],155:[function(require,module,exports){
+},{}],156:[function(require,module,exports){
 /** `Object#toString` result references. */
 var boolTag = '[object Boolean]',
     dateTag = '[object Date]',
@@ -7197,7 +7251,7 @@ function equalByTag(object, other, tag) {
 
 module.exports = equalByTag;
 
-},{}],156:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 var keys = require('../object/keys');
 
 /** Used for native method references. */
@@ -7271,7 +7325,7 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
 
 module.exports = equalObjects;
 
-},{"../object/keys":179}],157:[function(require,module,exports){
+},{"../object/keys":180}],158:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /** Used as references for `-Infinity` and `Infinity`. */
@@ -7307,7 +7361,7 @@ function extremumBy(collection, iteratee, isMin) {
 
 module.exports = extremumBy;
 
-},{"./baseEach":116}],158:[function(require,module,exports){
+},{"./baseEach":117}],159:[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
  * If `fromRight` is provided elements of `array` are iterated from right to left.
@@ -7333,7 +7387,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = indexOfNaN;
 
-},{}],159:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     isNative = require('../lang/isNative'),
     support = require('../support');
@@ -7373,7 +7427,7 @@ function isBindable(func) {
 
 module.exports = isBindable;
 
-},{"../lang/isNative":175,"../support":186,"./baseSetData":139}],160:[function(require,module,exports){
+},{"../lang/isNative":176,"../support":187,"./baseSetData":140}],161:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -7397,7 +7451,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],161:[function(require,module,exports){
+},{}],162:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -7431,7 +7485,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":176,"./isIndex":160,"./isLength":162}],162:[function(require,module,exports){
+},{"../lang/isObject":177,"./isIndex":161,"./isLength":163}],163:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -7456,7 +7510,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],163:[function(require,module,exports){
+},{}],164:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -7470,7 +7524,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],164:[function(require,module,exports){
+},{}],165:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -7487,7 +7541,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"../lang/isObject":176}],165:[function(require,module,exports){
+},{"../lang/isObject":177}],166:[function(require,module,exports){
 (function (global){
 var isNative = require('../lang/isNative');
 
@@ -7500,7 +7554,7 @@ var metaMap = WeakMap && new WeakMap;
 module.exports = metaMap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":175}],166:[function(require,module,exports){
+},{"../lang/isNative":176}],167:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -7530,7 +7584,7 @@ function pickByArray(object, props) {
 
 module.exports = pickByArray;
 
-},{"./toObject":170}],167:[function(require,module,exports){
+},{"./toObject":171}],168:[function(require,module,exports){
 var baseForIn = require('./baseForIn');
 
 /**
@@ -7554,7 +7608,7 @@ function pickByCallback(object, predicate) {
 
 module.exports = pickByCallback;
 
-},{"./baseForIn":123}],168:[function(require,module,exports){
+},{"./baseForIn":124}],169:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -7598,7 +7652,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":171,"../lang/isArray":172,"../object/keysIn":180,"../support":186,"./isIndex":160,"./isLength":162}],169:[function(require,module,exports){
+},{"../lang/isArguments":172,"../lang/isArray":173,"../object/keysIn":181,"../support":187,"./isIndex":161,"./isLength":163}],170:[function(require,module,exports){
 var isLength = require('./isLength'),
     isObject = require('../lang/isObject'),
     values = require('../object/values');
@@ -7622,7 +7676,7 @@ function toIterable(value) {
 
 module.exports = toIterable;
 
-},{"../lang/isObject":176,"../object/values":182,"./isLength":162}],170:[function(require,module,exports){
+},{"../lang/isObject":177,"../object/values":183,"./isLength":163}],171:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -7638,7 +7692,7 @@ function toObject(value) {
 
 module.exports = toObject;
 
-},{"../lang/isObject":176}],171:[function(require,module,exports){
+},{"../lang/isObject":177}],172:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -7678,7 +7732,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":162,"../internal/isObjectLike":163}],172:[function(require,module,exports){
+},{"../internal/isLength":163,"../internal/isObjectLike":164}],173:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -7721,7 +7775,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":162,"../internal/isObjectLike":163,"./isNative":175}],173:[function(require,module,exports){
+},{"../internal/isLength":163,"../internal/isObjectLike":164,"./isNative":176}],174:[function(require,module,exports){
 var isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isFunction = require('./isFunction'),
@@ -7771,7 +7825,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"../internal/isLength":162,"../internal/isObjectLike":163,"../object/keys":179,"./isArguments":171,"./isArray":172,"./isFunction":174,"./isString":177}],174:[function(require,module,exports){
+},{"../internal/isLength":163,"../internal/isObjectLike":164,"../object/keys":180,"./isArguments":172,"./isArray":173,"./isFunction":175,"./isString":178}],175:[function(require,module,exports){
 (function (global){
 var baseIsFunction = require('../internal/baseIsFunction'),
     isNative = require('./isNative');
@@ -7818,7 +7872,7 @@ var isFunction = !(baseIsFunction(/x/) || (Uint8Array && !baseIsFunction(Uint8Ar
 module.exports = isFunction;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../internal/baseIsFunction":131,"./isNative":175}],175:[function(require,module,exports){
+},{"../internal/baseIsFunction":132,"./isNative":176}],176:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -7875,7 +7929,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":163,"../string/escapeRegExp":184}],176:[function(require,module,exports){
+},{"../internal/isObjectLike":164,"../string/escapeRegExp":185}],177:[function(require,module,exports){
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -7907,7 +7961,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],177:[function(require,module,exports){
+},{}],178:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -7945,7 +7999,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"../internal/isObjectLike":163}],178:[function(require,module,exports){
+},{"../internal/isObjectLike":164}],179:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -8022,7 +8076,7 @@ function isTypedArray(value) {
 
 module.exports = isTypedArray;
 
-},{"../internal/isLength":162,"../internal/isObjectLike":163}],179:[function(require,module,exports){
+},{"../internal/isLength":163,"../internal/isObjectLike":164}],180:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -8072,7 +8126,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":162,"../internal/shimKeys":168,"../lang/isNative":175,"../lang/isObject":176}],180:[function(require,module,exports){
+},{"../internal/isLength":163,"../internal/shimKeys":169,"../lang/isNative":176,"../lang/isObject":177}],181:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -8139,7 +8193,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":160,"../internal/isLength":162,"../lang/isArguments":171,"../lang/isArray":172,"../lang/isObject":176,"../support":186}],181:[function(require,module,exports){
+},{"../internal/isIndex":161,"../internal/isLength":163,"../lang/isArguments":172,"../lang/isArray":173,"../lang/isObject":177,"../support":187}],182:[function(require,module,exports){
 var arrayMap = require('../internal/arrayMap'),
     baseDifference = require('../internal/baseDifference'),
     baseFlatten = require('../internal/baseFlatten'),
@@ -8192,7 +8246,7 @@ function omit(object, predicate, thisArg) {
 
 module.exports = omit;
 
-},{"../internal/arrayMap":106,"../internal/baseDifference":115,"../internal/baseFlatten":121,"../internal/bindCallback":145,"../internal/pickByArray":166,"../internal/pickByCallback":167,"./keysIn":180}],182:[function(require,module,exports){
+},{"../internal/arrayMap":107,"../internal/baseDifference":116,"../internal/baseFlatten":122,"../internal/bindCallback":146,"../internal/pickByArray":167,"../internal/pickByCallback":168,"./keysIn":181}],183:[function(require,module,exports){
 var baseValues = require('../internal/baseValues'),
     keys = require('./keys');
 
@@ -8227,7 +8281,7 @@ function values(object) {
 
 module.exports = values;
 
-},{"../internal/baseValues":144,"./keys":179}],183:[function(require,module,exports){
+},{"../internal/baseValues":145,"./keys":180}],184:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -8250,7 +8304,7 @@ function capitalize(string) {
 
 module.exports = capitalize;
 
-},{"../internal/baseToString":143}],184:[function(require,module,exports){
+},{"../internal/baseToString":144}],185:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -8284,7 +8338,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":143}],185:[function(require,module,exports){
+},{"../internal/baseToString":144}],186:[function(require,module,exports){
 var baseToString = require('../internal/baseToString'),
     isIterateeCall = require('../internal/isIterateeCall');
 
@@ -8324,7 +8378,7 @@ function words(string, pattern, guard) {
 
 module.exports = words;
 
-},{"../internal/baseToString":143,"../internal/isIterateeCall":161}],186:[function(require,module,exports){
+},{"../internal/baseToString":144,"../internal/isIterateeCall":162}],187:[function(require,module,exports){
 (function (global){
 var isNative = require('./lang/isNative');
 
@@ -8403,7 +8457,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":175}],187:[function(require,module,exports){
+},{"./lang/isNative":176}],188:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -8428,7 +8482,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],188:[function(require,module,exports){
+},{}],189:[function(require,module,exports){
 /**
  * This method returns the first argument provided to it.
  *
@@ -8450,7 +8504,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],189:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -8478,7 +8532,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],190:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 (function (global){
 
 var rng;
@@ -8513,7 +8567,7 @@ module.exports = rng;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],191:[function(require,module,exports){
+},{}],192:[function(require,module,exports){
 //     uuid.js
 //
 //     Copyright (c) 2010-2012 Robert Kieffer
@@ -8698,7 +8752,7 @@ uuid.unparse = unparse;
 
 module.exports = uuid;
 
-},{"./rng":190}],192:[function(require,module,exports){
+},{"./rng":191}],193:[function(require,module,exports){
 module.exports={
   "name": "focus-components",
   "version": "0.1.0",
@@ -8731,6 +8785,14 @@ module.exports={
     {
       "name": "bar",
       "path": "application/bar"
+    },
+    {
+      "name": "header",
+      "path": "application/header"
+    },
+    {
+      "name": "cartridge",
+      "path": "application/cartridge"
     },
     {
       "name": "quick-search",
@@ -8906,14 +8968,14 @@ module.exports={
   }
 }
 
-},{}],193:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   search: require("./search")
 };
 
-},{"./search":198}],194:[function(require,module,exports){
+},{"./search":199}],195:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -8967,7 +9029,7 @@ var groupByComponent = {
 
 module.exports = builder(groupByComponent);
 
-},{}],195:[function(require,module,exports){
+},{}],196:[function(require,module,exports){
 "use strict";
 
 var isArray = require("lodash/lang/isArray");
@@ -9007,11 +9069,11 @@ var GroupByMixin = {
         };
     },
 
-    renderGroupByList: function renderGroupByList() {
+    groupByListComponent: function groupByListComponent() {
         var groupList = [];
         for (var groupKey in this.state.list) {
             groupList.push(React.createElement(GroupBy, { key: groupKey, ref: groupKey,
-                renderGroupBy: this.renderGroupBy,
+                renderGroupBy: this.renderGroupByBlock,
                 list: this.state.list[groupKey],
                 groupKey: groupKey,
                 maxRows: this.props.groupMaxRows }));
@@ -9022,7 +9084,7 @@ var GroupByMixin = {
 
 module.exports = { mixin: GroupByMixin };
 
-},{"./group-by-component":194,"lodash/lang/isArray":172}],196:[function(require,module,exports){
+},{"./group-by-component":195,"lodash/lang/isArray":173}],197:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -9108,7 +9170,7 @@ var InfiniteScrollPageMixin = {
 
 module.exports = { mixin: InfiniteScrollPageMixin };
 
-},{"object-assign":189}],197:[function(require,module,exports){
+},{"object-assign":190}],198:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -9122,6 +9184,7 @@ var SearchStore = window.focus.store.SearchStore;
 var assign = require("object-assign");
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
 var GroupByMixin = require("../common-mixin/group-by-mixin").mixin;
+var checkIsNotNull = window.focus.util.object.checkIsNotNull;
 
 var searchFilterResultMixin = {
     mixins: [InfiniteScrollPageMixin, GroupByMixin],
@@ -9412,19 +9475,18 @@ var searchFilterResultMixin = {
 
     /**
      * Render a simple list.
-     * @param id Technical id of the list.
-     * @param list Content of the list.
-     * @param maxRows Number max of rows in the list (optional).
-     * @returns {JSX} Html rendering.
-     * @private
+     * @param {object} options - map of parameters.
+     * @returns {XML} Html rendering.
      */
-    renderSimpleList: function renderSimpleList(id, list, maxRows) {
-        var newList = list;
-        if (maxRows) {
-            newList = list.slice(0, maxRows);
+    simpleListComponent: function simpleListComponent(options) {
+        checkIsNotNull("options", options);
+        checkIsNotNull("options.type", options.type);
+        var newList = options.list || this.state.list;
+        if (options.maxRows) {
+            newList = newList.slice(0, options.maxRows);
         }
         return React.createElement(ListSelection, { data: newList,
-            ref: id,
+            ref: options.type,
             idField: this.props.idField,
             isSelection: this.props.isSelection,
             onSelection: this._selectItem,
@@ -9433,7 +9495,7 @@ var searchFilterResultMixin = {
             operationList: this.props.lineOperationList,
             hasMoreData: this.state.hasMoreData,
             isLoading: this.state.isLoading,
-            lineComponent: this.props.lineComponent,
+            lineComponent: this.props.lineMap[options.type],
             selectionStatus: this.state.selectionStatus });
     },
 
@@ -9450,13 +9512,13 @@ var searchFilterResultMixin = {
                 this.renderSimpleList("list", this.state.list)
             );
         }
-        return this.renderGroupByList();
+        return this.groupByListComponent();
     }
 };
 
 module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../list/action-bar/index":46,"../../../list/selection":51,"../../../list/summary/index":54,"../../../search/live-filter/index":201,"../common-mixin/group-by-mixin":195,"../common-mixin/infinite-scroll-page-mixin":196,"object-assign":189}],198:[function(require,module,exports){
+},{"../../../list/action-bar/index":47,"../../../list/selection":52,"../../../list/summary/index":55,"../../../search/live-filter/index":202,"../common-mixin/group-by-mixin":196,"../common-mixin/infinite-scroll-page-mixin":197,"object-assign":190}],199:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -9464,7 +9526,7 @@ module.exports = {
     searchResult: require("./search-result")
 };
 
-},{"./filter-result":197,"./search-result":199}],199:[function(require,module,exports){
+},{"./filter-result":198,"./search-result":200}],200:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -9475,6 +9537,7 @@ var assign = require("object-assign");
 var type = window.focus.component.types;
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
 var GroupByMixin = require("../common-mixin/group-by-mixin").mixin;
+var checkIsNotNull = window.focus.util.object.checkIsNotNull;
 
 var searchMixin = {
     mixins: [InfiniteScrollPageMixin, GroupByMixin],
@@ -9501,7 +9564,7 @@ var searchMixin = {
 
     getDefaultProps: function getDefaultProps() {
         return {
-            lineComponent: undefined,
+            lineMap: undefined,
             isSelection: false,
             lineOperationList: {},
             idField: "id"
@@ -9512,7 +9575,7 @@ var searchMixin = {
      * properties validation
      */
     propTypes: {
-        lineComponent: type("object"),
+        lineMap: type("object"),
         isSelection: type("bool"),
         lineOperationList: type("array"),
         idField: type("string")
@@ -9590,13 +9653,11 @@ var searchMixin = {
      * Run search action.
      */
     search: function search() {
-        var searchValues = this.refs.quickSearch.getValue();
-        this.actions.search(this.getSearchCriteria(searchValues.scope, searchValues.query));
+        this.actions.search(this.getSearchCriteria(this.state.scope, this.state.query));
     },
 
-    _quickSearch: function quickSearch(event) {
-        event.preventDefault();
-        this.setState(assign({ isLoadingSearch: true }, this.getNoFetchState()), this.search());
+    _quickSearch: function quickSearch(searchValues) {
+        this.setState(assign({ isLoadingSearch: true }, searchValues, this.getNoFetchState()), this.search());
     },
 
     /**
@@ -9604,7 +9665,7 @@ var searchMixin = {
      * @returns {XML} the component
      */
     quickSearchComponent: function quickSearchComponent() {
-        return React.createElement(QuickSearch, { handleKeyUp: this._quickSearch,
+        return React.createElement(QuickSearch, { handleChange: this._quickSearch,
             ref: "quickSearch",
             scope: this.props.scope,
             scopes: this.props.scopeList,
@@ -9613,13 +9674,20 @@ var searchMixin = {
         });
     },
 
-    renderSimpleList: function renderSimpleList(id, list, maxRows) {
-        var newList = list;
-        if (maxRows) {
-            newList = list.slice(0, maxRows);
+    /**
+     * Render a list based on a single entity.
+     * @param {object} options - map of parameters
+     * @return {XML} the List component.
+     */
+    simpleListComponent: function simpleListComponent(options) {
+        checkIsNotNull("options", options);
+        checkIsNotNull("options.type", options.type);
+        var newList = options.list || this.state.list;
+        if (options.maxRows) {
+            newList = newList.slice(0, options.maxRows);
         }
         return React.createElement(List, { data: newList,
-            ref: id,
+            ref: options.type,
             idField: this.props.idField,
             isSelection: this.props.isSelection,
             onSelection: this._selectItem,
@@ -9628,25 +9696,26 @@ var searchMixin = {
             hasMoreData: this.state.hasMoreData,
             isLoading: this.state.isLoading,
             operationList: this.props.operationList,
-            lineComponent: this.props.lineComponent
+            lineComponent: this.props.lineMap[options.type]
         });
     },
 
     /**
      * return a list component
+     * @param {string} id - id of the list to display
      * @returns {XML} the list component
      */
-    listComponent: function listComponent(id, list, maxRows) {
+    listComponent: function listComponent(id) {
         if (this.isSimpleList()) {
-            return this.renderSimpleList("list", this.state.list);
+            return this.renderSimpleList({ type: id, list: this.state.list });
         }
-        return this.renderGroupByList();
+        return this.groupByListComponent();
     }
 };
 
 module.exports = builder(searchMixin, true);
 
-},{"../../../list/selection":51,"../../../search/quick-search":204,"../common-mixin/group-by-mixin":195,"../common-mixin/infinite-scroll-page-mixin":196,"object-assign":189}],200:[function(require,module,exports){
+},{"../../../list/selection":52,"../../../search/quick-search":205,"../common-mixin/group-by-mixin":196,"../common-mixin/infinite-scroll-page-mixin":197,"object-assign":190}],201:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -9654,7 +9723,7 @@ module.exports = {
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":201,"./quick-search":204}],201:[function(require,module,exports){
+},{"./live-filter":202,"./quick-search":205}],202:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -9818,7 +9887,7 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/i18n/mixin":21,"../../common/img":22,"./live-filter-facet":203,"lodash/object/omit":181,"object-assign":189}],202:[function(require,module,exports){
+},{"../../common/i18n/mixin":22,"../../common/img":23,"./live-filter-facet":204,"lodash/object/omit":182,"object-assign":190}],203:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -9866,7 +9935,7 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],203:[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -10023,12 +10092,12 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":202}],204:[function(require,module,exports){
+},{"./live-filter-data":203}],205:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":205}],205:[function(require,module,exports){
+},{"./input":206}],206:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -10070,12 +10139,18 @@ var SearchInputMixin = {
       query: this.refs.query.getDOMNode().value
     };
   },
+  _handleChange: function _handleChange() {
+    if (this.props.handleChange) {
+      return this.props.handleChange(this.getValue());
+    }
+  },
   handleKeyUp: function handleKeyUpInputSearch(event) {
     var val = event.target.value;
     if (val.length >= this.props.minChar) {
       if (this.props.handleKeyUp) {
         this.props.handleKeyUp(event);
       }
+      this._handleChange();
     }
   },
   _handleChangeScope: function handleChangeScope(event) {
@@ -10088,6 +10163,7 @@ var SearchInputMixin = {
     if (this.props.handleChangeScope) {
       this.props.handleChangeScope(event);
     }
+    this._handleChange();
   },
   handleOnClickScope: function handleOnClickScope() {
     this.setState({ scope: this.refs.scope.getValue() }, this._handleChangeScope(event));
@@ -10133,7 +10209,7 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":206,"lodash/string/words":185}],206:[function(require,module,exports){
+},{"./scope":207,"lodash/string/words":186}],207:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -10294,5 +10370,5 @@ var scopeMixin = {
 
 module.exports = builder(scopeMixin);
 
-},{"lodash/collection/find":72,"uuid":191}]},{},[1])(1)
+},{"lodash/collection/find":73,"uuid":192}]},{},[1])(1)
 });
