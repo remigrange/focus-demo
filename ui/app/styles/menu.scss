@@ -1,0 +1,115 @@
+@import "./variables";
+
+ $menu-item-width:100px;
+ $taille-image-petite:40px;
+
+.menu-horizontal {
+  height: 60px;
+}
+
+.menu-vertical {
+  width: 60px;
+}
+.header-menu {
+  margin-left: 60px;
+  border-bottom: 1px solid  $color-gris2;
+  background:  $color-blanc;
+}
+.header-menu .top-menu-items-container  {
+  float: right;
+  width: 320px;
+  margin-right: 50px;
+}
+
+.header-menu .top-menu-item {
+  width: $menu-item-width;
+  padding-top: 18px;
+  display: inline-block;
+}
+
+.header-menu .top-menu-item {
+  font-size: 24px;
+  text-align: center;
+  border-left: 1px solid  $color-gris2;
+  height: 60px;
+}
+
+
+.header-menu h3 {
+  color:  $color-noir2;
+  font-size: 24px;
+  margin: 0;
+  font-family: RalewayExtraBold;
+  background:  $color-blanc;
+  width:  $menu-item-width;
+  padding: 18px 0 18px 10px;
+  text-transform: uppercase;
+}
+
+.header-menu a,
+.left-menu a{
+  border-left: none;
+  border-bottom: none;
+  padding:0;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.header-menu a {
+  width:  $menu-item-width;
+  height: 60px;
+}
+
+.left-menu  a {
+  width: 60px;
+}
+
+.left-menu a img {
+  width:20px;
+  height: 20px;
+}
+
+.header-menu a:hover,
+.left-menu a:hover {
+  background:  $color-vert2;
+}
+
+.left-menu {
+  background:  $color-vert;
+}
+
+
+#leftMenu .brand {
+  text-align: center;
+  background-color:  $color-gris;
+  height: 60px;
+  padding-top: 20px;
+}
+
+#leftMenu .left-menu a {
+  padding-top: 20px;
+  height: 60px;
+}
+
+.badge-alerte {
+  background-color: $color-rouge2;
+  margin-left: -10px;
+  margin-top: -5px;
+  position: absolute;
+}
+.badge-warning {
+  background-color: $color-jaune;
+  padding: 3px 4px;
+  margin-left: -5px;
+  margin-top: -2px;
+  position: absolute;
+}
+
+.user-image {
+  background-color: rgba(5,29,49,0.5);
+  width:$taille-image-petite;
+  height: $taille-image-petite;
+  position: relative;
+}
