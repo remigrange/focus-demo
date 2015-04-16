@@ -6,13 +6,13 @@ var render = focus.application.render;
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
 
-var MenuView = require('../views/menu');
+var TopMenuView = require('../views/menu/topMenu');
+var LeftMenuView = require('../views/menu/leftMenu');
 
 var renderMenu = function(){
-  render(MenuView, '#header',
-    {props: {position: 'top', direction: 'horizontal', title: 'Focus', reference: 'menuTop', links: [{url: '#', name: 'Home'}], style: {className: 'header-menu'}}});
-  render(MenuView, '#leftMenu',
-    {props: {position: 'left', direction: 'vertical', title: '', reference: 'menuLeft', links: [{url: '#search/quick', name: '', img: 'static/img/search.png'}], style: {className: 'left-menu'}}});
+  render(TopMenuView, '#header',
+    {props: {position: 'top', direction: 'horizontal', title: '', reference: 'menuTop', style: {className: 'header-menu'}}});
+  render(LeftMenuView, '#leftMenu');
 };
 
 var AppRouter = Router.extend({
@@ -33,6 +33,7 @@ var AppRouter = Router.extend({
   movie: function handleMovieRoute(id) {
     console.log('ROUTE: MOVIE');
     var MovieDetailView = require('../views/movie');
+    renderMenu();
     render(MovieDetailView, '#page', {props: {id: id}});
   },
   people: function handlePeopleRoute(id) {

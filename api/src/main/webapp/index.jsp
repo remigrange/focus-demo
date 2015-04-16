@@ -26,7 +26,8 @@
 	</div>
 	<div id="pageContent">
 		<div id="header" class="affix"></div>
-		<div id="page"></div>		
+		<div id="page"></div>	
+		<div id="modalContainer"></div>		
 	</div>
 	<script>require('./index');</script>
 
