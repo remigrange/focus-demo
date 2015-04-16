@@ -23,7 +23,7 @@ module.exports = {
   application: require("./application")
 };
 
-},{"./application":5,"./common":24,"./list":49,"./message":59,"./package.json":193,"./page":194,"./search":201}],2:[function(require,module,exports){
+},{"./application":5,"./common":24,"./list":49,"./message":59,"./package.json":193,"./page":195,"./search":202}],2:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -49,7 +49,7 @@ var cartridgeMixin = {
     applicationStore.removeCartridgeComponentChangeListener(this._onComponentChange);
   },
   _getStateFromStore: function getCartridgeStateFromStore() {
-    return { cartridgeComponent: applicationStore.getCartridgeComponent() || React.DOM.div };
+    return { cartridgeComponent: applicationStore.getCartridgeComponent() || { component: "div", props: {} } };
   },
   _handleComponentChange: function _handleComponentChange() {
     this.setState(this._getStateFromStore());
@@ -60,7 +60,7 @@ var cartridgeMixin = {
     return React.createElement(
       "div",
       { className: className, "data-focus-cartridge": true },
-      React.createElement(this.state.cartridgeComponent, null)
+      React.createElement(this.state.cartridgeComponent.component, this.state.cartridgeComponent.props)
     );
   }
 };
@@ -201,9 +201,10 @@ var headerMixin = {
     scrollTargetSelector: type("string"),
     style: type("object"),
     sizeMap: type("object"),
-    notifySizeChange: type("function"),
-    processSize: type("function")
+    notifySizeChange: type(["function", "object"]),
+    processSize: type(["function", "object"])
   },
+  /** @inheritdoc */
   getInitialState: function getMenuDefaultState() {
     /** @inheriteddoc */
     return {
@@ -3524,6 +3525,7 @@ var Button = require("../../common/button/action").component;
 var type = window.focus.component.types;
 var InfiniteScrollMixin = require("../mixin/infinite-scroll").mixin;
 var referenceMixin = require("../../common/mixin/reference-property");
+var checkIsNotNull = window.focus.util.object.checkIsNotNull;
 
 var listMixin = {
     /**
@@ -3568,7 +3570,12 @@ var listMixin = {
         FetchNextPage: type("func"),
         operationList: type("array"),
         isManualFetch: type("bool"),
-        idField: type("string")
+        idField: type("string"),
+        lineComponent: type("func", true)
+    },
+
+    componentWillMount: function componentWillMount() {
+        checkIsNotNull("lineComponent", this.props.lineComponent);
     },
 
     /**
@@ -3618,7 +3625,7 @@ var listMixin = {
         var _this = this;
 
         var lineCount = 1;
-        var LineComponent = this.props.lineComponent || React.createClass(Line);
+        var LineComponent = this.props.lineComponent;
         return this.props.data.map(function (line) {
             var isSelected;
             switch (_this.props.selectionStatus) {
@@ -8971,11 +8978,38 @@ module.exports={
 },{}],194:[function(require,module,exports){
 "use strict";
 
+var dispatcher = window.focus.dispatcher;
+
+var detailMixin = {
+  /**
+   * Register the cartridge.
+   */
+  _registerCartridge: function registerCartridge() {
+    if (!this.cartridgeConfiguration) {
+      this.cartridgeConfiguration = {};
+      console.warn("\n        Your detail page does not have any cartrige configuration, this is not mandarory but recommended.\n        It should be a component attribute.\n        cartridgeConfiguration = {\n          summary: {component: \"A React Component\"},\n          cartridge: {component: \"A React Component\"}\n        };\n      ");
+    }
+    dispatcher.handleServerAction({
+      data: {
+        cartridgeComponent: this.cartridgeConfiguration.cartridge,
+        summaryComponent: this.cartridgeConfiguration.summary
+      },
+      type: "update"
+    });
+  }
+
+};
+module.exports = { mixin: detailMixin };
+
+},{}],195:[function(require,module,exports){
+"use strict";
+
 module.exports = {
+  detail: require("./detail"),
   search: require("./search")
 };
 
-},{"./search":199}],195:[function(require,module,exports){
+},{"./detail":194,"./search":200}],196:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -9029,7 +9063,7 @@ var groupByComponent = {
 
 module.exports = builder(groupByComponent);
 
-},{}],196:[function(require,module,exports){
+},{}],197:[function(require,module,exports){
 "use strict";
 
 var isArray = require("lodash/lang/isArray");
@@ -9084,7 +9118,7 @@ var GroupByMixin = {
 
 module.exports = { mixin: GroupByMixin };
 
-},{"./group-by-component":195,"lodash/lang/isArray":173}],197:[function(require,module,exports){
+},{"./group-by-component":196,"lodash/lang/isArray":173}],198:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -9170,7 +9204,7 @@ var InfiniteScrollPageMixin = {
 
 module.exports = { mixin: InfiniteScrollPageMixin };
 
-},{"object-assign":190}],198:[function(require,module,exports){
+},{"object-assign":190}],199:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -9497,28 +9531,12 @@ var searchFilterResultMixin = {
             isLoading: this.state.isLoading,
             lineComponent: this.props.lineMap[options.type],
             selectionStatus: this.state.selectionStatus });
-    },
-
-    /**
-     * Render the result list.
-     * @returns {JSX} The rendering of the list.
-     * @private
-     */
-    listComponent: function listComponent() {
-        if (this.isSimpleList()) {
-            return React.createElement(
-                "div",
-                { className: "listResultContainer panel" },
-                this.renderSimpleList("list", this.state.list)
-            );
-        }
-        return this.groupByListComponent();
     }
 };
 
 module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../list/action-bar/index":47,"../../../list/selection":52,"../../../list/summary/index":55,"../../../search/live-filter/index":202,"../common-mixin/group-by-mixin":196,"../common-mixin/infinite-scroll-page-mixin":197,"object-assign":190}],199:[function(require,module,exports){
+},{"../../../list/action-bar/index":47,"../../../list/selection":52,"../../../list/summary/index":55,"../../../search/live-filter/index":203,"../common-mixin/group-by-mixin":197,"../common-mixin/infinite-scroll-page-mixin":198,"object-assign":190}],200:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -9526,7 +9544,7 @@ module.exports = {
     searchResult: require("./search-result")
 };
 
-},{"./filter-result":198,"./search-result":200}],200:[function(require,module,exports){
+},{"./filter-result":199,"./search-result":201}],201:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -9566,8 +9584,9 @@ var searchMixin = {
         return {
             lineMap: undefined,
             isSelection: false,
-            lineOperationList: {},
-            idField: "id"
+            lineOperationList: [],
+            idField: "id",
+            SearchComponent: QuickSearch
         };
     },
 
@@ -9578,7 +9597,8 @@ var searchMixin = {
         lineMap: type("object"),
         isSelection: type("bool"),
         lineOperationList: type("array"),
-        idField: type("string")
+        idField: type("string"),
+        SearchComponent: type("func")
     },
 
     /**
@@ -9657,7 +9677,7 @@ var searchMixin = {
     },
 
     _quickSearch: function quickSearch(searchValues) {
-        this.setState(assign({ isLoadingSearch: true }, searchValues, this.getNoFetchState()), this.search());
+        this.setState(assign({ isLoadingSearch: true }, searchValues, this.getNoFetchState()), this.search);
     },
 
     /**
@@ -9665,12 +9685,11 @@ var searchMixin = {
      * @returns {XML} the component
      */
     quickSearchComponent: function quickSearchComponent() {
-        return React.createElement(QuickSearch, { handleChange: this._quickSearch,
+        return React.createElement(this.props.SearchComponent, { handleChange: this._quickSearch,
             ref: "quickSearch",
             scope: this.props.scope,
             scopes: this.props.scopeList,
-            loading: this.state.isLoadingSearch,
-            handleChangeScope: this._quickSearch
+            loading: this.state.isLoadingSearch
         });
     },
 
@@ -9698,24 +9717,12 @@ var searchMixin = {
             operationList: this.props.operationList,
             lineComponent: this.props.lineMap[options.type]
         });
-    },
-
-    /**
-     * return a list component
-     * @param {string} id - id of the list to display
-     * @returns {XML} the list component
-     */
-    listComponent: function listComponent(id) {
-        if (this.isSimpleList()) {
-            return this.renderSimpleList({ type: id, list: this.state.list });
-        }
-        return this.groupByListComponent();
     }
 };
 
 module.exports = builder(searchMixin, true);
 
-},{"../../../list/selection":52,"../../../search/quick-search":205,"../common-mixin/group-by-mixin":196,"../common-mixin/infinite-scroll-page-mixin":197,"object-assign":190}],201:[function(require,module,exports){
+},{"../../../list/selection":52,"../../../search/quick-search":206,"../common-mixin/group-by-mixin":197,"../common-mixin/infinite-scroll-page-mixin":198,"object-assign":190}],202:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -9723,7 +9730,7 @@ module.exports = {
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":202,"./quick-search":205}],202:[function(require,module,exports){
+},{"./live-filter":203,"./quick-search":206}],203:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -9887,7 +9894,7 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/i18n/mixin":22,"../../common/img":23,"./live-filter-facet":204,"lodash/object/omit":182,"object-assign":190}],203:[function(require,module,exports){
+},{"../../common/i18n/mixin":22,"../../common/img":23,"./live-filter-facet":205,"lodash/object/omit":182,"object-assign":190}],204:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -9935,7 +9942,7 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],204:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
@@ -10092,12 +10099,12 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":203}],205:[function(require,module,exports){
+},{"./live-filter-data":204}],206:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":206}],206:[function(require,module,exports){
+},{"./input":207}],207:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -10209,7 +10216,7 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":207,"lodash/string/words":186}],207:[function(require,module,exports){
+},{"./scope":208,"lodash/string/words":186}],208:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;

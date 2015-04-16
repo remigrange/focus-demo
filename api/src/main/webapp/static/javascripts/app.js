@@ -1845,7 +1845,7 @@ var LeftMenuView = require('../views/menu/leftMenu');
 
 var renderMenu = function(){
   render(TopMenuView, '#header',
-    {props: {position: 'top', direction: 'horizontal', title: '', reference: 'menuTop', style: {className: 'header-menu'}}});
+    {props: {position: 'top', direction: 'horizontal', title: 'Focus', reference: 'menuTop', style: {className: 'header-menu'}}});
   render(LeftMenuView, '#leftMenu');
 };
 
@@ -2845,7 +2845,7 @@ module.exports = React.createClass({displayName: "exports",
   },
   renderContent: function (popin) {
     return React.createElement(SearchResult, {
-      lineMap: {'Movies': MovieLineComponent, 'People': PeopleLineComponent}, 
+      lineMap: {'Movies': MovieLineComponent, 'People': PeopleLineComponent, 'MOVIE':MovieLineComponent, 'PEOPLE': PeopleLineComponent}, 
       onLineClick: config.onLineClick, 
       operationList: config.operationList, 
       scopeList: config.scopes, 
@@ -3055,15 +3055,11 @@ module.exports = React.createClass({displayName: "exports",
                                         linkFilterResult
       );
     }
-    var type = 'movie';
-    if(this.getCriteria() !== undefined && this.getCriteria() !== null){
-      if (this.getCriteria().scope !== null && this.getCriteria().scope !== undefined) {
-        //Le nom descrope correspond au nom de notre entite definition.
-        //raison pour laquelle on affecte à type directement la valeur de scope.
-        type = this.getCriteria().scope.toLowerCase();
-      }
+    var type = 'MOVIE';
+    if(this.state.scope !== undefined && this.state.scope !== null){
+        type = this.state.scope;
     }
-      var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
+    var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
     var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
     return root;
   },

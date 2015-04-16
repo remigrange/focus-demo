@@ -58,7 +58,7 @@ module.exports = React.createClass({
   },
   renderContent: function (popin) {
     return <SearchResult
-      lineMap= {{'Movies': MovieLineComponent, 'People': PeopleLineComponent}}
+      lineMap= {{'Movies': MovieLineComponent, 'People': PeopleLineComponent, 'MOVIE':MovieLineComponent, 'PEOPLE': PeopleLineComponent}}
       onLineClick = {config.onLineClick}
       operationList = {config.operationList}
       scopeList = {config.scopes}

@@ -29,15 +29,11 @@ module.exports = React.createClass({
                                         {linkFilterResult}
       </div>;
     }
-    var type = 'movie';
-    if(this.getCriteria() !== undefined && this.getCriteria() !== null){
-      if (this.getCriteria().scope !== null && this.getCriteria().scope !== undefined) {
-        //Le nom descrope correspond au nom de notre entite definition.
-        //raison pour laquelle on affecte à type directement la valeur de scope.
-        type = this.getCriteria().scope.toLowerCase();
-      }
+    var type = 'MOVIE';
+    if(this.state.scope !== undefined && this.state.scope !== null){
+        type = this.state.scope;
     }
-      var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
+    var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
     var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
     return root;
   },

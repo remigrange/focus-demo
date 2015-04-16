@@ -571,7 +571,7 @@ var ArgumentNullException = (function (_CustomException) {
   return ArgumentNullException;
 })(CustomException);
 
-module.expôrts = ArgumentNullException;
+module.exports = ArgumentNullException;
 
 },{"./CustomException":19}],19:[function(require,module,exports){
 "use strict";
@@ -586,20 +586,35 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 
 /**
  * Classe standing for custom exception.
+ * @see https://gist.github.com/daliwali/09ca19032ab192524dc6
  */
 
 var CustomException = (function (_Error) {
   function CustomException(name, message, options) {
     _classCallCheck(this, CustomException);
 
-    _get(Object.getPrototypeOf(CustomException.prototype), "constructor", this).call(this, message);
-    this.name = name;
+    _get(Object.getPrototypeOf(CustomException.prototype), "constructor", this).call(this);
+    if (Error.hasOwnProperty("captureStackTrace")) {
+      Error.captureStackTrace(this, this.constructor);
+    } else {
+      Object.defineProperty(this, "stack", {
+        value: new Error().stack
+      });
+    }
+    Object.defineProperty(this, "message", {
+      value: message
+    });
     this.options = options;
   }
 
   _inherits(CustomException, _Error);
 
   _createClass(CustomException, {
+    name: {
+      get: function () {
+        return this.constructor.name;
+      }
+    },
     log: {
       /**
        * Log the exception in the js console.
@@ -608,13 +623,15 @@ var CustomException = (function (_Error) {
       value: function log() {
         console.error("name", this.name, "message", this.message, "options", this.options);
       }
+    },
+    toJSON: {
       /**
        * JSONify the exception.
        */
-      /*toJSON(){
-        return {"name": this.name, "message": this.message,  "options": this.options};
-      }*/
 
+      value: function toJSON() {
+        return { name: this.name, message: this.message, options: this.options };
+      }
     }
   });
 
@@ -655,7 +672,7 @@ var DependencyException = (function (_CustomException) {
   return DependencyException;
 })(CustomException);
 
-module.expôrts = DependencyException;
+module.exports = DependencyException;
 
 },{"./CustomException":19}],21:[function(require,module,exports){
 "use strict";
@@ -689,7 +706,7 @@ var NotImplementedException = (function (_CustomException) {
   return NotImplementedException;
 })(CustomException);
 
-module.expôrts = NotImplementedException;
+module.exports = NotImplementedException;
 
 },{"./CustomException":19}],22:[function(require,module,exports){
 "use strict";

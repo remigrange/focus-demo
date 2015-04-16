@@ -11,7 +11,7 @@ var LeftMenuView = require('../views/menu/leftMenu');
 
 var renderMenu = function(){
   render(TopMenuView, '#header',
-    {props: {position: 'top', direction: 'horizontal', title: '', reference: 'menuTop', style: {className: 'header-menu'}}});
+    {props: {position: 'top', direction: 'horizontal', title: 'Focus', reference: 'menuTop', style: {className: 'header-menu'}}});
   render(LeftMenuView, '#leftMenu');
 };
 

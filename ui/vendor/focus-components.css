@@ -138,7 +138,6 @@ div.qs-quick-search {
 .qs-scope-none {
   background: url('../img/qs-none.svg') no-repeat center center; }
 
-
 .checkbox-unchecked {
   background: url("../img/checkbox-unchecked.svg") no-repeat center; }
 
@@ -172,6 +171,7 @@ div.qs-quick-search {
   border-left: solid 2px; }
 .action-bar .facet-container {
   width: 400px; }
+
 
 /* Style for the list component*/
 /*variables*/
@@ -359,17 +359,18 @@ form.form-edit {
   height: 40px;
   cursor: pointer; }
 
-.sticky-navigation li.active {
-  font-weight: bold; }
-
 .dots-three-vertical {
   background: url("../img/dots-three-vertical.svg") no-repeat center; }
 
 .select-action li.selected a {
   font-weight: bold; }
 
+.sticky-navigation li.active {
+  font-weight: bold; }
+
 .topic-displayer .topic {
   background: url("../img/cross.svg") no-repeat right center; }
+
 
 .btns-confirmation-popin {
   position: fixed;
@@ -379,7 +380,6 @@ form.form-edit {
 
 .btn-confirmation-popin-close {
   margin-right: 20px !important; }
-
 
 
 header[data-focus-header] {

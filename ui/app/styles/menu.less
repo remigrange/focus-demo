@@ -1,56 +1,66 @@
-@sidebar-width:100px;
+@import "./variables.less";
+
+@sidebar-width:60px;
 
 .menu-horizontal {
   height: 60px;
 }
 
 .menu-vertical {
-  width: 80px;
+  width: 60px;
 }
 .header-menu {
-  background: #C0D1CF;
-  margin-left: 80px;
+  background: #FFFFFF;
+  margin-left: 60px;
+  border-bottom: 1px solid #e2e2e2;
 }
 
 .header-menu h3 {
-  color: #FFFFFF;
-  font-size: 1.9em;
-  padding: 10px;
+  color: @color-noir2;
+  font-size: 24px;
   margin: 0;
-  font-weight: 300;
-  background: #C0D1CF;
+  font-family: RalewayExtraBold;
+  background: #FFFFFF;
   width: @sidebar-width;
-  display: none;
+  padding: 18px 0 18px 10px;
+  text-transform: uppercase;
 }
 
 .header-menu a,
 .left-menu a{
-  border-left: none;//1px solid #009587;
-  border-bottom: none;//1px solid #009587;
+  border-left: none;
+  border-bottom: none;
   width: auto;
-  padding: 10px 20px;
+  padding:0;
   text-decoration: none;
   font-size: 20px;
   font-weight: bold;
+  text-align: center;
 }
+
+.left-menu a img {
+  width:20px;
+  height: 20px;
+}
+
 .header-menu a:hover,
 .left-menu a:hover {
-  background: rgba(201, 234, 230, 0.4);
+  background: @color-vert2;
 }
 
 .left-menu {
-  background: #3ABAAE;
+  background: @color-vert;
 }
 
 
 #leftMenu .brand {
   text-align: center;
-  background-color: #000000;
+  background-color: @color-gris;
   height: 60px;
   padding-top: 20px;
 }
 
 #leftMenu .left-menu a {
-  padding-top: 15px;
+  padding-top: 20px;
   height: 60px;
 }
