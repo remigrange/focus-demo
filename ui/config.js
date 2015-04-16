@@ -46,9 +46,6 @@ exports.config = {
     react: {
       harmony: true
     },
-    sass: {
-      mode: 'ruby'
-    },
     appcache: {
       staticRoot: '/static',
       network: ['*'],
