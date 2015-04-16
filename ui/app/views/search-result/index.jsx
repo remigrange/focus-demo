@@ -2,7 +2,8 @@
 var lineResume = require('./lineResume');
 var SearchResult = require('./searchResult');
 //Composant d'une ligne.
-var Line = require('./lineComponent');
+var PeopleLineComponent = require('./peopleLineComponent');
+var MovieLineComponent = require('./movieLineComponent');
 
 //Configuration des props du composant de vue de recherche.
 var config = {
@@ -20,10 +21,13 @@ var config = {
   operationList: [
     {
       label: '', action: function (data) {
-      focus.application.render(lineResume, '#lineResume',
+      focus.application.render(lineResume, '#modalContainer',
         {
           props: {
-            data: data
+            data: data,
+            position: 'right',
+            open: true,
+            style: {className: 'preview-popin'}
           }
         });
     }, style: {className: 'preview'}, priority: 1
@@ -54,7 +58,7 @@ module.exports = React.createClass({
   },
   renderContent: function (popin) {
     return <SearchResult
-      lineComponent = {Line}
+      lineMap= {{'Movies': MovieLineComponent, 'People': PeopleLineComponent}}
       onLineClick = {config.onLineClick}
       operationList = {config.operationList}
       scopeList = {config.scopes}
@@ -62,14 +66,4 @@ module.exports = React.createClass({
       idField = {config.idField}
       groupMaxRows= {config.groupMaxRows}/>;
   }
-  /* render: function () {
-   return <SearchResult
-   lineComponent = {Line}
-   onLineClick = {config.onLineClick}
-   operationList = {config.operationList}
-   scopeList = {config.scopes}
-   scope = {config.scope}
-   idField = {config.idField}
-   groupMaxRows= {config.groupMaxRows}/>;
-   }*/
 });

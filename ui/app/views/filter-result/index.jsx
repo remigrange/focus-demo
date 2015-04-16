@@ -1,6 +1,9 @@
 /*global focusComponents, React */
 var FilterResult = require('./filterResult');
-var Line = require('./lineComponent');
+
+//Composants de ligne
+var PeopleLineComponent = require('../search-result/peopleLineComponent');
+var MovieLineComponent = require('../search-result/movieLineComponent');
 
 var config = {
     facetConfig: {
@@ -15,7 +18,6 @@ var config = {
         {key: 'GENRE_IDS', order: 'desc', label: 'Genre desc'},
         {key: 'GENRE_IDS', order: 'asc', label: 'Genre asc'}],
     operationList: [],
-    lineComponent: Line,
     onLineClick: function onLineClick(data) {
         var url = '';
         if(data.movId !== undefined && data.movId !== null){
@@ -61,7 +63,7 @@ module.exports = React.createClass({
             openedFacetList= {config.openedFacetList}
             orderableColumnList= {config.orderableColumnList}
             operationList= {config.operationList}
-            lineComponent= {config.lineComponent}
+            lineMap= {{'movie': MovieLineComponent, 'people': PeopleLineComponent}}
             onLineClick= {config.onLineClick}
             isSelection= {config.isSelection}
             lineOperationList= {config.lineOperationList}

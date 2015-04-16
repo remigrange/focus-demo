@@ -1,8 +1,8 @@
-@sidebar-width:100px;
+@sidebar-width: 100px;
 @background-color: #EEEEEE;
 @border-color: #c3c3c3;
 
-.mov-logo{
+.mov-logo {
   float: left;
   width: 40px;
   height: 40px;
@@ -15,48 +15,39 @@
   color: #1A3481;
 }
 
-.liveFilterContainer{
+.liveFilterContainer {
   float: none;
   display: inline-block;
 }
+
 .resultContainer {
   float: none !important;
   margin-left: 270px;
   position: relative;
 }
 
-.liveFilter{
-  width:15% !important;
+.liveFilter {
+  width: 15% !important;
 }
 
-.search-part {
-  padding-top: 30px;
-}
-
-.search-part-preview {
-  width:70%;
-  float: left;
-}
-
-#lineResume{
-  width: 28%;
-  float: right;
-}
 .line-preview-none {
   display: none;
 }
-.movie-lineResume{
+
+.movie-lineResume {
   width: 100%;
   display: inline-block;
   padding-bottom: 20px;
   border-bottom: 1px @border-color solid;
 }
-.movie-resume-logo img{
+
+.movie-resume-logo img {
   float: left;
   width: 50px;
   height: 50px;
   margin: 0 10px 0 0;
 }
+
 .movie-info {
   float: left;
   width: 55%;
@@ -69,19 +60,22 @@
   cursor: pointer;
   text-decoration: none;
 }
+
 .movie-link-detailed-sheet img {
-  padding-left : 5px;
+  padding-left: 5px;
 }
+
 .movie-link-detailed-sheet a {
-  padding : 5px;
+  padding: 5px;
   border: 1px solid #CCCCCC;
 }
 
-.movie-descrition{
+.movie-descrition {
   padding: 10px 0 20px 0;
   border-bottom: 1px @border-color solid;
 }
-.container-title, .details-panel-title{
+
+.container-title, .details-panel-title {
   font-size: 16px;
   text-transform: uppercase;
   color: #acacac;
@@ -106,6 +100,7 @@ ul.selection-list li.sl-line:hover {
   padding-right: 10px;
   float: right;
 }
+
 .linkFilterResult a {
   text-decoration: none;
   padding: 5px;
@@ -119,7 +114,7 @@ ul.selection-list li.sl-line:hover {
   float: left;
 }
 
-.summary{
+.summary {
   background: #ffffff;
   display: inline-block;
   width: 100%;
@@ -132,26 +127,32 @@ ul.selection-list li.sl-line:hover {
   background: url('./../img/film.svg') no-repeat center center;
   background-size: 100% 100%;
 }
+
 .qs-scope-PEOPLE {
   background: url('./../img/user.svg') no-repeat center center;
   background-size: 100% 100%;
 }
+
 .qs-scope-ALL {
   background: url('./../img/qs-none.svg') no-repeat center center;
   background-size: 100% 100%;
 }
-.results-groupBy-title{
+
+.results-groupBy-title {
   padding: 5px 0 0 5px;
 }
-.btn-group-by-container{
+
+.btn-group-by-container {
   display: inline-block;
   width: 100%;
   text-align: center;
 }
-.btn-see-more{
+
+.btn-see-more {
   display: inline-block;
 }
-.btn-show-all{
+
+.btn-show-all {
   display: inline-block;
   float: right;
   margin-right: 5px;
@@ -160,10 +161,12 @@ ul.selection-list li.sl-line:hover {
 ul.selection-list li.sl-line div.sl-selection {
   padding-left: 10px;
 }
-.line-preview{
+
+.line-preview {
   background-color: #FFFFFF;
   padding: 5px 5px;
 }
+
 .btn-preview {
   background: url('./../img/eye.svg') no-repeat center center;
   box-shadow: none !important;
@@ -174,22 +177,92 @@ ul.selection-list li.sl-line div.sl-selection {
   text-align: right;
   padding-right: 10px;
 }
+
 .linkAdvancedSearch a {
   text-decoration: none;
   padding: 5px;
   border: 1px solid #c4c4c4;
   background: #f5f5f5;
 }
+
 .count-results {
   font-weight: bold;
   padding-left: 5px;
 }
 
-.quick-search-popin{
-  margin: 10px 0 0 90px !important;
+.quick-search-popin {
+  margin: 60px 0 0 80px !important;
   z-index: 1004;
   height: 100%;
 }
-.quick-search-popin .full{
+
+.quick-search-popin .full {
   min-height: 100%;
+}
+
+.preview-popin {
+  margin: 60px 0 0 20px !important;
+  z-index: 1004;
+  height: 100%;
+  width: 40%;
+}
+
+.preview-popin .full {
+  min-height: 100%;
+}
+
+.preview-popin-header {
+  background: white;
+  height: 27px;
+}
+
+.title-level-1, .title-level-2, .title-level-3 {
+  margin-bottom: 0;
+}
+
+.title-level-1 .form-control {
+  font-size: 16px;
+  font-weight: bold;
+  color: #824A34;
+  background-image: none;
+}
+
+.title-level-2 .form-control {
+  font-size: 14px;
+  font-weight: bold;
+  background-image: none;
+}
+
+.title-level-3 .form-control {
+  font-size: 14px;
+  background-image: none;
+}
+
+.movie-details {
+  padding: 10px 0 20px 0;
+}
+
+.movie-detail-line {
+  width: 100%;
+  display: inline-block;
+}
+
+.details-label-name {
+  float: left;
+  width: 150px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.details-label-value {
+  float: left;
+  padding-left: 20px;
+}
+
+.title-group-key {
+  margin: 2px 0 5px 5px;
+  padding-top: 5px;
+}
+.item {
+  margin-left: 40px;
 }

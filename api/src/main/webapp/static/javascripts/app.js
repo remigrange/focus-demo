@@ -1840,13 +1840,13 @@ var render = focus.application.render;
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
 
-var MenuView = require('../views/menu');
+var TopMenuView = require('../views/menu/topMenu');
+var LeftMenuView = require('../views/menu/leftMenu');
 
 var renderMenu = function(){
-  render(MenuView, '#header',
-    {props: {position: 'top', direction: 'horizontal', title: 'Focus', reference: 'menuTop', links: [{url: '#', name: 'Home'}], style: {className: 'header-menu'}}});
-  render(MenuView, '#leftMenu',
-    {props: {position: 'left', direction: 'vertical', title: '', reference: 'menuLeft', links: [{url: '#search/quick', name: '', img: 'static/img/search.png'}], style: {className: 'left-menu'}}});
+  render(TopMenuView, '#header',
+    {props: {position: 'top', direction: 'horizontal', title: '', reference: 'menuTop', style: {className: 'header-menu'}}});
+  render(LeftMenuView, '#leftMenu');
 };
 
 var AppRouter = Router.extend({
@@ -1867,6 +1867,7 @@ var AppRouter = Router.extend({
   movie: function handleMovieRoute(id) {
     console.log('ROUTE: MOVIE');
     var MovieDetailView = require('../views/movie');
+    renderMenu();
     render(MovieDetailView, '#page', {props: {id: id}});
   },
   people: function handlePeopleRoute(id) {
@@ -2029,37 +2030,41 @@ var Button = focusComponents.common.button.action.component;
 var action = require('../../action/search/filterSearch');
 
 module.exports = React.createClass({displayName: "exports",
-    mixins: [focusComponents.page.search.filterResult.mixin],
-    actions: action,
-    store: new focus.store.SearchStore(),
-    render: function () {
-        var root = React.createElement('div', {className: 'search-result'},
-            this.liveFilterComponent(),
-            React.createElement(
-                'div',
-                {className: 'resultContainer'},
-                this.listSummaryComponent(),
-                this.actionBarComponent(),
-                this.listComponent()
-            )
-        );
-        return root;
-    },
-    renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
-        var buttonSeeMore = React.createElement("div", null);
-        if (list.length > this.props.groupMaxRows && maxRows <= this.props.groupMaxRows) {
-            buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, 10), label: "See More", className: "btn-show-all"});
-        }
-        return React.createElement("div", {className: "listResultContainer panel"}, 
-            React.createElement(Title, {className: "results-groupBy-title", title: groupKey}), 
-                             this.renderSimpleList(groupKey, list, maxRows), 
-            React.createElement("div", {className: "btn-group-by-container"}, 
-                React.createElement("div", {className: "btn-see-more"}, buttonSeeMore), 
-                React.createElement("div", {className: "btn-show-all"}, React.createElement(Button, {handleOnClick: this.showAllGroupListHandler(groupKey), label: "Show all"}))
-            )
-        );
-
+  mixins: [focusComponents.page.search.filterResult.mixin],
+  actions: action,
+  store: new focus.store.SearchStore(),
+  render: function () {
+    var list = this.isSimpleList() ? this.simpleListComponent({type: this.props.criteria.scope.toLowerCase()}) : this.groupByListComponent();
+    var root = React.createElement('div', {className: 'search-result'},
+      this.liveFilterComponent(),
+      React.createElement(
+        'div',
+        {className: 'resultContainer'},
+        this.listSummaryComponent(),
+        this.actionBarComponent(),
+        list
+      )
+    );
+    return root;
+  },
+  renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {
+    var buttonSeeMore = React.createElement("div", null);
+    if (list.length > this.props.groupMaxRows && maxRows <= this.props.groupMaxRows) {
+      buttonSeeMore = React.createElement(Button, {handleOnClick: this.changeGroupByMaxRows(groupKey, 10), label: "See More", className: "btn-show-all"});
     }
+    return React.createElement("div", {className: "listResultContainer panel"}, 
+      React.createElement(Title, {className: "results-groupBy-title", title: groupKey}), 
+      this.simpleListComponent(
+        {type: this.props.criteria.scope.toLowerCase(), list: list, maxRows: maxRows}), 
+      React.createElement("div", {className: "btn-group-by-container"}, 
+        React.createElement("div", {className: "btn-see-more"}, buttonSeeMore), 
+        React.createElement("div", {className: "btn-show-all"}, 
+          React.createElement(Button, {handleOnClick: this.showAllGroupListHandler(groupKey), label: "Show all"})
+        )
+      )
+    );
+
+  }
 });
 
 });
@@ -2067,7 +2072,10 @@ module.exports = React.createClass({displayName: "exports",
 require.register("views/filter-result/index", function(exports, require, module) {
 /*global focusComponents, React */
 var FilterResult = require('./filterResult');
-var Line = require('./lineComponent');
+
+//Composants de ligne
+var PeopleLineComponent = require('../search-result/peopleLineComponent');
+var MovieLineComponent = require('../search-result/movieLineComponent');
 
 var config = {
     facetConfig: {
@@ -2082,7 +2090,6 @@ var config = {
         {key: 'GENRE_IDS', order: 'desc', label: 'Genre desc'},
         {key: 'GENRE_IDS', order: 'asc', label: 'Genre asc'}],
     operationList: [],
-    lineComponent: Line,
     onLineClick: function onLineClick(data) {
         var url = '';
         if(data.movId !== undefined && data.movId !== null){
@@ -2128,52 +2135,13 @@ module.exports = React.createClass({displayName: "exports",
             openedFacetList: config.openedFacetList, 
             orderableColumnList: config.orderableColumnList, 
             operationList: config.operationList, 
-            lineComponent: config.lineComponent, 
+            lineMap: {'movie': MovieLineComponent, 'people': PeopleLineComponent}, 
             onLineClick: config.onLineClick, 
             isSelection: config.isSelection, 
             lineOperationList: config.lineOperationList, 
             criteria: config.criteria, 
             idField: config.idField, 
             groupMaxRows: config.groupMaxRows}
-        );
-    }
-});
-
-});
-
-require.register("views/filter-result/lineComponent", function(exports, require, module) {
-/*global React, focusComponents */
-module.exports = React.createClass({displayName: "exports",
-    mixins: [focusComponents.list.selection.line.mixin],
-    definitionPath: "movie",
-    renderLineContent: function (data) {
-        if(!data.movId){
-            return React.createElement("div", {className: "item"}, 
-                React.createElement("div", {className: "mov-logo"}, 
-                    React.createElement("img", {src: "./static/img/pictoPeople.png"})
-                ), 
-                React.createElement("div", null, 
-                    React.createElement("div", {className: "title-level-1"}, 
-                            data.peoName
-                    )
-                )
-            );
-        }
-        return React.createElement("div", {className: "item"}, 
-            React.createElement("div", {className: "mov-logo"}, 
-                React.createElement("img", {src: "./static/img/logoMovie.png"})
-            ), 
-            React.createElement("div", null, 
-                React.createElement("div", {className: "title-level-1"}, 
-                            data.title
-                ), 
-                React.createElement("div", {className: "title-level-2"}, 
-                            data.genreIds
-                ), 
-                React.createElement("div", {className: "title-level-3"}, 
-                            data.released
-                )
-            )
         );
     }
 });
@@ -2211,7 +2179,7 @@ var Menu = React.createClass({displayName: "Menu",
     if (this.props.type === 'menuLeft') {
       return this.props.links.map(function (link) {
         if(!link.img){
-          return React.createElement("a", {href: link.url}, "aaa");
+          return React.createElement("a", {href: link.url}, "link.title");
         } else {
           return React.createElement("a", {href: link.url}, React.createElement("img", {src: link.img}));
         }
@@ -2232,6 +2200,86 @@ module.exports = React.createClass({displayName: "exports",
         links: this.props.links, 
         ref: this.props.reference, 
         type: this.props.reference, 
+        style: this.props.style}
+      ));
+  }
+});
+
+});
+
+require.register("views/menu/leftMenu", function(exports, require, module) {
+/*global focusComponents, React */
+//Define menu.
+var menuMixin = focusComponents.application.menu.mixin;
+var Menu = React.createClass({displayName: "Menu",
+  mixins: [menuMixin],
+  /** @inheriteddoc */
+  renderTitle: function () {
+    if(!this.props.brand){
+      return React.createElement("h3", null, this.props.title);
+    }
+    return React.createElement("div", {className: "brand"}, React.createElement("img", {src: this.props.brand}), " ");
+  },
+  renderContent: function renderMenuContent() {
+    return this.props.links.map(function (link) {
+      if (!link.img) {
+        return React.createElement("a", {href: link.url}, "link.title");
+      } else {
+        return React.createElement("a", {href: link.url}, 
+          React.createElement("img", {src: link.img})
+        );
+      }
+    });
+  }
+});
+
+module.exports = React.createClass({displayName: "exports",
+  render: function renderLeftMenu() {
+    var style = {className: 'left-menu'};
+    return (
+      React.createElement(Menu, {
+        open: true, 
+        position: "left", 
+        direction: "vertical", 
+        title: "", 
+        links: [{url: '#', name: '', img: 'static/img/home-32x32-white.svg'}, {url: '#search/quick', name: '', img: 'static/img/search-32x32-white.svg'}], 
+        ref: "menuLeft", 
+        style: style, 
+        brand: "static/img/brand.png"}
+      ));
+  }
+});
+
+});
+
+require.register("views/menu/topMenu", function(exports, require, module) {
+/*global focusComponents, React */
+//Define menu.
+var menuMixin = focusComponents.application.menu.mixin;
+var Menu = React.createClass({displayName: "Menu",
+  mixins: [menuMixin],
+  /**
+   * Render the title content
+   * @returns {XML} - title content
+   */
+  renderTitle: function () {
+    return React.createElement("h3", null, this.props.title);
+  },
+  renderContent: function renderMenuContent() {
+    return this.renderLinks();
+  }
+});
+
+module.exports = React.createClass({displayName: "exports",
+  render: function renderTopMenu() {
+    return (
+      React.createElement(Menu, {
+        open: true, 
+        position: this.props.position, 
+        direction: this.props.direction, 
+        title: this.props.title, 
+        links: this.props.links, 
+        ref: this.props.reference, 
         style: this.props.style}
       ));
   }
@@ -2741,7 +2789,8 @@ require.register("views/search-result/index", function(exports, require, module)
 var lineResume = require('./lineResume');
 var SearchResult = require('./searchResult');
 //Composant d'une ligne.
-var Line = require('./lineComponent');
+var PeopleLineComponent = require('./peopleLineComponent');
+var MovieLineComponent = require('./movieLineComponent');
 
 //Configuration des props du composant de vue de recherche.
 var config = {
@@ -2759,10 +2808,13 @@ var config = {
   operationList: [
     {
       label: '', action: function (data) {
-      focus.application.render(lineResume, '#lineResume',
+      focus.application.render(lineResume, '#modalContainer',
         {
           props: {
-            data: data
+            data: data,
+            position: 'right',
+            open: true,
+            style: {className: 'preview-popin'}
           }
         });
     }, style: {className: 'preview'}, priority: 1
@@ -2793,7 +2845,7 @@ module.exports = React.createClass({displayName: "exports",
   },
   renderContent: function (popin) {
     return React.createElement(SearchResult, {
-      lineComponent: Line, 
+      lineMap: {'Movies': MovieLineComponent, 'People': PeopleLineComponent}, 
       onLineClick: config.onLineClick, 
       operationList: config.operationList, 
       scopeList: config.scopes, 
@@ -2801,165 +2853,172 @@ module.exports = React.createClass({displayName: "exports",
       idField: config.idField, 
       groupMaxRows: config.groupMaxRows});
   }
-  /* render: function () {
-   return <SearchResult
-   lineComponent = {Line}
-   onLineClick = {config.onLineClick}
-   operationList = {config.operationList}
-   scopeList = {config.scopes}
-   scope = {config.scope}
-   idField = {config.idField}
-   groupMaxRows= {config.groupMaxRows}/>;
-   }*/
-});
-
-});
-
-require.register("views/search-result/lineComponent", function(exports, require, module) {
-/*global React, focusComponents */
-module.exports = React.createClass({displayName: "exports",
-    mixins: [focusComponents.list.selection.line.mixin],
-    definitionPath: "movie",
-    renderLineContent: function (data) {
-        if(!data.movId){
-            return React.createElement("div", {className: "item"}, 
-                React.createElement("div", {className: "mov-logo"}, 
-                    React.createElement("img", {src: "./static/img/pictoPeople.png"})
-                ), 
-                React.createElement("div", null, 
-                    React.createElement("div", {className: "title-level-1"}, 
-                            data.peoName
-                    )
-                )
-            );
-        }
-        return React.createElement("div", {className: "item"}, 
-            React.createElement("div", {className: "mov-logo"}, 
-                React.createElement("img", {src: "./static/img/logoMovie.png"})
-            ), 
-            React.createElement("div", null, 
-                React.createElement("div", {className: "title-level-1"}, 
-                            data.title
-                ), 
-                React.createElement("div", {className: "title-level-2"}, 
-                            data.genreIds
-                ), 
-                React.createElement("div", {className: "title-level-3"}, 
-                            data.released
-                )
-            )
-        );
-    }
 });
 
 });
 
 require.register("views/search-result/lineResume", function(exports, require, module) {
+/*global React, focusComponents*/
 //Get the form mixin.
 var Block = focus.components.common.block.component;
 var Label = focus.components.common.label.component;
 module.exports = React.createClass({displayName: "exports",
-    render: function renderMovieResume() {
-        $('.search-part').removeClass('search-part-preview');
-        $('.search-part').toggleClass('search-part-preview');
-        $('#lineResume').removeClass('line-preview-none');
-        var movieLink = '#movie/' + this.props.data.movId;
-        var peopleLink = '#people/' + this.props.data.peoId;
-        if(!this.props.data.movId){
-            return (
-                React.createElement(Block, {style: {className: 'slideInRight animated line-preview'}}, 
-                    React.createElement("div", {className: "movie-lineResume"}, 
-                        React.createElement("div", {className: "movie-resume-logo"}, 
-                            React.createElement("img", {src: "./static/img/pictoPeople.png"})
-                        ), 
-                        React.createElement("div", {className: "movie-info"}, 
-                            React.createElement("div", {className: "title-level-2"}, 
-                                React.createElement("div", null, this.props.data.peoName)
-                            ), 
-                            React.createElement("div", {className: "title-level-3"}, 
+  mixins: [focusComponents.application.popin.mixin],
+  renderPopinHeader: function (popin) {
+    return React.createElement('div', null,
+      React.createElement('div', {
+        className: 'preview-popin-header'
+      }, '')
+    );
+  },
+  renderPopinFooter: function renderPopinFooter(popin) {
+    return React.createElement('div', null, '');
+  },
+  renderContent: function (popin) {
+    $('.search-part').removeClass('search-part-preview');
+    $('.search-part').toggleClass('search-part-preview');
+    $('#lineResume').removeClass('line-preview-none');
+    var movieLink = '#movie/' + this.props.data.movId;
+    var peopleLink = '#people/' + this.props.data.peoId;
+    if (!this.props.data.movId) {
+      return (
+        React.createElement(Block, null, 
+          React.createElement("div", {className: "movie-lineResume"}, 
+            React.createElement("div", {className: "movie-resume-logo"}, 
+              React.createElement("img", {src: "./static/img/pictoPeople.png"})
+            ), 
+            React.createElement("div", {className: "movie-info"}, 
+              React.createElement("div", {className: "title-level-2"}, 
+                React.createElement("div", null, this.props.data.peoName)
+              ), 
+              React.createElement("div", {className: "title-level-3"}, 
                                 this.props.data.imdbId
-                            )
-                        ), 
-                        React.createElement("div", {className: "movie-link-detailed-sheet"}, 
-                            React.createElement("a", {href: peopleLink}, "Detailed sheet ", React.createElement("img", {src: "./static/img/arrow-right-16.png"})), 
-                            React.createElement("img", {src: "./static/img/cross.svg", onClick: this._handleOnClickClose})
-                        )
-                    )
-                )
-            );
-        }
-        return (
-            React.createElement(Block, {style: {className: 'slideInRight animated line-preview'}}, 
-                React.createElement("div", {className: "movie-lineResume"}, 
-                    React.createElement("div", {className: "movie-resume-logo"}, 
-                        React.createElement("img", {src: "./static/img/logoMovie.png"})
-                    ), 
-                    React.createElement("div", {className: "movie-info"}, 
-                        React.createElement("div", {className: "title-level-2"}, 
-                            React.createElement("div", null, this.props.data.title)
-                        ), 
-                        React.createElement("div", {className: "title-level-3"}, 
-                                this.props.data.imdbId
-                        )
-                    ), 
-                    React.createElement("div", {className: "movie-link-detailed-sheet"}, 
-                        React.createElement("a", {href: movieLink}, "Detailed sheet ", React.createElement("img", {src: "./static/img/arrow-right-16.png"})), 
-                        React.createElement("img", {src: "./static/img/cross.svg", onClick: this._handleOnClickClose})
-                    )
-                ), 
-                React.createElement("div", {className: "movie-descrition"}, 
-                    React.createElement("div", {className: "container-title"}, "Storyline"), 
-                    React.createElement("div", null, this.props.data.description)
-                ), 
-
-                React.createElement("div", {className: "movie-details"}, 
-                    React.createElement("div", {className: "details-panel-title"}, "Details"), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Country")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.data.countryIds)
-                        )
-                    ), 
-
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Language")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.data.languageIds)
-                        )
-                    ), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Release date")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.data.released)
-                        )
-                    ), 
-                    React.createElement("div", {className: "movie-detail-line"}, 
-                        React.createElement("div", {className: "details-label-name"}, 
-                            React.createElement("div", null, "Runtime")
-                        ), 
-                        React.createElement("div", {className: "details-label-value"}, 
-                            React.createElement("div", null, this.props.data.runtime)
-                        )
-                    )
-                )
-
+              )
+            ), 
+            React.createElement("div", {className: "movie-link-detailed-sheet"}, 
+              React.createElement("a", {href: peopleLink}, "Detailed sheet", 
+                React.createElement("img", {src: "./static/img/arrow-right-16.png"})
+              )
             )
-        );
-    },
-    /**
-     * Handle click on close img.
-     * @private
-     */
-    _handleOnClickClose: function(){
-        $('.search-part').removeClass('search-part-preview');
-        $('#lineResume').addClass('line-preview-none');
+          )
+        )
+      );
     }
+    return (
+      React.createElement(Block, null, 
+        React.createElement("div", {className: "movie-lineResume"}, 
+          React.createElement("div", {className: "movie-resume-logo"}, 
+            React.createElement("img", {src: "./static/img/logoMovie.png"})
+          ), 
+          React.createElement("div", {className: "movie-info"}, 
+            React.createElement("div", {className: "title-level-2"}, 
+              React.createElement("div", null, this.props.data.title)
+            ), 
+            React.createElement("div", {className: "title-level-3"}, 
+                                this.props.data.imdbId
+            )
+          ), 
+          React.createElement("div", {className: "movie-link-detailed-sheet"}, 
+            React.createElement("a", {href: movieLink}, "Detailed sheet", 
+              React.createElement("img", {src: "./static/img/arrow-right-16.png"})
+            )
+          )
+        ), 
+        React.createElement("div", {className: "movie-descrition"}, 
+          React.createElement("div", {className: "container-title"}, "Storyline"), 
+          React.createElement("div", null, this.props.data.description)
+        ), 
+
+        React.createElement("div", {className: "movie-details"}, 
+          React.createElement("div", {className: "details-panel-title"}, "Details"), 
+          React.createElement("div", {className: "movie-detail-line"}, 
+            React.createElement("div", {className: "details-label-name"}, 
+              React.createElement("div", null, "Country")
+            ), 
+            React.createElement("div", {className: "details-label-value"}, 
+              React.createElement("div", null, this.props.data.countryIds)
+            )
+          ), 
+
+          React.createElement("div", {className: "movie-detail-line"}, 
+            React.createElement("div", {className: "details-label-name"}, 
+              React.createElement("div", null, "Language")
+            ), 
+            React.createElement("div", {className: "details-label-value"}, 
+              React.createElement("div", null, this.props.data.languageIds)
+            )
+          ), 
+          React.createElement("div", {className: "movie-detail-line"}, 
+            React.createElement("div", {className: "details-label-name"}, 
+              React.createElement("div", null, "Release date")
+            ), 
+            React.createElement("div", {className: "details-label-value"}, 
+              React.createElement("div", null, this.props.data.released)
+            )
+          ), 
+          React.createElement("div", {className: "movie-detail-line"}, 
+            React.createElement("div", {className: "details-label-name"}, 
+              React.createElement("div", null, "Runtime")
+            ), 
+            React.createElement("div", {className: "details-label-value"}, 
+              React.createElement("div", null, this.props.data.runtime)
+            )
+          )
+        )
+
+      )
+    );
+  },
+  /**
+   * Handle click on close img.
+   * @private
+   */
+  _handleOnClickClose: function () {
+    $('.search-part').removeClass('search-part-preview');
+    $('#lineResume').addClass('line-preview-none');
+  }
+});
+
+});
+
+require.register("views/search-result/movieLineComponent", function(exports, require, module) {
+/*global React, focusComponents */
+module.exports = React.createClass({displayName: "exports",
+  mixins: [focusComponents.list.selection.line.mixin],
+  definitionPath: 'movie',
+  renderLineContent: function (data) {
+    var id = React.createElement('div', null, data.id);
+    var logo = React.createElement("div", {className: "mov-logo"}, " ", React.createElement("img", {src: "./static/img/logoMovie.png"}));
+    var movieTilte = this.displayFor('title', {style: {className: 'title-level-1'}});
+    var genreIds = this.displayFor('genreIds', {style: {className: 'title-level-2'}});
+    var released = this.displayFor('released', {style: {className: 'title-level-3'}});
+    if(!data.genreIds){
+      genreIds = '';
+    }
+    if(!data.released){
+      released = '';
+    }
+    var item = React.createElement("div", {className: "item"}, movieTilte, " ", genreIds, " ", released, " ")
+    var root = React.createElement('div', null, id, logo, item);
+    return root;
+  }
+});
+
+});
+
+require.register("views/search-result/peopleLineComponent", function(exports, require, module) {
+/*global React, focusComponents */
+module.exports = React.createClass({displayName: "exports",
+  mixins: [focusComponents.list.selection.line.mixin],
+  definitionPath: 'people',
+  renderLineContent: function (data) {
+    var id = React.createElement('div', null, data.id);
+    var logo = React.createElement("div", {className: "mov-logo"}, React.createElement("img", {src: "./static/img/pictoPeople.png"}));
+    var userName = this.displayFor('peoName', {style: {className: 'title-level-1'}});
+    var item = React.createElement("div", {className: "item"}, userName)
+    var root = React.createElement('div', null, id, logo, item);
+    return root;
+  }
 });
 
 });
@@ -2969,72 +3028,77 @@ require.register("views/search-result/searchResult", function(exports, require, 
 var action = require('../../action/search/quickSearch');
 
 module.exports = React.createClass({displayName: "exports",
-    mixins: [focusComponents.page.search.searchResult.mixin],
-    actions: action,
-    store: new focus.store.SearchStore(),
-    render: function render() {
-        var qs = this.quickSearchComponent();
-        var summary = React.createElement("div", null);
-        if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
-            var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
-            var linkFilterResult = React.createElement("div", null);
-            if (this.state.totalRecords > 0) {
-              var criteria = this.getCriteria();
-                if(criteria.scope !== null && criteria.scope !== undefined){
-                    if(criteria.scope.toLowerCase() !== 'all'){
-                        var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
-                        linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
-                            React.createElement("a", {href: url}, "Filter result   ", 
-                                React.createElement("img", {src: "./static/img/arrow-right-16.png"})
-                            )
-                        );
-                    }
-                }
-            }
-            summary = React.createElement("div", {className: "summary"}, 
+  mixins: [focusComponents.page.search.searchResult.mixin],
+  actions: action,
+  store: new focus.store.SearchStore(),
+  render: function render() {
+    var qs = this.quickSearchComponent();
+    var summary = React.createElement("div", null);
+    if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
+      var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
+      var linkFilterResult = React.createElement("div", null);
+      if (this.state.totalRecords > 0) {
+        var criteria = this.getCriteria();
+        if (criteria.scope !== null && criteria.scope !== undefined) {
+          if (criteria.scope.toLowerCase() !== 'all') {
+            var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
+            linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
+              React.createElement("a", {href: url}, "Filter result   ", 
+                React.createElement("img", {src: "./static/img/arrow-right-16.png"})
+              )
+            );
+          }
+        }
+      }
+      summary = React.createElement("div", {className: "summary"}, 
                                         resultsContent, 
                                         linkFilterResult
-            );
-        }
-        var list = this.listComponent();
-        var search = React.createElement("div", {className: "search-part"}, " ", qs, " ", summary, " ", list)
-        var lineResumeContent = React.createElement("div", {id: "lineResume"});
-        var root = React.createElement('div', {className: 'search-panel'}, search, lineResumeContent);
-        return root;
-    },
-    renderGroupBy: function renderGroupBy(groupKey, list, maxRows) {
-        var title = React.createElement(focusComponents.common.title.component, { title: groupKey });
-        var showMoreButton = React.createElement(focusComponents.common.button.action.component, { handleOnClick: this.changeGroupByMaxRows(groupKey, maxRows + 3), label: 'Show more' });
-        var summary = React.createElement("div", null);
-        var count = React.createElement("div", null, "list.length items");
-        if(list.length > 3){
-            count = React.createElement("div", {className: "count-results"}, 
-                        React.createElement("span", null, " ", list.length, " items "), 
-                        React.createElement("div", null, " Three most relevents ")
-                    );
-        }
-        var linkFilterResult = React.createElement("div", null);
-        var criteria = this.getCriteria();
-        var scope = 'PEOPLE';
-        if(groupKey.toLowerCase().indexOf('movie') >= 0){
-            scope = 'MOVIE';
-        }
-        if(list.length > 0){
-            var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
-            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, 
-                React.createElement("a", {href: url}, "Advanced search   ", 
-                    React.createElement("img", {src: "./static/img/arrow-right-16.png"})
-                )
-            );
-        }
-        summary = React.createElement("div", null, count, " ", linkFilterResult)
-        return React.createElement( 'div', { className: 'listResultContainer panel' },
-            title,
-            summary,
-            this.renderSimpleList(groupKey, list, maxRows),
-            showMoreButton);
-
+      );
     }
+    var type = 'movie';
+    if(this.getCriteria() !== undefined && this.getCriteria() !== null){
+      if (this.getCriteria().scope !== null && this.getCriteria().scope !== undefined) {
+        //Le nom descrope correspond au nom de notre entite definition.
+        //raison pour laquelle on affecte à type directement la valeur de scope.
+        type = this.getCriteria().scope.toLowerCase();
+      }
+    }
+      var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
+    var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
+    return root;
+  },
+  renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {
+    var title = React.createElement("h3", {className: "title-group-key"}, groupKey);//React.createElement(focusComponents.common.title.component, {title: groupKey, style: {className: 'title-groupKey'}});
+    var summary = React.createElement("div", null);
+    var count = React.createElement("div", null, "list.length items");
+    if (list.length > 3) {
+      count = React.createElement("div", {className: "count-results"}, 
+        React.createElement("span", null, " ", list.length, " items "), 
+        React.createElement("div", null, " Three most relevents ")
+      );
+    }
+    var linkFilterResult = React.createElement("div", null);
+    var criteria = this.getCriteria();
+    var scope = 'PEOPLE';
+    if (groupKey.toLowerCase().indexOf('movie') >= 0) {
+      scope = 'MOVIE';
+    }
+    if (list.length > 0) {
+      var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
+      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, 
+        React.createElement("a", {href: url}, "Advanced search   ", 
+          React.createElement("img", {src: "./static/img/arrow-right-16.png"})
+        )
+      );
+    }
+    summary = React.createElement("div", null, count, " ", linkFilterResult)
+    return React.createElement('div', {className: 'listResultContainer panel'},
+      title,
+      summary,
+      this.simpleListComponent(
+        {type: groupKey, list: list, maxRows: maxRows}));
+
+  }
 
 });
 
