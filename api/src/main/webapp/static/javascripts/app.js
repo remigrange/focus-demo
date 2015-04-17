@@ -2151,19 +2151,12 @@ module.exports = React.createClass({displayName: "exports",
 require.register("views/home/index", function(exports, require, module) {
 /* global React, focusComponents */
 module.exports = React.createClass({displayName: "exports",
-  mixins: [focusComponents.application.popin.mixin],
-  renderPopinHeader: function (popin) {
-    return React.createElement('div', null,
-      React.createElement('div', {className: 'home-popin-header'
-      }, 'Welcome page popin')
+  render: function renderPeopleView() {
+    return (
+      React.createElement("div", {className: "welcome-title"}, 
+        "Welcome page"
+      )
     );
-  },
-  renderPopinFooter: function renderPopinFooter(popin) {
-    return React.createElement('div', null, '');
-
-  },
-  renderContent: function (popin) {
-    return React.createElement('div', {className: 'welcome-title'}, 'Bienvenue à la formation FOCUS');
   }
 });
 
@@ -2266,19 +2259,35 @@ var Menu = React.createClass({displayName: "Menu",
     return React.createElement("h3", null, this.props.title);
   },
   renderContent: function renderMenuContent() {
-    return this.renderLinks();
+    return React.createElement("div", {className: "top-menu-items-container"}, 
+      React.createElement("div", {className: "top-menu-item"}, 
+        React.createElement("i", {className: "fa fa-bell-o"}), 
+        React.createElement("span", {className: "badge badge-alerte"}, "4")
+      ), 
+      React.createElement("div", {className: "top-menu-item"}, 
+        React.createElement("i", {className: "fa fa-eye"}), 
+        React.createElement("span", {className: "badge badge-warning"}, "11")
+      ), 
+      React.createElement("div", {className: "top-menu-item"}, 
+        React.createElement("i", {className: "fa fa-user"})
+      )
+    );
   }
 });
 
 module.exports = React.createClass({displayName: "exports",
   render: function renderTopMenu() {
+    var links = [{url: '', name: '', img: 'static/img/home-32x32-white.svg'},
+      {url: '', name: '', img: 'static/img/search-32x32-white.svg'},
+      {url: '', name: '', img: 'static/img/search-32x32-white.svg', style: {className: 'user'}}
+    ];
     return (
       React.createElement(Menu, {
         open: true, 
         position: this.props.position, 
         direction: this.props.direction, 
         title: this.props.title, 
-        links: this.props.links, 
+        links: links, 
         ref: this.props.reference, 
         style: this.props.style}
       ));
