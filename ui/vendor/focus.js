@@ -31,7 +31,7 @@ module.exports = {
   }
 };
 
-},{"./application":4,"./component":7,"./definition":14,"./dispatcher":16,"./exception":22,"./helper":23,"./network":26,"./package.json":116,"./reference":121,"./router":122,"./store":127,"./user":138,"./util":143}],2:[function(require,module,exports){
+},{"./application":4,"./component":7,"./definition":14,"./dispatcher":16,"./exception":22,"./helper":23,"./network":26,"./package.json":118,"./reference":123,"./router":124,"./store":129,"./user":143,"./util":148}],2:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -77,7 +77,7 @@ module.exports = function builtInStore() {
   return instanciatedApplicationStore;
 };
 
-},{"../store/application":125}],4:[function(require,module,exports){
+},{"../store/application":127}],4:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -264,7 +264,7 @@ module.exports = {
   get: getDomain
 };
 
-},{"../../util/object/check":144,"../../util/string/check":147,"immutable":32,"lodash/lang/isObject":95,"lodash/lang/isString":98}],10:[function(require,module,exports){
+},{"../../util/object/check":149,"../../util/string/check":152,"immutable":32,"lodash/lang/isObject":95,"lodash/lang/isString":98}],10:[function(require,module,exports){
 /**
  * Application domain gestion.
  * @type {Object}
@@ -361,7 +361,7 @@ module.exports = {
   getFieldInformations: getFieldInformations
 };
 
-},{"../../util/object/check":144,"../../util/object/checkIsNotNull":145,"../../util/string/check":147,"../domain/container":9,"./container":12,"immutable":32}],12:[function(require,module,exports){
+},{"../../util/object/check":149,"../../util/object/checkIsNotNull":150,"../../util/string/check":152,"../domain/container":9,"./container":12,"immutable":32}],12:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -439,7 +439,7 @@ module.exports = {
   getFieldConfiguration: getFieldConfiguration
 };
 
-},{"../../store/search/definition":131,"../../util/object/check":144,"../../util/string/check":147,"immutable":32}],13:[function(require,module,exports){
+},{"../../store/search/definition":136,"../../util/object/check":149,"../../util/string/check":152,"immutable":32}],13:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -9807,6 +9807,226 @@ module.exports = Object.assign || function (target, source) {
 };
 
 },{}],116:[function(require,module,exports){
+(function (global){
+
+var rng;
+
+if (global.crypto && crypto.getRandomValues) {
+  // WHATWG crypto-based RNG - http://wiki.whatwg.org/wiki/Crypto
+  // Moderately fast, high quality
+  var _rnds8 = new Uint8Array(16);
+  rng = function whatwgRNG() {
+    crypto.getRandomValues(_rnds8);
+    return _rnds8;
+  };
+}
+
+if (!rng) {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var  _rnds = new Array(16);
+  rng = function() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      _rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return _rnds;
+  };
+}
+
+module.exports = rng;
+
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],117:[function(require,module,exports){
+//     uuid.js
+//
+//     Copyright (c) 2010-2012 Robert Kieffer
+//     MIT License - http://opensource.org/licenses/mit-license.php
+
+// Unique ID creation requires a high quality random # generator.  We feature
+// detect to determine the best RNG source, normalizing to a function that
+// returns 128-bits of randomness, since that's what's usually required
+var _rng = require('./rng');
+
+// Maps for number <-> hex string conversion
+var _byteToHex = [];
+var _hexToByte = {};
+for (var i = 0; i < 256; i++) {
+  _byteToHex[i] = (i + 0x100).toString(16).substr(1);
+  _hexToByte[_byteToHex[i]] = i;
+}
+
+// **`parse()` - Parse a UUID into it's component bytes**
+function parse(s, buf, offset) {
+  var i = (buf && offset) || 0, ii = 0;
+
+  buf = buf || [];
+  s.toLowerCase().replace(/[0-9a-f]{2}/g, function(oct) {
+    if (ii < 16) { // Don't overflow!
+      buf[i + ii++] = _hexToByte[oct];
+    }
+  });
+
+  // Zero out remaining bytes if string was short
+  while (ii < 16) {
+    buf[i + ii++] = 0;
+  }
+
+  return buf;
+}
+
+// **`unparse()` - Convert UUID byte array (ala parse()) into a string**
+function unparse(buf, offset) {
+  var i = offset || 0, bth = _byteToHex;
+  return  bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+// random #'s we need to init node and clockseq
+var _seedBytes = _rng();
+
+// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+var _nodeId = [
+  _seedBytes[0] | 0x01,
+  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
+];
+
+// Per 4.2.2, randomize (14 bit) clockseq
+var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
+
+// Previous uuid creation time
+var _lastMSecs = 0, _lastNSecs = 0;
+
+// See https://github.com/broofa/node-uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  var node = options.node || _nodeId;
+  for (var n = 0; n < 6; n++) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : unparse(b);
+}
+
+// **`v4()` - Generate random UUID**
+
+// See https://github.com/broofa/node-uuid for API details
+function v4(options, buf, offset) {
+  // Deprecated - 'format' argument, as supported in v1.2
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options == 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || _rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ii++) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || unparse(rnds);
+}
+
+// Export public API
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+uuid.parse = parse;
+uuid.unparse = unparse;
+
+module.exports = uuid;
+
+},{"./rng":116}],118:[function(require,module,exports){
 module.exports={
   "name": "focus",
   "version": "0.5.2",
@@ -9822,7 +10042,8 @@ module.exports={
     "keymirror": "^0.1.1",
     "lodash": "^3.3.1",
     "object-assign": "^2.0.0",
-    "react": "^0.13.1"
+    "react": "^0.13.1",
+    "uuid": "^2.0.1"
   },
   "scripts": {
     "test": "jest"
@@ -9882,7 +10103,7 @@ module.exports={
   }
 }
 
-},{}],117:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 /*global Promise,  _*/
 "use strict";
 
@@ -9954,7 +10175,7 @@ module.exports = {
   getAutoCompleteServiceQuery: getAutoCompleteServiceQuery
 };
 
-},{"../network/fetch":25,"../util/string/check":147,"./config":120}],118:[function(require,module,exports){
+},{"../network/fetch":25,"../util/string/check":152,"./config":122}],120:[function(require,module,exports){
 "use strict";
 
 var loadManyReferenceList = require("./builder").loadMany;
@@ -9986,7 +10207,7 @@ function builtInReferenceAction(referenceNames) {
 
 module.exports = builtInReferenceAction;
 
-},{"../dispatcher":16,"./builder":117}],119:[function(require,module,exports){
+},{"../dispatcher":16,"./builder":119}],121:[function(require,module,exports){
 "use strict";
 
 var ReferenceStore = require("../store/reference");
@@ -10002,7 +10223,7 @@ module.exports = function builtInStore() {
   return instanciatedRefStore;
 };
 
-},{"../store/reference":129}],120:[function(require,module,exports){
+},{"../store/reference":134}],122:[function(require,module,exports){
 "use strict";
 
 var Immutable = require("Immutable");
@@ -10046,7 +10267,7 @@ module.exports = {
   set: setConfig
 };
 
-},{"../util/object/check":144,"../util/string/check":147,"Immutable":27}],121:[function(require,module,exports){
+},{"../util/object/check":149,"../util/string/check":152,"Immutable":27}],123:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -10056,12 +10277,12 @@ module.exports = {
   builtInAction: require("./built-in-action")
 };
 
-},{"./builder":117,"./built-in-action":118,"./built-in-store":119,"./config":120}],122:[function(require,module,exports){
+},{"./builder":119,"./built-in-action":120,"./built-in-store":121,"./config":122}],124:[function(require,module,exports){
 "use strict";
 
 module.exports = {};
 
-},{}],123:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -10189,7 +10410,7 @@ var CoreStore = (function (_EventEmitter) {
               }
             }
           }
-          console.log("dispatchHandler:action", transferInfo);
+          //console.log('dispatchHandler:action', transferInfo);
         });
       }
     },
@@ -10211,7 +10432,7 @@ var CoreStore = (function (_EventEmitter) {
 
 module.exports = CoreStore;
 
-},{"../definition/entity/builder":11,"../dispatcher":16,"events":28,"immutable":32,"lodash/lang/isArray":81,"lodash/string/capitalize":106,"object-assign":115}],124:[function(require,module,exports){
+},{"../definition/entity/builder":11,"../dispatcher":16,"events":28,"immutable":32,"lodash/lang/isArray":81,"lodash/string/capitalize":106,"object-assign":115}],126:[function(require,module,exports){
 /**
  * Build the cartridge store definition.
  * @return {object} - The cartridge component.
@@ -10225,12 +10446,12 @@ module.exports = function () {
   };
 };
 
-},{}],125:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":126}],126:[function(require,module,exports){
+},{"./store":128}],128:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -10263,18 +10484,144 @@ var ApplicationStore = (function (_CoreStore) {
 
 module.exports = ApplicationStore;
 
-},{"../CoreStore":123,"./definition":124}],127:[function(require,module,exports){
+},{"../CoreStore":125,"./definition":126}],129:[function(require,module,exports){
 "use strict";
 
 module.exports = {
-	CoreStore: require("./CoreStore"),
-	ApplicationStore: require("./application"),
-	SearchStore: require("./search"),
-	ReferenceStore: require("./reference"),
-	UserStore: require("./user")
+  CoreStore: require("./CoreStore"),
+  MessageStore: require("./message"),
+  ApplicationStore: require("./application"),
+  SearchStore: require("./search"),
+  ReferenceStore: require("./reference"),
+  UserStore: require("./user")
 };
 
-},{"./CoreStore":123,"./application":125,"./reference":129,"./search":132,"./user":135}],128:[function(require,module,exports){
+},{"./CoreStore":125,"./application":127,"./message":131,"./reference":134,"./search":137,"./user":140}],130:[function(require,module,exports){
+/**
+ * Build the cartridge store definition.
+ * @return {object} - The error store component.
+ */
+"use strict";
+
+module.exports = function () {
+  return {
+    messages: "messages"
+  };
+};
+
+},{}],131:[function(require,module,exports){
+"use strict";
+
+module.exports = require("./store");
+
+},{"./store":132}],132:[function(require,module,exports){
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+//Dependencies.
+var CoreStore = require("../CoreStore");
+var getDefinition = require("./definition");
+var uuid = require("uuid").v4;
+var PUSH = "push";
+
+/**
+ * Class standing for the cartridge store.
+ */
+
+var MessageStore = (function (_CoreStore) {
+  /**
+   * Add a listener on the global change on the search store.
+   * @param {object} conf - The configuration of the message store.
+   */
+
+  function MessageStore(conf) {
+    _classCallCheck(this, MessageStore);
+
+    conf = conf || {};
+    conf.definition = conf.definition || getDefinition();
+    _get(Object.getPrototypeOf(MessageStore.prototype), "constructor", this).call(this, conf);
+  }
+
+  _inherits(MessageStore, _CoreStore);
+
+  _createClass(MessageStore, {
+    getMessage: {
+      /**
+       * Get a message from its identifier.
+       * @param {string} messageId - The message identifier.
+       * @returns {object} - The requested message.
+       */
+
+      value: function getMessage(messageId) {
+        if (!this.data.has(messageId)) {
+          return undefined;
+        }
+        var message = this.data.get(messageId);
+        if (!message.isAck) {
+          this.deleteMessage(messageId);
+        }
+        return message;
+      }
+    },
+    deleteMessage: {
+      /**
+       * Delete a message given its id.
+       * @param {string} messageId - The message identifier.
+       */
+
+      value: function deleteMessage(messageId) {
+        if (this.data.has(messageId)) {
+          this.data = this.data["delete"](messageId);
+        }
+      }
+    },
+    pushMessage: {
+      /**
+       * Add a listener on the global change on the search store.
+       * @param {object} message - The message to add.
+       */
+
+      value: function pushMessage(message) {
+        message.id = "" + uuid();
+        this.data = this.data.set(message.id, message);
+        this.emit(PUSH, message.id);
+      }
+    },
+    addPushedMessageListener: {
+      /**
+       * Add a listener on the global change on the search store.
+       * @param {function} cb - The callback to call when a message is pushed.
+       */
+
+      value: function addPushedMessageListener(cb) {
+        this.addListener(PUSH, cb);
+      }
+    },
+    removePushedMessageListener: {
+      /**
+       * Remove a listener on the global change on the search store.
+       * @param {function} cb - The callback to called when a message is pushed.
+       */
+
+      value: function removePushedMessageListener(cb) {
+        this.removeListener(PUSH, cb);
+      }
+    }
+  });
+
+  return MessageStore;
+})(CoreStore);
+
+module.exports = MessageStore;
+
+},{"../CoreStore":125,"./definition":130,"uuid":117}],133:[function(require,module,exports){
 "use strict";
 
 var refConfigAccessor = require("../../reference/config");
@@ -10298,12 +10645,12 @@ function buildReferenceDefinition() {
 
 module.exports = buildReferenceDefinition;
 
-},{"../../reference/config":120,"keymirror":33,"lodash/lang/isEmpty":85}],129:[function(require,module,exports){
+},{"../../reference/config":122,"keymirror":33,"lodash/lang/isEmpty":85}],134:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":130}],130:[function(require,module,exports){
+},{"./store":135}],135:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -10356,7 +10703,7 @@ var ReferenceStore = (function (_CoreStore) {
 
 module.exports = ReferenceStore;
 
-},{"../CoreStore":123,"./definition":128}],131:[function(require,module,exports){
+},{"../CoreStore":125,"./definition":133}],136:[function(require,module,exports){
 "use strict";
 
 var Immutable = require("immutable");
@@ -10378,12 +10725,12 @@ module.exports = {
   }
 };
 
-},{"immutable":32}],132:[function(require,module,exports){
+},{"immutable":32}],137:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":133}],133:[function(require,module,exports){
+},{"./store":138}],138:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -10517,7 +10864,7 @@ var SearchStore = (function (_CoreStore) {
 
 module.exports = SearchStore;
 
-},{"../../dispatcher":16,"../CoreStore":123,"immutable":32,"lodash/array/intersection":34,"lodash/lang/isArray":81,"lodash/lang/isEqual":86,"lodash/object/keys":103,"object-assign":115}],134:[function(require,module,exports){
+},{"../../dispatcher":16,"../CoreStore":125,"immutable":32,"lodash/array/intersection":34,"lodash/lang/isArray":81,"lodash/lang/isEqual":86,"lodash/object/keys":103,"object-assign":115}],139:[function(require,module,exports){
 /**
  * Build the user store definition from the login and profile.
  * @return {[type]} [description]
@@ -10531,12 +10878,12 @@ module.exports = function () {
   };
 };
 
-},{"../../user/login/definition.json":139,"../../user/profile/definition.json":141}],135:[function(require,module,exports){
+},{"../../user/login/definition.json":144,"../../user/profile/definition.json":146}],140:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":136}],136:[function(require,module,exports){
+},{"./store":141}],141:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -10568,7 +10915,7 @@ var UserStore = (function (_CoreStore) {
 
 module.exports = UserStore;
 
-},{"../CoreStore":123,"./definition":134}],137:[function(require,module,exports){
+},{"../CoreStore":125,"./definition":139}],142:[function(require,module,exports){
 "use strict";
 
 var UserStore = require("../store/user");
@@ -10584,7 +10931,7 @@ module.exports = function builtInStore() {
   return instanciatedUserStore;
 };
 
-},{"../store/user":135}],138:[function(require,module,exports){
+},{"../store/user":140}],143:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -10593,20 +10940,20 @@ module.exports = {
   builtInStore: require("./built-in-store")
 };
 
-},{"./built-in-store":137,"./login":140,"./profile":142}],139:[function(require,module,exports){
+},{"./built-in-store":142,"./login":145,"./profile":147}],144:[function(require,module,exports){
 module.exports={
   "userName": "userName",
   "password": "password"
 }
 
-},{}],140:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   definition: require("./definition.json")
 };
 
-},{"./definition.json":139}],141:[function(require,module,exports){
+},{"./definition.json":144}],146:[function(require,module,exports){
 module.exports={
   "id": "id",
   "provider": "provider",
@@ -10618,14 +10965,14 @@ module.exports={
   "lastName": "lastName"
 }
 
-},{}],142:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   definition: require("./definition.json")
 };
 
-},{"./definition.json":141}],143:[function(require,module,exports){
+},{"./definition.json":146}],148:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -10634,7 +10981,7 @@ module.exports = {
 	url: require("./url")
 };
 
-},{"./object":146,"./string":148,"./url":150}],144:[function(require,module,exports){
+},{"./object":151,"./string":153,"./url":155}],149:[function(require,module,exports){
 "use strict";
 
 var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
@@ -10652,7 +10999,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":17,"lodash/lang/isObject":95}],145:[function(require,module,exports){
+},{"../../exception/ArgumentInvalidException":17,"lodash/lang/isObject":95}],150:[function(require,module,exports){
 "use strict";
 
 var ArgumentNullException = require("../../exception/ArgumentNullException");
@@ -10675,7 +11022,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentNullException":18,"lodash/lang":77}],146:[function(require,module,exports){
+},{"../../exception/ArgumentNullException":18,"lodash/lang":77}],151:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -10683,7 +11030,7 @@ module.exports = {
 	checkIsNotNull: require("./checkIsNotNull")
 };
 
-},{"./check":144,"./checkIsNotNull":145}],147:[function(require,module,exports){
+},{"./check":149,"./checkIsNotNull":150}],152:[function(require,module,exports){
 "use strict";
 
 var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
@@ -10701,14 +11048,14 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":17,"lodash/lang/isString":98}],148:[function(require,module,exports){
+},{"../../exception/ArgumentInvalidException":17,"lodash/lang/isString":98}],153:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	check: require("./check")
 };
 
-},{"./check":147}],149:[function(require,module,exports){
+},{"./check":152}],154:[function(require,module,exports){
 "use strict";
 
 var urlProcessor = require("./processor");
@@ -10736,7 +11083,7 @@ module.exports = function (url, method) {
   };
 };
 
-},{"./processor":151}],150:[function(require,module,exports){
+},{"./processor":156}],155:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -10744,7 +11091,7 @@ module.exports = {
   preprocessor: require("./processor")
 };
 
-},{"./builder":149,"./processor":151}],151:[function(require,module,exports){
+},{"./builder":154,"./processor":156}],156:[function(require,module,exports){
 "use strict";
 
 var compile = require("lodash/string/template");

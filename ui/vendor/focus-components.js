@@ -2176,7 +2176,8 @@ module.exports = {
       data: this.state[name],
       line: options.LineComponent || this.props.LineComponent || this.LineComponent,
       perPage: options.perPage || 5,
-      reference: options.reference
+      reference: options.reference,
+      isEdit: options.isEdit !== undefined ? options.isEdit : false
     });
   },
   /**
@@ -3154,9 +3155,22 @@ var React = window.React;
 var fielBehaviourMixin = require("../../common/mixin/field-component-behaviour");
 var assign = require("object-assign");
 var Field = require("../../common/field").component;
+var Text = require("../../common/display/text").component;
 
 var builtInComponentsMixin = {
+    /**
+     * inherited minxins
+     */
     mixins: [fielBehaviourMixin],
+
+    /**
+     * @inheritDoc
+     */
+    getDefaultProps: function getbuiltInComponentsMixinDefaultProps() {
+        return {
+            isEdit: false
+        };
+    },
 
     /**
      * create an edit field for the given property metadata.
@@ -3205,12 +3219,30 @@ var builtInComponentsMixin = {
 
         var fieldProps = this._buildFieldProps(name, options, this);
         return React.createElement(Field, fieldProps);
+    },
+
+    /**
+     * Display the text for a given property.
+     * @param {string} name  - property name.
+     * @param {object} options - Option object
+     * @returns {object} - A React component.
+     */
+    textFor: function textFor(name, options) {
+        options = options || {};
+        var def = this.definition && this.definition[name] ? this.definition[name] : {};
+        return React.createElement(Text, {
+            name: options.name || "" + this.definitionPath + "." + name,
+            style: options.style,
+            FieldComponent: def.FieldComponent,
+            formatter: options.formatter || def.formatter,
+            value: this.state[name]
+        });
     }
 };
 
 module.exports = builtInComponentsMixin;
 
-},{"../../common/field":13,"../../common/mixin/field-component-behaviour":36,"object-assign":190}],51:[function(require,module,exports){
+},{"../../common/display/text":12,"../../common/field":13,"../../common/mixin/field-component-behaviour":36,"object-assign":190}],51:[function(require,module,exports){
 "use strict";
 
 var topOfElement = (function (_topOfElement) {
@@ -3236,7 +3268,7 @@ var topOfElement = (function (_topOfElement) {
 var InfiniteScrollMixin = {
     /**
      * defaults props for the mixin.
-     * @returns {{isInfiniteScroll: boolean, initialPage: number, offset: number}}
+     * @returns {object} - the default props
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -3574,6 +3606,9 @@ var listMixin = {
         lineComponent: type("func", true)
     },
 
+    /**
+     * called before component mount
+     */
     componentWillMount: function componentWillMount() {
         checkIsNotNull("lineComponent", this.props.lineComponent);
     },
@@ -3785,8 +3820,21 @@ module.exports = {
 var React = window.React;
 var builder = window.focus.component.builder;
 var type = window.focus.component.types;
+var translationMixin = require("../../common/i18n").mixin;
+var referenceMixin = require("../../common/mixin/reference-property");
+var definitionMixin = require("../../common/mixin/definition");
+var builtInComponentsMixin = require("../mixin/built-in-components");
+
 var lineMixin = {
+    /**
+     * React component name.
+     */
     displayName: "timeline-line",
+
+    /**
+     * Mixin dependancies.
+     */
+    mixins: [translationMixin, definitionMixin, referenceMixin, builtInComponentsMixin],
 
     /**
      * line property validation.
@@ -3801,7 +3849,7 @@ var lineMixin = {
 
     /**
      * Get the line value.
-     * @returns {{item: *}}
+     * @returns {object} - the data od the line.
      */
     getValue: function getLineValue() {
         return {
@@ -3811,7 +3859,7 @@ var lineMixin = {
 
     /**
      * Line Click handler.
-     * @param event
+     * @param {object} event - the event
      */
     _handleLineClick: function handleLineClick(event) {
         if (this.props.onLineClick) {
@@ -3821,7 +3869,7 @@ var lineMixin = {
 
     /**
      * render content for a line.
-     * @returns {*}
+     * @returns {XML} the line content
      */
     _renderLineContent: function renderLineContent() {
         if (this.renderLineContent) {
@@ -3854,7 +3902,7 @@ var lineMixin = {
 
     /**
      * Render line in list.
-     * @returns {*}
+     * @returns {XML} - the render of the line
      */
     render: function renderLine() {
         if (this.renderLine) {
@@ -3866,7 +3914,7 @@ var lineMixin = {
                 React.createElement(
                     "div",
                     { className: "timeline-date" },
-                    "02/06/1982"
+                    this.textFor(this.props.dateField, {})
                 ),
                 React.createElement("div", { className: "timeline-badge" }),
                 React.createElement(
@@ -3881,7 +3929,7 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{}],58:[function(require,module,exports){
+},{"../../common/i18n":21,"../../common/mixin/definition":35,"../../common/mixin/reference-property":39,"../mixin/built-in-components":50}],58:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
@@ -3889,6 +3937,9 @@ var React = window.React;
 var type = window.focus.component.types;
 var Line = require("./line").mixin;
 var uuid = require("uuid");
+var InfiniteScrollMixin = require("../mixin/infinite-scroll").mixin;
+var referenceMixin = require("../../common/mixin/reference-property");
+var checkIsNotNull = window.focus.util.object.checkIsNotNull;
 
 var listMixin = {
     /**
@@ -3897,7 +3948,13 @@ var listMixin = {
     displayName: "timeline",
 
     /**
+     * Mixin dependancies.
+     */
+    mixins: [InfiniteScrollMixin, referenceMixin],
+
+    /**
      * Default properties for the list.
+     * @return {object} default props.
      */
     getDefaultProps: function getDefaultProps() {
         return {
@@ -3910,16 +3967,23 @@ var listMixin = {
      * list property validation.
      */
     propTypes: {
-        date: type("array"),
+        data: type("array"),
         idField: type("string"),
         dateField: type("string"),
         dateComponent: type("object"),
-        lineComponent: type("object")
+        lineComponent: type("func", true)
+    },
+
+    /**
+     * called before component mount
+     */
+    componentWillMount: function componentWillMount() {
+        checkIsNotNull("lineComponent", this.props.lineComponent);
     },
 
     /**
      * Render lines of the list.
-     * @returns {*}
+     * @returns {*} the lines
      */
     _renderLines: function renderLines() {
         var _this = this;
@@ -3939,7 +4003,7 @@ var listMixin = {
 
     /**
      * Render the list.
-     * @returns {XML}
+     * @returns {XML} the list component
      */
     render: function renderList() {
         return React.createElement(
@@ -3952,7 +4016,7 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"./line":57,"uuid":192}],59:[function(require,module,exports){
+},{"../../common/mixin/reference-property":39,"../mixin/infinite-scroll":51,"./line":57,"uuid":192}],59:[function(require,module,exports){
 "use strict";
 
 var builder = window.focus.component.builder;
