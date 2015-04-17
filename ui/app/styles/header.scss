@@ -1,0 +1,36 @@
+@import "./variables";
+
+.user-infos i {
+  font-size: 24px;
+}
+.user-infos .header-menu-item {
+  text-align: center;
+  height: 60px;
+  width: 80px;
+  padding-top: 18px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.badge-alerte {
+  background-color: $color-rouge2;
+  margin-left: -10px;
+  margin-top: -5px;
+  padding: 3px 4px;
+  position: absolute;
+}
+.badge-warning {
+  background-color: $color-jaune;
+  padding: 3px 4px;
+  margin-left: -5px;
+  margin-top: -2px;
+  position: absolute;
+}
+
+header[data-focus-header] {
+  padding-left: 60px;
+}
+.header-back {
+  font-size: 24px;
+  text-transform: none;
+}

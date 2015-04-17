@@ -8,14 +8,14 @@ module.exports = React.createClass({
   render: function render() {
     var qs = this.quickSearchComponent();
     var summary = <div></div>;
+    var scope = this.state.scope
     if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
       var resultsContent = <div className='results'>{this.state.totalRecords} results </div>;
       var linkFilterResult = <div></div>;
       if (this.state.totalRecords > 0) {
-        var criteria = this.getCriteria();
-        if (criteria.scope !== null && criteria.scope !== undefined) {
-          if (criteria.scope.toLowerCase() !== 'all') {
-            var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
+        if (scope !== null && scope !== undefined) {
+          if (scope.toLowerCase() !== 'all') {
+            var url = '#search/advanced/scope/' + scope + '/query/' + this.state.query;
             linkFilterResult = <div className='linkFilterResult'>
               <a href={url}>Filter result&nbsp;&nbsp;&nbsp;
                 <img src='./static/img/arrow-right-16.png'/>
@@ -30,8 +30,8 @@ module.exports = React.createClass({
       </div>;
     }
     var type = 'MOVIE';
-    if(this.state.scope !== undefined && this.state.scope !== null){
-        type = this.state.scope;
+    if(scope !== undefined && scope !== null){
+        type = scope;
     }
     var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
     var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);

@@ -339,7 +339,7 @@ module.exports = {
                     list: list,
                     facet: {},
                     pageInfos: {
-                        currentPage: 1,
+                        currentPage: page,
                         perPage: 50,
                         totalRecords: data.totalRecords
                     },
@@ -1840,12 +1840,11 @@ var render = focus.application.render;
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
 
-var TopMenuView = require('../views/menu/topMenu');
 var LeftMenuView = require('../views/menu/leftMenu');
 
 var renderMenu = function(){
-  render(TopMenuView, '#header',
-    {props: {position: 'top', direction: 'horizontal', title: 'Focus', reference: 'menuTop', style: {className: 'header-menu'}}});
+  var PageHeader = require('../views/menu/appHeader');
+  render(PageHeader, '#header');
   render(LeftMenuView, '#leftMenu');
 };
 
@@ -2162,6 +2161,71 @@ module.exports = React.createClass({displayName: "exports",
 
 });
 
+require.register("views/menu/appHeader", function(exports, require, module) {
+/*global focusComponents, React */
+//Component for the application header.
+var AppHeader = focusComponents.application.header.component;
+var Cartouche = focus.components.application.cartridge.component;
+//Create the view.
+module.exports = React.createClass({displayName: "exports",
+  render: function () {
+    var notification = React.createElement("div", {className: "header-menu-item"}, 
+      React.createElement("i", {className: "fa fa-bell-o"}), 
+      React.createElement("span", {className: "badge badge-alerte"}, "11")
+    );
+    var eye = React.createElement("div", {className: "header-menu-item"}, 
+      React.createElement("i", {className: "fa fa-eye"}), 
+      React.createElement("span", {className: "badge badge-warning"}, "11")
+    );
+    var user = React.createElement("div", {className: "header-menu-item"}, 
+      React.createElement("i", {className: "fa fa-user"})
+    );
+    return React.createElement('div', null,
+      React.createElement(AppHeader, null,
+        React.createElement('div', {className: 'content-bar'},
+          React.createElement('div', {className: 'real-bar'},
+            React.createElement('div', {className: 'actions-left'},
+              React.createElement('button', {className: 'btn btn-raise btn-default fa fa-reply-all header-back'}, ' Back')
+            ),
+           /* React.createElement('div', {className: 'entete'},
+              'Super film vraiment top...',
+              React.createElement('button', {className: 'btn btn-info btn-raise'}, 'Context'),
+            ),*/
+
+            React.createElement('div', {className: 'user-infos'}, notification, eye, user)
+          ),
+         // React.createElement(Cartouche, {className: 'cartridge'})
+         React.createElement(Cartouche, {className: 'entete-tall'})
+        ),
+        React.createElement('div', {className: 'entete-actions'},
+          React.createElement('button', {className: 'btn btn-success btn-fab btn-raised fa fa-bell-o'}),
+          React.createElement('button', {className: 'btn btn-danger btn-fab btn-raised fa fa-eye'}),
+          React.createElement('button', {className: 'btn btn-primary btn-fab btn-raised fa fa-user'})
+        )
+      )
+    );
+  }
+});
+
+});
+
+require.register("views/menu/cartridge", function(exports, require, module) {
+/*global focusComponents, React */
+
+
+module.exports = React.createClass({
+  displayName: 'UserCartouche',
+  render: function() {
+    return (
+      React.createElement("div", {className: "cartouche"}, 
+        "tetsttttt"
+      )
+    );
+  }
+});
+
+});
+
 require.register("views/menu/index", function(exports, require, module) {
 /*global focusComponents, React */
 //Define menu.
@@ -2204,25 +2268,51 @@ require.register("views/menu/leftMenu", function(exports, require, module) {
 /*global focusComponents, React */
 //Define menu.
 var menuMixin = focusComponents.application.menu.mixin;
+var render = focus.application.render;
 var Menu = React.createClass({displayName: "Menu",
   mixins: [menuMixin],
   /** @inheriteddoc */
   renderTitle: function () {
-    if(!this.props.brand){
+    if (!this.props.brand) {
       return React.createElement("h3", null, this.props.title);
     }
-    return React.createElement("div", {className: "brand"}, React.createElement("img", {src: this.props.brand}), " ");
+    return React.createElement("div", {className: "brand"}, 
+      React.createElement("img", {src: this.props.brand})
+    );
   },
   renderContent: function renderMenuContent() {
-    return this.props.links.map(function (link) {
-      if (!link.img) {
-        return React.createElement("a", {href: link.url}, "link.title");
-      } else {
-        return React.createElement("a", {href: link.url}, 
-          React.createElement("img", {src: link.img})
-        );
+    var home = React.createElement("a", {href: "#"}, 
+      React.createElement("img", {src: "static/img/home-32x32-white.svg"})
+    );
+    var search = React.createElement("a", {onClick: this.openQuickSearchPopin, id: "quick-search-link"}, 
+      React.createElement("img", {src: "static/img/search-32x32-white.svg"})
+    );
+    var root = React.createElement('div', null, home, search);
+    return root;
+    /* return this.props.links.map(function (link) {
+     if (!link.img) {
+     return <a href= {link.url}>link.title</a>;
+     } else {
+     return <a href= {link.url}>
+     <img src={link.img}/>
+     </a>;
+     }
+     });*/
+
+  },
+  openQuickSearchPopin: function openQuickSearchPopin(event) {
+    event.preventDefault();
+    console.info('click on search icon');
+    var SearchResultView = require('../search-result');
+    React.createElement(SearchResultView, {
+      props: {
+        position: 'left',
+        open: false,
+        displaySelector: '#quick-search-link',
+        style: {className: 'quick-search-popin'}
       }
     });
+    render(SearchResultView, '#modalContainer', {props: {position: 'left', open: true, displaySelector: 'a[href="#search/quick"]', style: {className: 'quick-search-popin'}}});
   }
 });
 
@@ -2235,7 +2325,11 @@ module.exports = React.createClass({displayName: "exports",
         position: "left", 
         direction: "vertical", 
         title: "", 
-        links: [{url: '#', name: '', img: 'static/img/home-32x32-white.svg'}, {url: '#search/quick', name: '', img: 'static/img/search-32x32-white.svg'}], 
+        links: [{url: '#', name: '', img: 'static/img/home-32x32-white.svg'}, {
+          url: '#search/quick',
+          name: '',
+          img: 'static/img/search-32x32-white.svg'
+        }], 
         ref: "menuLeft", 
         style: style, 
         brand: "static/img/brand.png"}
@@ -2844,8 +2938,8 @@ module.exports = React.createClass({displayName: "exports",
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,
       React.createElement('div', {
-        className: ''
-      }, '')
+        className: 'quick-search-popin-header'
+      }, 'Quick search')
     );
   },
   renderPopinFooter: function renderPopinFooter(popin) {
@@ -2853,14 +2947,19 @@ module.exports = React.createClass({displayName: "exports",
 
   },
   renderContent: function (popin) {
+    var parentselector;
+    if(this.props.style.className !== null && this.props.style.className !== undefined){
+      parentselector = '.' + this.props.style.className;
+    }
     return React.createElement(SearchResult, {
-      lineMap: {'Movies': MovieLineComponent, 'People': PeopleLineComponent, 'MOVIE':MovieLineComponent, 'PEOPLE': PeopleLineComponent}, 
+      lineMap: {'Movies': MovieLineComponent, 'People': PeopleLineComponent, 'MOVIE': MovieLineComponent, 'PEOPLE': PeopleLineComponent}, 
       onLineClick: config.onLineClick, 
       operationList: config.operationList, 
       scopeList: config.scopes, 
       scope: config.scope, 
       idField: config.idField, 
-      groupMaxRows: config.groupMaxRows});
+      groupMaxRows: config.groupMaxRows, 
+      parentSelector: parentselector});
   }
 });
 
@@ -3043,14 +3142,14 @@ module.exports = React.createClass({displayName: "exports",
   render: function render() {
     var qs = this.quickSearchComponent();
     var summary = React.createElement("div", null);
+    var scope = this.state.scope
     if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
       var resultsContent = React.createElement("div", {className: "results"}, this.state.totalRecords, " results ");
       var linkFilterResult = React.createElement("div", null);
       if (this.state.totalRecords > 0) {
-        var criteria = this.getCriteria();
-        if (criteria.scope !== null && criteria.scope !== undefined) {
-          if (criteria.scope.toLowerCase() !== 'all') {
-            var url = '#search/advanced/scope/' + criteria.scope + '/query/' + criteria.query;
+        if (scope !== null && scope !== undefined) {
+          if (scope.toLowerCase() !== 'all') {
+            var url = '#search/advanced/scope/' + scope + '/query/' + this.state.query;
             linkFilterResult = React.createElement("div", {className: "linkFilterResult"}, 
               React.createElement("a", {href: url}, "Filter result   ", 
                 React.createElement("img", {src: "./static/img/arrow-right-16.png"})
@@ -3065,8 +3164,8 @@ module.exports = React.createClass({displayName: "exports",
       );
     }
     var type = 'MOVIE';
-    if(this.state.scope !== undefined && this.state.scope !== null){
-        type = this.state.scope;
+    if(scope !== undefined && scope !== null){
+        type = scope;
     }
     var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
     var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);

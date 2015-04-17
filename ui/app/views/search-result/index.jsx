@@ -48,8 +48,8 @@ module.exports = React.createClass({
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,
       React.createElement('div', {
-        className: ''
-      }, '')
+        className: 'quick-search-popin-header'
+      }, 'Quick search')
     );
   },
   renderPopinFooter: function renderPopinFooter(popin) {
@@ -57,13 +57,18 @@ module.exports = React.createClass({
 
   },
   renderContent: function (popin) {
+    var parentselector;
+    if(this.props.style.className !== null && this.props.style.className !== undefined){
+      parentselector = '.' + this.props.style.className;
+    }
     return <SearchResult
-      lineMap= {{'Movies': MovieLineComponent, 'People': PeopleLineComponent, 'MOVIE':MovieLineComponent, 'PEOPLE': PeopleLineComponent}}
+      lineMap= {{'Movies': MovieLineComponent, 'People': PeopleLineComponent, 'MOVIE': MovieLineComponent, 'PEOPLE': PeopleLineComponent}}
       onLineClick = {config.onLineClick}
       operationList = {config.operationList}
       scopeList = {config.scopes}
       scope = {config.scope}
       idField = {config.idField}
-      groupMaxRows= {config.groupMaxRows}/>;
+      groupMaxRows= {config.groupMaxRows}
+      parentSelector = {parentselector}/>;
   }
 });

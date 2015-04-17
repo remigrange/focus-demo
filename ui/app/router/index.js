@@ -6,12 +6,11 @@ var render = focus.application.render;
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
 
-var TopMenuView = require('../views/menu/topMenu');
 var LeftMenuView = require('../views/menu/leftMenu');
 
 var renderMenu = function(){
-  render(TopMenuView, '#header',
-    {props: {position: 'top', direction: 'horizontal', title: 'Focus', reference: 'menuTop', style: {className: 'header-menu'}}});
+  var PageHeader = require('../views/menu/appHeader');
+  render(PageHeader, '#header');
   render(LeftMenuView, '#leftMenu');
 };
 

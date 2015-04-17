@@ -94,20 +94,6 @@
   height: 60px;
 }
 
-.badge-alerte {
-  background-color: $color-rouge2;
-  margin-left: -10px;
-  margin-top: -5px;
-  position: absolute;
-}
-.badge-warning {
-  background-color: $color-jaune;
-  padding: 3px 4px;
-  margin-left: -5px;
-  margin-top: -2px;
-  position: absolute;
-}
-
 .user-image {
   background-color: rgba(5,29,49,0.5);
   width:$taille-image-petite;

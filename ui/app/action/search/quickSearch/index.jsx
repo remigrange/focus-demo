@@ -30,7 +30,7 @@ module.exports = {
                     list: list,
                     facet: {},
                     pageInfos: {
-                        currentPage: 1,
+                        currentPage: page,
                         perPage: 50,
                         totalRecords: data.totalRecords
                     },
