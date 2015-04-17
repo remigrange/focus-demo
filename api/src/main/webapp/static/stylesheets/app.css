@@ -79486,6 +79486,14 @@ body {
 hr {
   border-top: solid 1px #e2e2e2; }
 
+/* line 6, stdin */
+/* line 10, stdin */
+body {
+  background-color: #FFF;
+  font-family: RobotoRegular;
+  font-size: 12px;
+  word-wrap: break-word; }
+
 /* line 1, stdin */
 /* line 2, stdin */
 .details {
@@ -79720,6 +79728,18 @@ body {
   font-weight: normal;
   font-style: normal; }
 
+@font-face {
+  font-family: "RobotoBold";
+  src: url('../fonts/Roboto-Bold.ttf');
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "RobotoRegular";
+  src: url('../fonts/Roboto-Regular.ttf');
+  font-weight: normal;
+  font-style: normal; }
+
 /* line 13, app/styles/variables.scss */
 /* line 2, stdin */
 body {
@@ -79754,18 +79774,19 @@ body {
 .header-menu .top-menu-item {
   width: 100px;
   padding-top: 18px;
-  display: inline-block; }
+  display: inline-block;
+  cursor: pointer; }
 
-/* line 30, stdin */
-/* line 32, stdin */
+/* line 31, stdin */
+/* line 33, stdin */
 .header-menu .top-menu-item {
   font-size: 24px;
   text-align: center;
   border-left: 1px solid #e2e2e2;
   height: 60px; }
 
-/* line 38, stdin */
 /* line 39, stdin */
+/* line 40, stdin */
 .header-menu h3 {
   color: #242a30;
   font-size: 24px;
@@ -79776,8 +79797,8 @@ body {
   padding: 18px 0 18px 10px;
   text-transform: uppercase; }
 
-/* line 50, stdin */
-/* line 50, stdin */
+/* line 51, stdin */
+/* line 51, stdin */
 .header-menu a, .left-menu a {
   border-left: none;
   border-bottom: none;
@@ -79787,57 +79808,57 @@ body {
   font-weight: bold;
   text-align: center; }
 
-/* line 60, stdin */
-/* line 60, stdin */
+/* line 61, stdin */
+/* line 61, stdin */
 .header-menu a {
   width: 100px;
   height: 60px; }
 
-/* line 65, stdin */
-/* line 65, stdin */
+/* line 66, stdin */
+/* line 66, stdin */
 .left-menu a {
   width: 60px; }
 
-/* line 69, stdin */
-/* line 69, stdin */
+/* line 70, stdin */
+/* line 70, stdin */
 .left-menu a img {
   width: 20px;
   height: 20px; }
 
+/* line 76, stdin */
 /* line 75, stdin */
-/* line 74, stdin */
 .header-menu a:hover, .left-menu a:hover {
   background: #6acacb; }
 
+/* line 80, stdin */
 /* line 79, stdin */
-/* line 78, stdin */
 .left-menu {
   background: #36b7b9; }
 
-/* line 84, stdin */
-/* line 82, stdin */
+/* line 85, stdin */
+/* line 83, stdin */
 #leftMenu .brand {
   text-align: center;
   background-color: #424950;
   height: 60px;
   padding-top: 20px; }
 
-/* line 91, stdin */
-/* line 89, stdin */
+/* line 92, stdin */
+/* line 90, stdin */
 #leftMenu .left-menu a {
   padding-top: 20px;
   height: 60px; }
 
-/* line 96, stdin */
-/* line 94, stdin */
+/* line 97, stdin */
+/* line 95, stdin */
 .badge-alerte {
   background-color: #f82239;
   margin-left: -10px;
   margin-top: -5px;
   position: absolute; }
 
+/* line 103, stdin */
 /* line 102, stdin */
-/* line 101, stdin */
 .badge-warning {
   background-color: #ffbe60;
   padding: 3px 4px;
@@ -79845,8 +79866,8 @@ body {
   margin-top: -2px;
   position: absolute; }
 
+/* line 111, stdin */
 /* line 110, stdin */
-/* line 109, stdin */
 .user-image {
   background-color: rgba(5, 29, 49, 0.5);
   width: 40px;
@@ -79860,12 +79881,6 @@ body {
 
 /* line 5, stdin */
 /* line 6, stdin */
-body {
-  background-color: #FFF;
-  font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial; }
-
-/* line 9, stdin */
-/* line 11, stdin */
 #leftMenu {
   height: 100%;
   width: 60px;
@@ -79875,13 +79890,13 @@ body {
   text-align: center;
   z-index: 1006; }
 
-/* line 19, stdin */
-/* line 21, stdin */
+/* line 15, stdin */
+/* line 16, stdin */
 #pageContent {
   margin-left: 60px; }
 
-/* line 23, stdin */
-/* line 25, stdin */
+/* line 19, stdin */
+/* line 20, stdin */
 #header {
   text-align: center;
   position: absolute;
@@ -79890,26 +79905,26 @@ body {
   z-index: 1005;
   line-height: 40px; }
 
-/* line 36, stdin */
-/* line 34, stdin */
+/* line 32, stdin */
+/* line 29, stdin */
 #page {
   padding: 70px 20px 20px 20px;
   display: inline-block;
   width: 100%;
   min-width: 1300px; }
 
-/* line 43, stdin */
-/* line 41, stdin */
+/* line 39, stdin */
+/* line 36, stdin */
 .clear {
   clear: both; }
 
-/* line 47, stdin */
-/* line 45, stdin */
+/* line 43, stdin */
+/* line 40, stdin */
 .home-popin {
   margin: 70px 0 0 60px !important; }
 
-/* line 51, stdin */
-/* line 49, stdin */
+/* line 47, stdin */
+/* line 44, stdin */
 .home-popin-header {
   font-size: 16px;
   font-weight: bold;
