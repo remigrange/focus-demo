@@ -6,6 +6,7 @@ var Title = focus.components.common.title.component;
 var PeopleCard = require('./component/peopleCard');
 var Block = focus.components.common.block.component;
 var line = React.createClass({
+  definitionPath: 'people',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (

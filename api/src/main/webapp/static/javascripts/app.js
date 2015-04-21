@@ -2478,6 +2478,7 @@ var movieStore = require('../../stores/movie');
 var Block = focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
 var line = React.createClass({displayName: "line",
+  definitionPath: 'people',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
@@ -2580,6 +2581,7 @@ var movieStore = require('../../stores/movie');
 var Block = focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
 var line = React.createClass({displayName: "line",
+  definitionPath: 'people',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
@@ -2633,6 +2635,7 @@ var Title = focus.components.common.title.component;
 var PeopleCard = require('./component/peopleCard');
 var Block = focus.components.common.block.component;
 var line = React.createClass({displayName: "line",
+  definitionPath: 'people',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
