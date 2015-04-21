@@ -3172,7 +3172,7 @@ module.exports = React.createClass({displayName: "exports",
     return root;
   },
   renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {
-    var title = React.createElement("h3", {className: "title-group-key"}, groupKey);//React.createElement(focusComponents.common.title.component, {title: groupKey, style: {className: 'title-groupKey'}});
+    var title = React.createElement("h3", {className: "title-group-key"}, groupKey);
     var summary = React.createElement("div", null);
     var count = React.createElement("div", null, "list.length items");
     if (list.length > 3) {

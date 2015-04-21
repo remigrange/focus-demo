@@ -14,7 +14,6 @@
     <meta name="author" content="Klee Group">
     <title>Rodolphe Demo</title>
     <!--link rel="icon" type="image/png" href="static/images/favicon.png"/-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.1/react.js"></script>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/0.4.0/Showdown.js"></script>
     <link rel="stylesheet" href="static/stylesheets/app.css">
     <script src='static/javascripts/vendor.js'></script>
@@ -25,7 +24,7 @@
 	<div id="leftMenu">
 	</div>
 	<div id="pageContent">
-		<div id="header" class="affix"></div>
+		<div id="header"></div>
 		<div id="page"></div>	
 		<div id="modalContainer"></div>		
 	</div>
