@@ -21,7 +21,7 @@ var config = {
   operationList: [
     {
       label: '', action: function (data) {
-      focus.application.render(lineResume, '#modalContainer',
+      focus.application.render(lineResume, '#previewModal',
         {
           props: {
             data: data,
@@ -30,7 +30,7 @@ var config = {
             style: {className: 'preview-popin'}
           }
         });
-    }, style: {className: 'preview'}, priority: 1
+    }, style: {className: 'preview fa fa-eye'}, priority: 1
     }
   ],
   scopes: [
@@ -42,6 +42,24 @@ var config = {
   idField: 'movId',
   groupMaxRows: 3
 };
+
+var parentselector = '.quick-search-popin';
+
+var qs = React.createElement(SearchResult, {
+  lineMap: {
+    'Movies': MovieLineComponent,
+    'People': PeopleLineComponent,
+    'MOVIE': MovieLineComponent,
+    'PEOPLE': PeopleLineComponent
+  },
+  onLineClick: config.onLineClick,
+  operationList: config.operationList,
+  scopeList: config.scopes,
+  scope: config.scope,
+  idField: config.idField,
+  groupMaxRows: config.groupMaxRows,
+  parentSelector: parentselector
+});
 
 module.exports = React.createClass({
   mixins: [focusComponents.application.popin.mixin],
@@ -57,18 +75,24 @@ module.exports = React.createClass({
 
   },
   renderContent: function (popin) {
-    var parentselector;
-    if(this.props.style.className !== null && this.props.style.className !== undefined){
+   /* var parentselector;
+    if (this.props.style.className !== null && this.props.style.className !== undefined) {
       parentselector = '.' + this.props.style.className;
     }
     return <SearchResult
-      lineMap= {{'Movies': MovieLineComponent, 'People': PeopleLineComponent, 'MOVIE': MovieLineComponent, 'PEOPLE': PeopleLineComponent}}
+      lineMap= {{
+        'Movies': MovieLineComponent,
+        'People': PeopleLineComponent,
+        'MOVIE': MovieLineComponent,
+        'PEOPLE': PeopleLineComponent
+      }}
       onLineClick = {config.onLineClick}
       operationList = {config.operationList}
       scopeList = {config.scopes}
       scope = {config.scope}
       idField = {config.idField}
       groupMaxRows= {config.groupMaxRows}
-      parentSelector = {parentselector}/>;
+      parentSelector = {parentselector}/>;*/
+    return qs;
   }
 });

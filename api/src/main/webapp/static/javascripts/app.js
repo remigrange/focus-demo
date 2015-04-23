@@ -2248,6 +2248,24 @@ var Menu = React.createClass({displayName: "Menu",
 
 module.exports = React.createClass({displayName: "exports",
   render: function renderPeopleView() {
+    var test = React.createElement("div", null, 
+      React.createElement("button", {id: "buttonLeft", onClick: this.hanleOpenLeftPopin}, "Open popin left"), 
+      React.createElement("button", {id: "buttonUp", onClick: this.hanleOpenUpPopin}, "Open popin up"), 
+      React.createElement("button", {id: "buttonDown", onClick: this.hanleOpenDownPopin}, "Open popin down"), 
+      React.createElement("button", {id: "buttonRight", onClick: this.hanleOpenRightPopin}, "Open popin right"), 
+      React.createElement("div", null, "  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis condimentum, turpis non aliquam bibendum, ligula ex convallis dui, vel tincidunt ipsum risus et lacus. Vivamus quam lectus, finibus in gravida id, auctor semper libero. Cras lacinia dapibus erat facilisis vestibulum. Suspendisse aliquam sollicitudin lorem, eu ultricies velit malesuada in. Nunc at eros id erat gravida tincidunt. Nulla id ornare sem, nec mattis lacus. In ex libero, pulvinar semper nisl ut, pulvinar facilisis nisl. Sed ut quam consectetur sem porta blandit sed vitae magna. Sed ultrices egestas risus, id euismod magna interdum et. Proin lobortis porta commodo." + ' ' +
+
+        "Quisque vitae suscipit massa, ac mollis leo. Phasellus nisl magna, placerat a diam posuere, luctus blandit odio. Donec sagittis vehicula sem id ullamcorper. Nunc tincidunt arcu sagittis, faucibus quam ut, laoreet sapien. Cras magna odio, viverra quis elit ut, elementum tempor enim. Integer magna mauris, porttitor id nisl a, dapibus porttitor magna. Quisque ac porttitor magna. Nulla dapibus eleifend urna fermentum vehicula. Pellentesque ac tincidunt leo, quis gravida massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae purus sed metus molestie dapibus et ac est." + ' ' +
+
+        "Vestibulum est est, fermentum sed vestibulum ut, ultrices eu velit. Vivamus consequat auctor dui, at pulvinar nunc suscipit ut. Nulla porta tincidunt ipsum ut euismod. Donec ante lacus, mollis at vehicula a, sagittis at eros. Fusce fringilla erat sit amet ex vestibulum, et dignissim tellus rhoncus. Nullam eu suscipit tellus. Quisque hendrerit leo laoreet ligula dignissim malesuada. Duis consectetur nisl et tellus accumsan dignissim. Sed ultricies luctus tortor. Nam molestie convallis mauris dictum rutrum. Praesent ligula urna, tempus vitae auctor sed, condimentum a eros. Aliquam ante lacus, convallis vitae scelerisque ornare, tristique quis orci. Integer volutpat, erat at porta finibus, quam lectus ornare tortor, et lacinia leo purus eget ligula. Maecenas elementum semper pulvinar." + ' ' +
+
+        "Nulla nec neque maximus, sollicitudin mauris sit amet, mollis urna. Duis pellentesque non nunc sed cursus. Nunc sed ullamcorper purus. Morbi erat nulla, congue at urna tincidunt, rhoncus imperdiet eros. Vivamus interdum mattis risus, ut mollis orci convallis et. Maecenas a nulla quam. Maecenas sit amet eros a tortor lacinia accumsan eu non sapien." + ' ' +
+
+        "Duis fringilla arcu vitae sollicitudin facilisis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aenean at cursus ipsum, ac sollicitudin orci. Nam ultricies augue mi, eu interdum neque venenatis et. Duis euismod a massa et vestibulum. Quisque et lacinia nunc, eget vulputate orci. Nulla scelerisque rhoncus erat nec maximus. Nullam tincidunt mauris erat, non tempor nunc blandit vitae. Mauris non arcu sit amet turpis euismod elementum in nec magna. Donec id purus sodales erat auctor pharetra sit amet at orci. Nam dignissim vitae ligula at dictum."
+
+      )
+    );
+
     return (
       React.createElement(Menu, {
         open: true, 
@@ -2269,6 +2287,7 @@ require.register("views/menu/leftMenu", function(exports, require, module) {
 //Define menu.
 var menuMixin = focusComponents.application.menu.mixin;
 var render = focus.application.render;
+var isFirstTime = true;
 var Menu = React.createClass({displayName: "Menu",
   mixins: [menuMixin],
   /** @inheriteddoc */
@@ -2289,51 +2308,40 @@ var Menu = React.createClass({displayName: "Menu",
     );
     var root = React.createElement('div', null, home, search);
     return root;
-    /* return this.props.links.map(function (link) {
-     if (!link.img) {
-     return <a href= {link.url}>link.title</a>;
-     } else {
-     return <a href= {link.url}>
-     <img src={link.img}/>
-     </a>;
-     }
-     });*/
-
   },
   openQuickSearchPopin: function openQuickSearchPopin(event) {
     event.preventDefault();
     console.info('click on search icon');
-    var SearchResultView = require('../search-result');
-    React.createElement(SearchResultView, {
-      props: {
-        position: 'left',
-        open: false,
-        displaySelector: '#quick-search-link',
-        style: {className: 'quick-search-popin'}
-      }
-    });
-    render(SearchResultView, '#modalContainer', {props: {position: 'left', open: true, displaySelector: 'a[href="#search/quick"]', style: {className: 'quick-search-popin'}}});
+    if(isFirstTime){
+      var SearchResultView = require('../search-result');
+      render(SearchResultView, '#modalContainer', {
+        props: {
+          position: 'left',
+          open: true,
+          displaySelector: '#quick-search-link',
+          style: {className: 'quick-search-popin'}
+        }
+      });
+      isFirstTime = false;
+    }
+    //this.refs.qs._toggleOpen();
   }
 });
 
 module.exports = React.createClass({displayName: "exports",
   render: function renderLeftMenu() {
     var style = {className: 'left-menu'};
-    return (
-      React.createElement(Menu, {
-        open: true, 
-        position: "left", 
-        direction: "vertical", 
-        title: "", 
-        links: [{url: '#', name: '', img: 'static/img/home-32x32-white.svg'}, {
-          url: '#search/quick',
-          name: '',
-          img: 'static/img/search-32x32-white.svg'
-        }], 
-        ref: "menuLeft", 
-        style: style, 
-        brand: "static/img/brand.png"}
-      ));
+    var menu = React.createElement(Menu, {
+      open: true, 
+      position: "left", 
+      direction: "vertical", 
+      title: "", 
+      links: [], 
+      ref: "menuLeft", 
+      style: style, 
+      brand: "static/img/brand.png"}
+    );
+    return React.createElement('div', null, menu);
   }
 });
 
@@ -2914,7 +2922,7 @@ var config = {
   operationList: [
     {
       label: '', action: function (data) {
-      focus.application.render(lineResume, '#modalContainer',
+      focus.application.render(lineResume, '#previewModal',
         {
           props: {
             data: data,
@@ -2923,7 +2931,7 @@ var config = {
             style: {className: 'preview-popin'}
           }
         });
-    }, style: {className: 'preview'}, priority: 1
+    }, style: {className: 'preview fa fa-eye'}, priority: 1
     }
   ],
   scopes: [
@@ -2935,6 +2943,24 @@ var config = {
   idField: 'movId',
   groupMaxRows: 3
 };
+
+var parentselector = '.quick-search-popin';
+
+var qs = React.createElement(SearchResult, {
+  lineMap: {
+    'Movies': MovieLineComponent,
+    'People': PeopleLineComponent,
+    'MOVIE': MovieLineComponent,
+    'PEOPLE': PeopleLineComponent
+  },
+  onLineClick: config.onLineClick,
+  operationList: config.operationList,
+  scopeList: config.scopes,
+  scope: config.scope,
+  idField: config.idField,
+  groupMaxRows: config.groupMaxRows,
+  parentSelector: parentselector
+});
 
 module.exports = React.createClass({displayName: "exports",
   mixins: [focusComponents.application.popin.mixin],
@@ -2950,19 +2976,25 @@ module.exports = React.createClass({displayName: "exports",
 
   },
   renderContent: function (popin) {
-    var parentselector;
-    if(this.props.style.className !== null && this.props.style.className !== undefined){
+   /* var parentselector;
+    if (this.props.style.className !== null && this.props.style.className !== undefined) {
       parentselector = '.' + this.props.style.className;
     }
-    return React.createElement(SearchResult, {
-      lineMap: {'Movies': MovieLineComponent, 'People': PeopleLineComponent, 'MOVIE': MovieLineComponent, 'PEOPLE': PeopleLineComponent}, 
-      onLineClick: config.onLineClick, 
-      operationList: config.operationList, 
-      scopeList: config.scopes, 
-      scope: config.scope, 
-      idField: config.idField, 
-      groupMaxRows: config.groupMaxRows, 
-      parentSelector: parentselector});
+    return <SearchResult
+      lineMap= {{
+        'Movies': MovieLineComponent,
+        'People': PeopleLineComponent,
+        'MOVIE': MovieLineComponent,
+        'PEOPLE': PeopleLineComponent
+      }}
+      onLineClick = {config.onLineClick}
+      operationList = {config.operationList}
+      scopeList = {config.scopes}
+      scope = {config.scope}
+      idField = {config.idField}
+      groupMaxRows= {config.groupMaxRows}
+      parentSelector = {parentselector}/>;*/
+    return qs;
   }
 });
 
@@ -3171,7 +3203,11 @@ module.exports = React.createClass({displayName: "exports",
         type = scope;
     }
     var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
-    var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
+    var helpContainer = React.createElement("div", {className: "qs-help_container"}, 
+        React.createElement("div", null, React.createElement("img", {src: "./static/img/arrow-help.png"})), 
+        React.createElement("div", null, "Hover over a line and click on ", React.createElement("i", {className: "fa fa-eye"}), " to see a preview")
+    );
+    var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list, helpContainer);
     return root;
   },
   renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {

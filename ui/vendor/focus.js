@@ -115,6 +115,12 @@ module.exports = function (component, selector, options) {
   mountedComponents[selector] = true;
   console.log("Mounted components : ", mountedComponents);
 };
+/*
+  Exemple
+  var render = focus.application.render;
+  var MyComponent = require('./my-component');
+  render(MyComponent, 'div.component-container', {props: {id: '12'}});
+ */
 
 },{}],6:[function(require,module,exports){
 "use strict";
@@ -743,6 +749,20 @@ module.exports = function builtInStore() {
 "use strict";
 
 var dispatcher = require("../dispatcher");
+var isString = require("lodash/lang/isString");
+
+/**
+ * Transform the message into objet if it is a string.
+ * @param {[string, object]} message - The message to display (object or string).
+ * @returns {object} - The well constructed message.
+ */
+function _parseString(message) {
+  if (isString(message)) {
+    message = { content: message };
+  }
+  return message;
+}
+
 /**
  * Add a message.
  * @param {object} message - The message object.
@@ -759,6 +779,7 @@ function addMessage(message) {
  * @param {object} message - The message content.
  */
 function addErrorMessage(message) {
+  message = _parseString(message);
   message.type = "error";
   addMessage(message);
 }
@@ -767,6 +788,7 @@ function addErrorMessage(message) {
  * @param {object} message - The message content.
  */
 function addWarningMessage(message) {
+  message = _parseString(message);
   message.type = "warning";
   addMessage(message);
 }
@@ -776,6 +798,7 @@ function addWarningMessage(message) {
  * @param {object} message - The message content.
  */
 function addInformationMessage(message) {
+  message = _parseString(message);
   message.type = "info";
   addMessage(message);
 }
@@ -785,6 +808,7 @@ function addInformationMessage(message) {
  * @param {object} message - The message content.
  */
 function addSuccessMessage(message) {
+  message = _parseString(message);
   message.type = "success";
   addMessage(message);
 }
@@ -803,7 +827,7 @@ module.exports = {
   builtInStore: require("./built-in-store")
 };
 
-},{"../dispatcher":16,"./built-in-store":24}],26:[function(require,module,exports){
+},{"../dispatcher":16,"./built-in-store":24,"lodash/lang/isString":100}],26:[function(require,module,exports){
 "use strict";
 /*global XMLHttpRequest, XDomainRequest*/
 /**
@@ -10375,7 +10399,12 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 //The store is an event emitter.
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
-var isArray = require("lodash/lang/isArray");
+
+var _require = require("lodash/lang");
+
+var isArray = _require.isArray;
+var isEmpty = _require.isEmpty;
+
 var getEntityInformations = require("../definition/entity/builder").getEntityInformations;
 var capitalize = require("lodash/string/capitalize");
 var Immutable = require("immutable");
@@ -10398,6 +10427,7 @@ var CoreStore = (function (_EventEmitter) {
     });
     //Initialize the data as immutable map.
     this.data = Immutable.Map({});
+    this.dataError = Immutable.Map({});
     this.customHandler = assign({}, config.customHandler);
     //Register all gernerated methods.
     this.buildDefinition();
@@ -10459,7 +10489,42 @@ var CoreStore = (function (_EventEmitter) {
           currentStore["get" + capitalizeDefinition] = (function (def) {
             return function () {
               var hasData = currentStore.data.has(def);
-              return hasData ? currentStore.data.get(def).toJS() : undefined;
+              if (hasData) {
+                var data = currentStore.data.get(def).toJS();
+                if (!isEmpty(data)) {
+                  return data;
+                }
+              }
+              return undefined;
+            };
+          })(definition);
+
+          //Creates the error change listener
+          currentStore["add" + capitalizeDefinition + "ErrorListener"] = (function (def) {
+            return function (cb) {
+              currentStore.addListener("" + def + ":error", cb);
+            };
+          })(definition);
+          //Remove the change listener
+          currentStore["remove" + capitalizeDefinition + "ErrorListener"] = (function (def) {
+            return function (cb) {
+              currentStore.removeListener("" + def + ":error", cb);
+            };
+          })(definition);
+          //Create an update method.
+          currentStore["updateError" + capitalizeDefinition] = (function (def) {
+            return function (dataNode) {
+              //CheckIsObject
+              var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
+              currentStore.dataError = currentStore.dataError.set(def, immutableNode);
+              currentStore.emit("" + def + ":error");
+            };
+          })(definition);
+          //Create a get method.
+          currentStore["getError" + capitalizeDefinition] = (function (def) {
+            return function () {
+              var hasData = currentStore.dataError.has(def);
+              return hasData ? currentStore.dataError.get(def).toJS() : undefined;
             };
           })(definition);
         }
@@ -10513,7 +10578,7 @@ var CoreStore = (function (_EventEmitter) {
 
 module.exports = CoreStore;
 
-},{"../definition/entity/builder":11,"../dispatcher":16,"events":30,"immutable":34,"lodash/lang/isArray":83,"lodash/string/capitalize":108,"object-assign":117}],128:[function(require,module,exports){
+},{"../definition/entity/builder":11,"../dispatcher":16,"events":30,"immutable":34,"lodash/lang":79,"lodash/string/capitalize":108,"object-assign":117}],128:[function(require,module,exports){
 /**
  * Build the cartridge store definition.
  * @return {object} - The cartridge component.

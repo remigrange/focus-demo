@@ -72,9 +72,15 @@ Scope css
 }
 
 .btn-preview {
-  background: url('./../img/eye.svg') no-repeat center center;
   box-shadow: none !important;
-  padding-top: 40px;
+  width: 40px !important;
+  height: 40px !important;
+  color: #FFF !important;
+  background-color: #2a8182 !important;
+  border-radius: 20px;
+  font-size: 27px;
+  padding: 0 !important;
+  margin: 15px 0 0 0 !important;
 }
 
 .linkAdvancedSearch {
@@ -90,11 +96,13 @@ Scope css
 }
 
 .quick-search-popin {
-  margin: 0 0 0 60px !important;
+  margin: 0 0 0 0 !important;
+  padding-left: 60px;
   z-index: 1004;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  width: 50%;
 }
 
 .quick-search-popin .full {
@@ -106,10 +114,10 @@ Scope css
 }
 
 .preview-popin {
-  margin: 60px 0 0 20px !important;
+  margin: 0 0 0 20px !important;
   z-index: 1004;
   height: 100%;
-  width: 40%;
+  width: 50%;
 }
 
 .preview-popin .full {
@@ -147,4 +155,18 @@ Scope css
 .quick-search-popin .popin-close-btn {
   margin-top: 22px;
 }
-
+ .qs-help_container {
+   position: fixed;
+   top:30%;
+   left:105%;
+   font-size: 19px;
+   font-family: RobotoItalic;
+   width: 280px;
+   color: $color-blanc;
+   border: 1px solid transparent;
+ }
+ .qs-help_container img {
+   float : left;
+   margin-right: 5px;
+   margin-top: 5px
+ }
