@@ -3149,6 +3149,45 @@ module.exports = React.createClass({displayName: "exports",
 
 });
 
+require.register("views/search-result/moviePreview", function(exports, require, module) {
+/*global React, focusComponents */
+module.exports = React.createClass({displayName: "exports",
+  mixins: [focusComponents.application.popin.mixin],
+  definitionPath: 'movie',
+  renderPopinHeader: function (popin) {
+    return React.createElement('div', null,
+      React.createElement('div', {
+        className: 'preview-popin-header'
+      }, '')
+    );
+  },
+  renderPopinFooter: function renderPopinFooter(popin) {
+    return React.createElement('div', null, '');
+  },
+  renderContent: function (data) {
+    var movieLink = '#movie/' + this.props.data.movId;
+
+    var root = React.createElement("div", null, " ", React.createElement("div", {className: "movie-preview-header"}, 
+      React.createElement("div", null, " ", React.createElement("img", {src: "./static/img/logoMovie.png"}), " "), 
+      React.createElement("div", {className: "title-level-1"}, this.props.data.title), 
+      React.createElement("div", {className: "title-level-3"}, "IMBD ID ", this.props.data.imdbId), 
+      React.createElement("div", {className: "title-level-3"}, this.props.data.genreIds), 
+      React.createElement("div", {className: "title-level-3"}, this.props.data.description)
+    ), 
+    React.createElement("div", {className: "movie-preview-detail"}, 
+      React.createElement("div", {className: "title-level-1"}, this.props.data.countryIds), 
+      React.createElement("div", {className: "title-level-3"}, this.props.data.languageIds), 
+      React.createElement("div", {className: "title-level-3"}, this.props.data.released), 
+      React.createElement("div", {className: "title-level-3"}, this.props.data.runtime)
+    ), 
+    React.createElement("div", {className: "movie-link-detailed-sheet"}, React.createElement("a", {href: movieLink}, "Detailed sheet "))
+    );
+    return root;
+  }
+});
+
+});
+
 require.register("views/search-result/peopleLineComponent", function(exports, require, module) {
 /*global React, focusComponents */
 module.exports = React.createClass({displayName: "exports",
@@ -3211,33 +3250,31 @@ module.exports = React.createClass({displayName: "exports",
     return root;
   },
   renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {
-    var title = React.createElement("h3", {className: "title-group-key"}, groupKey);
     var summary = React.createElement("div", null);
-    var count = React.createElement("div", null, "list.length items");
-    if (list.length > 3) {
-      count = React.createElement("div", {className: "count-results"}, 
-        React.createElement("span", null, " ", list.length, " items "), 
-        React.createElement("div", null, " Three most relevents ")
-      );
-    }
-    var linkFilterResult = React.createElement("div", null);
-    var criteria = this.getCriteria();
+    var mostRelevent = React.createElement("div", {className: "qs-results-most-relevents"}, "The 3 most relevents");
     var scope = 'PEOPLE';
+    var faIconClass = 'fa fa-user';
     if (groupKey.toLowerCase().indexOf('movie') >= 0) {
       scope = 'MOVIE';
+      faIconClass = 'fa fa-film';
     }
+    var title = React.createElement("div", {className: "title-group-key"}, React.createElement("i", {className: faIconClass}), " ", groupKey);
+    if (list.length > 3) {
+      title = React.createElement("div", {className: "title-group-key"}, React.createElement("i", {className: faIconClass}), " ", groupKey, " (", list.length, ")");
+    }
+
+    var linkFilterResult = React.createElement("div", null);
+    var criteria = this.getCriteria();
+
     if (list.length > 0) {
       var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
-      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, 
-        React.createElement("a", {href: url}, "Advanced search   ", 
-          React.createElement("img", {src: "./static/img/arrow-right-16.png"})
-        )
-      );
+      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {href: url}, "Advanced search"));
     }
-    summary = React.createElement("div", null, count, " ", linkFilterResult)
-    return React.createElement('div', {className: 'listResultContainer panel'},
-      title,
-      summary,
+    summary = React.createElement("div", null, mostRelevent, " ", linkFilterResult);
+    var goupHeader = React.createElement('div', {className: 'group-result-header'}, title, summary);
+
+    return React.createElement('div', {className: 'listResultContainer panel qs-group-results'},
+      goupHeader,
       this.simpleListComponent(
         {type: groupKey, list: list, maxRows: maxRows}));
 

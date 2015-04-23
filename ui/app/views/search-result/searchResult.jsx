@@ -42,33 +42,31 @@ module.exports = React.createClass({
     return root;
   },
   renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {
-    var title = <h3 className='title-group-key'>{groupKey}</h3>;
     var summary = <div></div>;
-    var count = <div>list.length items</div>;
-    if (list.length > 3) {
-      count = <div className='count-results'>
-        <span> {list.length} items </span>
-        <div> Three most relevents </div>
-      </div>;
-    }
-    var linkFilterResult = <div></div>;
-    var criteria = this.getCriteria();
+    var mostRelevent = <div className='qs-results-most-relevents'>The 3 most relevents</div>;
     var scope = 'PEOPLE';
+    var faIconClass = 'fa fa-user';
     if (groupKey.toLowerCase().indexOf('movie') >= 0) {
       scope = 'MOVIE';
+      faIconClass = 'fa fa-film';
     }
+    var title = <div className='title-group-key'><i className ={faIconClass}></i> {groupKey}</div>;
+    if (list.length > 3) {
+      title = <div className='title-group-key'><i className ={faIconClass}></i> {groupKey} ({list.length})</div>;
+    }
+
+    var linkFilterResult = <div></div>;
+    var criteria = this.getCriteria();
+
     if (list.length > 0) {
       var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
-      linkFilterResult = <div className='linkAdvancedSearch'>
-        <a href={url}>Advanced search&nbsp;&nbsp;&nbsp;
-          <img src='./static/img/arrow-right-16.png'/>
-        </a>
-      </div>;
+      linkFilterResult = <div className='linkAdvancedSearch'> <a href={url}>Advanced search</a></div>;
     }
-    summary = <div>{count} {linkFilterResult}</div>
-    return React.createElement('div', {className: 'listResultContainer panel'},
-      title,
-      summary,
+    summary = <div>{mostRelevent} {linkFilterResult}</div>;
+    var goupHeader = React.createElement('div', {className: 'group-result-header'}, title, summary);
+
+    return React.createElement('div', {className: 'listResultContainer panel qs-group-results'},
+      goupHeader,
       this.simpleListComponent(
         {type: groupKey, list: list, maxRows: maxRows}));
 
