@@ -34,7 +34,11 @@ module.exports = React.createClass({
         type = scope;
     }
     var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
-    var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list);
+    var helpContainer = <div className='qs-help_container'>
+        <div><img src='./static/img/arrow-help.png'/></div>
+        <div>Hover over a line and click on <i className="fa fa-eye"></i> to see a preview</div>
+    </div>;
+    var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list, helpContainer);
     return root;
   },
   renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {

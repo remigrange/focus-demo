@@ -26,7 +26,8 @@
 	<div id="pageContent">
 		<div id="header"></div>
 		<div id="page"></div>	
-		<div id="modalContainer"></div>		
+		<div id="modalContainer"></div>
+		<div id="previewModal"></div>				
 	</div>
 	<script>require('./index');</script>
 
