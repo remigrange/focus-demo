@@ -1,3 +1,5 @@
+@import "./variables";
+
 .details {
   background-color: white;
   border: solid 1px $color-gris2;
@@ -129,4 +131,3 @@
   .slidingBloc ul.selection-list li.sl-line {
     cursor: auto;
   }
-}

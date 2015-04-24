@@ -248,3 +248,11 @@ Scope css
      height: auto;
    }
  }
+
+ #qs-affix {
+ }
+
+ #qs-affix.affix {
+   position: fixed;
+   top: 0;
+ }

@@ -3011,6 +3011,21 @@ module.exports = React.createClass({displayName: "exports",
       groupMaxRows= {config.groupMaxRows}
       parentSelector = {parentselector}/>;*/
     return qs;
+  },
+  /** @inheritdoc */
+  componentDidMount: function popinDidMount() {
+    var source = document.querySelector(this.props.displaySelector);
+    var currentView = this;
+    if(source !== undefined && source !== null){
+      source.onclick = function () {
+        currentView._toggleOpen();
+      };
+    }
+   /* $('#qs-affix').affix({
+      offset: {
+        top: 0
+      }
+    });*/
   }
 });
 
@@ -3213,7 +3228,8 @@ module.exports = React.createClass({displayName: "exports",
         React.createElement("div", null, React.createElement("img", {src: "./static/img/arrow-help.png"})), 
         React.createElement("div", null, "Hover over a line and click on ", React.createElement("i", {className: "fa fa-eye"}), " to see a preview")
     );
-    var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list, helpContainer);
+    var qsAffix = React.createElement("div", {id: "qs-affix", "data-spy": "affix", "data-offset-top": "100", "data-target": ".quick-search-popin"}, " ", qs)
+    var root = React.createElement('div', {className: 'search-panel'}, qsAffix, summary, list, helpContainer);
     return root;
   },
   renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {

@@ -101,5 +101,20 @@ module.exports = React.createClass({
       groupMaxRows= {config.groupMaxRows}
       parentSelector = {parentselector}/>;*/
     return qs;
+  },
+  /** @inheritdoc */
+  componentDidMount: function popinDidMount() {
+    var source = document.querySelector(this.props.displaySelector);
+    var currentView = this;
+    if(source !== undefined && source !== null){
+      source.onclick = function () {
+        currentView._toggleOpen();
+      };
+    }
+   /* $('#qs-affix').affix({
+      offset: {
+        top: 0
+      }
+    });*/
   }
 });

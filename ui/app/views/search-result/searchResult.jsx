@@ -58,7 +58,8 @@ module.exports = React.createClass({
         <div><img src='./static/img/arrow-help.png'/></div>
         <div>Hover over a line and click on <i className="fa fa-eye"></i> to see a preview</div>
     </div>;
-    var root = React.createElement('div', {className: 'search-panel'}, qs, summary, list, helpContainer);
+    var qsAffix = <div id='qs-affix' data-spy="affix" data-offset-top="100" data-target='.quick-search-popin'> {qs}</div>
+    var root = React.createElement('div', {className: 'search-panel'}, qsAffix, summary, list, helpContainer);
     return root;
   },
   renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {
