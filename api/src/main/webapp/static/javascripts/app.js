@@ -2900,7 +2900,7 @@ module.exports = React.createClass({
 
 require.register("views/search-result/index", function(exports, require, module) {
 /*global focusComponents, React*/
-var lineResume = require('./lineResume');
+var lineResume = require('./moviePreview');
 var SearchResult = require('./searchResult');
 //Composant d'une ligne.
 var PeopleLineComponent = require('./peopleLineComponent');
@@ -2929,6 +2929,9 @@ var config = {
             position: 'right',
             open: true,
             style: {className: 'preview-popin'}
+          },
+          data: {
+            released: data.released
           }
         });
     }, style: {className: 'preview fa fa-eye'}, priority: 1
@@ -3151,8 +3154,9 @@ module.exports = React.createClass({displayName: "exports",
 
 require.register("views/search-result/moviePreview", function(exports, require, module) {
 /*global React, focusComponents */
+var Field = focusComponents.common.field.component;
 module.exports = React.createClass({displayName: "exports",
-  mixins: [focusComponents.application.popin.mixin],
+  mixins: [focusComponents.application.popin.mixin, focusComponents.common.mixin.definition, focusComponents.common.mixin.fieldComponentBehaviour],
   definitionPath: 'movie',
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,
@@ -3166,22 +3170,40 @@ module.exports = React.createClass({displayName: "exports",
   },
   renderContent: function (data) {
     var movieLink = '#movie/' + this.props.data.movId;
+    var released = React.createElement("div", null);
+    if(this.props.data.released !== undefined && this.props.data.released !== null) {
+      var options = {
+        isEdit: false,
+        hasLabel: false,
+        value: this.props.data.released,
+        refContainer: this.props.data.released,
+        style: {className: 'movie-preview-release-date'}
+      };
+      var fieldProps = this._buildFieldProps('released', options, this);
+      released = React.createElement(Field, fieldProps);
+    }
 
     var root = React.createElement("div", null, " ", React.createElement("div", {className: "movie-preview-header"}, 
-      React.createElement("div", null, " ", React.createElement("img", {src: "./static/img/logoMovie.png"}), " "), 
-      React.createElement("div", {className: "title-level-1"}, this.props.data.title), 
-      React.createElement("div", {className: "title-level-3"}, "IMBD ID ", this.props.data.imdbId), 
-      React.createElement("div", {className: "title-level-3"}, this.props.data.genreIds), 
-      React.createElement("div", {className: "title-level-3"}, this.props.data.description)
+      React.createElement("div", {className: "movie-preview-picture"}), 
+      React.createElement("div", {className: "movie-preview-description"}, 
+        React.createElement("div", {className: "title-level-1"}, this.props.data.title), 
+        React.createElement("div", {className: "title-level-3"}, "IMBD ID ", React.createElement("span", {className: "movie-preview-imdb-id"}, this.props.data.imdbId)), 
+        React.createElement("div", {className: "genres"}, this.props.data.genreIds), 
+        React.createElement("div", {className: "description"}, this.props.data.description)
+      )
     ), 
+    React.createElement("div", {className: "clear"}), 
     React.createElement("div", {className: "movie-preview-detail"}, 
-      React.createElement("div", {className: "title-level-1"}, this.props.data.countryIds), 
-      React.createElement("div", {className: "title-level-3"}, this.props.data.languageIds), 
-      React.createElement("div", {className: "title-level-3"}, this.props.data.released), 
-      React.createElement("div", {className: "title-level-3"}, this.props.data.runtime)
+      React.createElement("div", {className: "title"}, " Details"), 
+      React.createElement("div", {className: "title-line"}), 
+      React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Country "), React.createElement("div", null, this.props.data.countryIds)), 
+      React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Language "), React.createElement("div", null, this.props.data.languageIds)), 
+      React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Released "), React.createElement("div", null, released)), 
+      React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Runtime "), React.createElement("div", null, this.props.data.runtime))
     ), 
-    React.createElement("div", {className: "movie-link-detailed-sheet"}, React.createElement("a", {href: movieLink}, "Detailed sheet "))
+    React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {href: movieLink}, "Detailed sheet "))
     );
+
     return root;
   }
 });

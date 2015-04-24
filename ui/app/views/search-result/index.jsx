@@ -1,5 +1,5 @@
 /*global focusComponents, React*/
-var lineResume = require('./lineResume');
+var lineResume = require('./moviePreview');
 var SearchResult = require('./searchResult');
 //Composant d'une ligne.
 var PeopleLineComponent = require('./peopleLineComponent');
@@ -28,6 +28,9 @@ var config = {
             position: 'right',
             open: true,
             style: {className: 'preview-popin'}
+          },
+          data: {
+            released: data.released
           }
         });
     }, style: {className: 'preview fa fa-eye'}, priority: 1

@@ -32,22 +32,17 @@ Scope css
 }
 
 /** preview line css */
-.movie-link-detailed-sheet {
-  float: right;
-  width: 30%;
-  text-align: right;
+.movie-preview-detailed-sheet {
+  text-align: center;
   cursor: pointer;
-  text-decoration: none;
+  text-transform: uppercase;
+  margin-top: 50px;
 }
 
-.movie-link-detailed-sheet img {
-  padding-left: 5px;
-}
-
-.movie-link-detailed-sheet a {
-  padding: 5px;
-  border: 1px solid  $color-gris2;
-}
+ .movie-preview-detailed-sheet a{
+   border: 1px solid  $color-vert;
+   color: $color-vert;
+ }
 
 .movie-resume-logo img {
   float: left;
@@ -89,13 +84,15 @@ Scope css
   text-transform: uppercase;
 }
 
-.linkAdvancedSearch a {
+.linkAdvancedSearch a, .movie-preview-detailed-sheet a{
   text-decoration: none;
   padding: 5px 7px;
-  border: 1px solid  $color-gris2;
   border-radius: 15px;
-  color: $color-gris;
 }
+ .linkAdvancedSearch a {
+   border: 1px solid  $color-gris2;
+   color: $color-gris;
+ }
 
 .quick-search-popin {
   margin: 0 0 0 0 !important;
@@ -125,9 +122,13 @@ Scope css
 .preview-popin .full {
   min-height: 100%;
 }
+.preview-popin .modal-content {
+  background-color: $color-gris3 !important;
+  box-shadow: none !important;
+}
 
 .preview-popin-header {
-  background: white;
+  background: $color-gris3;
   height: 27px;
 }
 
@@ -176,6 +177,8 @@ Scope css
  .group-result-header {
    border-bottom: 1px solid $color-gris2;
    padding-bottom: 15px;
+   display: inline-block;
+   width: 100%;
  }
  .qs-group-results li {
    border-bottom: 1px solid $color-gris2;
@@ -188,4 +191,70 @@ Scope css
    color: $color-gris;
    font-size: 14px;
    float: left;
+ }
+
+ .movie-preview-picture {
+   width: 175px;
+   height:  260px;
+   border: 1px solid $color-gris;
+   background-color: $color-gris2;
+   float: left;
+ }
+ .movie-preview-description {
+   margin-left: 200px;
+   font-size: 14px;
+ }
+
+ .movie-preview-description .title-level-1{
+   font-size: 20px;
+
+ }
+ .movie-preview-description .genres {
+   margin-top: 20px;
+ }
+
+ .movie-preview-description .description {
+   margin-top: 50px;
+ }
+
+ .movie-preview-imdb-id {
+   font-family: RobotoBold;
+ }
+
+ .movie-preview-detail {
+   margin-top: 30px;
+   font-size: 14px;
+ }
+ .movie-preview-detail .title {
+   color: $color-gris;
+   font-family: RobotoBold;
+   font-size: 18px;
+   width: 100px;
+   float: left;
+   margin-bottom: 15px;
+ }
+ .title-line {
+   margin-left: 80px;
+   padding-top: 15px;
+   border-bottom: 1px solid $color-gris2;
+ }
+
+ .movie-preview-detail .movie-detail-label {
+   font-family: RobotoBold;
+   width: 120px;
+   float: left;
+   text-align: right;
+   margin-right: 20px;
+ }
+ .movie-preview-release-date{
+   margin-bottom: 0;
+ }
+ .movie-preview-release-date .form-control {
+   font-size: 14px;
+   background-image: none;
+   height: auto;
+ }
+
+ .movie-preview-detail .movie-detail-line {
+   margin-bottom: 10px;
  }

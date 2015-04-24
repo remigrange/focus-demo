@@ -46370,6 +46370,8 @@ module.exports = { mixin: InfiniteScrollMixin };
 },{"../mixin/pagination":57}],57:[function(require,module,exports){
 "use strict";
 
+var type = window.focus.component.types;
+
 var paginationMixin = {
     /**
      * @inheritDoc
@@ -46379,6 +46381,12 @@ var paginationMixin = {
             hasMoreData: false,
             isManualFetch: false
         };
+    },
+
+    propTypes: {
+        hasMoreData: type("bool"),
+        fetchNextPage: type("func"),
+        isManualFetch: type("bool")
     },
 
     /**
@@ -46617,7 +46625,7 @@ var listMixin = {
      * Default properties for the list.
      * @returns {{isSelection: boolean}} the default properties
      */
-    getDefaultProps: function getLineDefaultProps() {
+    getDefaultProps: function getListDefaultProps() {
         return {
             isSelection: true,
             isAllSelected: false,
@@ -46640,9 +46648,7 @@ var listMixin = {
         onLineClick: type("func"),
         isLoading: type("bool"),
         loader: type("func"),
-        FetchNextPage: type("func"),
         operationList: type("array"),
-        isManualFetch: type("bool"),
         idField: type("string"),
         lineComponent: type("func", true)
     },
