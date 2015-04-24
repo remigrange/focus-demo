@@ -79676,63 +79676,54 @@ body {
 
 /* line 3, stdin */
 /* line 6, stdin */
-ul.selection-list li.sl-line div.sl-selection {
-  background-color: #FFF;
-  min-height: 60px; }
-
-/* line 8, stdin */
-/* line 11, stdin */
 ul.selection-list li.sl-line {
   padding-left: 10px;
   min-height: 60px; }
 
+/* line 6, stdin */
+/* line 10, stdin */
+ul.selection-list li.sl-line div.sl-selection {
+  background-color: #FFF;
+  min-height: 60px;
+  padding-left: 10px; }
+
 /* line 13, stdin */
 /* line 16, stdin */
-ul.selection-list li.sl-line:hover {
-  background: #d8e5fa; }
-
-/* line 18, stdin */
-/* line 20, stdin */
 .liveFilterContainer {
   float: none;
   display: inline-block; }
 
-/* line 23, stdin */
-/* line 25, stdin */
+/* line 18, stdin */
+/* line 21, stdin */
 .resultContainer {
   float: none !important;
   margin-left: 270px;
   position: relative; }
 
-/* line 29, stdin */
-/* line 31, stdin */
+/* line 24, stdin */
+/* line 27, stdin */
 .liveFilter {
   width: 15% !important; }
 
-/* line 34, stdin */
-/* line 35, stdin */
+/* line 29, stdin */
+/* line 31, stdin */
 .btn-see-more {
   display: inline-block; }
 
-/* line 38, stdin */
-/* line 39, stdin */
+/* line 33, stdin */
+/* line 35, stdin */
 .btn-show-all {
   display: inline-block;
   float: right;
   margin-right: 5px; }
 
-/* line 44, stdin */
-/* line 45, stdin */
-ul.selection-list li.sl-line div.sl-selection {
-  padding-left: 10px; }
-
-/* line 48, stdin */
-/* line 49, stdin */
+/* line 40, stdin */
+/* line 41, stdin */
 .results-groupBy-title {
   padding: 5px 0 0 5px; }
 
-/* line 52, stdin */
-/* line 53, stdin */
+/* line 44, stdin */
+/* line 45, stdin */
 .btn-group-by-container {
   display: inline-block;
   width: 100%;
@@ -79832,7 +79823,7 @@ body {
 .menu-vertical {
   width: 60px; }
 
-/* line 13, stdin */
+/* line 14, stdin */
 /* line 14, stdin */
 .header-menu {
   margin-left: 60px;
@@ -79840,30 +79831,7 @@ body {
   background: #FFF; }
 
 /* line 18, stdin */
-/* line 20, stdin */
-.header-menu .top-menu-items-container {
-  float: right;
-  width: 320px;
-  margin-right: 50px; }
-
-/* line 24, stdin */
-/* line 26, stdin */
-.header-menu .top-menu-item {
-  width: 100px;
-  padding-top: 18px;
-  display: inline-block;
-  cursor: pointer; }
-
-/* line 31, stdin */
-/* line 33, stdin */
-.header-menu .top-menu-item {
-  font-size: 24px;
-  text-align: center;
-  border-left: 1px solid #e2e2e2;
-  height: 60px; }
-
-/* line 39, stdin */
-/* line 40, stdin */
+/* line 19, stdin */
 .header-menu h3 {
   color: #242a30;
   font-size: 24px;
@@ -79874,65 +79842,88 @@ body {
   padding: 18px 0 18px 10px;
   text-transform: uppercase; }
 
-/* line 51, stdin */
-/* line 51, stdin */
-.header-menu a, .left-menu a {
+/* line 28, stdin */
+/* line 29, stdin */
+.header-menu a {
   border-left: none;
   border-bottom: none;
   padding: 0;
   text-decoration: none;
   font-size: 20px;
   font-weight: bold;
-  text-align: center; }
-
-/* line 61, stdin */
-/* line 61, stdin */
-.header-menu a {
+  text-align: center;
   width: 100px;
   height: 60px; }
 
-/* line 66, stdin */
-/* line 66, stdin */
-.left-menu a {
-  width: 60px; }
+/* line 39, stdin */
+/* line 40, stdin */
+.header-menu .top-menu-item {
+  font-size: 24px;
+  text-align: center;
+  border-left: 1px solid #e2e2e2;
+  height: 60px;
+  width: 100px;
+  padding-top: 18px;
+  display: inline-block;
+  cursor: pointer; }
 
-/* line 70, stdin */
-/* line 70, stdin */
-.left-menu a img {
-  width: 20px;
-  height: 20px; }
+/* line 49, stdin */
+/* line 50, stdin */
+.header-menu .top-menu-items-container {
+  float: right;
+  width: 320px;
+  margin-right: 50px; }
 
-/* line 76, stdin */
-/* line 75, stdin */
+/* line 57, stdin */
+/* line 56, stdin */
 .header-menu a:hover, .left-menu a:hover {
   background: #6acacb; }
 
-/* line 80, stdin */
-/* line 79, stdin */
-.left-menu {
-  background: #36b7b9; }
-
-/* line 85, stdin */
-/* line 83, stdin */
+/* line 63, stdin */
+/* line 60, stdin */
 #leftMenu .brand {
   text-align: center;
   background-color: #424950;
   height: 60px;
   padding-top: 20px; }
 
-/* line 92, stdin */
-/* line 90, stdin */
-#leftMenu .left-menu a {
-  padding-top: 20px;
-  height: 60px; }
+/* line 69, stdin */
+/* line 66, stdin */
+#leftMenu .left-menu {
+  background: #36b7b9; }
 
-/* line 97, stdin */
-/* line 95, stdin */
+/* line 71, stdin */
+/* line 69, stdin */
+#leftMenu .left-menu a {
+  border-left: none;
+  border-bottom: none;
+  padding: 0;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 20px;
+  height: 60px;
+  width: 60px; }
+
+/* line 83, stdin */
+/* line 81, stdin */
+#leftMenu .left-menu a img {
+  width: 20px;
+  height: 20px; }
+
+/* line 90, stdin */
+/* line 86, stdin */
 .user-image {
   background-color: rgba(5, 29, 49, 0.5);
   width: 40px;
   height: 40px;
   position: relative; }
+
+/* line 97, stdin */
+/* line 93, stdin */
+#quick-search-link {
+  cursor: pointer; }
 
 /* line 16, app/styles/variables.scss */
 /* line 2, stdin */
@@ -79964,7 +79955,7 @@ body {
   right: 0;
   line-height: 40px; }
 
-/* line 31, stdin */
+/* line 27, stdin */
 /* line 28, stdin */
 #page {
   padding: 280px 20px 20px 20px;
@@ -79972,17 +79963,17 @@ body {
   width: 100%;
   min-width: 1300px; }
 
-/* line 38, stdin */
+/* line 34, stdin */
 /* line 35, stdin */
 .clear {
   clear: both; }
 
-/* line 42, stdin */
+/* line 38, stdin */
 /* line 39, stdin */
 .home-popin {
   margin: 70px 0 0 60px !important; }
 
-/* line 46, stdin */
+/* line 42, stdin */
 /* line 43, stdin */
 .home-popin-header {
   font-size: 16px;
@@ -79996,37 +79987,43 @@ body {
 body {
   border: none; }
 
+/* line 3, stdin */
+/* line 6, stdin */
+div.qs-quick-search input[type=search] {
+  border: none;
+  border-bottom: 1px solid #e2e2e2; }
+
 /**
 Scope css
 */
-/* line 5, stdin */
-/* line 9, stdin */
+/* line 10, stdin */
+/* line 14, stdin */
 .qs-scope-MOVIE {
   background: url('./../img/film.svg') no-repeat center center;
   background-size: 100% 100%; }
 
-/* line 10, stdin */
-/* line 14, stdin */
+/* line 15, stdin */
+/* line 19, stdin */
 .qs-scope-PEOPLE {
   background: url('./../img/user.svg') no-repeat center center;
   background-size: 100% 100%; }
 
-/* line 15, stdin */
-/* line 19, stdin */
+/* line 20, stdin */
+/* line 24, stdin */
 .qs-scope-ALL {
   background: url('./../img/qs-none.svg') no-repeat center center;
   background-size: 100% 100%; }
 
 /** links to filter result css */
-/* line 21, stdin */
-/* line 25, stdin */
+/* line 26, stdin */
+/* line 30, stdin */
 .linkFilterResult {
   text-align: right;
   padding-right: 10px;
   float: right; }
 
-/* line 27, stdin */
-/* line 31, stdin */
+/* line 30, stdin */
+/* line 35, stdin */
 .linkFilterResult a {
   text-decoration: none;
   padding: 5px;
@@ -80034,48 +80031,37 @@ Scope css
   background: #f5f5f5; }
 
 /** preview line css */
-/* line 35, stdin */
 /* line 39, stdin */
+/* line 43, stdin */
 .movie-preview-detailed-sheet {
   text-align: center;
   cursor: pointer;
   text-transform: uppercase;
   margin-top: 50px; }
 
-/* line 42, stdin */
-/* line 46, stdin */
+/* line 44, stdin */
+/* line 49, stdin */
 .movie-preview-detailed-sheet a {
   border: 1px solid #36b7b9;
-  color: #36b7b9; }
+  color: #36b7b9;
+  text-decoration: none;
+  padding: 5px 7px;
+  border-radius: 15px; }
 
-/* line 47, stdin */
-/* line 51, stdin */
-.movie-resume-logo img {
-  float: left;
-  width: 50px;
-  height: 50px;
-  margin: 0 10px 0 0; }
-
-/* line 54, stdin */
-/* line 58, stdin */
-.movie-info {
-  float: left;
-  width: 55%; }
-
-/* line 59, stdin */
-/* line 63, stdin */
+/* line 53, stdin */
+/* line 57, stdin */
 .movie-descrition {
   padding: 10px 0 20px 0;
   border-bottom: 1px #e2e2e2 solid; }
 
-/* line 64, stdin */
-/* line 68, stdin */
+/* line 58, stdin */
+/* line 62, stdin */
 .line-preview {
   background-color: #FFF;
   padding: 5px 5px; }
 
-/* line 69, stdin */
-/* line 73, stdin */
+/* line 63, stdin */
+/* line 67, stdin */
 .btn-preview {
   box-shadow: none !important;
   width: 40px !important;
@@ -80087,28 +80073,25 @@ Scope css
   padding: 0 !important;
   margin: 15px 0 0 0 !important; }
 
-/* line 81, stdin */
-/* line 85, stdin */
+/* line 75, stdin */
+/* line 79, stdin */
 .linkAdvancedSearch {
   text-align: right;
   padding-right: 10px;
-  text-transform: uppercase; }
+  text-transform: uppercase;
+  cursor: pointer; }
 
-/* line 87, stdin */
-/* line 91, stdin */
-.linkAdvancedSearch a, .movie-preview-detailed-sheet a {
+/* line 80, stdin */
+/* line 85, stdin */
+.linkAdvancedSearch a {
   text-decoration: none;
   padding: 5px 7px;
-  border-radius: 15px; }
-
-/* line 92, stdin */
-/* line 97, stdin */
-.linkAdvancedSearch a {
+  border-radius: 15px;
   border: 1px solid #e2e2e2;
   color: #424950; }
 
-/* line 97, stdin */
-/* line 102, stdin */
+/* line 89, stdin */
+/* line 93, stdin */
 .quick-search-popin {
   margin: 0 0 0 0 !important;
   padding-left: 60px;
@@ -80118,75 +80101,80 @@ Scope css
   overflow-x: hidden;
   width: 50%; }
 
-/* line 107, stdin */
-/* line 112, stdin */
+/* line 97, stdin */
+/* line 102, stdin */
 .quick-search-popin .full {
   min-height: 100%; }
 
-/* line 110, stdin */
-/* line 116, stdin */
+/* line 100, stdin */
+/* line 105, stdin */
+.quick-search-popin .popin-close-btn {
+  margin-top: 22px; }
+
+/* line 105, stdin */
+/* line 109, stdin */
 .quick-search-popin-header {
   font-size: 24px;
   padding: 20px 0 20px 30px; }
 
-/* line 115, stdin */
-/* line 121, stdin */
+/* line 110, stdin */
+/* line 114, stdin */
 .preview-popin {
   margin: 0 0 0 20px !important;
   z-index: 1004;
   height: 100%;
   width: 50%; }
 
-/* line 122, stdin */
-/* line 128, stdin */
+/* line 115, stdin */
+/* line 120, stdin */
 .preview-popin .full {
   min-height: 100%; }
 
-/* line 125, stdin */
-/* line 132, stdin */
+/* line 118, stdin */
+/* line 123, stdin */
 .preview-popin .modal-content {
   background-color: #f2f3f3 !important;
   box-shadow: none !important; }
 
-/* line 130, stdin */
-/* line 137, stdin */
+/* line 122, stdin */
+/* line 127, stdin */
+.preview-popin .popin-close-btn.left {
+  float: right;
+  margin-top: 15px; }
+
+/* line 128, stdin */
+/* line 132, stdin */
 .preview-popin-header {
   background: #f2f3f3;
   height: 27px; }
 
-/** css on click on button preview */
+/* line 133, stdin */
 /* line 137, stdin */
-/* line 143, stdin */
 .movie-details {
   padding: 10px 0 20px 0; }
 
-/* line 141, stdin */
-/* line 147, stdin */
-.movie-detail-line {
+/* line 135, stdin */
+/* line 140, stdin */
+.movie-details .movie-detail-line {
   width: 100%;
   display: inline-block; }
 
-/* line 146, stdin */
-/* line 152, stdin */
-.details-label-name {
+/* line 139, stdin */
+/* line 144, stdin */
+.movie-details .details-label-name {
   float: left;
   width: 150px;
   text-align: right;
   font-weight: bold; }
 
-/* line 153, stdin */
-/* line 159, stdin */
-.details-label-value {
+/* line 145, stdin */
+/* line 150, stdin */
+.movie-details .details-label-value {
   float: left;
   padding-left: 20px; }
 
-/* line 158, stdin */
-/* line 164, stdin */
-.quick-search-popin .popin-close-btn {
-  margin-top: 22px; }
-
-/* line 161, stdin */
-/* line 168, stdin */
+/* line 151, stdin */
+/* line 155, stdin */
 .qs-help_container {
   position: fixed;
   top: 30%;
@@ -80197,41 +80185,42 @@ Scope css
   color: #FFF;
   border: 1px solid transparent; }
 
-/* line 171, stdin */
-/* line 179, stdin */
+/* line 160, stdin */
+/* line 165, stdin */
 .qs-help_container img {
   float: left;
   margin-right: 5px;
   margin-top: 5px; }
 
-/* line 177, stdin */
-/* line 185, stdin */
+/* line 167, stdin */
+/* line 171, stdin */
 .group-result-header {
   border-bottom: 1px solid #e2e2e2;
   padding-bottom: 15px;
   display: inline-block;
-  width: 100%; }
+  width: 100%;
+  font-size: 14px; }
 
-/* line 183, stdin */
-/* line 192, stdin */
-.qs-group-results li {
-  border-bottom: 1px solid #e2e2e2; }
-
-/* line 186, stdin */
-/* line 196, stdin */
+/* line 175, stdin */
+/* line 179, stdin */
 .qs-group-results {
   box-shadow: none !important; }
 
-/* line 189, stdin */
-/* line 200, stdin */
+/* line 177, stdin */
+/* line 182, stdin */
+.qs-group-results li {
+  border-bottom: 1px solid #e2e2e2; }
+
+/* line 181, stdin */
+/* line 186, stdin */
 .qs-results-most-relevents {
   width: 150px;
   color: #424950;
   font-size: 14px;
   float: left; }
 
-/* line 196, stdin */
-/* line 207, stdin */
+/* line 188, stdin */
+/* line 193, stdin */
 .movie-preview-picture {
   width: 175px;
   height: 260px;
@@ -80239,40 +80228,40 @@ Scope css
   background-color: #e2e2e2;
   float: left; }
 
-/* line 203, stdin */
-/* line 215, stdin */
+/* line 195, stdin */
+/* line 201, stdin */
 .movie-preview-description {
   margin-left: 200px;
   font-size: 14px; }
 
-/* line 208, stdin */
-/* line 220, stdin */
+/* line 198, stdin */
+/* line 205, stdin */
 .movie-preview-description .title-level-1 {
   font-size: 20px; }
 
-/* line 212, stdin */
-/* line 224, stdin */
+/* line 201, stdin */
+/* line 208, stdin */
 .movie-preview-description .genres {
   margin-top: 20px; }
 
-/* line 216, stdin */
-/* line 228, stdin */
+/* line 204, stdin */
+/* line 211, stdin */
 .movie-preview-description .description {
   margin-top: 50px; }
 
-/* line 220, stdin */
-/* line 232, stdin */
+/* line 209, stdin */
+/* line 215, stdin */
 .movie-preview-imdb-id {
   font-family: RobotoBold; }
 
-/* line 224, stdin */
-/* line 236, stdin */
+/* line 213, stdin */
+/* line 219, stdin */
 .movie-preview-detail {
   margin-top: 30px;
   font-size: 14px; }
 
-/* line 228, stdin */
-/* line 241, stdin */
+/* line 216, stdin */
+/* line 223, stdin */
 .movie-preview-detail .title {
   color: #424950;
   font-family: RobotoBold;
@@ -80281,15 +80270,8 @@ Scope css
   float: left;
   margin-bottom: 15px; }
 
-/* line 236, stdin */
-/* line 250, stdin */
-.title-line {
-  margin-left: 80px;
-  padding-top: 15px;
-  border-bottom: 1px solid #e2e2e2; }
-
-/* line 242, stdin */
-/* line 256, stdin */
+/* line 224, stdin */
+/* line 231, stdin */
 .movie-preview-detail .movie-detail-label {
   font-family: RobotoBold;
   width: 120px;
@@ -80297,22 +80279,31 @@ Scope css
   text-align: right;
   margin-right: 20px; }
 
-/* line 249, stdin */
-/* line 264, stdin */
+/* line 231, stdin */
+/* line 238, stdin */
+.movie-preview-detail .movie-detail-line {
+  margin-bottom: 10px;
+  display: inline-block;
+  width: 100%; }
+
+/* line 237, stdin */
+/* line 244, stdin */
+.title-line {
+  margin-left: 80px;
+  padding-top: 15px;
+  border-bottom: 1px solid #e2e2e2; }
+
+/* line 243, stdin */
+/* line 250, stdin */
 .movie-preview-release-date {
   margin-bottom: 0; }
 
-/* line 252, stdin */
-/* line 268, stdin */
+/* line 245, stdin */
+/* line 253, stdin */
 .movie-preview-release-date .form-control {
   font-size: 14px;
   background-image: none;
   height: auto; }
-
-/* line 258, stdin */
-/* line 274, stdin */
-.movie-preview-detail .movie-detail-line {
-  margin-bottom: 10px; }
 
 /* line 16, app/styles/variables.scss */
 /* line 2, stdin */
@@ -80341,28 +80332,20 @@ ul.selection-list li.sl-line:hover {
 
 /* line 21, stdin */
 /* line 23, stdin */
-.movie-lineResume {
-  width: 100%;
-  display: inline-block;
-  padding-bottom: 20px;
-  border-bottom: 1px #e2e2e2 solid; }
-
-/* line 28, stdin */
-/* line 30, stdin */
 .container-title, .details-panel-title {
   font-size: 16px;
   text-transform: uppercase;
   color: #acacac; }
 
-/* line 35, stdin */
-/* line 36, stdin */
+/* line 27, stdin */
+/* line 29, stdin */
 .results {
   text-align: left;
   padding-left: 10px;
   float: left; }
 
-/* line 41, stdin */
-/* line 42, stdin */
+/* line 33, stdin */
+/* line 35, stdin */
 .summary {
   background: #FFF;
   display: inline-block;
@@ -80371,53 +80354,47 @@ ul.selection-list li.sl-line:hover {
   font-size: 14px;
   font-weight: bold; }
 
-/* line 50, stdin */
-/* line 51, stdin */
-.count-results {
-  font-weight: bold;
-  padding-left: 5px; }
-
-/* line 56, stdin */
-/* line 56, stdin */
+/* line 43, stdin */
+/* line 44, stdin */
 .title-level-1, .title-level-2, .title-level-3 {
   margin-bottom: 0; }
 
-/* line 59, stdin */
-/* line 60, stdin */
+/* line 46, stdin */
+/* line 48, stdin */
 .title-level-1 {
   color: #6acacb; }
 
-/* line 62, stdin */
-/* line 64, stdin */
+/* line 48, stdin */
+/* line 51, stdin */
 .title-level-1 .form-control {
   font-size: 16px;
   font-weight: bold;
   color: #6acacb;
   background-image: none; }
 
-/* line 69, stdin */
-/* line 71, stdin */
+/* line 56, stdin */
+/* line 58, stdin */
 .title-level-2 .form-control {
   font-size: 14px;
   font-weight: bold;
   background-image: none; }
 
-/* line 75, stdin */
-/* line 77, stdin */
+/* line 62, stdin */
+/* line 64, stdin */
 .title-level-3 .form-control {
   font-size: 14px;
   background-image: none; }
 
-/* line 80, stdin */
-/* line 82, stdin */
+/* line 67, stdin */
+/* line 69, stdin */
 .title-group-key {
   margin: 2px 0 5px 5px;
   color: #6acacb;
   font-size: 20px;
   padding-top: 5px; }
 
-/* line 87, stdin */
-/* line 89, stdin */
+/* line 74, stdin */
+/* line 76, stdin */
 .item {
   margin-left: 40px; }
 

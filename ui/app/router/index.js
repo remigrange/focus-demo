@@ -26,19 +26,19 @@ var AppRouter = Router.extend({
   home: function handleHomeRoute() {
     console.log('ROUTE: HOME');
     var HomeView = require('../views/home');
-    renderMenu();
+   // renderMenu();
     render(HomeView, '#page', {props: {position: 'left', open: true, style: {className: 'home-popin'}}});
   },
   movie: function handleMovieRoute(id) {
     console.log('ROUTE: MOVIE');
     var MovieDetailView = require('../views/movie');
-    renderMenu();
+  //  renderMenu();
     render(MovieDetailView, '#page', {props: {id: id}});
   },
   people: function handlePeopleRoute(id) {
     console.log('ROUTE: PEOPLE');
     var PeopleDetailView = require('../views/people');
-    renderMenu();
+   // renderMenu();
     render(PeopleDetailView, '#page', {props: {id: id}});
   },
   filterResult: function handleFilterResult(scope, query) {
@@ -52,14 +52,14 @@ var AppRouter = Router.extend({
       query = '';
     }
     var FilterResultView = require('../views/filter-result');
-    renderMenu();
+    //renderMenu();
     render(FilterResultView, '#page', {props: {scope: scope, query: query}});
   },
 
   searchResult: function handleSearchResult() {
     console.log('ROUTE: SEARCH RESULT');
     var SearchResultView = require('../views/search-result');
-    renderMenu();
+   // renderMenu();
     render(SearchResultView, '#page', {props: {position: 'left', open: true, displaySelector: 'a[href="#search/quick"]', style: {className: 'quick-search-popin'}}});
   }
 });

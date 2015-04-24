@@ -1,4 +1,9 @@
  @import "./variables";
+
+ div.qs-quick-search input[type=search] {
+   border: none;
+   border-bottom: 1px solid $color-gris2;
+ }
 /**
 Scope css
 */
@@ -22,13 +27,12 @@ Scope css
   text-align: right;
   padding-right: 10px;
   float: right;
-}
-
-.linkFilterResult a {
-  text-decoration: none;
-  padding: 5px;
-  border: 1px solid  $color-gris2;
-  background: #f5f5f5;
+  a {
+    text-decoration: none;
+    padding: 5px;
+    border: 1px solid $color-gris2;
+    background: #f5f5f5;
+  }
 }
 
 /** preview line css */
@@ -37,23 +41,13 @@ Scope css
   cursor: pointer;
   text-transform: uppercase;
   margin-top: 50px;
-}
-
- .movie-preview-detailed-sheet a{
-   border: 1px solid  $color-vert;
-   color: $color-vert;
- }
-
-.movie-resume-logo img {
-  float: left;
-  width: 50px;
-  height: 50px;
-  margin: 0 10px 0 0;
-}
-
-.movie-info {
-  float: left;
-  width: 55%;
+  a {
+    border: 1px solid $color-vert;
+    color: $color-vert;
+    text-decoration: none;
+    padding: 5px 7px;
+    border-radius: 15px;
+  }
 }
 
 .movie-descrition {
@@ -82,17 +76,15 @@ Scope css
   text-align: right;
   padding-right: 10px;
   text-transform: uppercase;
+  cursor: pointer;
+  a {
+    text-decoration: none;
+    padding: 5px 7px;
+    border-radius: 15px;
+    border: 1px solid  $color-gris2;
+    color: $color-gris;
+  }
 }
-
-.linkAdvancedSearch a, .movie-preview-detailed-sheet a{
-  text-decoration: none;
-  padding: 5px 7px;
-  border-radius: 15px;
-}
- .linkAdvancedSearch a {
-   border: 1px solid  $color-gris2;
-   color: $color-gris;
- }
 
 .quick-search-popin {
   margin: 0 0 0 0 !important;
@@ -102,11 +94,14 @@ Scope css
   overflow-y: auto;
   overflow-x: hidden;
   width: 50%;
+  .full {
+    min-height: 100%;
+  }
+  .popin-close-btn {
+    margin-top: 22px;
+  }
 }
 
-.quick-search-popin .full {
-  min-height: 100%;
-}
 .quick-search-popin-header {
   font-size: 24px;
   padding: 20px 0 20px 30px;
@@ -117,14 +112,17 @@ Scope css
   z-index: 1004;
   height: 100%;
   width: 50%;
-}
-
-.preview-popin .full {
-  min-height: 100%;
-}
-.preview-popin .modal-content {
-  background-color: $color-gris3 !important;
-  box-shadow: none !important;
+  .full {
+    min-height: 100%;
+  }
+  .modal-content {
+    background-color: $color-gris3 !important;
+    box-shadow: none !important;
+  }
+  .popin-close-btn.left {
+    float: right;
+    margin-top: 15px;
+  }
 }
 
 .preview-popin-header {
@@ -132,46 +130,38 @@ Scope css
   height: 27px;
 }
 
-/** css on click on button preview */
-
 .movie-details {
   padding: 10px 0 20px 0;
+  .movie-detail-line {
+    width: 100%;
+    display: inline-block;
+  }
+  .details-label-name {
+    float: left;
+    width: 150px;
+    text-align: right;
+    font-weight: bold;
+  }
+  .details-label-value {
+    float: left;
+    padding-left: 20px;
+  }
 }
 
-.movie-detail-line {
-  width: 100%;
-  display: inline-block;
-}
-
-.details-label-name {
-  float: left;
-  width: 150px;
-  text-align: right;
-  font-weight: bold;
-}
-
-.details-label-value {
-  float: left;
-  padding-left: 20px;
-}
-
-.quick-search-popin .popin-close-btn {
-  margin-top: 22px;
-}
  .qs-help_container {
    position: fixed;
-   top:30%;
-   left:105%;
+   top: 30%;
+   left: 105%;
    font-size: 19px;
    font-family: RobotoItalic;
    width: 280px;
    color: $color-blanc;
    border: 1px solid transparent;
- }
- .qs-help_container img {
-   float : left;
-   margin-right: 5px;
-   margin-top: 5px
+   img {
+     float: left;
+     margin-right: 5px;
+     margin-top: 5px
+   }
  }
 
  .group-result-header {
@@ -179,12 +169,14 @@ Scope css
    padding-bottom: 15px;
    display: inline-block;
    width: 100%;
+   font-size: 14px;
  }
- .qs-group-results li {
-   border-bottom: 1px solid $color-gris2;
- }
+
  .qs-group-results {
    box-shadow: none !important;
+   li {
+     border-bottom: 1px solid $color-gris2;
+   }
  }
  .qs-results-most-relevents {
    width: 150px;
@@ -203,18 +195,15 @@ Scope css
  .movie-preview-description {
    margin-left: 200px;
    font-size: 14px;
- }
-
- .movie-preview-description .title-level-1{
-   font-size: 20px;
-
- }
- .movie-preview-description .genres {
-   margin-top: 20px;
- }
-
- .movie-preview-description .description {
-   margin-top: 50px;
+   .title-level-1 {
+     font-size: 20px;
+   }
+   .genres {
+     margin-top: 20px;
+   }
+   .description {
+     margin-top: 50px;
+   }
  }
 
  .movie-preview-imdb-id {
@@ -224,14 +213,26 @@ Scope css
  .movie-preview-detail {
    margin-top: 30px;
    font-size: 14px;
- }
- .movie-preview-detail .title {
-   color: $color-gris;
-   font-family: RobotoBold;
-   font-size: 18px;
-   width: 100px;
-   float: left;
-   margin-bottom: 15px;
+   .title {
+     color: $color-gris;
+     font-family: RobotoBold;
+     font-size: 18px;
+     width: 100px;
+     float: left;
+     margin-bottom: 15px;
+   }
+   .movie-detail-label {
+     font-family: RobotoBold;
+     width: 120px;
+     float: left;
+     text-align: right;
+     margin-right: 20px;
+   }
+   .movie-detail-line {
+     margin-bottom: 10px;
+     display: inline-block;
+     width: 100%;
+   }
  }
  .title-line {
    margin-left: 80px;
@@ -239,22 +240,11 @@ Scope css
    border-bottom: 1px solid $color-gris2;
  }
 
- .movie-preview-detail .movie-detail-label {
-   font-family: RobotoBold;
-   width: 120px;
-   float: left;
-   text-align: right;
-   margin-right: 20px;
- }
- .movie-preview-release-date{
+ .movie-preview-release-date {
    margin-bottom: 0;
- }
- .movie-preview-release-date .form-control {
-   font-size: 14px;
-   background-image: none;
-   height: auto;
- }
-
- .movie-preview-detail .movie-detail-line {
-   margin-bottom: 10px;
+   .form-control {
+     font-size: 14px;
+     background-image: none;
+     height: auto;
+   }
  }

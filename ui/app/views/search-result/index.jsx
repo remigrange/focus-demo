@@ -1,5 +1,6 @@
 /*global focusComponents, React*/
-var lineResume = require('./moviePreview');
+var MoviePreview = require('./moviePreview');
+var PeoplePreview = require('./peoplePreview');
 var SearchResult = require('./searchResult');
 //Composant d'une ligne.
 var PeopleLineComponent = require('./peopleLineComponent');
@@ -16,21 +17,24 @@ var config = {
         url = '#people/' + data.peoId;
       }
     }
+    //TODO check with PIERRE
     Backbone.history.navigate(url, true);
+    $('.quick-search-popin .popin-close-btn').click();
   },
   operationList: [
     {
       label: '', action: function (data) {
-      focus.application.render(lineResume, '#previewModal',
+      var Preview = MoviePreview;
+      if(!data.movId){
+        Preview = PeoplePreview;
+      }
+      focus.application.render(Preview, '#previewModal',
         {
           props: {
             data: data,
             position: 'right',
             open: true,
             style: {className: 'preview-popin'}
-          },
-          data: {
-            released: data.released
           }
         });
     }, style: {className: 'preview fa fa-eye'}, priority: 1

@@ -1,19 +1,14 @@
  @import "./variables";
 
-ul.selection-list li.sl-line div.sl-selection {
-  background-color:  $color-blanc;
-  min-height: 60px;
-}
-
 ul.selection-list li.sl-line {
   padding-left: 10px;
   min-height: 60px;
+  div.sl-selection {
+    background-color:  $color-blanc;
+    min-height: 60px;
+    padding-left: 10px;
+  }
 }
-
-ul.selection-list li.sl-line:hover {
-  background: #d8e5fa;
-}
-
 
 .liveFilterContainer {
   float: none;
@@ -41,9 +36,6 @@ ul.selection-list li.sl-line:hover {
   margin-right: 5px;
 }
 
-ul.selection-list li.sl-line div.sl-selection {
-  padding-left: 10px;
-}
 
 .results-groupBy-title {
   padding: 5px 0 0 5px;
