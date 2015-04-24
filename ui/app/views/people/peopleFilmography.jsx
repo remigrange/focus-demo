@@ -6,6 +6,7 @@ var Title = focus.components.common.title.component;
 var MovieCard = require('./movieCard');
 var FormList = focus.components.common.list;
 var line = React.createClass({
+  definitionPath: 'movie',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
