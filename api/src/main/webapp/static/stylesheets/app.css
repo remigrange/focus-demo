@@ -79481,6 +79481,62 @@ Copyright (c) 2014 Daniel Eden
 body {
   border: none; }
 
+/* line 4, stdin */
+/* line 6, stdin */
+.cartridge .header {
+  background-color: #EEECE1;
+  height: 150px;
+  border-bottom: solid 1px #e2e2e2; }
+
+/* line 8, stdin */
+/* line 11, stdin */
+.cartridge .header .picture {
+  float: left;
+  width: 100px;
+  height: 100px;
+  margin: 20px 20px; }
+
+/* line 14, stdin */
+/* line 17, stdin */
+.cartridge .header .title {
+  padding-top: 30px;
+  font-weight: bold;
+  font-size: 18px; }
+
+/* line 19, stdin */
+/* line 22, stdin */
+.cartridge .header .link {
+  float: left;
+  margin-top: 120px;
+  margin-left: -85px; }
+
+/* line 25, stdin */
+/* line 27, stdin */
+.cartridge .field {
+  background-color: #F2F2F2;
+  float: left;
+  width: 100%;
+  padding: 10px;
+  border-bottom: solid 1px #e2e2e2; }
+
+/* line 31, stdin */
+/* line 34, stdin */
+.cartridge .field .title {
+  width: 30%;
+  float: left;
+  font-weight: bold; }
+
+/* line 36, stdin */
+/* line 39, stdin */
+.cartridge .field .content {
+  width: 70%;
+  float: right; }
+
+/* line 16, app/styles/variables.scss */
+/* line 2, stdin */
+body {
+  border: none; }
+
 /* line 3, stdin */
 /* line 6, stdin */
 hr {
@@ -79530,149 +79586,25 @@ body {
   position: relative;
   padding-left: 20px; }
 
-/* line 11, stdin */
+/* line 13, stdin */
 /* line 14, stdin */
-.cartridgeCss {
+.slidingBloc ul.selection-list li.sl-line:hover {
+  background: none; }
+
+/* line 16, stdin */
+/* line 17, stdin */
+.slidingBloc ul.selection-list li.sl-line {
+  cursor: auto; }
+
+/* line 22, stdin */
+/* line 21, stdin */
+.catridgeContainer {
   z-index: 10;
   width: 500px;
   border-left: solid 1px #e2e2e2;
   border-bottom: solid 1px #e2e2e2;
   border-bottom: none;
   float: right; }
-
-/* line 22, stdin */
-/* line 23, stdin */
-.cartridge .header {
-  background-color: #EEECE1;
-  height: 150px;
-  border-bottom: solid 1px #e2e2e2; }
-
-/* line 26, stdin */
-/* line 28, stdin */
-.cartridge .header .picture {
-  float: left;
-  width: 100px;
-  height: 100px;
-  margin: 20px 20px; }
-
-/* line 32, stdin */
-/* line 34, stdin */
-.cartridge .header .title {
-  padding-top: 30px;
-  font-weight: bold;
-  font-size: 18px; }
-
-/* line 37, stdin */
-/* line 39, stdin */
-.cartridge .header .link {
-  float: left;
-  margin-top: 120px;
-  margin-left: -85px; }
-
-/* line 43, stdin */
-/* line 44, stdin */
-.cartridge .field {
-  background-color: #F2F2F2;
-  float: left;
-  width: 100%;
-  padding: 10px;
-  border-bottom: solid 1px #e2e2e2; }
-
-/* line 49, stdin */
-/* line 51, stdin */
-.cartridge .field .title {
-  width: 30%;
-  float: left;
-  font-weight: bold; }
-
-/* line 54, stdin */
-/* line 56, stdin */
-.cartridge .field .content {
-  width: 70%;
-  float: right; }
-
-/* line 67, stdin */
-/* line 61, stdin */
-#slidingContent .slidingBloc:first-of-type {
-  border: 0; }
-
-/* line 70, stdin */
-/* line 64, stdin */
-#slidingContent h3 {
-  color: grey;
-  margin: 10px 0; }
-
-/* line 74, stdin */
-/* line 68, stdin */
-#slidingContent .slidingBloc {
-  padding: 5px 15px 10px 15px; }
-
-/* line 77, stdin */
-/* line 71, stdin */
-#slidingContent .card {
-  background-color: #E0E0E0;
-  margin: 0 20px;
-  width: 900px;
-  padding: 5px 10px; }
-
-/* line 83, stdin */
-/* line 77, stdin */
-#slidingContent .card .picture {
-  float: left;
-  width: 50px;
-  height: 50px;
-  margin-right: 20px; }
-
-/* line 89, stdin */
-/* line 83, stdin */
-#slidingContent .card .name {
-  font-weight: bold;
-  font-size: 20px;
-  color: #953737; }
-
-/* line 94, stdin */
-/* line 88, stdin */
-#slidingContent .card .middleName {
-  font-weight: bold;
-  font-size: 16px; }
-
-/* line 101, stdin */
-/* line 93, stdin */
-.sticky-navigation {
-  background-color: white;
-  width: 250px;
-  float: left; }
-
-/* line 105, stdin */
-/* line 98, stdin */
-.sticky-navigation a {
-  color: black; }
-
-/* line 110, stdin */
-/* line 102, stdin */
-.sticky-navigation a:hover, .sticky-navigation a:focus {
-  color: purple; }
-
-/*
-  #slidingContent .noBorderBottom {
-    border-bottom: none;
-  }*/
-/*
-  .slidingBloc button.btn.btn-raised.btn-primary {
-    margin-top: 0;
-    margin-left: 900px;
-    position: relative;
-    margin-bottom: 0px;
-  }*/
-/* line 127, stdin */
-/* line 117, stdin */
-.slidingBloc ul.selection-list li.sl-line:hover {
-  background: none; }
-
-/* line 131, stdin */
-/* line 121, stdin */
-.slidingBloc ul.selection-list li.sl-line {
-  cursor: auto; }
 
 /* line 16, app/styles/variables.scss */
 /* line 2, stdin */
@@ -80408,6 +80340,88 @@ ul.selection-list li.sl-line:hover {
 /* line 76, stdin */
 .item {
   margin-left: 40px; }
+
+/* line 16, app/styles/variables.scss */
+/* line 2, stdin */
+body {
+  border: none; }
+
+/* line 4, stdin */
+/* line 6, stdin */
+#slidingContent .slidingBloc:first-of-type {
+  border: 0; }
+
+/* line 7, stdin */
+/* line 9, stdin */
+#slidingContent h3 {
+  color: grey;
+  margin: 10px 0; }
+
+/* line 11, stdin */
+/* line 13, stdin */
+#slidingContent .slidingBloc {
+  padding: 5px 15px 10px 15px; }
+
+/* line 14, stdin */
+/* line 16, stdin */
+#slidingContent .card {
+  background-color: #E0E0E0;
+  margin: 0 20px;
+  width: 900px;
+  padding: 5px 10px; }
+
+/* line 20, stdin */
+/* line 22, stdin */
+#slidingContent .card .picture {
+  float: left;
+  width: 50px;
+  height: 50px;
+  margin-right: 20px; }
+
+/* line 26, stdin */
+/* line 28, stdin */
+#slidingContent .card .name {
+  font-weight: bold;
+  font-size: 20px;
+  color: #953737; }
+
+/* line 31, stdin */
+/* line 33, stdin */
+#slidingContent .card .middleName {
+  font-weight: bold;
+  font-size: 16px; }
+
+/* line 16, app/styles/variables.scss */
+/* line 2, stdin */
+body {
+  border: none; }
+
+/* line 3, stdin */
+/* line 6, stdin */
+.sticky-navigation {
+  background-color: white;
+  width: 250px;
+  float: left; }
+
+/* line 7, stdin */
+/* line 11, stdin */
+.sticky-navigation a {
+  color: black; }
+
+/* line 10, stdin */
+/* line 14, stdin */
+.sticky-navigation a:hover {
+  color: #6acacb; }
+
+/* line 13, stdin */
+/* line 17, stdin */
+.sticky-navigation a:focus {
+  color: #6acacb; }
+
+/* line 16, stdin */
+/* line 20, stdin */
+.sticky-navigation ul.selection-list li.sl-line:hover {
+  background: none; }
 
 /* line 16, stdin */
 /* line 2, stdin */

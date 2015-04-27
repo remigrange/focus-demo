@@ -2695,7 +2695,7 @@ module.exports = React.createClass({
     render: function renderSlidingContent() {
         return (
             React.createElement("div", {className: "details"}, 
-                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}}), 
+                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'catridgeContainer'}}), 
                 React.createElement("div", {id: "slidingContent"}, 
                     React.createElement(MovieDetails, {id: this.props.id}), 
                     React.createElement("hr", null), 
@@ -2894,7 +2894,7 @@ module.exports = React.createClass({
     render: function renderSlidingContent() {
         return (
             React.createElement("div", {className: "details"}, 
-                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'cartridgeCss'}}), 
+                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'catridgeContainer'}}), 
                 React.createElement("div", {id: "slidingContent"}, 
                     React.createElement(PeopleDetails, {id: this.props.id}), 
                     React.createElement(PeopleFilmography, {id: this.props.id}), 

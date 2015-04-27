@@ -1,0 +1,41 @@
+@import "./variables";
+
+.cartridge {
+  .header {
+    background-color: #EEECE1;
+    height: 150px;
+    border-bottom: solid 1px $color-gris2;
+    .picture {
+      float: left;
+      width: 100px;
+      height: 100px;
+      margin: 20px 20px;
+    }
+    .title {
+      padding-top: 30px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .link {
+      float: left;
+      margin-top: 120px;
+      margin-left: -85px;
+    }
+  }
+  .field {
+    background-color: #F2F2F2;
+    float: left;
+    width: 100%;
+    padding: 10px;
+    border-bottom: solid 1px $color-gris2;
+    .title{
+      width: 30%;
+      float: left;
+      font-weight: bold;
+    }
+    .content{
+      width: 70%;
+      float: right;
+    }
+  }
+}

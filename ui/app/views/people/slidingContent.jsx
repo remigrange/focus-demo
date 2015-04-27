@@ -7,7 +7,7 @@ module.exports = React.createClass({
     render: function renderSlidingContent() {
         return (
             <div className="details">
-                <MovieCartridge id={this.props.id} style={{className: 'cartridgeCss'}}/>
+                <MovieCartridge id={this.props.id} style={{className: 'catridgeContainer'}}/>
                 <div id='slidingContent'>
                     <PeopleDetails id={this.props.id}/>
                     <PeopleFilmography id={this.props.id}/>

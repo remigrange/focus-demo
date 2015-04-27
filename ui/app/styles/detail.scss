@@ -8,7 +8,18 @@
   padding-left: 20px;
 }
 
-.cartridgeCss {
+.slidingBloc {
+  ul.selection-list {
+    li.sl-line:hover {
+      background: none;
+    }
+    li.sl-line {
+      cursor: auto;
+    }
+  }
+}
+
+.catridgeContainer {
   z-index: 10;
   width: 500px;
   border-left: solid 1px $color-gris2;
@@ -16,118 +27,3 @@
   border-bottom: none;
   float:right;
 }
-
-
-.cartridge {
-  .header {
-    background-color: #EEECE1;
-    height: 150px;
-    border-bottom: solid 1px $color-gris2;
-    .picture {
-      float: left;
-      width: 100px;
-      height: 100px;
-      margin: 20px 20px;
-    }
-    .title {
-      padding-top: 30px;
-      font-weight: bold;
-      font-size: 18px;
-    }
-    .link {
-      float: left;
-      margin-top: 120px;
-      margin-left: -85px;
-    }
-  }
-  .field {
-    background-color: #F2F2F2;
-    float: left;
-    width: 100%;
-    padding: 10px;
-    border-bottom: solid 1px $color-gris2;
-    .title{
-      width: 30%;
-      float: left;
-      font-weight: bold;
-    }
-    .content{
-      width: 70%;
-      float: right;
-    }
-  }
-}
-
-
-  #slidingContent {
-
-  }
-
-  #slidingContent {
-    .slidingBloc:first-of-type {
-      border: 0;
-    }
-    h3 {
-      color: grey;
-      margin: 10px 0;
-    }
-    .slidingBloc {
-      padding: 5px 15px 10px 15px;
-    }
-    .card {
-      background-color: #E0E0E0;
-      //height: 70px;
-      margin: 0 20px;
-      width: 900px;
-      padding: 5px 10px;
-      .picture {
-        float: left;
-        width: 50px;
-        height: 50px;
-        margin-right: 20px;
-      }
-      .name {
-        font-weight: bold;
-        font-size: 20px;
-        color: #953737;
-      }
-      .middleName {
-        font-weight: bold;
-        font-size: 16px;
-      }
-    }
-  }
-
-  .sticky-navigation {
-    background-color: white;
-    width: 250px;
-    float: left;
-    a {
-      color: black;
-    }
-  }
-
-  .sticky-navigation a:hover,.sticky-navigation a:focus{
-    color: purple;
-  }
-
-  /*
-  #slidingContent .noBorderBottom {
-    border-bottom: none;
-  }*/
-
-  /*
-  .slidingBloc button.btn.btn-raised.btn-primary {
-    margin-top: 0;
-    margin-left: 900px;
-    position: relative;
-    margin-bottom: 0px;
-  }*/
-
-  .slidingBloc ul.selection-list li.sl-line:hover {
-    background: none;
-  }
-
-  .slidingBloc ul.selection-list li.sl-line {
-    cursor: auto;
-  }
