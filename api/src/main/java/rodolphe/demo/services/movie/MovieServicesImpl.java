@@ -63,18 +63,25 @@ public class MovieServicesImpl implements MovieServices {
         for (final FacetSelection sel : selection) {
             criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
         }
-        String sortFieldName = null;
-        boolean isSortDesc = false;
-        final DtListState listState;
+        // -----
+        final String sortFieldName;
+        final boolean isSortDesc;
         if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
             sortFieldName = uiListState.getSortFieldName();
             isSortDesc = uiListState.isSortDesc();
-        }
-        if (uiListState.getSkip() > 0) {
-            listState = new DtListState(MAX_ROWS, (uiListState.getSkip() - 1) * MAX_ROWS, sortFieldName, isSortDesc);
         } else {
-            listState = new DtListState(MAX_ROWS, 0, sortFieldName, isSortDesc);
+            sortFieldName = null;
+            isSortDesc = false;
         }
+        // -----
+        final int skipRows;
+        if (uiListState.getSkip() > 0) {
+            skipRows = (uiListState.getSkip() - 1) * MAX_ROWS;
+        } else {
+            skipRows = 0;
+        }
+        // -----
+        final DtListState listState = new DtListState(MAX_ROWS, skipRows, sortFieldName, isSortDesc);
         final FacetConst facetConst = FacetConst.getFacetByName(clusteringFacetName);
         if (facetConst != null) {
             criteria.setClusteringFacetName(facetConst.name());
