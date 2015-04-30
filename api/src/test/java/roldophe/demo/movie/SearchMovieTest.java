@@ -47,10 +47,6 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
     @Inject
     private MovieDAO movieDAO;
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractEsSearchTestCase#getCritereForEsSearchWithUniqueResultAsSU()
-     */
     /** {@inheritDoc} */
     @Override
     protected MovieCriteria getCritereForEsSearchWithUniqueResultAsSU() {
@@ -82,20 +78,12 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
         return mov;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractSearchTestCase#getDataSenderClass()
-     */
     /** {@inheritDoc} */
     @Override
     protected Class<? extends MemorizeTnrData> getDataSenderClass() {
         return MovieSearchHandler.class;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractSearchTestCase#getListByCritere(io.vertigo.dynamo.domain.model.DtObject)
-     */
     /** {@inheritDoc} */
     @Override
     protected DtList<MovieResult> getListByCritere(final MovieCriteria critere) {
@@ -103,20 +91,12 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
         return movieServices.getMoviesByCriteria(critere, uiListState, "").getDtList();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractSearchTestCase#getId(io.vertigo.dynamo.domain.model.DtObject)
-     */
     /** {@inheritDoc} */
     @Override
     protected Long getId(final MovieResult dto) {
         return dto.getMovId();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractSearchTestCase#getIdForCritere(io.vertigo.dynamo.domain.model.DtObject)
-     */
     /** {@inheritDoc} */
     @Override
     protected Long getIdForCritere(final MovieCriteria critere) {
@@ -139,14 +119,14 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
      */
     @Test
     public void searchByReleasedDate() {
-        final MovieCriteria crit = getCritereForSearchWithUniqueResultAsSU();
-        final Movie mov = movieServices.getMovie(getIdForCritere(crit));
-        crit.setReleased(mov.getReleased());
-        checkUniqueResult(crit);
-        crit.setReleased(new DateBuilder(mov.getReleased()).addDays(1).build());
-        checkResultSize(crit, 0);
-        crit.setReleased(new DateBuilder(mov.getReleased()).addDays(-1).build());
-        checkResultSize(crit, 0);
+        final MovieCriteria movieCriteria = getCritereForSearchWithUniqueResultAsSU();
+        final Movie mov = movieServices.getMovie(getIdForCritere(movieCriteria));
+        movieCriteria.setReleased(mov.getReleased());
+        checkUniqueResult(movieCriteria);
+        movieCriteria.setReleased(new DateBuilder(mov.getReleased()).addDays(1).build());
+        checkResultSize(movieCriteria, 0);
+        movieCriteria.setReleased(new DateBuilder(mov.getReleased()).addDays(-1).build());
+        checkResultSize(movieCriteria, 0);
     }
 
     /**

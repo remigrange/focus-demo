@@ -170,10 +170,6 @@ public class MovieServicesImpl implements MovieServices {
         return moviePao.getCastingByMovId(movId);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see rodolphe.demo.services.movie.MovieServices#cleanMovieTitle()
-     */
     /** {@inheritDoc} */
     @Override
     @Transactional

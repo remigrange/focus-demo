@@ -30,10 +30,6 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
     @Inject
     private PeopleServices peopleServices;
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractEsSearchTestCase#getCritereForEsSearchWithUniqueResultAsSU()
-     */
     /** {@inheritDoc} */
     @Override
     protected PeopleCriteria getCritereForEsSearchWithUniqueResultAsSU() {
@@ -64,20 +60,12 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
         return peo;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractSearchTestCase#getDataSenderClass()
-     */
     /** {@inheritDoc} */
     @Override
     protected Class<? extends MemorizeTnrData> getDataSenderClass() {
         return PeopleSearchHandler.class;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractSearchTestCase#getListByCritere(io.vertigo.dynamo.domain.model.DtObject)
-     */
     /** {@inheritDoc} */
     @Override
     protected DtList<PeopleResult> getListByCritere(final PeopleCriteria critere) {
@@ -85,20 +73,12 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
         return peopleServices.getPeopleByCriteria(critere, uiListState, "").getDtList();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractSearchTestCase#getId(io.vertigo.dynamo.domain.model.DtObject)
-     */
     /** {@inheritDoc} */
     @Override
     protected Long getId(final PeopleResult dto) {
         return dto.getPeoId();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see roldophe.demo.tools.AbstractSearchTestCase#getIdForCritere(io.vertigo.dynamo.domain.model.DtObject)
-     */
     /** {@inheritDoc} */
     @Override
     protected Long getIdForCritere(final PeopleCriteria critere) {
