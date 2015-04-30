@@ -1,7 +1,5 @@
 package rodolphe.demo.services.batch;
 
-import io.vertigo.core.Home;
-import io.vertigo.core.di.injector.Injector;
 import io.vertigo.lang.Assertion;
 import io.vertigo.lang.Option;
 import io.vertigo.persona.security.UserSession;
@@ -18,7 +16,7 @@ import rodolphe.demo.user.RodolpheUserSession;
  *
  * @author jmforhan
  */
-public abstract class AbstractRodolpheBatch implements InjectableComponent {
+public abstract class AbstractRodolpheBatch {
 
     @Inject
     private VSecurityManager vSecurityManager;
@@ -63,12 +61,5 @@ public abstract class AbstractRodolpheBatch implements InjectableComponent {
      */
     protected final Logger getLogger() {
         return logger;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final void injectMembers() {
-        // On inject tous les composants
-        Injector.injectMembers(this, Home.getComponentSpace());
     }
 }

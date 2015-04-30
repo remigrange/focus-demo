@@ -11,7 +11,7 @@ import rodolphe.demo.services.search.SearchServices;
 
 /**
  * Job for People index.
- * 
+ *
  * @author JDALMEIDA
  */
 public class JobIndexPeople extends AbstractRodolpheJob {
@@ -20,10 +20,6 @@ public class JobIndexPeople extends AbstractRodolpheJob {
     @Inject
     private SearchServices searchServices;
 
-    /*
-     * (non-Javadoc)
-     * @see rodolphe.demo.services.batch.AbstractRodolpheJob#doRun()
-     */
     /** {@inheritDoc} */
     @Override
     protected void doRun() {
