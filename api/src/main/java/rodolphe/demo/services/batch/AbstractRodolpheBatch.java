@@ -3,7 +3,6 @@ package rodolphe.demo.services.batch;
 import io.vertigo.core.Home;
 import io.vertigo.core.di.injector.Injector;
 import io.vertigo.lang.Assertion;
-import io.vertigo.lang.Container;
 import io.vertigo.lang.Option;
 import io.vertigo.persona.security.UserSession;
 import io.vertigo.persona.security.VSecurityManager;
@@ -70,15 +69,6 @@ public abstract class AbstractRodolpheBatch implements InjectableComponent {
     @Override
     public final void injectMembers() {
         // On inject tous les composants
-        Injector.injectMembers(this, getContainer());
-    }
-
-    /**
-     * Fournit le container utilisé pour l'injection.
-     *
-     * @return Container de l'injection
-     */
-    private static Container getContainer() {
-        return Home.getComponentSpace();
+        Injector.injectMembers(this, Home.getComponentSpace());
     }
 }
