@@ -11,7 +11,7 @@ import rodolphe.demo.services.movie.MovieServices;
 
 /**
  * Job for cleaning data in database.
- * 
+ *
  * @author JDALMEIDA
  */
 public class JobCleanData extends AbstractRodolpheJob {
@@ -21,10 +21,6 @@ public class JobCleanData extends AbstractRodolpheJob {
     @Inject
     private MovieServices movieServices;
 
-    /*
-     * (non-Javadoc)
-     * @see rodolphe.demo.services.batch.AbstractRodolpheJob#doRun()
-     */
     /** {@inheritDoc} */
     @Override
     protected void doRun() {
