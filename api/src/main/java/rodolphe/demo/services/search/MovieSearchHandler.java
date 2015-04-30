@@ -20,7 +20,7 @@ import rodolphe.demo.domain.movies.MovieView;
 
 /**
  * Movie search Handler.
- * 
+ *
  * @author jmforhan
  */
 public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex, MovieResult, MovieView, MovieCriteria> {
@@ -28,49 +28,31 @@ public class MovieSearchHandler extends AbstractElasticSearchHandler<MovieIndex,
     @Inject
     private MoviesPAO moviesPAO;
 
-    /*
-     * (non-Javadoc)
-     * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getIndexDefinitionName()
-     */
     /** {@inheritDoc} */
     @Override
     protected String getIndexDefinitionName() {
         return "IDX_MOVIE";
     }
 
-    /*
-     * (non-Javadoc)
-     * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getVue(int, int)
-     */
     /** {@inheritDoc} */
     @Override
     protected DtList<MovieView> getVue(final int rangMin, final int maxRows) {
         return moviesPAO.getMovieView(rangMin, maxRows);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see rodolphe.demo.services.search.AbstractElasticSearchHandler#getVueItem(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     protected MovieView getVueItem(final Object key) {
         return moviesPAO.getMovieViewByMovId((Long) key);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * rodolphe.demo.services.search.AbstractElasticSearchHandler#getTranslatedCriteria(io.vertigo.dynamo.domain.model
-     * .DtObject)
-     */
     /** {@inheritDoc} */
     @Override
-    protected String getTranslatedCriteria(final MovieCriteria criterium) {
-        final List<String> lst = new ArrayList<>();
-        addSimpleCriteriaAttribute(lst, MovieIndexFields.MOV_ID, criterium, MovieCriteriaFields.MOV_ID);
-        addSimpleCriteriaAttribute(lst, MovieIndexFields.RELEASED, criterium, MovieCriteriaFields.RELEASED);
-        addStartWithCriteria(lst, MovieIndexFields.TITLE, criterium, MovieCriteriaFields.TITLE);
-        return getRequestFromCriteriaList(lst);
+    protected String getTranslatedCriteria(final MovieCriteria movieCriteria) {
+        final List<String> list = new ArrayList<>();
+        addSimpleCriteriaAttribute(list, MovieIndexFields.MOV_ID, movieCriteria, MovieCriteriaFields.MOV_ID);
+        addSimpleCriteriaAttribute(list, MovieIndexFields.RELEASED, movieCriteria, MovieCriteriaFields.RELEASED);
+        addStartWithCriteria(list, MovieIndexFields.TITLE, movieCriteria, MovieCriteriaFields.TITLE);
+        return getRequestFromCriteriaList(list);
     }
 }
