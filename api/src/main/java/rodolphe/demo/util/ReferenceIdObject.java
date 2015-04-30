@@ -7,8 +7,8 @@ package rodolphe.demo.util;
  */
 public class ReferenceIdObject {
 
-    private Long code;
-    private String label;
+    private final Long code;
+    private final String label;
     private final Boolean active;
 
     /**
@@ -34,30 +34,12 @@ public class ReferenceIdObject {
     }
 
     /**
-     * Set id.
-     *
-     * @param code new value.
-     */
-    public void setCode(final Long code) {
-        this.code = code;
-    }
-
-    /**
      * get the label.
      *
      * @return label.
      */
     public String getLabel() {
         return label;
-    }
-
-    /**
-     * Set label.
-     *
-     * @param label new value
-     */
-    public void setLabel(final String label) {
-        this.label = label;
     }
 
     /**

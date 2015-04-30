@@ -7,9 +7,9 @@ package rodolphe.demo.util;
  */
 public class ReferenceObject {
 
-    private String code;
-    private String label;
-    private Boolean active;
+    private final String code;
+    private final String label;
+    private final Boolean active;
 
     /**
      * Create an instance of ReferenceObject.
@@ -34,15 +34,6 @@ public class ReferenceObject {
     }
 
     /**
-     * Set code.
-     *
-     * @param code new value.
-     */
-    public void setCode(final String code) {
-        this.code = code;
-    }
-
-    /**
      * get the label.
      *
      * @return label.
@@ -52,29 +43,11 @@ public class ReferenceObject {
     }
 
     /**
-     * Set label.
-     *
-     * @param label new value
-     */
-    public void setLabel(final String label) {
-        this.label = label;
-    }
-
-    /**
      * get active.
      *
      * @return active.
      */
     public Boolean getActive() {
         return active;
-    }
-
-    /**
-     * Set active.
-     *
-     * @param active If active
-     */
-    public void setActive(final Boolean active) {
-        this.active = active;
     }
 }
