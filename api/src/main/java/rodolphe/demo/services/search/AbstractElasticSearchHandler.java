@@ -269,7 +269,7 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
 
     /** {@inheritDoc} */
     @Override
-    public void indexer() {
+    public void index() {
         // Lecture de la configuration.
         final Integer clusterCard = configManager.getIntValue("search", "clusterCard");
         final SearchIndexDefinition indexDef = getIndexDefinition();
@@ -315,7 +315,7 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
 
     /** {@inheritDoc} */
     @Override
-    public final void indexerItem(final Object key) {
+    public final void indexItem(final Object key) {
         logger.debug("Indexation unitaire ");
         final SearchIndexDefinition indexDef = getIndexDefinition();
         final V vueItem = getVueItem(key);
@@ -335,7 +335,7 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
 
     /** {@inheritDoc} */
     @Override
-    public final void supprimerItem(final Object key) {
+    public final void removeItem(final Object key) {
         final SearchIndexDefinition indexDef = getIndexDefinition();
         final URI<I> uri = new URI<>(indexDef.getIndexDtDefinition(), key);
         searchManager.remove(indexDef, uri);

@@ -27,21 +27,21 @@ public class SearchServicesImpl implements SearchServices {
     @Override
     @Transactional
     public void indexMovies() {
-        movieSearchHandler.indexer();
+        movieSearchHandler.index();
     }
 
     /** {@inheritDoc} */
     @Override
     @Transactional
     public void indexMovie(final Long movId) {
-        movieSearchHandler.indexerItem(movId);
+        movieSearchHandler.indexItem(movId);
     }
 
     /** {@inheritDoc} */
     @Override
     @Transactional
     public void removeMovieFromIndex(final Long movId) {
-        movieSearchHandler.supprimerItem(movId);
+        movieSearchHandler.removeItem(movId);
     }
 
     /** {@inheritDoc} */
@@ -56,14 +56,14 @@ public class SearchServicesImpl implements SearchServices {
     @Override
     @Transactional
     public void indexPeople() {
-        peopleSearchHandler.indexer();
+        peopleSearchHandler.index();
     }
 
     /** {@inheritDoc} */
     @Override
     @Transactional
     public void indexPeople(final Long peoId) {
-        peopleSearchHandler.indexerItem(peoId);
+        peopleSearchHandler.indexItem(peoId);
     }
 
     /** {@inheritDoc} */

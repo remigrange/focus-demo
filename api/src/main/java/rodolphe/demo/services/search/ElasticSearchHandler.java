@@ -19,21 +19,21 @@ public interface ElasticSearchHandler<S extends DtObject, R extends DtObject> {
     /**
      * Recalcul l'index.
      */
-    void indexer();
+    void index();
 
     /**
      * Index un élément à partir de sa clé.
      *
      * @param key Clé de l'élément.
      */
-    void indexerItem(Object key);
+    void indexItem(Object key);
 
     /**
      * Supprime un élément à partir de sa clé.
      *
      * @param key Clé de l'élément.
      */
-    void supprimerItem(Object key);
+    void removeItem(Object key);
 
     /**
      * Exécute la recherche.
