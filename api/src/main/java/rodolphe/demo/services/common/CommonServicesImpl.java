@@ -37,34 +37,30 @@ public class CommonServicesImpl implements CommonServices {
     @Inject
     private PeopleServices peopleServices;
 
-    /*
-     * (non-Javadoc)
-     * @see rodolphe.demo.services.common.CommonServices#search(java.lang.String, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     @Transactional
     public Object search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection,
             final UiListState uiListState, final String clusteringFacetName) {
-        final MovieCriteria movieCrit = new MovieCriteria();
+        final MovieCriteria movieCriteria = new MovieCriteria();
         final String searchText = searchCriteria.getQuery();
         final String scope = searchCriteria.getScope();
-        movieCrit.setTitle(searchText);
-        final PeopleCriteria peopleCrit = new PeopleCriteria();
-        peopleCrit.setPeoName(searchText);
-        peopleCrit.setFirstName(searchText);
-        peopleCrit.setLastName(searchText);
+        movieCriteria.setTitle(searchText);
+        final PeopleCriteria peopleCriteria = new PeopleCriteria();
+        peopleCriteria.setPeoName(searchText);
+        peopleCriteria.setFirstName(searchText);
+        peopleCriteria.setLastName(searchText);
         final FacetSelection[] facetSel = getFacetSelectionList(selection);
         if (CodeScope.MOVIE.name().equals(scope)) {
-            return movieServices.getMoviesByCriteria(movieCrit, uiListState, clusteringFacetName, facetSel);
+            return movieServices.getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel);
         } else if (CodeScope.PEOPLE.name().equals(scope)) {
-            return peopleServices.getPeopleByCriteria(peopleCrit, uiListState, clusteringFacetName, facetSel);
+            return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel);
         } else {
             final UiContext uiContext = new UiContext();
             final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices
-                    .getMoviesByCriteria(movieCrit, uiListState, clusteringFacetName, facetSel);
+                    .getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel);
             final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices
-                    .getPeopleByCriteria(peopleCrit, uiListState, clusteringFacetName, facetSel);
+                    .getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel);
             final UiContext result = new UiContext();
             result.put("Movies", movies.getDtList());
             result.put("People", people.getDtList());
@@ -76,25 +72,25 @@ public class CommonServicesImpl implements CommonServices {
 
     /** {@inheritDoc} */
     @Override
-    public FacetSelection[] getFacetSelectionList(final DtList<SelectedFacet> selection) {
-        final FacetSelection[] facetSel = new FacetSelection[selection.size()];
+    public FacetSelection[] getFacetSelectionList(final DtList<SelectedFacet> selectedFacets) {
+        final FacetSelection[] facetSelections = new FacetSelection[selectedFacets.size()];
         // facet selection list.
-        for (int i = 0; i < selection.size(); i++) {
-            final SelectedFacet selected = selection.get(i);
+        for (int i = 0; i < selectedFacets.size(); i++) {
+            final SelectedFacet selectedFacet = selectedFacets.get(i);
             FacetConst selectedFacetConst = null;
-            final FacetConst[] listFacets = FacetConst.values();
-            for (final FacetConst facetConst : listFacets) {
-                if (facetConst.getFacetName().equalsIgnoreCase(selected.getKey())) {
+            final FacetConst[] facets = FacetConst.values();
+            for (final FacetConst facetConst : facets) {
+                if (facetConst.getFacetName().equalsIgnoreCase(selectedFacet.getKey())) {
                     selectedFacetConst = facetConst;
                     break;
                 }
             }
             if (selectedFacetConst != null) {
                 final ListFilter filter = new ListFilter(selectedFacetConst.getField().name() + ":\""
-                        + selected.getValue() + "\"");
-                facetSel[i] = new FacetSelection(selectedFacetConst.name(), selected.getValue(), filter);
+                        + selectedFacet.getValue() + "\"");
+                facetSelections[i] = new FacetSelection(selectedFacetConst.name(), selectedFacet.getValue(), filter);
             }
         }
-        return facetSel;
+        return facetSelections;
     }
 }
