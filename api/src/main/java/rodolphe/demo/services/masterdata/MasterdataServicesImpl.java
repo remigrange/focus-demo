@@ -16,8 +16,8 @@ public class MasterdataServicesImpl implements MasterdataServices {
     @Override
     public List<ReferenceObject> getScopes() {
         final List<ReferenceObject> ret = new ArrayList<>();
-        final CodeScope[] list = CodeScope.values();
-        for (final CodeScope code : list) {
+        final CodeScope[] codeScopes = CodeScope.values();
+        for (final CodeScope code : codeScopes) {
             ret.add(new ReferenceObject(code.name(), code.name(), true));
         }
         return ret;

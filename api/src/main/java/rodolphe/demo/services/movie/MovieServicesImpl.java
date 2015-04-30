@@ -179,18 +179,18 @@ public class MovieServicesImpl implements MovieServices {
     @Transactional
     public int cleanMovieTitle(final int minRank, final int maxRows) {
         Long maxRank = -1L;
-        final DtList<MovieView> movieViewList = moviePao.getMovieView(minRank, maxRows);
-        final DtList<Movie> movieList = new DtList<>(Movie.class);
-        for (final MovieView movieView : movieViewList) {
+        final DtList<MovieView> movieViews = moviePao.getMovieView(minRank, maxRows);
+        final DtList<Movie> movies = new DtList<>(Movie.class);
+        for (final MovieView movieView : movieViews) {
             // Pour ne pas remttre à jour les donnes deja mise à jour.
             if (StringUtil.isEmpty(movieView.getMetadasJson())) {
-                movieList.add(CleanMovieData.parseMovieTitle(movieView));
+                movies.add(CleanMovieData.parseMovieTitle(movieView));
             }
             if (maxRank < movieView.getRank()) {
                 maxRank = movieView.getRank();
             }
         }
-        moviePao.updateMoviesTitles(movieList);
+        moviePao.updateMoviesTitles(movies);
         return maxRank.intValue();
     }
 }
