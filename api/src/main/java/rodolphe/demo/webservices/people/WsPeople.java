@@ -8,6 +8,7 @@ import io.vertigo.vega.rest.stereotype.AnonymousAccessAllowed;
 import io.vertigo.vega.rest.stereotype.GET;
 import io.vertigo.vega.rest.stereotype.POST;
 import io.vertigo.vega.rest.stereotype.PathParam;
+import io.vertigo.vega.rest.stereotype.PathPrefix;
 import io.vertigo.vega.rest.stereotype.QueryParam;
 
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import rodolphe.demo.services.search.SearchCriterium;
  *
  * @author JDALMEIDA
  */
+@PathPrefix("/people")
 public final class WsPeople implements RestfulService {
 
     @Inject
@@ -37,7 +39,7 @@ public final class WsPeople implements RestfulService {
      * @param uiListState uiListState
      * @return search results
      */
-    @POST("/people")
+    @POST("")
     @AnonymousAccessAllowed
     public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
             final PeopleCriteria peopleCriteria, @QueryParam("") final UiListState uiListState) {
@@ -50,7 +52,7 @@ public final class WsPeople implements RestfulService {
      * @param peoId identifier
      * @return people
      */
-    @GET("/people/{id}")
+    @GET("/{id}")
     @AnonymousAccessAllowed
     public People getPeople(@PathParam("id") final long peoId) {
         return peopleServices.getPeople(peoId);
@@ -63,7 +65,7 @@ public final class WsPeople implements RestfulService {
      * @return people
      */
     // TODO change the ws name.
-    @POST("/people/new")
+    @POST("/new")
     @AnonymousAccessAllowed
     public People savePeople(final People people) {
         return peopleServices.savePeople(people);
@@ -75,7 +77,7 @@ public final class WsPeople implements RestfulService {
      * @param peoId people identifier
      * @return movies list
      */
-    @GET("/people/{id}/movies")
+    @GET("/{id}/movies")
     @AnonymousAccessAllowed
     public DtList<Movie> getMoviesByPeo(@PathParam("id") final Long peoId) {
         return peopleServices.getMoviesByPeo(peoId);
@@ -87,8 +89,8 @@ public final class WsPeople implements RestfulService {
      * @param peoId people id.
      * @return people.
      */
-     //todo: rename in /people/{id}/detail
-    @GET("/people/{id}/peopleView")
+    // todo: rename in /people/{id}/detail
+    @GET("/{id}/peopleView")
     @AnonymousAccessAllowed
     public PeopleView getPeopleDetails(@PathParam("id") final long peoId) {
         return peopleServices.getPeopleDetails(peoId);
@@ -100,7 +102,7 @@ public final class WsPeople implements RestfulService {
      * @param peoId people identifier
      * @return movies list
      */
-    @GET("/people/{id}/filmography")
+    @GET("/{id}/filmography")
     @AnonymousAccessAllowed
     public DtList<Movie> getFilmographyByPeo(@PathParam("id") final Long peoId) {
         return peopleServices.getFilmographyByPeo(peoId);
