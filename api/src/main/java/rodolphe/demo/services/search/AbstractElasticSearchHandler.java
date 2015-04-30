@@ -155,9 +155,9 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
      */
     protected abstract V getVueItem(final Object key);
 
-    private Map<String, DtField> getFieldMap(final List<DtField> dtFieldList) {
+    private Map<String, DtField> getFieldMap(final List<DtField> dtFields) {
         final Map<String, DtField> dtFieldMap = new HashMap<>();
-        for (final DtField dtField : dtFieldList) {
+        for (final DtField dtField : dtFields) {
             dtFieldMap.put(dtField.name(), dtField);
         }
         return dtFieldMap;
@@ -257,9 +257,7 @@ public abstract class AbstractElasticSearchHandler<I extends DtObject, R extends
     }
 
     private ListFilter createClearFilter(final int rangMin, final Integer rangMax) {
-        final StringBuilder sb = new StringBuilder(RANK_FIELD_NAME + ":[");
-        sb.append(rangMin);
-        sb.append(" TO ");
+        final StringBuilder sb = new StringBuilder(RANK_FIELD_NAME + ":[").append(rangMin).append(" TO ");
         if (rangMax == null) {
             sb.append('*');
         } else {
