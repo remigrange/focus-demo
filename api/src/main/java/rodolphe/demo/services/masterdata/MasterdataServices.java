@@ -18,5 +18,5 @@ public interface MasterdataServices extends Component {
      *
      * @return scope List
      */
-    List<ReferenceObject> getScopeList();
+    List<ReferenceObject> getScopes();
 }

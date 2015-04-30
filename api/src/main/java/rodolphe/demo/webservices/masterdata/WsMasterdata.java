@@ -29,6 +29,6 @@ public final class WsMasterdata implements RestfulService {
     @GET("/scopes")
     @AnonymousAccessAllowed
     public List<ReferenceObject> getScopes() {
-        return masterdataServices.getScopeList();
+        return masterdataServices.getScopes();
     }
 }
