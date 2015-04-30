@@ -61,6 +61,22 @@ public final class MdlUtil {
     }
 
     /**
+     * Récupère une option permettant de savoir si un champ est présent sur un dto ou pas.
+     *
+     * @param def definition du dto
+     * @param fieldName nom du champ
+     * @return option
+     */
+    private static Option<DtField> getDtField(final DtDefinition def, final String fieldName) {
+        try {
+            return Option.some(def.getField(fieldName));
+        } catch (final NullPointerException e) {
+            // Le champ n'existe pas sur l'objet. On retourne null
+            return Option.none();
+        }
+    }
+
+    /**
      * Get the value displayed for a given key.
      *
      * @param dtDef definition of the dto
@@ -198,7 +214,7 @@ public final class MdlUtil {
     }
 
     private static Option<DtField> getActifField(final DtDefinition dtDef) {
-        return DtUtil.getDtField(dtDef, ACTIF_FIELD_NAME);
+        return getDtField(dtDef, ACTIF_FIELD_NAME);
     }
 
     private static <D extends DtObject> List<ReferenceIdObject> getNotStaticReferenceIdObjectList(
