@@ -7,6 +7,7 @@ import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.vega.rest.engine.UiContext;
 import io.vertigo.vega.rest.model.UiListState;
 
 import java.util.Map.Entry;
@@ -17,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import rodolphe.demo.domain.common.SearchCriteria;
-import rodolphe.demo.domain.common.SearchRet;
 import rodolphe.demo.domain.common.SelectedFacet;
 import rodolphe.demo.domain.masterdata.CodeScope;
 import rodolphe.demo.domain.movies.MovieCriteria;
@@ -97,7 +97,7 @@ public class CommonTest extends AbstractRodolpheTestCase {
         criteria.setSearchText("Jen");
         final UiListState uiListState = new UiListState(50, 0, null, false, null);
         final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
-        final DtList<SearchRet> ret = (DtList<SearchRet>) commonServices.search(criteria, selection, uiListState, "");
-        Logger.getLogger(getClass()).info("result : " + ret.size());
+        final UiContext context = (UiContext) commonServices.search(criteria, selection, uiListState, "");
+        Logger.getLogger(getClass()).info("result : " + context.size());
     }
 }
