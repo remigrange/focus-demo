@@ -9,9 +9,9 @@ import io.vertigo.dynamo.collections.ListFilter;
  */
 public class FacetSelection {
 
-    private String facetName;
-    private String facetValueKey;
-    private ListFilter facetQuery;
+    private final String facetName;
+    private final String facetValueKey;
+    private final ListFilter facetQuery;
 
     /**
      * Construit une instance de FacetSelection.
@@ -37,15 +37,6 @@ public class FacetSelection {
     }
 
     /**
-     * Affecte facetName à facetName.
-     *
-     * @param facetName La nouvelle valeur de facetName
-     */
-    public void setFacetName(final String facetName) {
-        this.facetName = facetName;
-    }
-
-    /**
      * Donne la valeur de facetValueKey.
      *
      * @return la valeur de facetValueKey.
@@ -59,21 +50,5 @@ public class FacetSelection {
      */
     public ListFilter getFacetQuery() {
         return facetQuery;
-    }
-
-    /**
-     * @param facetQuery the facetQuery to set
-     */
-    public void setFacetQuery(final ListFilter facetQuery) {
-        this.facetQuery = facetQuery;
-    }
-
-    /**
-     * Affecte facetValueKey à facetValueKey.
-     *
-     * @param facetValueKey La nouvelle valeur de facetValueKey
-     */
-    public void setFacetValueKey(final String facetValueKey) {
-        this.facetValueKey = facetValueKey;
     }
 }
