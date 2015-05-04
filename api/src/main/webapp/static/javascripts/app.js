@@ -2309,17 +2309,17 @@ var Menu = React.createClass({displayName: "Menu",
     );
   },
   renderContent: function renderMenuContent() {
-    var home = React.createElement("a", {href: "#"}, 
+    var home = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#"}, 
       React.createElement("img", {src: "static/img/home-32x32-white.svg"})
     );
     var search = React.createElement("a", {onClick: this.openQuickSearchPopin, id: "quick-search-link"}, 
       React.createElement("img", {src: "static/img/search-32x32-white.svg"})
     );
-    var films = React.createElement("a", {href: "#", className: "fa fa-film"});
-    var videos = React.createElement("a", {href: "#", className: "fa fa-video-camera"});
-    var users = React.createElement("a", {href: "#", className: "fa fa-user"});
-    var settings = React.createElement("a", {href: "#", className: "fa fa-cog"});
-    var help = React.createElement("a", {href: "#", className: "fa fa-info-circle"});
+    var films = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-film"});
+    var videos = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-video-camera"});
+    var users = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-user"});
+    var settings = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-cog"});
+    var help = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-info-circle"});
     var root = React.createElement('div', null, home, search, films, videos, users, settings, help);
     return root;
   },
@@ -2340,6 +2340,19 @@ var Menu = React.createClass({displayName: "Menu",
     }
     $('body').toggleClass('stop-scrolling');
     //this.refs.qs._toggleOpen();
+  },
+  handleNaviagtion: function (event){
+    event.preventDefault();
+    var url = $(event.target).closest('a').attr('data-action');
+    Backbone.history.navigate(url, true);
+    var qsPopin = $('.quick-search-popin .popin-close-btn');
+    if(qsPopin !== undefined && qsPopin !== null && qsPopin.length > 0){
+      qsPopin.click();
+    }
+    var qsPreview = $('.preview-popin .popin-close-btn');
+    if(qsPreview !== undefined && qsPreview !== null && qsPreview.length > 0){
+      qsPreview.click();
+    }
   }
 });
 
