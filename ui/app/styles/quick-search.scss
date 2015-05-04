@@ -1,26 +1,5 @@
  @import "./variables";
 
- div.qs-quick-search input[type=search] {
-   border: none;
-   border-bottom: 1px solid $color-gris2;
- }
-/**
-Scope css
-*/
-.qs-scope-MOVIE {
-  background: url('./../img/film.svg') no-repeat center center;
-  background-size: 100% 100%;
-}
-
-.qs-scope-PEOPLE {
-  background: url('./../img/user.svg') no-repeat center center;
-  background-size: 100% 100%;
-}
-
-.qs-scope-ALL {
-  background: url('./../img/qs-none.svg') no-repeat center center;
-  background-size: 100% 100%;
-}
 /** links to filter result css */
 
 .linkFilterResult {
@@ -65,12 +44,16 @@ Scope css
   width: 40px !important;
   height: 40px !important;
   color: #FFF !important;
-  background-color: #2a8182 !important;
+  background-color: $color-gris2 !important;
   border-radius: 20px;
   font-size: 27px;
   padding: 0 !important;
   margin: 15px 0 0 0 !important;
 }
+
+ .btn-preview:hover{
+   background-color: $color-vert3 !important;
+ }
 
 .linkAdvancedSearch {
   text-align: right;
@@ -79,7 +62,7 @@ Scope css
   cursor: pointer;
   a {
     text-decoration: none;
-    padding: 5px 7px;
+    padding: 5px 10px;
     border-radius: 15px;
     border: 1px solid  $color-gris2;
     color: $color-gris;

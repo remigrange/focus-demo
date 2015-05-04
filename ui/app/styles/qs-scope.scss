@@ -1,0 +1,47 @@
+@import "./variables";
+
+div.qs-quick-search {
+  div.qs-scope {
+    background-color: $color-blanc;
+    border-bottom: 1px solid $color-gris2;
+    ul{
+      background-color: $color-blanc;
+      margin-right: 10px;
+      z-index: 5;
+      li {
+        color: $color-noir;
+      }
+    }
+    div.qs-scope-deploy-up {
+      background: url('../img/arrow-up-black.svg') no-repeat center right;
+    }
+    div.qs-scope-deploy-down {
+      background: url('../img/arrow-down-black.svg') no-repeat center right;
+    }
+    .qs-scope-MOVIE {
+      background: url('./../img/film-black.svg') no-repeat center left 5px;
+      background-size: 24px 24px;
+      padding-left: 40px;
+    }
+    .qs-scope-PEOPLE {
+      background: url('./../img/user-black.svg') no-repeat center left 5px;
+      background-size: 24px 24px;
+      padding-left: 40px;
+    }
+    .qs-scope-ALL {
+      background: url('./../img/qs-none-black.svg') no-repeat center left 5px;
+      background-size: 24px 24px;
+      padding-left: 40px;
+    }
+  }
+  div.qs-help {
+    background: url('../img/help-arrow-green.svg') no-repeat center left;
+  }
+  input[type=search] {
+    border: none;
+    border-bottom: 1px solid $color-gris2;
+    padding-left: 0px;
+    margin-left: 100px;
+    width: 88%;
+  }
+}

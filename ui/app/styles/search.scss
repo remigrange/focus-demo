@@ -12,6 +12,15 @@ ul.selection-list li.sl-line:hover {
   margin: 5px 5px 0 0;
 }
 
+.movie-background {
+  background: url('./../img/film-black.svg') no-repeat center left;
+  background-size: 40px 40px;
+  width: 40px;
+  height: 40px;
+  margin: 5px 5px 0 0;
+  float: left;
+}
+
 .welcome-title {
   text-align: center;
   font-size: 45px;
@@ -72,5 +81,5 @@ ul.selection-list li.sl-line:hover {
 }
 
 .item {
-  margin-left: 40px;
+  margin-left: 55px;
 }
