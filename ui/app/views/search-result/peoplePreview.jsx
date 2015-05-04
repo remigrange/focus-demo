@@ -24,9 +24,22 @@ module.exports = React.createClass({
       </div>
     </div>
       <div className='clear'></div>
-      <div className="movie-preview-detailed-sheet" ><a href={peopleLink}>Detailed sheet </a></div>
+      <div className="movie-preview-detailed-sheet" ><a onClick={this.detailedSheet} data-action={peopleLink}>Detailed sheet </a></div>
     </div>;
 
     return root;
+  },
+  detailedSheet: function (event){
+    event.preventDefault();
+    var url = $(event.target).closest('a').attr('data-action');
+    Backbone.history.navigate(url, true);
+    var qsPopin = $('.quick-search-popin .popin-close-btn');
+    if(qsPopin !== undefined && qsPopin !== null && qsPopin.length > 0){
+      qsPopin.click();
+    }
+    var qsPreview = $('.preview-popin .popin-close-btn');
+    if(qsPreview !== undefined && qsPreview !== null && qsPreview.length > 0){
+      qsPreview.click();
+    }
   }
 });
