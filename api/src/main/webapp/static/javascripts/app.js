@@ -1365,7 +1365,7 @@ var root = "./movies/";
 var url = focus.util.url.builder;
 module.exports = {
     getAll: url(root, 'GET'),
-    update: url(root + "${id}/",'PUT'),
+    update: url(root + "${id}",'PUT'),
     create: url(root, 'POST'),
     get: url(root + "${id}", 'GET'),
     actors: url(root + "${id}/" + 'actors', 'GET'),
@@ -2314,7 +2314,12 @@ var Menu = React.createClass({displayName: "Menu",
     var search = React.createElement("a", {onClick: this.openQuickSearchPopin, id: "quick-search-link"}, 
       React.createElement("img", {src: "static/img/search-32x32-white.svg"})
     );
-    var root = React.createElement('div', null, home, search);
+    var films = React.createElement("a", {href: "#", className: "fa fa-film"});
+    var videos = React.createElement("a", {href: "#", className: "fa fa-video-camera"});
+    var users = React.createElement("a", {href: "#", className: "fa fa-user"});
+    var settings = React.createElement("a", {href: "#", className: "fa fa-cog"});
+    var help = React.createElement("a", {href: "#", className: "fa fa-info-circle"});
+    var root = React.createElement('div', null, home, search, films, videos, users, settings, help);
     return root;
   },
   openQuickSearchPopin: function openQuickSearchPopin(event) {
@@ -2565,7 +2570,7 @@ module.exports = React.createClass({
   definitionPath: 'movie',
   displayName: 'movieDetails',
   mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["movie"]}],
+  stores: [{store: movieStore, properties: ['movie']}],
   action: movieActions,
   renderContent: function render() {
       return (
@@ -3038,7 +3043,7 @@ module.exports = React.createClass({displayName: "exports",
   definitionPath: 'movie',
   renderLineContent: function (data) {
     var id = React.createElement('div', null, data.id);
-    var logo = React.createElement("div", {className: "movie-background"});
+    var logo = React.createElement("div", {className: "movie-background fa fa-film"});
     var movieTilte = this.displayFor('title', {style: {className: 'title-level-1'}});
     var genreIds = this.displayFor('genreIds', {style: {className: 'title-level-2'}});
     var released = this.displayFor('released', {style: {className: 'title-level-3'}});
@@ -3105,10 +3110,24 @@ module.exports = React.createClass({displayName: "exports",
       React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Released "), React.createElement("div", null, released)), 
       React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Runtime "), React.createElement("div", null, this.props.data.runtime))
     ), 
-    React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {href: movieLink}, "Detailed sheet "))
+    React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, "data-action": movieLink}, "Detailed sheet "))
     );
 
     return root;
+  },
+
+  detailedSheet: function (event){
+    event.preventDefault();
+    var url = $(event.target).closest('a').attr('data-action');
+    Backbone.history.navigate(url, true);
+    var qsPopin = $('.quick-search-popin .popin-close-btn');
+    if(qsPopin !== undefined && qsPopin !== null && qsPopin.length > 0){
+      qsPopin.click();
+    }
+    var qsPreview = $('.preview-popin .popin-close-btn');
+    if(qsPreview !== undefined && qsPreview !== null && qsPreview.length > 0){
+      qsPreview.click();
+    }
   }
 });
 
@@ -3158,10 +3177,23 @@ module.exports = React.createClass({displayName: "exports",
       )
     ), 
       React.createElement("div", {className: "clear"}), 
-      React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {href: peopleLink}, "Detailed sheet "))
+      React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, "data-action": peopleLink}, "Detailed sheet "))
     );
 
     return root;
+  },
+  detailedSheet: function (event){
+    event.preventDefault();
+    var url = $(event.target).closest('a').attr('data-action');
+    Backbone.history.navigate(url, true);
+    var qsPopin = $('.quick-search-popin .popin-close-btn');
+    if(qsPopin !== undefined && qsPopin !== null && qsPopin.length > 0){
+      qsPopin.click();
+    }
+    var qsPreview = $('.preview-popin .popin-close-btn');
+    if(qsPreview !== undefined && qsPreview !== null && qsPreview.length > 0){
+      qsPreview.click();
+    }
   }
 });
 

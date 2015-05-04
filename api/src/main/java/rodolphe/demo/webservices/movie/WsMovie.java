@@ -52,7 +52,7 @@ public final class WsMovie implements RestfulService {
         return movieServices.saveMovie(movie);
     }
 
-    @PUT("/movies/{id}")
+    @PUT("/{id}")
     @AnonymousAccessAllowed
     public Movie updateMovie(@PathParam("id") final long movId, final Movie movie) {
         if (movId != movie.getMovId()) {

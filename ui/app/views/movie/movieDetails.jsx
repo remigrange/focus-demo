@@ -6,7 +6,7 @@ module.exports = React.createClass({
   definitionPath: 'movie',
   displayName: 'movieDetails',
   mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["movie"]}],
+  stores: [{store: movieStore, properties: ['movie']}],
   action: movieActions,
   renderContent: function render() {
       return (

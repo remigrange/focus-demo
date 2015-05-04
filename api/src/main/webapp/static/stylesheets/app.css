@@ -79857,24 +79857,25 @@ body {
   text-align: center;
   padding-top: 20px;
   height: 60px;
-  width: 60px; }
+  width: 60px;
+  color: #FFF; }
 
-/* line 83, stdin */
-/* line 81, stdin */
+/* line 84, stdin */
+/* line 82, stdin */
 #leftMenu .left-menu a img {
   width: 20px;
   height: 20px; }
 
-/* line 90, stdin */
-/* line 86, stdin */
+/* line 91, stdin */
+/* line 87, stdin */
 .user-image {
   background-color: rgba(5, 29, 49, 0.5);
   width: 40px;
   height: 40px;
   position: relative; }
 
-/* line 97, stdin */
-/* line 93, stdin */
+/* line 98, stdin */
+/* line 94, stdin */
 #quick-search-link {
   cursor: pointer; }
 
@@ -80317,36 +80318,33 @@ ul.selection-list li.sl-line:hover {
 /* line 15, stdin */
 /* line 17, stdin */
 .movie-background {
-  background: url('./../img/film-black.svg') no-repeat center left;
-  background-size: 40px 40px;
-  width: 40px;
-  height: 40px;
+  font-size: 40px;
   margin: 5px 5px 0 0;
   float: left; }
 
-/* line 24, stdin */
-/* line 26, stdin */
+/* line 21, stdin */
+/* line 23, stdin */
 .welcome-title {
   text-align: center;
   font-size: 45px;
   color: #1A3481; }
 
-/* line 30, stdin */
-/* line 32, stdin */
+/* line 27, stdin */
+/* line 29, stdin */
 .container-title, .details-panel-title {
   font-size: 16px;
   text-transform: uppercase;
   color: #acacac; }
 
-/* line 36, stdin */
-/* line 38, stdin */
+/* line 33, stdin */
+/* line 35, stdin */
 .results {
   text-align: left;
   padding-left: 10px;
   float: left; }
 
-/* line 42, stdin */
-/* line 44, stdin */
+/* line 39, stdin */
+/* line 41, stdin */
 .summary {
   background: #FFF;
   display: inline-block;
@@ -80355,47 +80353,47 @@ ul.selection-list li.sl-line:hover {
   font-size: 14px;
   font-weight: bold; }
 
-/* line 52, stdin */
-/* line 53, stdin */
+/* line 49, stdin */
+/* line 50, stdin */
 .title-level-1, .title-level-2, .title-level-3 {
   margin-bottom: 0; }
 
-/* line 55, stdin */
-/* line 57, stdin */
+/* line 52, stdin */
+/* line 54, stdin */
 .title-level-1 {
   color: #6acacb; }
 
+/* line 54, stdin */
 /* line 57, stdin */
-/* line 60, stdin */
 .title-level-1 .form-control {
   font-size: 16px;
   font-weight: bold;
   color: #6acacb;
   background-image: none; }
 
-/* line 65, stdin */
-/* line 67, stdin */
+/* line 62, stdin */
+/* line 64, stdin */
 .title-level-2 .form-control {
   font-size: 14px;
   font-weight: bold;
   background-image: none; }
 
-/* line 71, stdin */
-/* line 73, stdin */
+/* line 68, stdin */
+/* line 70, stdin */
 .title-level-3 .form-control {
   font-size: 14px;
   background-image: none; }
 
-/* line 76, stdin */
-/* line 78, stdin */
+/* line 73, stdin */
+/* line 75, stdin */
 .title-group-key {
   margin: 2px 0 5px 5px;
   color: #6acacb;
   font-size: 20px;
   padding-top: 5px; }
 
-/* line 83, stdin */
-/* line 85, stdin */
+/* line 80, stdin */
+/* line 82, stdin */
 .item {
   margin-left: 55px; }
 
