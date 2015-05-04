@@ -21,7 +21,12 @@ var Menu = React.createClass({
     var search = <a onClick={this.openQuickSearchPopin} id='quick-search-link'>
       <img src='static/img/search-32x32-white.svg'/>
     </a>;
-    var root = React.createElement('div', null, home, search);
+    var films = <a href='#' className='fa fa-film'></a>;
+    var videos = <a href='#' className='fa fa-video-camera'></a>;
+    var users = <a href='#' className='fa fa-user'></a>;
+    var settings = <a href='#' className='fa fa-cog'></a>;
+    var help = <a href='#' className='fa fa-info-circle'></a>;
+    var root = React.createElement('div', null, home, search, films, videos, users, settings, help);
     return root;
   },
   openQuickSearchPopin: function openQuickSearchPopin(event) {
