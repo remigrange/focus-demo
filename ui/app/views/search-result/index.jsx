@@ -115,10 +115,11 @@ module.exports = React.createClass({
         currentView._toggleOpen();
       };
     }
-   /* $('#qs-affix').affix({
+   /*$('#qs-affix').affix({
       offset: {
-        top: 0
-      }
+        top: 70
+      },
+     target: '.qs-search-popin'
     });*/
   }
 });

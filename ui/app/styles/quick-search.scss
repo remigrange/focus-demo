@@ -131,7 +131,7 @@
   }
 }
 
- .qs-help_container {
+ .qs-help-container {
    position: fixed;
    top: 30%;
    left: 105%;
@@ -233,9 +233,8 @@
  }
 
  #qs-affix {
+   position: inherit;
  }
 
- #qs-affix.affix {
-   position: fixed;
-   top: 0;
+ #qs-affix.affix-top {
  }

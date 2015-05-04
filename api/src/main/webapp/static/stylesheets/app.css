@@ -80168,7 +80168,7 @@ body {
 
 /* line 134, stdin */
 /* line 136, stdin */
-.qs-help_container {
+.qs-help-container {
   position: fixed;
   top: 30%;
   left: 105%;
@@ -80180,7 +80180,7 @@ body {
 
 /* line 143, stdin */
 /* line 146, stdin */
-.qs-help_container img {
+.qs-help-container img {
   float: left;
   margin-right: 5px;
   margin-top: 5px; }
@@ -80298,11 +80298,10 @@ body {
   background-image: none;
   height: auto; }
 
-/* line 238, stdin */
+/* line 235, stdin */
 /* line 240, stdin */
-#qs-affix.affix {
-  position: fixed;
-  top: 0; }
+#qs-affix {
+  position: inherit; }
 
 /* line 16, app/styles/variables.scss */
 /* line 2, stdin */

@@ -3045,10 +3045,11 @@ module.exports = React.createClass({displayName: "exports",
         currentView._toggleOpen();
       };
     }
-   /* $('#qs-affix').affix({
+   /*$('#qs-affix').affix({
       offset: {
-        top: 0
-      }
+        top: 70
+      },
+     target: '.qs-search-popin'
     });*/
   }
 });
@@ -3229,8 +3230,13 @@ module.exports = React.createClass({displayName: "exports",
   render: function render() {
     var qs = this.quickSearchComponent();
     var summary = React.createElement("div", null);
-    var helpContainer =React.createElement("div", null);
+    var helpContainer = React.createElement("div", null);
     var scope = this.state.scope;
+    var mountedHelp = $('.qs-help-container').html('');
+    if(mountedHelp !== undefined && mountedHelp !== null && mountedHelp.length > 0){
+      mountedHelp.html('');
+      mountedHelp.toggleClass('qs-help-container');
+    }
     if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
       var groupKey = 'Movies';
       var faIconClass = 'fa fa-film';
@@ -3261,7 +3267,7 @@ module.exports = React.createClass({displayName: "exports",
             linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, "data-action": url}, "Advanced search"));
           }
         }
-        helpContainer = React.createElement("div", {className: "qs-help_container"}, 
+        helpContainer = React.createElement("div", {className: "qs-help-container"}, 
           React.createElement("div", null, React.createElement("img", {src: "./static/img/arrow-help.png"})), 
           React.createElement("div", null, "Hover over a line and click on ", React.createElement("i", {className: "fa fa-eye"}), " to see a preview")
         );
@@ -3280,7 +3286,7 @@ module.exports = React.createClass({displayName: "exports",
       }
     }
     var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
-    var qsAffix = React.createElement("div", {id: "qs-affix", "data-spy": "affix", "data-offset-top": "100", "data-target": ".quick-search-popin"}, " ", qs)
+    var qsAffix = React.createElement("div", {id: "qs-affix"}, " ", qs)
     var root = React.createElement('div', {className: 'search-panel'}, qsAffix, summary, list, helpContainer);
     return root;
   },
