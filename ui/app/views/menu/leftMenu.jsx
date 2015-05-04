@@ -44,6 +44,7 @@ var Menu = React.createClass({
       });
       isFirstTime = false;
     }
+    $('body').toggleClass('stop-scrolling');
     //this.refs.qs._toggleOpen();
   }
 });

@@ -79757,9 +79757,16 @@ header[data-focus-header] {
 
 /* line 33, stdin */
 /* line 39, stdin */
-.header-back {
-  font-size: 24px;
-  text-transform: none; }
+.header-title {
+  font-size: 28px;
+  text-transform: none;
+  font-family: RobotoBold;
+  margin-left: 12px; }
+
+/* line 39, stdin */
+/* line 46, stdin */
+.actions-left {
+  margin-top: 10px; }
 
 /* line 16, app/styles/variables.scss */
 /* line 2, stdin */

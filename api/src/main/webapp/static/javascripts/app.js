@@ -2193,7 +2193,8 @@ module.exports = React.createClass({displayName: "exports",
         React.createElement('div', {className: 'content-bar'},
           React.createElement('div', {className: 'real-bar'},
             React.createElement('div', {className: 'actions-left'},
-              React.createElement('button', {className: 'btn btn-raise btn-default fa fa-reply-all header-back'}, ' Back')
+              //React.createElement('button', {className: 'btn btn-raise btn-default fa fa-reply-all header-back'}, 'FOCUS')
+              React.createElement('span', {className: 'header-title'}, 'FOCUS')
             ),
            /* React.createElement('div', {className: 'entete'},
               'Super film vraiment top...',
@@ -2337,6 +2338,7 @@ var Menu = React.createClass({displayName: "Menu",
       });
       isFirstTime = false;
     }
+    $('body').toggleClass('stop-scrolling');
     //this.refs.qs._toggleOpen();
   }
 });

@@ -30,7 +30,12 @@
 header[data-focus-header] {
   padding-left: 60px;
 }
-.header-back {
-  font-size: 24px;
+.header-title {
+  font-size: 28px;
   text-transform: none;
+  font-family: RobotoBold;
+  margin-left: 12px;
+}
+.actions-left {
+  margin-top: 10px;
 }
