@@ -2947,9 +2947,13 @@ var config = {
         url = '#people/' + data.peoId;
       }
     }
-    //TODO check with PIERRE
     Backbone.history.navigate(url, true);
     $('.quick-search-popin .popin-close-btn').click();
+    //On ferme la popin de preview si elle est affichée.
+    var qsPreview = $('.preview-popin .popin-close-btn');
+    if(qsPreview !== undefined && qsPreview !== null && qsPreview.length > 0){
+      qsPreview.click();
+    }
   },
   operationList: [
     {
@@ -3155,7 +3159,7 @@ module.exports = React.createClass({displayName: "exports",
   definitionPath: 'people',
   renderLineContent: function (data) {
     var id = React.createElement('div', null, data.id);
-    var logo = React.createElement("div", {className: "mov-logo"}, React.createElement("img", {src: "./static/img/pictoPeople.png"}));
+    var logo = React.createElement("div", {className: "movie-background fa fa-user"});
     var userName = this.displayFor('peoName', {style: {className: 'title-level-1'}});
     var item = React.createElement("div", {className: "item"}, userName)
     var root = React.createElement('div', null, id, logo, item);

@@ -17,9 +17,13 @@ var config = {
         url = '#people/' + data.peoId;
       }
     }
-    //TODO check with PIERRE
     Backbone.history.navigate(url, true);
     $('.quick-search-popin .popin-close-btn').click();
+    //On ferme la popin de preview si elle est affichée.
+    var qsPreview = $('.preview-popin .popin-close-btn');
+    if(qsPreview !== undefined && qsPreview !== null && qsPreview.length > 0){
+      qsPreview.click();
+    }
   },
   operationList: [
     {
