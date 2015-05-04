@@ -4,7 +4,7 @@ module.exports = React.createClass({
   definitionPath: 'movie',
   renderLineContent: function (data) {
     var id = React.createElement('div', null, data.id);
-    var logo = <div className="mov-logo" > <img src="./static/img/logoMovie.png"/></div>;
+    var logo = <div className="movie-background" ></div>;
     var movieTilte = this.displayFor('title', {style: {className: 'title-level-1'}});
     var genreIds = this.displayFor('genreIds', {style: {className: 'title-level-2'}});
     var released = this.displayFor('released', {style: {className: 'title-level-3'}});

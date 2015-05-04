@@ -3038,7 +3038,7 @@ module.exports = React.createClass({displayName: "exports",
   definitionPath: 'movie',
   renderLineContent: function (data) {
     var id = React.createElement('div', null, data.id);
-    var logo = React.createElement("div", {className: "mov-logo"}, " ", React.createElement("img", {src: "./static/img/logoMovie.png"}));
+    var logo = React.createElement("div", {className: "movie-background"});
     var movieTilte = this.displayFor('title', {style: {className: 'title-level-1'}});
     var genreIds = this.displayFor('genreIds', {style: {className: 'title-level-2'}});
     var released = this.displayFor('released', {style: {className: 'title-level-3'}});
@@ -3178,6 +3178,7 @@ module.exports = React.createClass({displayName: "exports",
   render: function render() {
     var qs = this.quickSearchComponent();
     var summary = React.createElement("div", null);
+    var helpContainer =React.createElement("div", null);
     var scope = this.state.scope;
     if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
       var groupKey = 'Movies';
@@ -3209,6 +3210,10 @@ module.exports = React.createClass({displayName: "exports",
             linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, "data-action": url}, "Advanced search"));
           }
         }
+        helpContainer = React.createElement("div", {className: "qs-help_container"}, 
+          React.createElement("div", null, React.createElement("img", {src: "./static/img/arrow-help.png"})), 
+          React.createElement("div", null, "Hover over a line and click on ", React.createElement("i", {className: "fa fa-eye"}), " to see a preview")
+        );
       }
       summary = React.createElement('div', {className: 'group-result-header'}, resultsContent, linkFilterResult);
     }
@@ -3224,10 +3229,6 @@ module.exports = React.createClass({displayName: "exports",
       }
     }
     var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
-    var helpContainer = React.createElement("div", {className: "qs-help_container"}, 
-        React.createElement("div", null, React.createElement("img", {src: "./static/img/arrow-help.png"})), 
-        React.createElement("div", null, "Hover over a line and click on ", React.createElement("i", {className: "fa fa-eye"}), " to see a preview")
-    );
     var qsAffix = React.createElement("div", {id: "qs-affix", "data-spy": "affix", "data-offset-top": "100", "data-target": ".quick-search-popin"}, " ", qs)
     var root = React.createElement('div', {className: 'search-panel'}, qsAffix, summary, list, helpContainer);
     return root;

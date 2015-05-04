@@ -8,6 +8,7 @@ module.exports = React.createClass({
   render: function render() {
     var qs = this.quickSearchComponent();
     var summary = <div></div>;
+    var helpContainer =<div/>;
     var scope = this.state.scope;
     if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
       var groupKey = 'Movies';
@@ -39,6 +40,10 @@ module.exports = React.createClass({
             linkFilterResult = <div className='linkAdvancedSearch'> <a onClick={this.advancedSearch} data-action={url}>Advanced search</a></div>;
           }
         }
+        helpContainer = <div className='qs-help_container'>
+          <div><img src='./static/img/arrow-help.png'/></div>
+          <div>Hover over a line and click on <i className="fa fa-eye"></i> to see a preview</div>
+        </div>;
       }
       summary = React.createElement('div', {className: 'group-result-header'}, resultsContent, linkFilterResult);
     }
@@ -54,10 +59,6 @@ module.exports = React.createClass({
       }
     }
     var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
-    var helpContainer = <div className='qs-help_container'>
-        <div><img src='./static/img/arrow-help.png'/></div>
-        <div>Hover over a line and click on <i className="fa fa-eye"></i> to see a preview</div>
-    </div>;
     var qsAffix = <div id='qs-affix' data-spy="affix" data-offset-top="100" data-target='.quick-search-popin'> {qs}</div>
     var root = React.createElement('div', {className: 'search-panel'}, qsAffix, summary, list, helpContainer);
     return root;
