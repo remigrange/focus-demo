@@ -27,7 +27,7 @@ import rodolphe.demo.services.search.SearchCriterium;
  * @author JDALMEIDA
  */
 @PathPrefix("/people")
-public final class WsPeople implements RestfulService {
+public final class PeopleWebServices implements RestfulService {
 
     @Inject
     private PeopleServices peopleServices;

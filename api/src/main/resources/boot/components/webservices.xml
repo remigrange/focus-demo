@@ -3,9 +3,10 @@
 	<module name="knock-ws" inheritance="io.vertigo.vega.rest.RestfulService" api="false">
 		<component class="io.vertigo.vega.impl.rest.catalog.CatalogRestServices" />
 		<component class="io.vertigo.vega.impl.rest.catalog.SwaggerRestServices" />
-		<component class="rodolphe.demo.webservices.movie.WsMovie" />
-		<component class="rodolphe.demo.webservices.people.WsPeople" />
-		<component class="rodolphe.demo.webservices.common.WsCommon" />
-		<component class="rodolphe.demo.webservices.masterdata.WsMasterdata" />
+		
+		<component class="rodolphe.demo.webservices.movie.MovieWebServices" />
+		<component class="rodolphe.demo.webservices.people.PeopleWebServices" />
+		<component class="rodolphe.demo.webservices.common.CommonWebServices" />
+		<component class="rodolphe.demo.webservices.masterdata.MasterdataWebServices" />
 	</module>
 </config>
