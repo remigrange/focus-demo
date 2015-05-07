@@ -16,9 +16,6 @@ import io.vertigo.dynamo.persistence.datastore.Broker;
 import io.vertigo.lang.Assertion;
 import io.vertigo.lang.Option;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Helper sur la récupération d'information des listes de références.
  *
@@ -77,37 +74,6 @@ public final class MdlUtil {
     }
 
     /**
-     * Get the value displayed for a given key.
-     *
-     * @param dtDef definition of the dto
-     * @param key the key
-     * @return displayed value
-     */
-    public static String getDisplay(final DtDefinition dtDef, final Object key) {
-        final DtObject dto = getObject(dtDef, key);
-        final DtListURIForMasterData mdlUri = getMasterDataListUri(dtDef, ALL_DATA_CODE);
-        final DtField mdFieldDisplay = mdlUri.getDtDefinition().getDisplayField().get();
-        return (String) mdFieldDisplay.getDataAccessor().getValue(dto);
-    }
-
-    /**
-     * Get the order value for a given key : it the sort field is ORDER, it's the field value, if not returns null.
-     *
-     * @param dtObjectClass class of the dto
-     * @param key the key
-     * @return order value
-     */
-    public static Long getOrder(final Class<? extends DtObject> dtObjectClass, final Object key) {
-        final DtObject dto = getObject(dtObjectClass, key);
-        final DtListURIForMasterData mdlUri = getMasterDataListUri(dtObjectClass, ALL_DATA_CODE);
-        final DtField mdFieldSort = mdlUri.getDtDefinition().getSortField().get();
-        if (!ORDRE_FIELD_NAME.equals(mdFieldSort.name())) {
-            return null;
-        }
-        return (Long) mdFieldSort.getDataAccessor().getValue(dto);
-    }
-
-    /**
      * Récupère un objet donné des listes de référence.
      *
      * @param <D> type de l'objet
@@ -146,17 +112,6 @@ public final class MdlUtil {
     }
 
     /**
-     * Get the collection associated with a MasterDataList (only active data).
-     *
-     * @param <D> type of the list elements
-     * @param dtObjectClass class of the dto
-     * @return the collection
-     */
-    public static <D extends DtObject> DtList<D> getReferenceList(final Class<D> dtObjectClass) {
-        return getReferenceList(dtObjectClass, ACTIF_DATA_CODE);
-    }
-
-    /**
      * Get the collection associated with a MasterDataList (including all data, active or inactive).
      *
      * @param <D> type of the list elements
@@ -167,100 +122,8 @@ public final class MdlUtil {
         return getReferenceList(dtObjectClass, ALL_DATA_CODE);
     }
 
-    private static <D extends DtObject> List<ReferenceObject> getStaticReferenceObjectList(
-            final Class<D> dtObjectClass, final boolean withCode) {
-        final DtDefinition dtDef = DtObjectUtil.findDtDefinition(dtObjectClass);
-        final DtField pkField = dtDef.getIdField().get();
-        final DtField displayField = dtDef.getDisplayField().get();
-        final DtList<D> dtc = getReferenceList(dtObjectClass, ALL_DATA_CODE);
-        final List<ReferenceObject> ret = new ArrayList<>();
-        final Option<DtField> isActifField = getActifField(dtDef);
-        Boolean isActif = true;
-        for (final DtObject dto : dtc) {
-            if (isActifField.isDefined()) {
-                isActif = (Boolean) isActifField.get().getDataAccessor().getValue(dto);
-            }
-            String libelle = displayField.getDataAccessor().getValue(dto).toString();
-            if (withCode) {
-                libelle = pkField.getDataAccessor().getValue(dto).toString() + " - " + libelle;
-            }
-            ret.add(new ReferenceObject(pkField.getDataAccessor().getValue(dto).toString(), libelle, isActif));
-        }
-        return ret;
-    }
-
-    /**
-     * Renvoie une liste sous la forme d'une liste de ReferenceObject.
-     *
-     * @param <D> type de l'objet
-     * @param dtObjectClass class de l'objet
-     * @return liste
-     */
-    public static <D extends DtObject> List<ReferenceObject> getStaticReferenceWithCodeObjectList(
-            final Class<D> dtObjectClass) {
-        return getStaticReferenceObjectList(dtObjectClass, true);
-    }
-
-    /**
-     * Renvoie une liste sous la forme d'une liste de ReferenceObject. La clé priaire DOIT être une chaine de
-     * caractères.
-     *
-     * @param <D> type de l'objet
-     * @param dtObjectClass class de l'objet
-     * @return liste
-     */
-    public static <D extends DtObject> List<ReferenceObject> getReferenceObjectList(final Class<D> dtObjectClass) {
-        return getStaticReferenceObjectList(dtObjectClass, false);
-    }
-
     private static Option<DtField> getActifField(final DtDefinition dtDef) {
         return getDtField(dtDef, ACTIF_FIELD_NAME);
-    }
-
-    private static <D extends DtObject> List<ReferenceIdObject> getNotStaticReferenceIdObjectList(
-            final Class<D> dtObjectClass, final boolean withCode) {
-        final DtDefinition dtDef = DtObjectUtil.findDtDefinition(dtObjectClass);
-        final DtField pkField = dtDef.getIdField().get();
-        final DtField displayField = dtDef.getDisplayField().get();
-        final DtList<D> dtc = getReferenceList(dtObjectClass, ALL_DATA_CODE);
-        final List<ReferenceIdObject> ret = new ArrayList<>();
-        final Option<DtField> isActifField = getActifField(dtDef);
-        Boolean isActif = true;
-        for (final DtObject dto : dtc) {
-            if (isActifField.isDefined()) {
-                isActif = (Boolean) isActifField.get().getDataAccessor().getValue(dto);
-            }
-            String libelle = displayField.getDataAccessor().getValue(dto).toString();
-            if (withCode) {
-                final DtField codeField = dtDef.getField(CODE_FIELD_NAME);
-                libelle = codeField.getDataAccessor().getValue(dto).toString() + " - " + libelle;
-            }
-            ret.add(new ReferenceIdObject((Long) pkField.getDataAccessor().getValue(dto), libelle, isActif));
-        }
-        return ret;
-    }
-
-    /**
-     * Renvoie une liste sous la forme d'une liste de ReferenceIdObject.
-     *
-     * @param <D> type de l'objet
-     * @param dtObjectClass class de l'objet
-     * @return liste
-     */
-    public static <D extends DtObject> List<ReferenceIdObject> getReferenceWithCodeObjectList(
-            final Class<D> dtObjectClass) {
-        return getNotStaticReferenceIdObjectList(dtObjectClass, true);
-    }
-
-    /**
-     * Renvoie une liste sous la forme d'une liste de ReferenceObject.
-     *
-     * @param <D> type de l'objet
-     * @param dtObjectClass class de l'objet
-     * @return liste
-     */
-    public static <D extends DtObject> List<ReferenceIdObject> getReferenceIdObjectList(final Class<D> dtObjectClass) {
-        return getNotStaticReferenceIdObjectList(dtObjectClass, false);
     }
 
     /**

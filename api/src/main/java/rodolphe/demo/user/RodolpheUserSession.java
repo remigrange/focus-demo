@@ -9,7 +9,7 @@ import java.util.Locale;
  *
  * @author jmforhan
  */
-public class RodolpheUserSession extends UserSession {
+public final class RodolpheUserSession extends UserSession {
 
     private static final long serialVersionUID = 3522402730076977461L;
     private final boolean canUserCommit;
@@ -18,17 +18,8 @@ public class RodolpheUserSession extends UserSession {
      * Construit une instance de IdNotUserSession.
      */
     public RodolpheUserSession() {
-        this(true);
-    }
-
-    /**
-     * Construit une instance de IdNotUserSession.
-     *
-     * @param canUserCommit l'utilisateur peut-il commité? Oui dans cas normal, non dans le cas des TNR.
-     */
-    protected RodolpheUserSession(final boolean canUserCommit) {
         super();
-        this.canUserCommit = canUserCommit;
+        canUserCommit = true;
     }
 
     /**
@@ -42,7 +33,7 @@ public class RodolpheUserSession extends UserSession {
 
     /**
      * get default locale.
-     * 
+     *
      * @return Default Locale.
      */
     @Override
