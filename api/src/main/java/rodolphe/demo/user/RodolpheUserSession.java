@@ -42,7 +42,7 @@ public class RodolpheUserSession extends UserSession {
 
     /**
      * get default locale.
-     * 
+     *
      * @return Default Locale.
      */
     @Override

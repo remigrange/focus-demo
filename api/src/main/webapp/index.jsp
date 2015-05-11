@@ -14,7 +14,7 @@
     <meta name="author" content="Klee Group">
     <title>Rodolphe Demo</title>
     <!--link rel="icon" type="image/png" href="static/images/favicon.png"/-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/0.4.0/Showdown.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/0.5.0/showdown.js"></script>
     <link rel="stylesheet" href="static/stylesheets/app.css">
     <script src='static/javascripts/vendor.js'></script>
     <!-- Include Required Prerequisites -->
@@ -31,9 +31,9 @@
 	</div>
 	<div id="pageContent">
 		<div id="header"></div>
-		<div id="page"></div>	
+		<div id="page"></div>
 		<div id="modalContainer"></div>
-		<div id="previewModal"></div>				
+		<div id="previewModal"></div>
 	</div>
 	<script>require('./index');</script>
 
