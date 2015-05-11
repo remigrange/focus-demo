@@ -158,7 +158,7 @@ module.exports = {
     },
     save: function saveMovie(jsonMovie){
       jsonMovie.movId = jsonMovie.movId || 1;
-      movieServices.updateMovie(jsonMovie).then(
+      return movieServices.updateMovie(jsonMovie).then(
         function(data){
           AppDispatcher.handleServerAction({
             data: {movie: data},
@@ -2566,7 +2566,7 @@ var StickyNavigation = focus.components.common.stickyNavigation.component;
 module.exports = React.createClass({displayName: "exports",
     render: function renderMovieView() {
         return (
-            React.createElement("div", {className: "movieView"}, 
+            React.createElement("div", {className: "detail movieView"}, 
                 React.createElement(StickyNavigation, {contentSelector: "body"}), 
                 React.createElement(SlidingContent, {id: this.props.id})
             )
@@ -2714,17 +2714,13 @@ module.exports = React.createClass({
     displayName: 'slidingContent',
     render: function renderSlidingContent() {
         return (
-            React.createElement("div", {className: "details"}, 
+            React.createElement("div", {className: "detail-content"}, 
                 React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'catridgeContainer'}}), 
                 React.createElement("div", {id: "slidingContent"}, 
                     React.createElement(MovieDetails, {id: this.props.id}), 
-                    React.createElement("hr", null), 
                     React.createElement(Castings, {id: this.props.id}), 
-                    React.createElement("hr", null), 
                     React.createElement(MovieProducers, {id: this.props.id}), 
-                    React.createElement("hr", null), 
                     React.createElement(MovieDirectors, {id: this.props.id}), 
-                    React.createElement("hr", null), 
                     React.createElement(MoviePictures, {id: this.props.id})
                 )
 

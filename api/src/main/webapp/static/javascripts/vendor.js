@@ -42754,11 +42754,8 @@ var headerMixin = {
         small: {
           sizeBorder: 800
         },
-        medium: {
-          sizeBorder: 500
-        },
         tall: {
-          sizeBorder: 300
+          sizeBorder: 1
         }
       },
       /**
@@ -43984,10 +43981,9 @@ var formMixin = {
   /**
    * Handle the form submission.
    * @param {Event} e - React sanityze event from the form submit.
-   */
-  _handleSubmitForm: function handleSumbitForm(e) {
+    _handleSubmitForm: function handleSumbitForm(e) {
     e.preventDefault();
-    if (this.validate()) {
+    if(this.validate()){
       this.action.save(this._getEntity());
     }
     //return false;
@@ -44881,17 +44877,20 @@ module.exports = {
    * @returns {object} - A React button.
    */
   buttonSave: function buttonSave() {
-    //var form = this;
+    var form = this;
     return React.createElement(Button, {
       label: "save",
       type: "submit",
-      css: "primary"
-      /*,handleOnClick: function(e){
-        if(form.validate()){
-          form.action.save(form._getEntity());
+      css: "primary",
+      handleOnClick: function handleOnClick(e) {
+        e.preventDefault();
+        if (form.validate()) {
+          form.action.save(form._getEntity()).then(function (data) {
+            form.setState({ isEdit: !form.state.isEdit });
+          });
         }
         return;
-      }*/
+      }
     });
   } };
 

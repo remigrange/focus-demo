@@ -46,7 +46,7 @@ module.exports = {
     },
     save: function saveMovie(jsonMovie){
       jsonMovie.movId = jsonMovie.movId || 1;
-      movieServices.updateMovie(jsonMovie).then(
+      return movieServices.updateMovie(jsonMovie).then(
         function(data){
           AppDispatcher.handleServerAction({
             data: {movie: data},
