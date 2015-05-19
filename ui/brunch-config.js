@@ -1,5 +1,8 @@
 exports.config = {
   sourceMaps: false,
+  /*npm: {
+    enabled: true
+  },*/
   paths: {
     "public": '../api/src/main/webapp/static/'
   },
@@ -7,7 +10,7 @@ exports.config = {
     javascripts: {
       joinTo: {
         'javascripts/app.js': /^app/,
-        'javascripts/vendor.js': /^(bower_components|vendor)/
+        'javascripts/vendor.js': /^(bower_components|vendor|node_modules)/
       },
       order: {
         before: [
@@ -16,7 +19,6 @@ exports.config = {
             'vendor/bootstrap.min.js',
             'vendor/ripples.min.js',
             'vendor/material.min.js',
-            /*'vendor/zepto.js',*/
             'vendor/lodash.js',
             'vendor/focus.js',
             'vendor/focus-components.js'
