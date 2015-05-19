@@ -21,15 +21,11 @@
     "doc": "docco app/lib/* app/models/* app/views/* README.md"
   },
   "dependencies": {
-    "bootstrap": "^3.3.4",
-    "bootstrap-material": "^0.1.5",
     "focusjs": "^0.6.0",
     "focusjs-components": "^0.1.4",
-    "i18next": "^1.7.10",
-    "immutable": "^3.7.1",
-    "lodash": "^3.6.0",
-    "react": "^0.13.1",
-    "sass-brunch": "^1.8.10"
+    "immutable": "^3.7.2",
+    "lodash": "^3.8.0",
+    "react": "^0.13.1"
   },
   "main": "index.js",
   "directories": {
