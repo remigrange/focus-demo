@@ -35,7 +35,7 @@
 		<div id="modalContainer"></div>
 		<div id="previewModal"></div>
 	</div>
-	<script>require('./index');</script>
+	<script>require('index');</script>
 
 </body>
 </html>
