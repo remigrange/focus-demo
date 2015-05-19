@@ -1,6 +1,6 @@
-/*global React, focusComponents */
+/*global React, Focus.components */
 module.exports = React.createClass({
-  mixins: [focusComponents.list.selection.line.mixin],
+  mixins: [Focus.components.list.selection.line.mixin],
   definitionPath: 'movie',
   renderLineContent: function (data) {
     var id = React.createElement('div', null, data.id);

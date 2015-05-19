@@ -381,11 +381,11 @@ form.form-edit {
 .select-action li.selected a {
   font-weight: bold; }
 
-.topic-displayer .topic {
-  background: url("../img/cross.svg") no-repeat right center; }
-
 .sticky-navigation li.active {
   font-weight: bold; }
+
+.topic-displayer .topic {
+  background: url("../img/cross.svg") no-repeat right center; }
 
 
 .btns-confirmation-popin {

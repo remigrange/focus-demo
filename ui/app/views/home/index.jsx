@@ -1,4 +1,4 @@
-/* global React, focusComponents */
+/* global React, Focus.components */
 module.exports = React.createClass({
   render: function renderPeopleView() {
     return (
