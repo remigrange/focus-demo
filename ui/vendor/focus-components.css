@@ -431,14 +431,12 @@ header[data-focus-header] {
       align-content: stretch;
       flex-wrap: wrap; }
   header[data-focus-header].header-tall div.content-bar {
-    min-height: 250px;
     -webkit-transition: min-height 0.5s;
     -moz-transition: min-height 0.5s;
     -ms-transition: min-height 0.5s;
     -o-transition: min-height 0.5s;
     transition: min-height 0.5s; }
   header[data-focus-header].header-medium div.content-bar {
-    min-height: 150px;
     -webkit-transition: min-height 0.5s;
     -moz-transition: min-height 0.5s;
     -ms-transition: min-height 0.5s;
