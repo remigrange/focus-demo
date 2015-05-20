@@ -6,7 +6,7 @@ var action = require('../../action/search/filterSearch');
 module.exports = React.createClass({
   mixins: [Focus.components.page.search.filterResult.mixin],
   actions: action,
-  store: new focus.store.SearchStore(),
+  store: new Focus.store.SearchStore(),
   render: function () {
     var list = this.isSimpleList() ? this.simpleListComponent({type: this.props.criteria.scope.toLowerCase()}) : this.groupByListComponent();
     var root = React.createElement('div', {className: 'search-result'},

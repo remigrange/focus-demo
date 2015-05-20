@@ -39,7 +39,7 @@ module.exports = {
                         query: criteria.criteria.query
                     }
                 };
-                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+                Focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(errors) {
                 console.info('Errrors ', errors);

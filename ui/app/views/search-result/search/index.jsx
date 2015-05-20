@@ -4,7 +4,7 @@ var action = require('../../action/search/quickSearch');
 module.exports = React.createClass({
   mixins: [Focus.components.page.search.searchResult.mixin],
   actions: action,
-  store: new focus.store.SearchStore(),
+  store: new Focus.store.SearchStore(),
   render: function render() {
     var qs = this.quickSearchComponent();
     var summary = <div></div>;
