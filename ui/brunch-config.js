@@ -47,7 +47,10 @@ exports.config = {
       removeEmpty: true
     },
     react: {
-      harmony: true
+      transformOptions: {
+        sourceMap: false
+      },
+      babel: true
     },
     appcache: {
       staticRoot: '/static',
