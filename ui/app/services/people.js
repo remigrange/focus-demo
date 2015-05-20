@@ -1,5 +1,5 @@
 var URL = require('../../config/server');
-var fetch = focus.network.fetch;
+var fetch = Focus.network.fetch;
 module.exports = {
     getPeopleViewById: function getPeopleViewById(id){
         return fetch(URL.people.peopleView({urlData: {id: id}}));

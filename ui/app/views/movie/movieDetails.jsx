@@ -1,7 +1,7 @@
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
-var Block = focus.components.common.block.component;
+var Block = Focus.components.common.block.component;
 module.exports = React.createClass({
   definitionPath: 'movie',
   displayName: 'movieDetails',

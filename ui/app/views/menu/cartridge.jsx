@@ -1,4 +1,4 @@
-/*global focusComponents, React */
+/*global Focus.components, React */
 
 
 module.exports = React.createClass({

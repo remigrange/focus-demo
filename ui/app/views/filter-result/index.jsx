@@ -1,4 +1,4 @@
-/*global focusComponents, React */
+/*global Focus.components, React */
 var FilterResult = require('./filterResult');
 
 //Composants de ligne

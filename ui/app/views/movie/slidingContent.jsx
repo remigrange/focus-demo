@@ -1,4 +1,4 @@
-var Title = focus.components.common.title.component;
+var Title = Focus.components.common.title.component;
 var MovieDetails = require('./movieDetails');
 var Castings = require('./castings');
 var MovieProducers = require('./movieProducers');

@@ -8,7 +8,7 @@ module.exports = {
         "style": "date right",
         "format": {
             "value": function(data){return data;}
-        },'InputComponent': focusComponents.common.input.date.component,
+        },'InputComponent': Focus.components.common.input.date.component,
         'formatter': function(date){
             var monthNames = [
                 'January', "February", "March",

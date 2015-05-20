@@ -21,15 +21,11 @@
     "doc": "docco app/lib/* app/models/* app/views/* README.md"
   },
   "dependencies": {
-    "bootstrap": "^3.3.4",
-    "bootstrap-material": "^0.1.5",
     "focusjs": "^0.6.0",
     "focusjs-components": "^0.1.4",
-    "i18next": "^1.7.10",
-    "immutable": "^3.7.1",
-    "lodash": "^3.6.0",
-    "react": "^0.13.1",
-    "sass-brunch": "^1.8.10"
+    "immutable": "^3.7.2",
+    "lodash": "^3.8.0",
+    "react": "^0.13.1"
   },
   "main": "index.js",
   "directories": {
@@ -39,12 +35,13 @@
   "devDependencies": {
     "appcache": "0.0.4",
     "brunch": "^1.8.2",
+    "babel-brunch": "^5.1.2",
     "clean-css-brunch": "^1.7.1",
     "css-brunch": "^1.7.0",
     "eslint": "^0.17.1",
     "javascript-brunch": "^1.7.1",
     "less-brunch": "^1.8.1",
-    "react-brunch": "^1.0.7",
+    "react-brunch": "^1.0.9",
     "sass-brunch": "^1.8.10",
     "uglify": "^0.1.1"
   },
