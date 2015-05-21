@@ -1,7 +1,7 @@
 @import "./variables";
 
 .detail {
-  padding: 300px 0 40px 0;
+  padding: 85px 0 40px 0;
 }
 
 .detail-content {
@@ -11,7 +11,7 @@
     background-color: white;
     border: solid 1px $detail-bloc-border;
     padding: 15px;
-    box-shadow: 1px 1px 5px 0px $detail-bloc-border;
+    box-shadow: 1px 1px 3px 0px $detail-bloc-border;
     margin-bottom: 15px;
   }
 }
