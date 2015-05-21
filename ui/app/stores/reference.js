@@ -3,7 +3,7 @@
  * Store dealing with the movie subject.
  * @type {focus}
  */
-var referenceStore = new focus.store.CoreStore({
+var referenceStore = new Focus.store.CoreStore({
     definition : {
         'reference': 'reference'
     }

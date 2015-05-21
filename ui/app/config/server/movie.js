@@ -1,5 +1,5 @@
 var root = "./movies/";
-var url = focus.util.url.builder;
+var url = Focus.util.url.builder;
 module.exports = {
     getAll: url(root, 'GET'),
     update: url(root + "${id}",'PUT'),

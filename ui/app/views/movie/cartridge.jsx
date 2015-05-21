@@ -1,4 +1,4 @@
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 module.exports = React.createClass({

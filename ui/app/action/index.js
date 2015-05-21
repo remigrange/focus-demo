@@ -1,4 +1,4 @@
-var AppDispatcher =  focus.dispatcher;
+var AppDispatcher =  Focus.dispatcher;
 //var fetch = require('../../core/fetch');
 //var URL = require('../../config/server');
 

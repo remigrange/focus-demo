@@ -1,7 +1,7 @@
 //Get the form mixin.
 var SlidingContent = require('./slidingContent');
 
-var StickyNavigation = focus.components.common.stickyNavigation.component;
+var StickyNavigation = Focus.components.common.stickyNavigation.component;
 
 module.exports = React.createClass({
     render: function renderPeopleView() {

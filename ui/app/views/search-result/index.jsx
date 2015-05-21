@@ -1,4 +1,4 @@
-/*global focusComponents, React*/
+/*global Focus.components, React*/
 var MoviePreview = require('./moviePreview');
 var PeoplePreview = require('./peoplePreview');
 var SearchResult = require('./searchResult');
@@ -32,7 +32,7 @@ var config = {
       if(!data.movId){
         Preview = PeoplePreview;
       }
-      focus.application.render(Preview, '#previewModal',
+      Focus.application.render(Preview, '#previewModal',
         {
           props: {
             data: data,
@@ -73,7 +73,7 @@ var qs = React.createElement(SearchResult, {
 });
 
 module.exports = React.createClass({
-  mixins: [focusComponents.application.popin.mixin],
+  mixins: [Focus.components.application.popin.mixin],
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,
       React.createElement('div', {

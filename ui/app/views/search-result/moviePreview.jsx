@@ -1,7 +1,7 @@
-/*global React, focusComponents */
-var Field = focusComponents.common.field.component;
+/*global React, Focus.components */
+var Field = Focus.components.common.field.component;
 module.exports = React.createClass({
-  mixins: [focusComponents.application.popin.mixin, focusComponents.common.mixin.definition, focusComponents.common.mixin.fieldComponentBehaviour],
+  mixins: [Focus.components.application.popin.mixin, Focus.components.common.mixin.definition, Focus.components.common.mixin.fieldComponentBehaviour],
   definitionPath: 'movie',
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,

@@ -1,7 +1,7 @@
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
-var Title = focus.components.common.title.component;
+var Title = Focus.components.common.title.component;
 module.exports = React.createClass({
   definitionPath: 'people',
   displayName: 'peopleIdentification',

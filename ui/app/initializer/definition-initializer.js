@@ -1,2 +1,2 @@
 /*global focus*/
-focus.definition.entity.container.setEntityConfiguration(require('../config/entityDefinition'));
+Focus.definition.entity.container.setEntityConfiguration(require('../config/entityDefinition'));

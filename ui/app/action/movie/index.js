@@ -1,4 +1,4 @@
-var AppDispatcher = focus.dispatcher;
+var AppDispatcher = Focus.dispatcher;
 var movieServices = require('../../services').movie;
 module.exports = {
     load: function(id){
