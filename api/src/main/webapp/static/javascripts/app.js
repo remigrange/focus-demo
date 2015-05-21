@@ -1,42 +1,59 @@
-(function(/*! Brunch !*/) {
+(function() {
   'use strict';
 
-  var globals = typeof window !== 'undefined' ? window : global;
+  var globals = typeof window === 'undefined' ? global : window;
   if (typeof globals.require === 'function') return;
 
   var modules = {};
   var cache = {};
+  var has = ({}).hasOwnProperty;
 
-  var has = function(object, name) {
-    return ({}).hasOwnProperty.call(object, name);
+  var aliases = {};
+
+  var endsWith = function(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
   };
 
-  var expand = function(root, name) {
-    var results = [], parts, part;
-    if (/^\.\.?(\/|$)/.test(name)) {
-      parts = [root, name].join('/').split('/');
-    } else {
-      parts = name.split('/');
-    }
-    for (var i = 0, length = parts.length; i < length; i++) {
-      part = parts[i];
-      if (part === '..') {
-        results.pop();
-      } else if (part !== '.' && part !== '') {
-        results.push(part);
+  var unalias = function(alias, loaderPath) {
+    var start = 0;
+    if (loaderPath) {
+      if (loaderPath.indexOf('components/' === 0)) {
+        start = 'components/'.length;
+      }
+      if (loaderPath.indexOf('/', start) > 0) {
+        loaderPath = loaderPath.substring(start, loaderPath.indexOf('/', start));
       }
     }
-    return results.join('/');
+    var result = aliases[alias + '/index.js'] || aliases[loaderPath + '/deps/' + alias + '/index.js'];
+    if (result) {
+      return 'components/' + result.substring(0, result.length - '.js'.length);
+    }
+    return alias;
   };
 
+  var expand = (function() {
+    var reg = /^\.\.?(\/|$)/;
+    return function(root, name) {
+      var results = [], parts, part;
+      parts = (reg.test(name) ? root + '/' + name : name).split('/');
+      for (var i = 0, length = parts.length; i < length; i++) {
+        part = parts[i];
+        if (part === '..') {
+          results.pop();
+        } else if (part !== '.' && part !== '') {
+          results.push(part);
+        }
+      }
+      return results.join('/');
+    };
+  })();
   var dirname = function(path) {
     return path.split('/').slice(0, -1).join('/');
   };
 
   var localRequire = function(path) {
     return function(name) {
-      var dir = dirname(path);
-      var absolute = expand(dir, name);
+      var absolute = expand(dirname(path), name);
       return globals.require(absolute, path);
     };
   };
@@ -51,21 +68,26 @@
   var require = function(name, loaderPath) {
     var path = expand(name, '.');
     if (loaderPath == null) loaderPath = '/';
+    path = unalias(name, loaderPath);
 
-    if (has(cache, path)) return cache[path].exports;
-    if (has(modules, path)) return initModule(path, modules[path]);
+    if (has.call(cache, path)) return cache[path].exports;
+    if (has.call(modules, path)) return initModule(path, modules[path]);
 
     var dirIndex = expand(path, './index');
-    if (has(cache, dirIndex)) return cache[dirIndex].exports;
-    if (has(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
+    if (has.call(cache, dirIndex)) return cache[dirIndex].exports;
+    if (has.call(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
 
     throw new Error('Cannot find module "' + name + '" from '+ '"' + loaderPath + '"');
   };
 
-  var define = function(bundle, fn) {
+  require.alias = function(from, to) {
+    aliases[to] = from;
+  };
+
+  require.register = require.define = function(bundle, fn) {
     if (typeof bundle === 'object') {
       for (var key in bundle) {
-        if (has(bundle, key)) {
+        if (has.call(bundle, key)) {
           modules[key] = bundle[key];
         }
       }
@@ -74,21 +96,18 @@
     }
   };
 
-  var list = function() {
+  require.list = function() {
     var result = [];
     for (var item in modules) {
-      if (has(modules, item)) {
+      if (has.call(modules, item)) {
         result.push(item);
       }
     }
     return result;
   };
 
+  require.brunch = true;
   globals.require = require;
-  globals.require.define = define;
-  globals.require.register = define;
-  globals.require.list = list;
-  globals.require.brunch = true;
 })();
 require.register("action/index", function(exports, require, module) {
 var AppDispatcher =  focus.dispatcher;
@@ -306,7 +325,7 @@ module.exports = {
 
 });
 
-require.register("action/search/quickSearch/index", function(exports, require, module) {
+require.register("action/search/quickSearch", function(exports, require, module) {
 var services = require('../../../services');
 
 
@@ -2036,7 +2055,7 @@ var Title = focusComponents.common.title.component;
 var Button = focusComponents.common.button.action.component;
 var action = require('../../action/search/filterSearch');
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   mixins: [focusComponents.page.search.filterResult.mixin],
   actions: action,
   store: new focus.store.SearchStore(),
@@ -2118,7 +2137,7 @@ var config = {
     groupMaxRows: 3
 };
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
     render: function () {
         config.criteria = {
             scope: this.props.scope,
@@ -2157,7 +2176,7 @@ module.exports = React.createClass({displayName: "exports",
 
 require.register("views/home/index", function(exports, require, module) {
 /* global React, focusComponents */
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   render: function renderPeopleView() {
     return (
       React.createElement("div", {className: "welcome-title"}, 
@@ -2175,7 +2194,7 @@ require.register("views/menu/appHeader", function(exports, require, module) {
 var AppHeader = focusComponents.application.header.component;
 var Cartouche = focus.components.application.cartridge.component;
 //Create the view.
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   render: function () {
     var notification = React.createElement("div", {className: "header-menu-item"}, 
       React.createElement("i", {className: "fa fa-bell-o"}), 
@@ -2239,7 +2258,7 @@ require.register("views/menu/index", function(exports, require, module) {
 /*global focusComponents, React */
 //Define menu.
 var menuMixin = focusComponents.application.menu.mixin;
-var Menu = React.createClass({displayName: "Menu",
+var Menu = React.createClass({displayName: 'Menu',
   mixins: [menuMixin],
   renderContent: function renderMenuContent() {
     if (this.props.type === 'menuLeft') {
@@ -2255,7 +2274,7 @@ var Menu = React.createClass({displayName: "Menu",
   }
 });
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   render: function renderPeopleView() {
     var test = React.createElement("div", null, 
       React.createElement("button", {id: "buttonLeft", onClick: this.hanleOpenLeftPopin}, "Open popin left"), 
@@ -2297,7 +2316,7 @@ require.register("views/menu/leftMenu", function(exports, require, module) {
 var menuMixin = focusComponents.application.menu.mixin;
 var render = focus.application.render;
 var isFirstTime = true;
-var Menu = React.createClass({displayName: "Menu",
+var Menu = React.createClass({displayName: 'Menu',
   mixins: [menuMixin],
   /** @inheriteddoc */
   renderTitle: function () {
@@ -2309,17 +2328,17 @@ var Menu = React.createClass({displayName: "Menu",
     );
   },
   renderContent: function renderMenuContent() {
-    var home = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#"}, 
+    var home = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#"}, 
       React.createElement("img", {src: "static/img/home-32x32-white.svg"})
     );
     var search = React.createElement("a", {onClick: this.openQuickSearchPopin, id: "quick-search-link"}, 
       React.createElement("img", {src: "static/img/search-32x32-white.svg"})
     );
-    var films = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-film"});
-    var videos = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-video-camera"});
-    var users = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-user"});
-    var settings = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-cog"});
-    var help = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-info-circle"});
+    var films = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-film"});
+    var videos = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-video-camera"});
+    var users = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-user"});
+    var settings = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-cog"});
+    var help = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-info-circle"});
     var root = React.createElement('div', null, home, search, films, videos, users, settings, help);
     return root;
   },
@@ -2356,7 +2375,7 @@ var Menu = React.createClass({displayName: "Menu",
   }
 });
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   render: function renderLeftMenu() {
     var style = {className: 'left-menu'};
     var menu = React.createElement(Menu, {
@@ -2379,7 +2398,7 @@ require.register("views/menu/topMenu", function(exports, require, module) {
 /*global focusComponents, React */
 //Define menu.
 var menuMixin = focusComponents.application.menu.mixin;
-var Menu = React.createClass({displayName: "Menu",
+var Menu = React.createClass({displayName: 'Menu',
   mixins: [menuMixin],
   /**
    * Render the title content
@@ -2405,7 +2424,7 @@ var Menu = React.createClass({displayName: "Menu",
   }
 });
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   render: function renderTopMenu() {
     var links = [{url: '', name: '', img: 'static/img/home-32x32-white.svg'},
       {url: '', name: '', img: 'static/img/search-32x32-white.svg'},
@@ -2513,7 +2532,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Block = focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
-var line = React.createClass({displayName: "line",
+var line = React.createClass({displayName: 'line',
   definitionPath: 'people',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2544,7 +2563,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/movie/component/peopleCard", function(exports, require, module) {
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
     render: function renderPeopleCard() {
         return (
             React.createElement("div", {className: "card"}, 
@@ -2563,7 +2582,7 @@ require.register("views/movie/index", function(exports, require, module) {
 var SlidingContent = require('./slidingContent');
 var StickyNavigation = focus.components.common.stickyNavigation.component;
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
     render: function renderMovieView() {
         return (
             React.createElement("div", {className: "detail movieView"}, 
@@ -2616,7 +2635,7 @@ var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 var Block = focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
-var line = React.createClass({displayName: "line",
+var line = React.createClass({displayName: 'line',
   definitionPath: 'people',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2670,7 +2689,7 @@ var movieStore = require('../../stores/movie');
 var Title = focus.components.common.title.component;
 var PeopleCard = require('./component/peopleCard');
 var Block = focus.components.common.block.component;
-var line = React.createClass({displayName: "line",
+var line = React.createClass({displayName: 'line',
   definitionPath: 'people',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2772,7 +2791,7 @@ var SlidingContent = require('./slidingContent');
 
 var StickyNavigation = focus.components.common.stickyNavigation.component;
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
     render: function renderPeopleView() {
         return (
             React.createElement("div", {className: "peopleView"}, 
@@ -2786,7 +2805,7 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 require.register("views/people/movieCard", function(exports, require, module) {
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
     render: function renderMovieCard() {
         return (
             React.createElement("div", {className: "card"}, 
@@ -2847,7 +2866,7 @@ var peopleStore = require('../../stores/people');
 var Title = focus.components.common.title.component;
 var MovieCard = require('./movieCard');
 var FormList = focus.components.common.list;
-var line = React.createClass({displayName: "line",
+var line = React.createClass({displayName: 'line',
   definitionPath: 'movie',
   mixins: [focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
@@ -2998,7 +3017,7 @@ var qs = React.createElement(SearchResult, {
   parentSelector: parentselector
 });
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   mixins: [focusComponents.application.popin.mixin],
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,
@@ -3054,7 +3073,7 @@ module.exports = React.createClass({displayName: "exports",
 
 require.register("views/search-result/movieLineComponent", function(exports, require, module) {
 /*global React, focusComponents */
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   mixins: [focusComponents.list.selection.line.mixin],
   definitionPath: 'movie',
   renderLineContent: function (data) {
@@ -3080,7 +3099,7 @@ module.exports = React.createClass({displayName: "exports",
 require.register("views/search-result/moviePreview", function(exports, require, module) {
 /*global React, focusComponents */
 var Field = focusComponents.common.field.component;
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   mixins: [focusComponents.application.popin.mixin, focusComponents.common.mixin.definition, focusComponents.common.mixin.fieldComponentBehaviour],
   definitionPath: 'movie',
   renderPopinHeader: function (popin) {
@@ -3126,7 +3145,7 @@ module.exports = React.createClass({displayName: "exports",
       React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Released "), React.createElement("div", null, released)), 
       React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Runtime "), React.createElement("div", null, this.props.data.runtime))
     ), 
-    React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, "data-action": movieLink}, "Detailed sheet "))
+    React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, 'data-action': movieLink}, "Detailed sheet "))
     );
 
     return root;
@@ -3151,7 +3170,7 @@ module.exports = React.createClass({displayName: "exports",
 
 require.register("views/search-result/peopleLineComponent", function(exports, require, module) {
 /*global React, focusComponents */
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   mixins: [focusComponents.list.selection.line.mixin],
   definitionPath: 'people',
   renderLineContent: function (data) {
@@ -3169,7 +3188,7 @@ module.exports = React.createClass({displayName: "exports",
 require.register("views/search-result/peoplePreview", function(exports, require, module) {
 /*global React, focusComponents */
 var Field = focusComponents.common.field.component;
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   mixins: [focusComponents.application.popin.mixin, focusComponents.common.mixin.definition, focusComponents.common.mixin.fieldComponentBehaviour],
   definitionPath: 'people',
   renderPopinHeader: function (popin) {
@@ -3193,7 +3212,7 @@ module.exports = React.createClass({displayName: "exports",
       )
     ), 
       React.createElement("div", {className: "clear"}), 
-      React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, "data-action": peopleLink}, "Detailed sheet "))
+      React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, 'data-action': peopleLink}, "Detailed sheet "))
     );
 
     return root;
@@ -3219,7 +3238,7 @@ require.register("views/search-result/searchResult", function(exports, require, 
 /*global React, focusComponents*/
 var action = require('../../action/search/quickSearch');
 
-module.exports = React.createClass({displayName: "exports",
+module.exports = React.createClass({displayName: 'exports',
   mixins: [focusComponents.page.search.searchResult.mixin],
   actions: action,
   store: new focus.store.SearchStore(),
@@ -3260,7 +3279,7 @@ module.exports = React.createClass({displayName: "exports",
         if (scope !== null && scope !== undefined) {
           if (scope.toLowerCase() !== 'all') {
             var url = '#search/advanced/scope/' + scope + '/query/' + this.state.query;
-            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, "data-action": url}, "Advanced search"));
+            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, 'data-action': url}, "Advanced search"));
           }
         }
         helpContainer = React.createElement("div", {className: "qs-help-container"}, 
@@ -3305,7 +3324,7 @@ module.exports = React.createClass({displayName: "exports",
 
     if (list.length > 0) {
       var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
-      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, "data-action": url}, "Advanced search"));
+      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, 'data-action': url}, "Advanced search"));
       if(list.length >= 3){
         mostRelevent = React.createElement("div", {className: "qs-results-most-relevents"}, "The 3 most relevents");
       }
@@ -3319,6 +3338,125 @@ module.exports = React.createClass({displayName: "exports",
         {type: groupKey, list: list, maxRows: maxRows}));
 
   },
+  advancedSearch: function (event){
+    event.preventDefault();
+    var url = $(event.target).closest('a').attr('data-action');
+    Backbone.history.navigate(url, true);
+    $('.quick-search-popin .popin-close-btn').click();
+  }
+
+});
+
+});
+
+require.register("views/search-result/search/index", function(exports, require, module) {
+/*global React, focusComponents*/
+var action = require('../../action/search/quickSearch');
+
+module.exports = React.createClass({displayName: 'exports',
+  mixins: [focusComponents.page.search.searchResult.mixin],
+  actions: action,
+  store: new focus.store.SearchStore(),
+  render: function render() {
+    var qs = this.quickSearchComponent();
+    var summary = React.createElement("div", null);
+    var helpContainer = React.createElement("div", null);
+    var scope = this.state.scope;
+    var mountedHelp = $('.qs-help-container').html('');
+    if(mountedHelp !== undefined && mountedHelp !== null && mountedHelp.length > 0){
+      mountedHelp.html('');
+      mountedHelp.toggleClass('qs-help-container');
+    }
+    if (this.state.totalRecords !== undefined && this.state.totalRecords !== null) {
+      var groupKey = 'Movies';
+      var faIconClass = 'fa fa-film';
+      if(scope !== null && scope !== undefined) {
+        if (scope.toLowerCase() === 'people') {
+          groupKey = 'People';
+          faIconClass = 'fa fa-user';
+        }
+      } else {
+        //TODO Check avec PIERRRE.
+        if(this.state.list.length > 0){
+          if(this.state.list[0].peoId !== null && this.state.list[0].peoId !== undefined){
+            scope = 'PEOPLE';
+            groupKey = 'People';
+            faIconClass = 'fa fa-user';
+          }
+        }
+      }
+     var resultsContent = React.createElement("div", {className: "title-group-key"}, React.createElement("i", {className: faIconClass}), " ", groupKey, " (", this.state.totalRecords, ") ");
+      if(!this.isSimpleList()) {
+        resultsContent = React.createElement("div", null, "Total records (", this.state.totalRecords, ")");
+      }
+      var linkFilterResult = React.createElement("div", null);
+      if (this.state.totalRecords > 0) {
+        if (scope !== null && scope !== undefined) {
+          if (scope.toLowerCase() !== 'all') {
+            var url = '#search/advanced/scope/' + scope + '/query/' + this.state.query;
+            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, 'data-action': url}, "Advanced search"));
+          }
+        }
+        helpContainer = React.createElement("div", {className: "qs-help-container"}, 
+          React.createElement("div", null, React.createElement("img", {src: "./static/img/arrow-help.png"})), 
+          React.createElement("div", null, "Hover over a line and click on ", React.createElement("i", {className: "fa fa-eye"}), " to see a preview")
+        );
+      }
+      summary = React.createElement('div', {className: 'group-result-header'}, resultsContent, linkFilterResult);
+    }
+    var type = 'MOVIE';
+    if(scope !== undefined && scope !== null){
+        type = scope;
+    } else {
+      //TODO Check avec PIERRRE.
+      if(this.state.list.length > 0){
+        if(this.state.list[0].peoId !== null && this.state.list[0].peoId !== undefined){
+          type = 'PEOPLE';
+        }
+      }
+    }
+    var list = this.isSimpleList() ? this.simpleListComponent({type: type}) : this.groupByListComponent();
+    var qsAffix = React.createElement("div", {id: "qs-affix"}, " ", qs)
+    var root = React.createElement('div', {className: 'search-panel'}, qsAffix, summary, list, helpContainer);
+    return root;
+  },
+  renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {
+    var summary;
+    var mostRelevent = React.createElement("div", null);
+    var scope = 'PEOPLE';
+    var faIconClass = 'fa fa-user';
+    if (groupKey.toLowerCase().indexOf('movie') >= 0) {
+      scope = 'MOVIE';
+      faIconClass = 'fa fa-film';
+    }
+    var title = React.createElement("div", {className: "title-group-key"}, React.createElement("i", {className: faIconClass}), " ", groupKey);
+    if (list.length > 3) {
+      title = React.createElement("div", {className: "title-group-key"}, React.createElement("i", {className: faIconClass}), " ", groupKey, " (", list.length, ")");
+    }
+
+    var linkFilterResult = React.createElement("div", null);
+    var criteria = this.getCriteria();
+
+    if (list.length > 0) {
+      var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
+      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, 'data-action': url}, "Advanced search"));
+      if(list.length >= 3){
+        mostRelevent = React.createElement("div", {className: "qs-results-most-relevents"}, "The 3 most relevents");
+      }
+    }
+    summary = React.createElement("div", null, mostRelevent, " ", linkFilterResult);
+    var goupHeader = React.createElement('div', {className: 'group-result-header'}, title, summary);
+
+    return React.createElement('div', {className: 'listResultContainer panel qs-group-results'},
+      goupHeader,
+      this.simpleListComponent(
+        {type: groupKey, list: list, maxRows: maxRows}));
+
+  },
+  /**
+   * Navigation vers la page de recherche avancée.
+   * @param {obejct} event - JS event.
+   */
   advancedSearch: function (event){
     event.preventDefault();
     var url = $(event.target).closest('a').attr('data-action');
