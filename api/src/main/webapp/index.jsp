@@ -12,8 +12,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="Klee Group">
-    <title>Rodolphe Demo</title>
-    <!--link rel="icon" type="image/png" href="static/images/favicon.png"/-->
+    <title>FOCUS démo</title>
+    <link rel="icon" type="image/png" href="static/img/focus.png" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/0.5.0/showdown.js"></script>
     <link rel="stylesheet" href="static/stylesheets/app.css">
     <script src='static/javascripts/vendor.js'></script>
