@@ -1,8 +1,6 @@
 
 //Récupération des dépendances.
-var StickyNavigation = Focus.components.common.stickyNavigation.component;
-var Title = Focus.components.common.title.component;
-
+var Detail = Focus.components.common.detail.component
 //Blocs composants la page.
 var MovieDetails = require('./movieDetails');
 var Castings = require('./castings');
@@ -20,28 +18,18 @@ module.exports = React.createClass({
     /** @inheritedDoc */
     render: function renderMovieView() {
         return (
-
-            <div className="detail movie-view">
-                <StickyNavigation contentSelector="body"/>
-                <div className="detail-content">
-                  <MovieDetails id={this.props.id}/>
-                  <Castings id={this.props.id}/>
-                  <MovieProducers id={this.props.id}/>
-                  <MovieDirectors id={this.props.id}/>
-                  <MoviePictures id={this.props.id}/>
-                </div>
-            </div>
+          <Detail>
+            <MovieDetails id={this.props.id}/>
+            <Castings id={this.props.id}/>
+            <MovieProducers id={this.props.id}/>
+            <MovieDirectors id={this.props.id}/>
+            <MoviePictures id={this.props.id}/>
+          </Detail>
         );
     }
 });
 
 
 /*
-<Detail navigation={false}>
-  <MovieDetails id={this.props.id}/>
-  <Castings id={this.props.id}/>
-  <MovieProducers id={this.props.id}/>
-  <MovieDirectors id={this.props.id}/>
-  <MoviePictures id={this.props.id}/>
-</Detail>
+
  */
