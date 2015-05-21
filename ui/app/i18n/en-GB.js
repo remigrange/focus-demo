@@ -6,5 +6,17 @@ module.exports = {
     },
     'result': {
         'for': 'results for'
+    },
+
+    'movie': {
+      'title': 'Movie',
+      'detail': {
+        'identity': {
+          'title': 'Identity'
+        },
+        'directors': {
+          'title': 'Directors'
+        }
+      }
     }
 };
