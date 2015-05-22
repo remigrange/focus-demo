@@ -14,15 +14,15 @@
     <meta name="author" content="Klee Group">
     <title>Rodolphe Demo</title>
     <!--link rel="icon" type="image/png" href="static/images/favicon.png"/-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/0.5.0/showdown.js"></script>
+    <!-- script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/0.5.0/showdown.js"></script-->
     <link rel="stylesheet" href="static/stylesheets/app.css">
     <script src='static/javascripts/vendor.js'></script>
     <!-- Include Required Prerequisites -->
-  	<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/2.9.0/moment.min.js"></script>
+  	<!--script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/2.9.0/moment.min.js"></script-->
 
   	<!-- Include Date Range Picker -->
-  	<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/1/daterangepicker.js"></script>
-  	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/1/daterangepicker-bs3.css" />
+  	<!-- script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/1/daterangepicker.js"></script>
+  	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/1/daterangepicker-bs3.css" /-->
     <script src='static/javascripts/app.js'></script>
 
 </head>
