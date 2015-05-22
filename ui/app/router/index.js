@@ -1,7 +1,7 @@
-/*global Backbone, focus, focusComponents */
+/*global Backbone, focus, Focus.components */
 //Dependencies.
 var Router = Backbone.Router;
-var render = focus.application.render;
+var render = Focus.application.render;
 
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');

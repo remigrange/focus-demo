@@ -1,7 +1,7 @@
-/*global focusComponents, React */
+/*global Focus.components, React */
 //Define menu.
-var menuMixin = focusComponents.application.menu.mixin;
-var render = focus.application.render;
+var menuMixin = Focus.components.application.menu.mixin;
+var render = Focus.application.render;
 var isFirstTime = true;
 var Menu = React.createClass({
   mixins: [menuMixin],

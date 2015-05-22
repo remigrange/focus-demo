@@ -39,7 +39,7 @@ module.exports = {
                 if (criteria.group) {
                     dataRet.pageInfos = {};
                 }
-                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+                Focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(errors) {
                 console.info('Errrors: ', errors);

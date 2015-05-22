@@ -1,12 +1,12 @@
-/*global React, focusComponents */
-var Title = focusComponents.common.title.component;
-var Button = focusComponents.common.button.action.component;
+/*global React, Focus.components */
+var Title = Focus.components.common.title.component;
+var Button = Focus.components.common.button.action.component;
 var action = require('../../action/search/filterSearch');
 
 module.exports = React.createClass({
-  mixins: [focusComponents.page.search.filterResult.mixin],
+  mixins: [Focus.components.page.search.filterResult.mixin],
   actions: action,
-  store: new focus.store.SearchStore(),
+  store: new Focus.store.SearchStore(),
   render: function () {
     var list = this.isSimpleList() ? this.simpleListComponent({type: this.props.criteria.scope.toLowerCase()}) : this.groupByListComponent();
     var root = React.createElement('div', {className: 'search-result'},

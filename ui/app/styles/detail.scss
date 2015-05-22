@@ -1,19 +1,11 @@
 @import "./variables";
 
 .detail {
-  padding: 300px 25px 40px 25px;
+  padding: 85px 0 40px 0;
 }
 
 .detail-content {
   margin-left:270px;
-
-  .block {
-    background-color: white;
-    border: solid 1px $detail-bloc-border;
-    padding: 15px;
-    box-shadow: 1px 1px 5px 0px $detail-bloc-border;
-    margin-bottom: 15px;
-  }
 }
 
 .slidingBloc {

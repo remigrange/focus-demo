@@ -101,6 +101,10 @@ module.exports = React.createClass({
         {type: groupKey, list: list, maxRows: maxRows}));
 
   },
+  /**
+   * Navigation vers la page de recherche avancée.
+   * @param {obejct} event - JS event.
+   */
   advancedSearch: function (event){
     event.preventDefault();
     var url = $(event.target).closest('a').attr('data-action');

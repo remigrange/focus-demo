@@ -1,7 +1,7 @@
 //Path to the reference service.
 /*global focus */
 var serviceReference = require('../services');
-var reference = focus.reference;
+var reference = Focus.reference;
 
 module.exports = {
     initialize: function(options, context) {

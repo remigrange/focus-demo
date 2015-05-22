@@ -1,13 +1,13 @@
 //TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
-var Title = focus.components.common.title.component;
+var Title = Focus.components.common.title.component;
 var MovieCard = require('./movieCard');
-var FormList = focus.components.common.list;
+var FormList = Focus.components.common.list;
 var line = React.createClass({
   definitionPath: 'movie',
-  mixins: [focus.components.list.selection.line.mixin],
+  mixins: [Focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
       <MovieCard picture="" name={data.title} middleName={data.genreIds} subName={data.year}/>

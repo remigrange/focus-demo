@@ -3,7 +3,7 @@
  * Store dealing with the movie subject.
  * @type {focus}
  */
-var movieStore = new focus.store.CoreStore({
+var movieStore = new Focus.store.CoreStore({
     definition : {
         'movie': 'movie',
         'castings': 'movieCasting',

@@ -1,4 +1,4 @@
-var AppDispatcher = focus.dispatcher;
+var AppDispatcher = Focus.dispatcher;
 var peopleServices = require('../../services').people;
 module.exports = {
     load: function(id){

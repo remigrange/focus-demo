@@ -1,7 +1,7 @@
-/*global focusComponents, React */
+/*global Focus.components, React */
 //Component for the application header.
-var AppHeader = focusComponents.application.header.component;
-var Cartouche = focus.components.application.cartridge.component;
+var AppHeader = Focus.components.application.header.component;
+var Cartouche = Focus.components.application.cartridge.component;
 //Create the view.
 module.exports = React.createClass({
   render: function () {

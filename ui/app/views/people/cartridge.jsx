@@ -1,4 +1,4 @@
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
 module.exports = React.createClass({

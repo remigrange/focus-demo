@@ -3,9 +3,10 @@
 hr {
   border-top: solid 1px $color-gris2
 }
+
 body {
   background-color: $color-background;
-  font-family: Roboto;
+  font-family: $font-family;
   font-size: 12px;
   word-wrap: break-word;
 }
