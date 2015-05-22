@@ -1,59 +1,42 @@
-(function() {
+(function(/*! Brunch !*/) {
   'use strict';
 
-  var globals = typeof window === 'undefined' ? global : window;
+  var globals = typeof window !== 'undefined' ? window : global;
   if (typeof globals.require === 'function') return;
 
   var modules = {};
   var cache = {};
-  var has = ({}).hasOwnProperty;
 
-  var aliases = {};
-
-  var endsWith = function(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+  var has = function(object, name) {
+    return ({}).hasOwnProperty.call(object, name);
   };
 
-  var unalias = function(alias, loaderPath) {
-    var start = 0;
-    if (loaderPath) {
-      if (loaderPath.indexOf('components/' === 0)) {
-        start = 'components/'.length;
-      }
-      if (loaderPath.indexOf('/', start) > 0) {
-        loaderPath = loaderPath.substring(start, loaderPath.indexOf('/', start));
+  var expand = function(root, name) {
+    var results = [], parts, part;
+    if (/^\.\.?(\/|$)/.test(name)) {
+      parts = [root, name].join('/').split('/');
+    } else {
+      parts = name.split('/');
+    }
+    for (var i = 0, length = parts.length; i < length; i++) {
+      part = parts[i];
+      if (part === '..') {
+        results.pop();
+      } else if (part !== '.' && part !== '') {
+        results.push(part);
       }
     }
-    var result = aliases[alias + '/index.js'] || aliases[loaderPath + '/deps/' + alias + '/index.js'];
-    if (result) {
-      return 'components/' + result.substring(0, result.length - '.js'.length);
-    }
-    return alias;
+    return results.join('/');
   };
 
-  var expand = (function() {
-    var reg = /^\.\.?(\/|$)/;
-    return function(root, name) {
-      var results = [], parts, part;
-      parts = (reg.test(name) ? root + '/' + name : name).split('/');
-      for (var i = 0, length = parts.length; i < length; i++) {
-        part = parts[i];
-        if (part === '..') {
-          results.pop();
-        } else if (part !== '.' && part !== '') {
-          results.push(part);
-        }
-      }
-      return results.join('/');
-    };
-  })();
   var dirname = function(path) {
     return path.split('/').slice(0, -1).join('/');
   };
 
   var localRequire = function(path) {
     return function(name) {
-      var absolute = expand(dirname(path), name);
+      var dir = dirname(path);
+      var absolute = expand(dir, name);
       return globals.require(absolute, path);
     };
   };
@@ -68,26 +51,21 @@
   var require = function(name, loaderPath) {
     var path = expand(name, '.');
     if (loaderPath == null) loaderPath = '/';
-    path = unalias(name, loaderPath);
 
-    if (has.call(cache, path)) return cache[path].exports;
-    if (has.call(modules, path)) return initModule(path, modules[path]);
+    if (has(cache, path)) return cache[path].exports;
+    if (has(modules, path)) return initModule(path, modules[path]);
 
     var dirIndex = expand(path, './index');
-    if (has.call(cache, dirIndex)) return cache[dirIndex].exports;
-    if (has.call(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
+    if (has(cache, dirIndex)) return cache[dirIndex].exports;
+    if (has(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
 
     throw new Error('Cannot find module "' + name + '" from '+ '"' + loaderPath + '"');
   };
 
-  require.alias = function(from, to) {
-    aliases[to] = from;
-  };
-
-  require.register = require.define = function(bundle, fn) {
+  var define = function(bundle, fn) {
     if (typeof bundle === 'object') {
       for (var key in bundle) {
-        if (has.call(bundle, key)) {
+        if (has(bundle, key)) {
           modules[key] = bundle[key];
         }
       }
@@ -96,21 +74,24 @@
     }
   };
 
-  require.list = function() {
+  var list = function() {
     var result = [];
     for (var item in modules) {
-      if (has.call(modules, item)) {
+      if (has(modules, item)) {
         result.push(item);
       }
     }
     return result;
   };
 
-  require.brunch = true;
   globals.require = require;
+  globals.require.define = define;
+  globals.require.register = define;
+  globals.require.list = list;
+  globals.require.brunch = true;
 })();
 require.register("action/index", function(exports, require, module) {
-var AppDispatcher =  focus.dispatcher;
+var AppDispatcher =  Focus.dispatcher;
 //var fetch = require('../../core/fetch');
 //var URL = require('../../config/server');
 
@@ -129,7 +110,7 @@ module.exports = {
 });
 
 require.register("action/movie/index", function(exports, require, module) {
-var AppDispatcher = focus.dispatcher;
+var AppDispatcher = Focus.dispatcher;
 var movieServices = require('../../services').movie;
 module.exports = {
     load: function(id){
@@ -191,7 +172,7 @@ module.exports = {
 });
 
 require.register("action/people/index", function(exports, require, module) {
-var AppDispatcher = focus.dispatcher;
+var AppDispatcher = Focus.dispatcher;
 var peopleServices = require('../../services').people;
 module.exports = {
     load: function(id){
@@ -261,7 +242,7 @@ module.exports = {
                 if (criteria.group) {
                     dataRet.pageInfos = {};
                 }
-                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+                Focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(errors) {
                 console.info('Errrors: ', errors);
@@ -314,7 +295,7 @@ module.exports = {
                 if (criteria.group) {
                     dataRet.pageInfos = {};
                 }
-                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+                Focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(errors) {
                 console.info('Errrors: ', errors);
@@ -367,7 +348,7 @@ module.exports = {
                         query: criteria.criteria.query
                     }
                 };
-                focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
+                Focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(errors) {
                 console.info('Errrors ', errors);
@@ -393,7 +374,7 @@ module.exports = {
         "style": "date right",
         "format": {
             "value": function(data){return data;}
-        },'InputComponent': focusComponents.common.input.date.component,
+        },'InputComponent': Focus.components.common.input.date.component,
         'formatter': function(date){
             var monthNames = [
                 'January', "February", "March",
@@ -1381,7 +1362,7 @@ module.exports= {
 
 require.register("config/server/movie", function(exports, require, module) {
 var root = "./movies/";
-var url = focus.util.url.builder;
+var url = Focus.util.url.builder;
 module.exports = {
     getAll: url(root, 'GET'),
     update: url(root + "${id}",'PUT'),
@@ -1397,7 +1378,7 @@ module.exports = {
 
 require.register("config/server/people", function(exports, require, module) {
 var root = "./people/";
-var url = focus.util.url.builder;
+var url = Focus.util.url.builder;
 module.exports = {
   getAll: url(root, 'GET'),
   update: url(root + "${id}/",'PUT'),
@@ -1412,7 +1393,7 @@ module.exports = {
 
 require.register("config/server/reference", function(exports, require, module) {
 var root = ".";
-var url = focus.util.url.builder;
+var url = Focus.util.url.builder;
 module.exports = {
     getScopes: url(root+"/scopes", 'GET')
 };
@@ -1421,7 +1402,7 @@ module.exports = {
 
 require.register("config/server/search", function(exports, require, module) {
 var root = '.';
-var url = focus.util.url.builder;
+var url = Focus.util.url.builder;
 module.exports = {
     searchByScope: url(root + '/searchByScope?sortFieldName=${sortFieldName}&sortDesc=${sortDesc}&skip=${skip}', 'POST')
 };
@@ -1456,6 +1437,18 @@ module.exports = {
     },
     'result': {
         'for': 'results for'
+    },
+
+    'movie': {
+      'title': 'Movie',
+      'detail': {
+        'identity': {
+          'title': 'Identity'
+        },
+        'directors': {
+          'title': 'Directors'
+        }
+      }
     }
 };
 
@@ -1693,8 +1686,9 @@ module.exports = {'en-GB': {translation: english}};
 
 require.register("index", function(exports, require, module) {
 /*global Backbone*/
+
 console.log('Application demo rodoplphe');
-focus.components = focusComponents;
+Focus.components = FocusComponents;
 ////Require dependencies.
 require('./initializer');
 //Start the application.
@@ -1702,7 +1696,7 @@ require('./router');
 Backbone.history.start();
 
 //render menu modules
-var render = focus.application.render;
+var render = Focus.application.render;
 var LeftMenuView = require('../views/menu/leftMenu');
 var PageHeader = require('../views/menu/appHeader');
 render(PageHeader, '#header');
@@ -1715,13 +1709,14 @@ render(LeftMenuView, '#leftMenu');
 
 require.register("initializer/definition-initializer", function(exports, require, module) {
 /*global focus*/
-focus.definition.entity.container.setEntityConfiguration(require('../config/entityDefinition'));
+Focus.definition.entity.container.setEntityConfiguration(require('../config/entityDefinition'));
 
 });
 
 require.register("initializer/domain-initializer", function(exports, require, module) {
 /*global focus*/
-focus.definition.domain.container.setAll(require('../config/domain'));
+Focus.definition.domain.container.setAll(require('../config/domain'));
+
 });
 
 require.register("initializer/i18n-initializer", function(exports, require, module) {
@@ -1776,7 +1771,7 @@ require.register("initializer/reference_list_initializer", function(exports, req
 //Path to the reference service.
 /*global focus */
 var serviceReference = require('../services');
-var reference = focus.reference;
+var reference = Focus.reference;
 
 module.exports = {
     initialize: function(options, context) {
@@ -1859,10 +1854,10 @@ module.exports = {
 });
 
 require.register("router/index", function(exports, require, module) {
-/*global Backbone, focus, focusComponents */
+/*global Backbone, focus, Focus.components */
 //Dependencies.
 var Router = Backbone.Router;
-var render = focus.application.render;
+var render = Focus.application.render;
 
 //var AlertModule = require('../component/alert');
 //render(AlertModule, '#notification-center');
@@ -1939,7 +1934,7 @@ module.exports= {
 
 require.register("services/movie", function(exports, require, module) {
 var URL = require('../../config/server');
-var fetch = focus.network.fetch;
+var fetch = Focus.network.fetch;
 module.exports = {
     getMovieById: function getMovieById(id){
         return fetch(URL.movie.get({urlData:{id: id}}));
@@ -1968,7 +1963,7 @@ module.exports = {
 
 require.register("services/people", function(exports, require, module) {
 var URL = require('../../config/server');
-var fetch = focus.network.fetch;
+var fetch = Focus.network.fetch;
 module.exports = {
     getPeopleViewById: function getPeopleViewById(id){
         return fetch(URL.people.peopleView({urlData: {id: id}}));
@@ -1981,7 +1976,7 @@ module.exports = {
 
 require.register("services/reference", function(exports, require, module) {
 var URL = require('../../config/server');
-var fetch = focus.network.fetch;
+var fetch = Focus.network.fetch;
 module.exports = {
     getScopes: function getScopes(id){
         return fetch(URL.reference.getScopes({}));
@@ -1991,7 +1986,7 @@ module.exports = {
 
 require.register("services/search", function(exports, require, module) {
 var URL = require('../../config/server');
-var fetch = focus.network.fetch;
+var fetch = Focus.network.fetch;
 module.exports = {
     searchByScope: function searchByScope(criteria){
         return fetch(URL.search.searchByScope({urlData: criteria.pageInfos, data: criteria}));
@@ -2006,7 +2001,7 @@ require.register("stores/movie", function(exports, require, module) {
  * Store dealing with the movie subject.
  * @type {focus}
  */
-var movieStore = new focus.store.CoreStore({
+var movieStore = new Focus.store.CoreStore({
     definition : {
         'movie': 'movie',
         'castings': 'movieCasting',
@@ -2024,7 +2019,7 @@ require.register("stores/people", function(exports, require, module) {
  * Store dealing with the movie subject.
  * @type {focus}
  */
-var peopleStore = new focus.store.CoreStore({
+var peopleStore = new Focus.store.CoreStore({
     definition : {
         'people': 'people',
         'filmography': 'filmography'
@@ -2040,7 +2035,7 @@ require.register("stores/reference", function(exports, require, module) {
  * Store dealing with the movie subject.
  * @type {focus}
  */
-var referenceStore = new focus.store.CoreStore({
+var referenceStore = new Focus.store.CoreStore({
     definition : {
         'reference': 'reference'
     }
@@ -2050,15 +2045,15 @@ module.exports = referenceStore;
 });
 
 require.register("views/filter-result/filterResult", function(exports, require, module) {
-/*global React, focusComponents */
-var Title = focusComponents.common.title.component;
-var Button = focusComponents.common.button.action.component;
+/*global React, Focus.components */
+var Title = Focus.components.common.title.component;
+var Button = Focus.components.common.button.action.component;
 var action = require('../../action/search/filterSearch');
 
-module.exports = React.createClass({displayName: 'exports',
-  mixins: [focusComponents.page.search.filterResult.mixin],
+module.exports = React.createClass({displayName: "exports",
+  mixins: [Focus.components.page.search.filterResult.mixin],
   actions: action,
-  store: new focus.store.SearchStore(),
+  store: new Focus.store.SearchStore(),
   render: function () {
     var list = this.isSimpleList() ? this.simpleListComponent({type: this.props.criteria.scope.toLowerCase()}) : this.groupByListComponent();
     var root = React.createElement('div', {className: 'search-result'},
@@ -2096,7 +2091,7 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/filter-result/index", function(exports, require, module) {
-/*global focusComponents, React */
+/*global Focus.components, React */
 var FilterResult = require('./filterResult');
 
 //Composants de ligne
@@ -2137,7 +2132,7 @@ var config = {
     groupMaxRows: 3
 };
 
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({displayName: "exports",
     render: function () {
         config.criteria = {
             scope: this.props.scope,
@@ -2175,8 +2170,8 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/home/index", function(exports, require, module) {
-/* global React, focusComponents */
-module.exports = React.createClass({displayName: 'exports',
+/* global React, Focus.components */
+module.exports = React.createClass({displayName: "exports",
   render: function renderPeopleView() {
     return (
       React.createElement("div", {className: "welcome-title"}, 
@@ -2189,12 +2184,12 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/menu/appHeader", function(exports, require, module) {
-/*global focusComponents, React */
+/*global Focus.components, React */
 //Component for the application header.
-var AppHeader = focusComponents.application.header.component;
-var Cartouche = focus.components.application.cartridge.component;
+var AppHeader = Focus.components.application.header.component;
+var Cartouche = Focus.components.application.cartridge.component;
 //Create the view.
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({displayName: "exports",
   render: function () {
     var notification = React.createElement("div", {className: "header-menu-item"}, 
       React.createElement("i", {className: "fa fa-bell-o"}), 
@@ -2238,7 +2233,7 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/menu/cartridge", function(exports, require, module) {
-/*global focusComponents, React */
+/*global Focus.components, React */
 
 
 module.exports = React.createClass({
@@ -2255,10 +2250,10 @@ module.exports = React.createClass({
 });
 
 require.register("views/menu/index", function(exports, require, module) {
-/*global focusComponents, React */
+/*global Focus.components, React */
 //Define menu.
-var menuMixin = focusComponents.application.menu.mixin;
-var Menu = React.createClass({displayName: 'Menu',
+var menuMixin = Focus.components.application.menu.mixin;
+var Menu = React.createClass({displayName: "Menu",
   mixins: [menuMixin],
   renderContent: function renderMenuContent() {
     if (this.props.type === 'menuLeft') {
@@ -2274,7 +2269,7 @@ var Menu = React.createClass({displayName: 'Menu',
   }
 });
 
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({displayName: "exports",
   render: function renderPeopleView() {
     var test = React.createElement("div", null, 
       React.createElement("button", {id: "buttonLeft", onClick: this.hanleOpenLeftPopin}, "Open popin left"), 
@@ -2311,12 +2306,12 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/menu/leftMenu", function(exports, require, module) {
-/*global focusComponents, React */
+/*global Focus.components, React */
 //Define menu.
-var menuMixin = focusComponents.application.menu.mixin;
-var render = focus.application.render;
+var menuMixin = Focus.components.application.menu.mixin;
+var render = Focus.application.render;
 var isFirstTime = true;
-var Menu = React.createClass({displayName: 'Menu',
+var Menu = React.createClass({displayName: "Menu",
   mixins: [menuMixin],
   /** @inheriteddoc */
   renderTitle: function () {
@@ -2328,17 +2323,17 @@ var Menu = React.createClass({displayName: 'Menu',
     );
   },
   renderContent: function renderMenuContent() {
-    var home = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#"}, 
+    var home = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#"}, 
       React.createElement("img", {src: "static/img/home-32x32-white.svg"})
     );
     var search = React.createElement("a", {onClick: this.openQuickSearchPopin, id: "quick-search-link"}, 
       React.createElement("img", {src: "static/img/search-32x32-white.svg"})
     );
-    var films = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-film"});
-    var videos = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-video-camera"});
-    var users = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-user"});
-    var settings = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-cog"});
-    var help = React.createElement("a", {onClick: this.handleNaviagtion, 'data-action': "#", className: "fa fa-info-circle"});
+    var films = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-film"});
+    var videos = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-video-camera"});
+    var users = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-user"});
+    var settings = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-cog"});
+    var help = React.createElement("a", {onClick: this.handleNaviagtion, "data-action": "#", className: "fa fa-info-circle"});
     var root = React.createElement('div', null, home, search, films, videos, users, settings, help);
     return root;
   },
@@ -2375,7 +2370,7 @@ var Menu = React.createClass({displayName: 'Menu',
   }
 });
 
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({displayName: "exports",
   render: function renderLeftMenu() {
     var style = {className: 'left-menu'};
     var menu = React.createElement(Menu, {
@@ -2395,10 +2390,10 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/menu/topMenu", function(exports, require, module) {
-/*global focusComponents, React */
+/*global Focus.components, React */
 //Define menu.
-var menuMixin = focusComponents.application.menu.mixin;
-var Menu = React.createClass({displayName: 'Menu',
+var menuMixin = Focus.components.application.menu.mixin;
+var Menu = React.createClass({displayName: "Menu",
   mixins: [menuMixin],
   /**
    * Render the title content
@@ -2424,7 +2419,7 @@ var Menu = React.createClass({displayName: 'Menu',
   }
 });
 
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({displayName: "exports",
   render: function renderTopMenu() {
     var links = [{url: '', name: '', img: 'static/img/home-32x32-white.svg'},
       {url: '', name: '', img: 'static/img/search-32x32-white.svg'},
@@ -2446,7 +2441,7 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/movie/cartridge", function(exports, require, module) {
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
 module.exports = React.createClass({
@@ -2527,14 +2522,14 @@ module.exports = React.createClass({
 
 require.register("views/movie/castings", function(exports, require, module) {
 //TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
-var Block = focus.components.common.block.component;
+var Block = Focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
-var line = React.createClass({displayName: 'line',
+var line = React.createClass({displayName: "line",
   definitionPath: 'people',
-  mixins: [focus.components.list.selection.line.mixin],
+  mixins: [Focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
       React.createElement(PeopleCard, {picture: "", name: data.peoName, subName: "As ("+data.role+") "+(data.characterName!==undefined?data.characterName:"")})
@@ -2563,7 +2558,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/movie/component/peopleCard", function(exports, require, module) {
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({displayName: "exports",
     render: function renderPeopleCard() {
         return (
             React.createElement("div", {className: "card"}, 
@@ -2578,66 +2573,100 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/movie/index", function(exports, require, module) {
-//Get the form mixin.
-var SlidingContent = require('./slidingContent');
-var StickyNavigation = focus.components.common.stickyNavigation.component;
 
-module.exports = React.createClass({displayName: 'exports',
+//Récupération des dépendances.
+var StickyNavigation = Focus.components.common.stickyNavigation.component;
+var Title = Focus.components.common.title.component;
+
+//Blocs composants la page.
+var MovieDetails = require('./movieDetails');
+var Castings = require('./castings');
+var MovieProducers = require('./movieProducers');
+var MovieDirectors = require('./movieDirectors');
+var MoviePictures = require('./moviePictures');
+
+
+/**
+ * Page représentant le détail de la fiche d'un film.
+ */
+module.exports = React.createClass({
+    /** @inheritedDoc */
+    displayName: 'MovieView',
+    /** @inheritedDoc */
     render: function renderMovieView() {
         return (
-            React.createElement("div", {className: "detail movieView"}, 
+
+            React.createElement("div", {className: "detail movie-view"}, 
                 React.createElement(StickyNavigation, {contentSelector: "body"}), 
-                React.createElement(SlidingContent, {id: this.props.id})
+                React.createElement("div", {className: "detail-content"}, 
+                  React.createElement(MovieDetails, {id: this.props.id}), 
+                  React.createElement(Castings, {id: this.props.id}), 
+                  React.createElement(MovieProducers, {id: this.props.id}), 
+                  React.createElement(MovieDirectors, {id: this.props.id}), 
+                  React.createElement(MoviePictures, {id: this.props.id})
+                )
             )
         );
     }
 });
 
+
+/*
+<Detail navigation={false}>
+  <MovieDetails id={this.props.id}/>
+  <Castings id={this.props.id}/>
+  <MovieProducers id={this.props.id}/>
+  <MovieDirectors id={this.props.id}/>
+  <MoviePictures id={this.props.id}/>
+</Detail>
+ */
+
 });
 
-require.register("views/movie/movieDetails", function(exports, require, module) {
-var formMixin = focus.components.common.form.mixin;
+;require.register("views/movie/movieDetails", function(exports, require, module) {
+/*global React, Focus*/
+var formMixin = Focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
-var Block = focus.components.common.block.component;
+var Block = Focus.components.common.block.component;
+
 module.exports = React.createClass({
   definitionPath: 'movie',
   displayName: 'movieDetails',
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ['movie']}],
   action: movieActions,
-  renderContent: function render() {
+  renderContent: function renderMovieView() {
       return (
-        React.createElement("div", null, 
-          React.createElement(Block, {title: "DETAILS", style: {className: "slidingBlock", titleId: "details"}}, 
-            this._renderActions(), 
-            this.fieldFor('title'), {isEdit: true}, 
+          React.createElement(Block, {title: "movie.detail.identity.title", actions: this._renderActions}, 
+            this.fieldFor('title'), 
             this.fieldFor('released'), 
             this.fieldFor('runtime'), 
             this.fieldFor('countryIds'), 
             this.fieldFor('languageIds'), 
             this.fieldFor('genreIds')
-          ), 
-          React.createElement(Block, {title: "STORYLINE", style: {className: "slidingBlock", titleId: "storyline"}}, 
-            this.state.description
           )
-        )
       );
   }
 });
+/**
+ *       <Block title='movie.detail.storyLine'>
+         {this.state.description}
+       </Block>
+ */
 
 });
 
-require.register("views/movie/movieDirectors", function(exports, require, module) {
+;require.register("views/movie/movieDirectors", function(exports, require, module) {
 //TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
-var Block = focus.components.common.block.component;
+var Block = Focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
-var line = React.createClass({displayName: 'line',
+var line = React.createClass({displayName: "line",
   definitionPath: 'people',
-  mixins: [focus.components.list.selection.line.mixin],
+  mixins: [Focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
       React.createElement(PeopleCard, {picture: "", name: data.peoName, subName: ""})
@@ -2667,7 +2696,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/movie/moviePictures", function(exports, require, module) {
-var Block = focus.components.common.block.component;
+var Block = Focus.components.common.block.component;
 module.exports = React.createClass({
   displayName: "moviePictures",
   render: function render() {
@@ -2683,15 +2712,15 @@ module.exports = React.createClass({
 
 require.register("views/movie/movieProducers", function(exports, require, module) {
 //TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var movieActions = require('../../action/movie');
 var movieStore = require('../../stores/movie');
-var Title = focus.components.common.title.component;
+var Title = Focus.components.common.title.component;
 var PeopleCard = require('./component/peopleCard');
-var Block = focus.components.common.block.component;
-var line = React.createClass({displayName: 'line',
+var Block = Focus.components.common.block.component;
+var line = React.createClass({displayName: "line",
   definitionPath: 'people',
-  mixins: [focus.components.list.selection.line.mixin],
+  mixins: [Focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
       React.createElement(PeopleCard, {picture: "", name: data.peoName, subName: ""})
@@ -2720,7 +2749,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/movie/slidingContent", function(exports, require, module) {
-var Title = focus.components.common.title.component;
+var Title = Focus.components.common.title.component;
 var MovieDetails = require('./movieDetails');
 var Castings = require('./castings');
 var MovieProducers = require('./movieProducers');
@@ -2751,7 +2780,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/people/cartridge", function(exports, require, module) {
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
 module.exports = React.createClass({
@@ -2789,9 +2818,9 @@ require.register("views/people/index", function(exports, require, module) {
 //Get the form mixin.
 var SlidingContent = require('./slidingContent');
 
-var StickyNavigation = focus.components.common.stickyNavigation.component;
+var StickyNavigation = Focus.components.common.stickyNavigation.component;
 
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({displayName: "exports",
     render: function renderPeopleView() {
         return (
             React.createElement("div", {className: "peopleView"}, 
@@ -2805,7 +2834,7 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/people/movieCard", function(exports, require, module) {
-module.exports = React.createClass({displayName: 'exports',
+module.exports = React.createClass({displayName: "exports",
     render: function renderMovieCard() {
         return (
             React.createElement("div", {className: "card"}, 
@@ -2823,10 +2852,10 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/people/peopleDetails", function(exports, require, module) {
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
-var Title = focus.components.common.title.component;
+var Title = Focus.components.common.title.component;
 module.exports = React.createClass({
   definitionPath: 'people',
   displayName: 'peopleIdentification',
@@ -2860,15 +2889,15 @@ module.exports = React.createClass({
 
 require.register("views/people/peopleFilmography", function(exports, require, module) {
 //TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
-var formMixin = focus.components.common.form.mixin;
+var formMixin = Focus.components.common.form.mixin;
 var peopleActions = require('../../action/people');
 var peopleStore = require('../../stores/people');
-var Title = focus.components.common.title.component;
+var Title = Focus.components.common.title.component;
 var MovieCard = require('./movieCard');
-var FormList = focus.components.common.list;
-var line = React.createClass({displayName: 'line',
+var FormList = Focus.components.common.list;
+var line = React.createClass({displayName: "line",
   definitionPath: 'movie',
-  mixins: [focus.components.list.selection.line.mixin],
+  mixins: [Focus.components.list.selection.line.mixin],
   renderLineContent: function(data){
     return (
       React.createElement(MovieCard, {picture: "", name: data.title, middleName: data.genreIds, subName: data.year})
@@ -2905,7 +2934,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/people/peoplePictures", function(exports, require, module) {
-var Title = focus.components.common.title.component;
+var Title = Focus.components.common.title.component;
 module.exports = React.createClass({
   displayName: "moviePictures",
   render: function render() {
@@ -2943,7 +2972,7 @@ module.exports = React.createClass({
 });
 
 require.register("views/search-result/index", function(exports, require, module) {
-/*global focusComponents, React*/
+/*global Focus.components, React*/
 var MoviePreview = require('./moviePreview');
 var PeoplePreview = require('./peoplePreview');
 var SearchResult = require('./searchResult');
@@ -2977,7 +3006,7 @@ var config = {
       if(!data.movId){
         Preview = PeoplePreview;
       }
-      focus.application.render(Preview, '#previewModal',
+      Focus.application.render(Preview, '#previewModal',
         {
           props: {
             data: data,
@@ -3017,8 +3046,8 @@ var qs = React.createElement(SearchResult, {
   parentSelector: parentselector
 });
 
-module.exports = React.createClass({displayName: 'exports',
-  mixins: [focusComponents.application.popin.mixin],
+module.exports = React.createClass({displayName: "exports",
+  mixins: [Focus.components.application.popin.mixin],
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,
       React.createElement('div', {
@@ -3072,9 +3101,9 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/search-result/movieLineComponent", function(exports, require, module) {
-/*global React, focusComponents */
-module.exports = React.createClass({displayName: 'exports',
-  mixins: [focusComponents.list.selection.line.mixin],
+/*global React, Focus.components */
+module.exports = React.createClass({displayName: "exports",
+  mixins: [Focus.components.list.selection.line.mixin],
   definitionPath: 'movie',
   renderLineContent: function (data) {
     var id = React.createElement('div', null, data.id);
@@ -3097,10 +3126,10 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/search-result/moviePreview", function(exports, require, module) {
-/*global React, focusComponents */
-var Field = focusComponents.common.field.component;
-module.exports = React.createClass({displayName: 'exports',
-  mixins: [focusComponents.application.popin.mixin, focusComponents.common.mixin.definition, focusComponents.common.mixin.fieldComponentBehaviour],
+/*global React, Focus.components */
+var Field = Focus.components.common.field.component;
+module.exports = React.createClass({displayName: "exports",
+  mixins: [Focus.components.application.popin.mixin, Focus.components.common.mixin.definition, Focus.components.common.mixin.fieldComponentBehaviour],
   definitionPath: 'movie',
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,
@@ -3145,7 +3174,7 @@ module.exports = React.createClass({displayName: 'exports',
       React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Released "), React.createElement("div", null, released)), 
       React.createElement("div", {className: "movie-detail-line"}, React.createElement("div", {className: "movie-detail-label"}, "Runtime "), React.createElement("div", null, this.props.data.runtime))
     ), 
-    React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, 'data-action': movieLink}, "Detailed sheet "))
+    React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, "data-action": movieLink}, "Detailed sheet "))
     );
 
     return root;
@@ -3169,9 +3198,9 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/search-result/peopleLineComponent", function(exports, require, module) {
-/*global React, focusComponents */
-module.exports = React.createClass({displayName: 'exports',
-  mixins: [focusComponents.list.selection.line.mixin],
+/*global React, Focus.components */
+module.exports = React.createClass({displayName: "exports",
+  mixins: [Focus.components.list.selection.line.mixin],
   definitionPath: 'people',
   renderLineContent: function (data) {
     var id = React.createElement('div', null, data.id);
@@ -3186,10 +3215,10 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/search-result/peoplePreview", function(exports, require, module) {
-/*global React, focusComponents */
-var Field = focusComponents.common.field.component;
-module.exports = React.createClass({displayName: 'exports',
-  mixins: [focusComponents.application.popin.mixin, focusComponents.common.mixin.definition, focusComponents.common.mixin.fieldComponentBehaviour],
+/*global React, Focus.components */
+var Field = Focus.components.common.field.component;
+module.exports = React.createClass({displayName: "exports",
+  mixins: [Focus.components.application.popin.mixin, Focus.components.common.mixin.definition, Focus.components.common.mixin.fieldComponentBehaviour],
   definitionPath: 'people',
   renderPopinHeader: function (popin) {
     return React.createElement('div', null,
@@ -3212,7 +3241,7 @@ module.exports = React.createClass({displayName: 'exports',
       )
     ), 
       React.createElement("div", {className: "clear"}), 
-      React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, 'data-action': peopleLink}, "Detailed sheet "))
+      React.createElement("div", {className: "movie-preview-detailed-sheet"}, React.createElement("a", {onClick: this.detailedSheet, "data-action": peopleLink}, "Detailed sheet "))
     );
 
     return root;
@@ -3235,13 +3264,13 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/search-result/searchResult", function(exports, require, module) {
-/*global React, focusComponents*/
+/*global React, Focus.components*/
 var action = require('../../action/search/quickSearch');
 
-module.exports = React.createClass({displayName: 'exports',
-  mixins: [focusComponents.page.search.searchResult.mixin],
+module.exports = React.createClass({displayName: "exports",
+  mixins: [Focus.components.page.search.searchResult.mixin],
   actions: action,
-  store: new focus.store.SearchStore(),
+  store: new Focus.store.SearchStore(),
   render: function render() {
     var qs = this.quickSearchComponent();
     var summary = React.createElement("div", null);
@@ -3279,7 +3308,7 @@ module.exports = React.createClass({displayName: 'exports',
         if (scope !== null && scope !== undefined) {
           if (scope.toLowerCase() !== 'all') {
             var url = '#search/advanced/scope/' + scope + '/query/' + this.state.query;
-            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, 'data-action': url}, "Advanced search"));
+            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, "data-action": url}, "Advanced search"));
           }
         }
         helpContainer = React.createElement("div", {className: "qs-help-container"}, 
@@ -3324,7 +3353,7 @@ module.exports = React.createClass({displayName: 'exports',
 
     if (list.length > 0) {
       var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
-      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, 'data-action': url}, "Advanced search"));
+      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, "data-action": url}, "Advanced search"));
       if(list.length >= 3){
         mostRelevent = React.createElement("div", {className: "qs-results-most-relevents"}, "The 3 most relevents");
       }
@@ -3350,13 +3379,13 @@ module.exports = React.createClass({displayName: 'exports',
 });
 
 require.register("views/search-result/search/index", function(exports, require, module) {
-/*global React, focusComponents*/
+/*global React, Focus.components*/
 var action = require('../../action/search/quickSearch');
 
-module.exports = React.createClass({displayName: 'exports',
-  mixins: [focusComponents.page.search.searchResult.mixin],
+module.exports = React.createClass({displayName: "exports",
+  mixins: [Focus.components.page.search.searchResult.mixin],
   actions: action,
-  store: new focus.store.SearchStore(),
+  store: new Focus.store.SearchStore(),
   render: function render() {
     var qs = this.quickSearchComponent();
     var summary = React.createElement("div", null);
@@ -3394,7 +3423,7 @@ module.exports = React.createClass({displayName: 'exports',
         if (scope !== null && scope !== undefined) {
           if (scope.toLowerCase() !== 'all') {
             var url = '#search/advanced/scope/' + scope + '/query/' + this.state.query;
-            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, 'data-action': url}, "Advanced search"));
+            linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, "data-action": url}, "Advanced search"));
           }
         }
         helpContainer = React.createElement("div", {className: "qs-help-container"}, 
@@ -3439,7 +3468,7 @@ module.exports = React.createClass({displayName: 'exports',
 
     if (list.length > 0) {
       var url = '#search/advanced/scope/' + scope + '/query/' + criteria.query;
-      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, 'data-action': url}, "Advanced search"));
+      linkFilterResult = React.createElement("div", {className: "linkAdvancedSearch"}, " ", React.createElement("a", {onClick: this.advancedSearch, "data-action": url}, "Advanced search"));
       if(list.length >= 3){
         mostRelevent = React.createElement("div", {className: "qs-results-most-relevents"}, "The 3 most relevents");
       }

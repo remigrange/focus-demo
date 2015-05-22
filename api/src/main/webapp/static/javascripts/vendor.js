@@ -1,59 +1,42 @@
-(function() {
+(function(/*! Brunch !*/) {
   'use strict';
 
-  var globals = typeof window === 'undefined' ? global : window;
+  var globals = typeof window !== 'undefined' ? window : global;
   if (typeof globals.require === 'function') return;
 
   var modules = {};
   var cache = {};
-  var has = ({}).hasOwnProperty;
 
-  var aliases = {};
-
-  var endsWith = function(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+  var has = function(object, name) {
+    return ({}).hasOwnProperty.call(object, name);
   };
 
-  var unalias = function(alias, loaderPath) {
-    var start = 0;
-    if (loaderPath) {
-      if (loaderPath.indexOf('components/' === 0)) {
-        start = 'components/'.length;
-      }
-      if (loaderPath.indexOf('/', start) > 0) {
-        loaderPath = loaderPath.substring(start, loaderPath.indexOf('/', start));
+  var expand = function(root, name) {
+    var results = [], parts, part;
+    if (/^\.\.?(\/|$)/.test(name)) {
+      parts = [root, name].join('/').split('/');
+    } else {
+      parts = name.split('/');
+    }
+    for (var i = 0, length = parts.length; i < length; i++) {
+      part = parts[i];
+      if (part === '..') {
+        results.pop();
+      } else if (part !== '.' && part !== '') {
+        results.push(part);
       }
     }
-    var result = aliases[alias + '/index.js'] || aliases[loaderPath + '/deps/' + alias + '/index.js'];
-    if (result) {
-      return 'components/' + result.substring(0, result.length - '.js'.length);
-    }
-    return alias;
+    return results.join('/');
   };
 
-  var expand = (function() {
-    var reg = /^\.\.?(\/|$)/;
-    return function(root, name) {
-      var results = [], parts, part;
-      parts = (reg.test(name) ? root + '/' + name : name).split('/');
-      for (var i = 0, length = parts.length; i < length; i++) {
-        part = parts[i];
-        if (part === '..') {
-          results.pop();
-        } else if (part !== '.' && part !== '') {
-          results.push(part);
-        }
-      }
-      return results.join('/');
-    };
-  })();
   var dirname = function(path) {
     return path.split('/').slice(0, -1).join('/');
   };
 
   var localRequire = function(path) {
     return function(name) {
-      var absolute = expand(dirname(path), name);
+      var dir = dirname(path);
+      var absolute = expand(dir, name);
       return globals.require(absolute, path);
     };
   };
@@ -68,26 +51,21 @@
   var require = function(name, loaderPath) {
     var path = expand(name, '.');
     if (loaderPath == null) loaderPath = '/';
-    path = unalias(name, loaderPath);
 
-    if (has.call(cache, path)) return cache[path].exports;
-    if (has.call(modules, path)) return initModule(path, modules[path]);
+    if (has(cache, path)) return cache[path].exports;
+    if (has(modules, path)) return initModule(path, modules[path]);
 
     var dirIndex = expand(path, './index');
-    if (has.call(cache, dirIndex)) return cache[dirIndex].exports;
-    if (has.call(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
+    if (has(cache, dirIndex)) return cache[dirIndex].exports;
+    if (has(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
 
     throw new Error('Cannot find module "' + name + '" from '+ '"' + loaderPath + '"');
   };
 
-  require.alias = function(from, to) {
-    aliases[to] = from;
-  };
-
-  require.register = require.define = function(bundle, fn) {
+  var define = function(bundle, fn) {
     if (typeof bundle === 'object') {
       for (var key in bundle) {
-        if (has.call(bundle, key)) {
+        if (has(bundle, key)) {
           modules[key] = bundle[key];
         }
       }
@@ -96,18 +74,21 @@
     }
   };
 
-  require.list = function() {
+  var list = function() {
     var result = [];
     for (var item in modules) {
-      if (has.call(modules, item)) {
+      if (has(modules, item)) {
         result.push(item);
       }
     }
     return result;
   };
 
-  require.brunch = true;
   globals.require = require;
+  globals.require.define = define;
+  globals.require.register = define;
+  globals.require.list = list;
+  globals.require.brunch = true;
 })();
 /**
  * React v0.13.2
@@ -31287,12 +31268,12 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
   }
 }.call(this));
 
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focus = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Focus = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+//http://www.ascii-fr.com/Generateur-de-texte.html
 "use strict";
 
-console.log("\n    .########..#######...######..##.....##..######.\n    .##.......##.....##.##....##.##.....##.##....##\n    .##.......##.....##.##.......##.....##.##......\n    .######...##.....##.##.......##.....##..######.\n    .##.......##.....##.##.......##.....##.......##\n    .##.......##.....##.##....##.##.....##.##....##\n    .##........#######...######...#######...######.\n");
 var infos = require("./package.json");
+console.log("\n  _____   _____   _____   _   _   _____\n |  ___| /  _  \\ /  ___| | | | | /  ___/\n | |__   | | | | | |     | | | | | |___\n |  __|  | | | | | |     | | | | \\___  \\\n | |     | |_| | | |___  | |_| |  ___| |\n |_|     \\_____/ \\_____| \\_____/ /_____/\n\n version: " + infos.version + "\n focus: " + infos.homepage + "\n documentation: " + infos.documentation + "\n issues: " + infos.bugs.url + "\n");
 /**
  * Focus library.
  * This file requires all submodules.
@@ -31406,7 +31387,7 @@ module.exports = function (component, selector, options) {
 };
 /*
   Exemple
-  var render = focus.application.render;
+  var render = Focus.application.render;
   var MyComponent = require('./my-component');
   render(MyComponent, 'div.component-container', {props: {id: '12'}});
  */
@@ -41693,6 +41674,7 @@ var _require = require("lodash/lang");
 
 var isArray = _require.isArray;
 var isEmpty = _require.isEmpty;
+var isObject = _require.isObject;
 
 var getEntityInformations = require("../definition/entity/builder").getEntityInformations;
 var capitalize = require("lodash/string/capitalize");
@@ -41716,7 +41698,8 @@ var CoreStore = (function (_EventEmitter) {
     });
     //Initialize the data as immutable map.
     this.data = Immutable.Map({});
-    this.dataError = Immutable.Map({});
+    this.status = Immutable.Map({});
+    this.error = Immutable.Map({});
     this.customHandler = assign({}, config.customHandler);
     //Register all gernerated methods.
     this.buildDefinition();
@@ -41743,6 +41726,18 @@ var CoreStore = (function (_EventEmitter) {
         return this.definition;
       }
     },
+    getStatus: {
+      /** Return the status of a definition.
+       * @returns {string} - The status of a definition.
+       */
+
+      value: function getStatus(def) {
+        if (this.status.has(def)) {
+          return this.status.get(def);
+        }
+        return undefined;
+      }
+    },
     buildEachNodeChangeEventListener: {
       /**
       * Build a change listener for each property in the definition. (should be macro entities);
@@ -41767,11 +41762,12 @@ var CoreStore = (function (_EventEmitter) {
           })(definition);
           //Create an update method.
           currentStore["update" + capitalizeDefinition] = (function (def) {
-            return function (dataNode) {
-              //CheckIsObject
-              var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
+            return function (dataNode, status) {
+              var immutableNode = Immutable.fromJS(dataNode);
               currentStore.data = currentStore.data.set(def, immutableNode);
-              currentStore.emit("" + def + ":change");
+              //Update the status on the data.
+              currentStore.status = currentStore.status.set(def, status);
+              currentStore.emit("" + def + ":change", { status: status });
             };
           })(definition);
           //Create a get method.
@@ -41779,15 +41775,19 @@ var CoreStore = (function (_EventEmitter) {
             return function () {
               var hasData = currentStore.data.has(def);
               if (hasData) {
-                var data = currentStore.data.get(def).toJS();
-                if (!isEmpty(data)) {
-                  return data;
+                var rawData = currentStore.data.get(def);
+                if (isObject(rawData)) {
+                  var data = rawData.toJS();
+                  if (!isEmpty(data)) {
+                    return data;
+                  }
+                } else {
+                  return rawData;
                 }
               }
               return undefined;
             };
           })(definition);
-
           //Creates the error change listener
           currentStore["add" + capitalizeDefinition + "ErrorListener"] = (function (def) {
             return function (cb) {
@@ -41805,15 +41805,15 @@ var CoreStore = (function (_EventEmitter) {
             return function (dataNode) {
               //CheckIsObject
               var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
-              currentStore.dataError = currentStore.dataError.set(def, immutableNode);
+              currentStore.error = currentStore.error.set(def, immutableNode);
               currentStore.emit("" + def + ":error");
             };
           })(definition);
           //Create a get method.
           currentStore["getError" + capitalizeDefinition] = (function (def) {
             return function () {
-              var hasData = currentStore.dataError.has(def);
-              return hasData ? currentStore.dataError.get(def).toJS() : undefined;
+              var hasData = currentStore.error.has(def);
+              return hasData ? currentStore.error.get(def).toJS() : undefined;
             };
           })(definition);
         }
@@ -41833,15 +41833,16 @@ var CoreStore = (function (_EventEmitter) {
             return currentStore.globalCustomHandler.call(currentStore, transferInfo);
           }
           var rawData = transferInfo.action.data;
+          var status = transferInfo.action.status || {};
           var type = transferInfo.action.type;
           for (var node in rawData) {
             if (currentStore.definition[node]) {
               //Call a custom handler if this exists.
               if (currentStore.customHandler && currentStore.customHandler[node] && currentStore.customHandler[node][type]) {
-                currentStore.customHandler[node][type].call(currentStore, rawData[node]);
+                currentStore.customHandler[node][type].call(currentStore, rawData[node], status[node]);
               } else {
                 //Update the data for the given node. and emit the change/.
-                currentStore["" + type + "" + capitalize(node)](rawData[node]);
+                currentStore["" + type + "" + capitalize(node)](rawData[node], status[node]);
               }
             }
           }
@@ -42340,8 +42341,12 @@ var SearchStore = (function (_CoreStore) {
           var defKeys = keys(currentStore.definition); //TODO: a sub part of the keys may be needed.
           var dataKeys = keys(transferInfo.action.data);
           var intersectKeys = intersection(defKeys, dataKeys);
-          if (intersectKeys.length === defKeys.length) {
-            currentStore.update(transferInfo.action.data);
+          if (intersectKeys.length > 0) {
+            if (intersectKeys.length === defKeys.length) {
+              currentStore.update(transferInfo.action.data);
+            } else {
+              console.warn("Incomplete search store update received. Got [" + dataKeys.join(",") + "], expected [" + defKeys.join(",") + "].");
+            }
           }
         });
       }
@@ -42593,12 +42598,15 @@ module.exports = function (url, data) {
 
 },{"lodash/string/template":111}]},{},[1])(1)
 });
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.focusComponents = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.FocusComponents = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
 //Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus-COMPONENTS
-console.log("\n  .########..#######...######..##.....##..######...........######...#######..##.....##.########...#######..##....##.########.##....##.########..######.\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.###...###.##.....##.##.....##.###...##.##.......###...##....##....##....##\n.##.......##.....##.##.......##.....##.##...............##.......##.....##.####.####.##.....##.##.....##.####..##.##.......####..##....##....##......\n.######...##.....##.##.......##.....##..######..#######.##.......##.....##.##.###.##.########..##.....##.##.##.##.######...##.##.##....##.....######.\n.##.......##.....##.##.......##.....##.......##.........##.......##.....##.##.....##.##........##.....##.##..####.##.......##..####....##..........##\n.##.......##.....##.##....##.##.....##.##....##.........##....##.##.....##.##.....##.##........##.....##.##...###.##.......##...###....##....##....##\n.##........#######...######...#######...######...........######...#######..##.....##.##.........#######..##....##.########.##....##....##.....######.\n");
 var infos = require("./package.json");
+var infosFn = function infos() {
+  console.log("\n    _____   _____   _____   _   _   _____        _____   _____       ___  ___   _____   _____   __   _   _____   __   _   _____   _____\n  |  ___| /  _  \\ /  ___| | | | | /  ___/      /  ___| /  _  \\     /   |/   | |  _  \\ /  _  \\ |  \\ | | | ____| |  \\ | | |_   _| /  ___/\n  | |__   | | | | | |     | | | | | |___       | |     | | | |    / /|   /| | | |_| | | | | | |   | |  | |__   |   \\| |   | |   | |___\n  |  __|  | | | | | |     | | | | \\___  \\      | |     | | | |   / / |__/ | | |  ___/ | | | | | |\\   | |  __|  | |\\   |   | |   \\___  \\\n  | |     | |_| | | |___  | |_| |  ___| |      | |___  | |_| |  / /       | | | |     | |_| | | | \\  | | |___  | | \\  |   | |    ___| |\n  |_|     \\_____/ \\_____| \\_____/ /_____/      \\_____| \\_____/ /_/        |_| |_|     \\_____/ |_|  \\_| |_____| |_|  \\_|   |_|   /_____/\n\n   version: " + infos.version + "\n   focus-components: " + infos.homepage + "\n   documentation: " + infos.documentation + "\n   issues: " + infos.bugs.url + "\n  ");
+};
+
 module.exports = {
   VERSION: infos.version,
   AUTHORS: infos.author,
@@ -42615,15 +42623,16 @@ module.exports = {
   search: require("./search"),
   page: require("./page"),
   message: require("./message"),
-  application: require("./application")
+  application: require("./application"),
+  infos: infosFn
 };
 
-},{"./application":5,"./common":26,"./list":54,"./message":68,"./package.json":228,"./page":230,"./search":237}],2:[function(require,module,exports){
+},{"./application":5,"./common":28,"./list":56,"./message":70,"./package.json":231,"./page":233,"./search":240}],2:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var applicationStore = window.focus.application.builtInStore();
+var applicationStore = window.Focus.application.builtInStore();
 
 var cartridgeMixin = {
   getDefaultProps: function getCartridgeDefaultProps() {
@@ -42665,10 +42674,10 @@ module.exports = builder(cartridgeMixin);
 },{}],3:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var popin = require("../popin").mixin;
 var Button = require("../../common/button/action").component;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 
 /**
  * Popin mixin
@@ -42735,9 +42744,9 @@ module.exports = builder(popinMixin);
 },{"../../common/button/action":11,"../popin":9}],4:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 
 var _require = require("lodash/collection");
 
@@ -42762,20 +42771,17 @@ var headerMixin = {
        * Default size of the bar. Should be present in sizeMap.
        * @type {String}
        */
-      size: "tall",
+      size: "medium",
       /**
        * Map which defines sizes exists for the components and their border.
        * @type {Object}
        */
       sizeMap: {
         small: {
-          sizeBorder: 800
+          sizeBorder: 200
         },
         medium: {
-          sizeBorder: 500
-        },
-        tall: {
-          sizeBorder: 300
+          sizeBorder: 0
         }
       },
       /**
@@ -42844,7 +42850,7 @@ var headerMixin = {
   _getScrollPosition: function getScrollPosition() {
     //The pageYOffset is done in order to deal with the window case. Another possibility would have been to use window.docment.body as a node for scrollTop.
     //But the scrollListener on the page is only on the window element.
-    return this.scrollTargetNode.pageYOffset ? this.scrollTargetNode.pageYOffset : this.scrollTargetNode.scrollTop;
+    return this.scrollTargetNode.pageYOffset !== undefined ? this.scrollTargetNode.pageYOffset : this.scrollTargetNode.scrollTop;
   },
   /**
    * Notify other elements that the size has changed.
@@ -42884,7 +42890,7 @@ var headerMixin = {
     //Process decrease treatement.
     if (currentIndex > 0) {
       var decreaseBorder = this.props.sizeMap[this.sizes[currentIndex - 1]].sizeBorder;
-      if (currentScrollPosition < decreaseBorder) {
+      if (currentScrollPosition <= decreaseBorder) {
         return this._changeSize(this.sizes[currentIndex - 1]);
       }
     }
@@ -42925,7 +42931,7 @@ var headerMixin = {
 
 module.exports = builder(headerMixin);
 
-},{"lodash/collection":70}],5:[function(require,module,exports){
+},{"lodash/collection":73}],5:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -42940,9 +42946,9 @@ module.exports = {
 },{"./cartridge":2,"./confirmation-popin":3,"./header":4,"./menu":6,"./message-center":7,"./popin":9}],6:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var popinProperties = require("../mixin/popin-behaviour").mixin;
 
 var menuMixin = {
@@ -42992,10 +42998,10 @@ module.exports = builder(menuMixin);
 },{"../mixin/popin-behaviour":8}],7:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
-var messageStore = window.focus.message.builtInStore();
+var type = window.Focus.component.types;
+var messageStore = window.Focus.message.builtInStore();
 var Message = require("../../message").component;
 var assign = require("object-assign");
 
@@ -43055,10 +43061,10 @@ var messageCenterMixin = {
 
 module.exports = builder(messageCenterMixin);
 
-},{"../../message":68,"object-assign":225}],8:[function(require,module,exports){
+},{"../../message":70,"object-assign":228}],8:[function(require,module,exports){
 "use strict";
 
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 /**
  * Mixin used in order to create a popin or a menu.
  * @type {Object} - popin behavour mixin
@@ -43091,9 +43097,9 @@ module.exports = { mixin: PopinProperties };
 "use strict";
 
 /*global document*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var popinProperties = require("../mixin/popin-behaviour").mixin;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var capitalize = require("lodash/string/capitalize");
 /**
  * Popin mixin
@@ -43236,11 +43242,11 @@ var popinMixin = {
 
 module.exports = builder(popinMixin);
 
-},{"../mixin/popin-behaviour":8,"lodash/string/capitalize":219}],10:[function(require,module,exports){
+},{"../mixin/popin-behaviour":8,"lodash/string/capitalize":222}],10:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var Title = require("../title").component;
 var i18nMixin = require("../i18n").mixin;
 /**
@@ -43251,7 +43257,10 @@ var blockMixin = {
   mixins: [i18nMixin],
   getDefaultProps: function getDefaultProps() {
     return {
-      style: {}
+      style: {},
+      actions: function actions() {
+        return; // override this to add actions.
+      }
     };
   },
   /**
@@ -43270,19 +43279,33 @@ var blockMixin = {
   render: function renderBlock() {
     return React.createElement(
       "div",
-      { className: "block " + this.props.style.className },
-      React.createElement(Title, { id: this.props.style.titleId, title: this.heading() }),
-      this.props.children
+      { className: "" + this.props.style.className, "data-focus": "block" },
+      React.createElement(
+        "header",
+        null,
+        React.createElement(Title, { id: this.props.style.titleId, title: this.heading() }),
+        React.createElement(
+          "div",
+          { className: "actions" },
+          this.props.actions()
+        )
+      ),
+      React.createElement(
+        "div",
+        { className: "block-content" },
+        this.props.children
+      )
     );
   }
 };
 module.exports = builder(blockMixin);
+// actions -->
 
-},{"../i18n":23,"../title":50}],11:[function(require,module,exports){
+},{"../i18n":24,"../title":52}],11:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var Img = require("../../img").component;
 
 /**
@@ -43354,7 +43377,7 @@ var buttonMixin = {
 
 module.exports = builder(buttonMixin);
 
-},{"../../img":25}],12:[function(require,module,exports){
+},{"../../img":27}],12:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -43364,10 +43387,64 @@ module.exports = {
 },{"./action":11}],13:[function(require,module,exports){
 "use strict";
 
-//Dependencies.
-var builder = window.focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var builder = window.Focus.component.builder;
+//var i18nMixin = require('../i18n').mixin;
+var StickyNavigation = require("../sticky-navigation").component;
+var type = window.Focus.component.types;
+var stylable = require("../../mixin/stylable");
+/**
+ * Mixin used in order to create a Detail.
+ * @type {Object}
+ */
+var detailMixin = {
+  mixins: [stylable],
+  /** @inheritedDoc */
+  getDefaultProps: function getDetailDefaultProps() {
+    return {
+      /**
+       * Activate the presence of the sticky navigation component.
+       * @type {Boolean}
+       */
+      navigation: true
+    };
+  },
+  /** @inheritedDoc */
+  propTypes: {
+    navigation: type("bool")
+  },
+  /**
+   * Render the navigation component if the props navigation is true.
+   * @returns {Object} - The jsx component.
+   */
+  renderNavigation: function renderNavigation() {
+    if (this.props.navigation) {
+      return React.createElement(StickyNavigation, { contentSelector: "[data-focus=\"detail-content\"" });
+    }return;
+  },
+  /** @inheritedDoc */
+  render: function renderDetail() {
+    return React.createElement(
+      "div",
+      { className: "" + this._getStyleClassName(), "data-focus": "detail" },
+      this.renderNavigation(),
+      React.createElement(
+        "div",
+        { "data-focus": "detail-content" },
+        this.props.children
+      )
+    );
+  }
+};
+module.exports = builder(detailMixin);
+
+},{"../../mixin/stylable":71,"../sticky-navigation":51}],14:[function(require,module,exports){
+"use strict";
+
+//Dependencies.
+var builder = window.Focus.component.builder;
+var React = window.React;
+var type = window.Focus.component.types;
 var i18nBehaviour = require("../../i18n/mixin");
 /**
  * Input text mixin.
@@ -43416,7 +43493,7 @@ var displayCheckboxMixin = {
 
 module.exports = builder(displayCheckboxMixin);
 
-},{"../../i18n/mixin":24}],14:[function(require,module,exports){
+},{"../../i18n/mixin":25}],15:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -43424,13 +43501,13 @@ module.exports = {
   checkbox: require("./checkbox")
 };
 
-},{"./checkbox":13,"./text":15}],15:[function(require,module,exports){
+},{"./checkbox":14,"./text":16}],16:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 
 /**
  * Input text mixin.
@@ -43477,11 +43554,11 @@ var displayTextMixin = {
 
 module.exports = builder(displayTextMixin);
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
-var type = window.focus.component.types;
+var builder = window.Focus.component.builder;
+var type = window.Focus.component.types;
 var React = window.React;
 var valueBehaviour = require("./mixin/value-behaviour");
 var validationBehaviour = require("./mixin/validation-behaviour");
@@ -43539,7 +43616,7 @@ var FieldMixin = {
   render: function renderField() {
     return React.createElement(
       "div",
-      { className: this._className() },
+      { className: this._className(), "data-focus": "field" },
       this.label(),
       this.props.isEdit ? this.props.values ? this.select() : this.input() : this.display(),
       this.help(),
@@ -43549,7 +43626,7 @@ var FieldMixin = {
 };
 module.exports = builder(FieldMixin);
 
-},{"./mixin/built-in-components":17,"./mixin/validation-behaviour":18,"./mixin/value-behaviour":19}],17:[function(require,module,exports){
+},{"./mixin/built-in-components":18,"./mixin/validation-behaviour":19,"./mixin/value-behaviour":20}],18:[function(require,module,exports){
 "use strict";
 
 var InputText = require("../../input/text").component;
@@ -43557,7 +43634,7 @@ var DisplayText = require("../../display/text").component;
 var SelectClassic = require("../../select/classic").component;
 var Label = require("../../label").component;
 var fieldGridBehaviourMixin = require("../../mixin/field-grid-behaviour");
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 
 var fieldBuiltInComponentsMixin = {
   mixins: [fieldGridBehaviourMixin],
@@ -43631,10 +43708,10 @@ var fieldBuiltInComponentsMixin = {
     if (this.props.FieldComponent || this.props.InputLabelComponent) {
       return this.renderFieldComponent();
     }
-    var inputClassName = "form-control " + this._getContentGridClassName();
+    var inputClassName = "form-control }";
     return React.createElement(
       "div",
-      { className: "input-group" },
+      { className: "" + this._getContentGridClassName() + " input-group" },
       React.createElement(this.props.InputComponent, {
         style: { "class": inputClassName },
         id: this.props.name,
@@ -43751,7 +43828,7 @@ var fieldBuiltInComponentsMixin = {
 
 module.exports = fieldBuiltInComponentsMixin;
 
-},{"../../display/text":15,"../../input/text":31,"../../label":34,"../../mixin/field-grid-behaviour":39,"../../select/classic":46}],18:[function(require,module,exports){
+},{"../../display/text":16,"../../input/text":33,"../../label":36,"../../mixin/field-grid-behaviour":41,"../../select/classic":48}],19:[function(require,module,exports){
 "use strict";
 
 var i18nMixin = require("../../i18n").mixin;
@@ -43803,7 +43880,7 @@ var validationMixin = {
 };
 module.exports = validationMixin;
 
-},{"../../i18n":23}],19:[function(require,module,exports){
+},{"../../i18n":24}],20:[function(require,module,exports){
 "use strict";
 
 var valueBehaviourMixin = {
@@ -43838,12 +43915,12 @@ var valueBehaviourMixin = {
 
 module.exports = valueBehaviourMixin;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var assign = require("object-assign");
 
@@ -43900,15 +43977,51 @@ var formMixin = {
     };
   },
   /**
-   * Event handler for 'change' events coming from the stores
+   * Display a message on change.
    */
-  _onChange: function onFormStoreChangeHandler() {
-    this.setState(this._getStateFromStores());
+  _displayMessageOnChange: function displayMessageOnChange(changeInfos) {
+    if (this.displayMessageOnChange) {
+      return this.displayMessageOnChange(changeInfos);
+    }
+    if (changeInfos && changeInfos.status && changeInfos.status.name) {
+      switch (changeInfos.status.name) {
+        case "loading":
+          Focus.message.addInformationMessage("loading");
+          break;
+        case "loaded":
+          Focus.message.addSuccessMessage("loaded");
+          break;
+        case "saving":
+          Focus.message.addInformationMessage("saving");
+          break;
+        case "saved":
+          Focus.message.addSuccessMessage("saved");
+          break;
+      }
+    }
   },
-
   /**
-   * Event handler for 'error' events coming from the stores.
-    */
+   * After change informations.
+   * You can override this method using afterChange function.
+   * @param {object} changeInfos - All informations relative to the change.
+   * @returns {undefined} -  The return value is the callback.
+   */
+  _afterChange: function afterChangeForm(changeInfos) {
+    if (this.afterChange) {
+      return this.afterChange(changeInfos);
+    }
+    return this._displayMessageOnChange(changeInfos);
+  },
+  /**
+   * Event handler for 'change' events coming from the stores
+   * @param {object} changeInfos - The changing informations.
+   */
+  _onChange: function onFormStoreChangeHandler(changeInfos) {
+    this.setState(this._getStateFromStores(), this._afterChange(changeInfos));
+  },
+  /**
+     * Event handler for 'error' events coming from the stores.
+      */
   _onError: function onFormErrorHandler() {
     var errorState = this._getErrorStateFromStores();
     for (var key in errorState) {
@@ -43988,8 +44101,8 @@ var formMixin = {
     return React.createElement(
       "div",
       { className: "button-bar" },
-      this.buttonCancel(),
-      this.buttonSave()
+      this.buttonSave(),
+      this.buttonCancel()
     );
   },
   _renderConsultActions: function _renderConsultActions() {
@@ -44011,6 +44124,7 @@ var formMixin = {
   },
   /** @inheritdoc */
   render: function renderForm() {
+    console.log("state form", this.state);
     return React.createElement(
       "form",
       {
@@ -44028,11 +44142,12 @@ var formMixin = {
 
 module.exports = builder(formMixin);
 
-},{"../mixin/built-in-components":36,"../mixin/definition":37,"../mixin/store-behaviour":42,"./mixin/action-behaviour":21,"./mixin/reference-behaviour":22,"lodash/lang":189,"object-assign":225}],21:[function(require,module,exports){
+},{"../mixin/built-in-components":38,"../mixin/definition":39,"../mixin/store-behaviour":44,"./mixin/action-behaviour":22,"./mixin/reference-behaviour":23,"lodash/lang":192,"object-assign":228}],22:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
 var isFunction = require("lodash/lang/isFunction");
+var omit = require("lodash/object/omit");
 var actionMixin = {
 
   /**
@@ -44046,6 +44161,26 @@ var actionMixin = {
     return this.state.id;
   },
   /**
+   * Get a clean state to send data to the server.
+   * @returns {object} - The state json cleanded
+   */
+  _getCleanState: function _getCleanState() {
+    return omit(this.state, ["reference", "isLoading", "isEdit"]);
+  },
+  /**
+   * Compute the entity read from the html givent the keys and the definition Path, this operation is reversed from the _computeEntityFromStore operation.
+   * @param {object} htmlData - Data read from the html form.
+   */
+  _computeEntityFromHtml: function _computeEntityFromHtml(htmlData) {
+    var DEF = "" + this.definitionPath + ".";
+    var EMPTY = "";
+    var computedEntity = {};
+    for (var prop in htmlData) {
+      computedEntity[prop.replace(DEF, EMPTY)] = htmlData[prop];
+    }
+    return computedEntity;
+  },
+  /**
    * Get the constructed entity from the state.
    * @returns {object} - the entity informations.
    */
@@ -44056,12 +44191,13 @@ var actionMixin = {
     //Build the entity value from the ref getVaue.
     var htmlData = {};
     for (var r in this.refs) {
-      //todo @pierr see if this is sufficient.
+      //If the reference has a getValue function if is read.
       if (this.refs[r] && isFunction(this.refs[r].getValue)) {
         htmlData[r] = this.refs[r].getValue();
       }
     }
-    return assign({}, this.state, htmlData);
+    //Maybe a merge cold be done if we need a deeper property merge.
+    return assign({}, this._getCleanState(), this._computeEntityFromHtml(htmlData));
   },
   /**
    * Load data action call.
@@ -44073,13 +44209,13 @@ var actionMixin = {
 
 module.exports = actionMixin;
 
-},{"lodash/lang/isFunction":201,"object-assign":225}],22:[function(require,module,exports){
+},{"lodash/lang/isFunction":204,"lodash/object/omit":220,"object-assign":228}],23:[function(require,module,exports){
 "use strict";
 
-//focus.reference.builder.loadListByName('papas').then(function(data){focus.dispatcher.dispatch({action: {type: "update",data: {papas: data}}})})
+//Focus.reference.builder.loadListByName('papas').then(function(data){Focus.dispatcher.dispatch({action: {type: "update",data: {papas: data}}})})
 
-var builtInRefStoreAccessor = window.focus.reference.builtInStore;
-var builtInActionReferenceLoader = window.focus.reference.builtInAction;
+var builtInRefStoreAccessor = window.Focus.reference.builtInStore;
+var builtInActionReferenceLoader = window.Focus.reference.builtInAction;
 var isEmpty = require("lodash/lang/isEmpty");
 var referenceMixin = {
   /** @inheritdoc */
@@ -44139,14 +44275,14 @@ var referenceMixin = {
 
 module.exports = referenceMixin;
 
-},{"lodash/lang/isEmpty":197}],23:[function(require,module,exports){
+},{"lodash/lang/isEmpty":200}],24:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   mixin: require("./mixin")
 };
 
-},{"./mixin":24}],24:[function(require,module,exports){
+},{"./mixin":25}],25:[function(require,module,exports){
 "use strict";
 
 /*global window*/
@@ -44166,10 +44302,49 @@ module.exports = {
     }
 };
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
+var React = window.React;
+
+var type = window.Focus.component.types;
+
+var iconMixin = {
+  /**
+   * Display name.
+   */
+  displayName: "icon",
+  /**
+   * Default props.
+   * @returns {object} Initial props.
+   */
+  getDefaultProps: function getDefaultProps() {
+    return {
+      prefix: "fa fa-",
+      name: ""
+    };
+  },
+  propTypes: {
+    prefix: type("string"),
+    name: type("string")
+  },
+  /**
+   * Render the img.
+   * @returns {XML} Html code.
+   */
+  render: function renderIcon() {
+    var className = "" + this.props.prefix + "" + this.props.name;
+    return React.createElement("i", { className: className, onClick: this.props.onClick });
+  }
+};
+
+module.exports = builder(iconMixin);
+
+},{}],27:[function(require,module,exports){
+"use strict";
+
+var builder = window.Focus.component.builder;
 var React = window.React;
 
 var imgMixin = {
@@ -44203,7 +44378,7 @@ var imgMixin = {
 
 module.exports = builder(imgMixin);
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -44212,6 +44387,8 @@ module.exports = {
   field: require("./field"),
   form: require("./form"),
   img: require("./img"),
+  i18n: require("./i18n"),
+  icon: require("./icon"),
   input: require("./input"),
   label: require("./label"),
   panel: require("./panel"),
@@ -44222,10 +44399,11 @@ module.exports = {
   topicDisplayer: require("./topic-displayer"),
   list: require("./list"),
   mixin: require("./mixin"),
-  display: require("./display")
+  display: require("./display"),
+  detail: require("./detail")
 };
 
-},{"./block":10,"./button":12,"./display":14,"./field":16,"./form":20,"./img":25,"./input":29,"./label":34,"./list":35,"./mixin":40,"./panel":43,"./select":47,"./select-action":44,"./sticky-navigation":49,"./title":50,"./topic-displayer":51}],27:[function(require,module,exports){
+},{"./block":10,"./button":12,"./detail":13,"./display":15,"./field":17,"./form":21,"./i18n":24,"./icon":26,"./img":27,"./input":31,"./label":36,"./list":37,"./mixin":42,"./panel":45,"./select":49,"./select-action":46,"./sticky-navigation":51,"./title":52,"./topic-displayer":53}],29:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -44235,9 +44413,9 @@ module.exports = {
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var fieldGridBehaviourMixin = require("../../mixin/field-grid-behaviour");
 var jQuery = window.jQuery;
 var isBoolean = require("lodash/lang/isBoolean");
@@ -44261,7 +44439,8 @@ var checkBoxMixin = {
   propTypes: {
     value: type("bool"),
     label: type("string"),
-    style: type("object")
+    style: type("object"),
+    onChange: type("function")
   },
   getInitialState: function getInitialState() {
     return {
@@ -44271,10 +44450,7 @@ var checkBoxMixin = {
   _onChange: function onChange(event) {
     this.setState({
       isChecked: !this.state.isChecked
-    });
-    if (this.props.onChange) {
-      this.props.onChange(event);
-    }
+    }, this.props.onChange);
   },
   /**
    * Get the value from the input in  the DOM.
@@ -44319,13 +44495,13 @@ var checkBoxMixin = {
 
 module.exports = builder(checkBoxMixin);
 
-},{"../../mixin/field-grid-behaviour":39,"lodash/lang/isBoolean":194}],28:[function(require,module,exports){
+},{"../../mixin/field-grid-behaviour":41,"lodash/lang/isBoolean":197}],30:[function(require,module,exports){
 "use strict";
 
 var jQuery = window.jQuery;
 //Dependencies.
 ////http://www.daterangepicker.com/#ex2
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var inputTextMixin = require("../text").mixin;
 
@@ -44354,7 +44530,7 @@ var inputDateMixin = {
 
 module.exports = builder(inputDateMixin);
 
-},{"../text":31}],29:[function(require,module,exports){
+},{"../text":33}],31:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -44366,11 +44542,11 @@ module.exports = {
   markdown: require("./markdown")
 };
 
-},{"./checkbox":27,"./date":28,"./markdown":30,"./text":31,"./textarea":32,"./toggle":33}],30:[function(require,module,exports){
+},{"./checkbox":29,"./date":30,"./markdown":32,"./text":33,"./textarea":34,"./toggle":35}],32:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 
 var markdownEditorMixin = {
@@ -44414,13 +44590,13 @@ var markdownEditorMixin = {
 
 module.exports = builder(markdownEditorMixin);
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 
 /**
  * Input text mixin.
@@ -44493,7 +44669,7 @@ var inputTextMixin = {
 
 module.exports = builder(inputTextMixin);
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -44504,9 +44680,9 @@ module.exports = builder(inputTextMixin);
   </label>
 </div>
  */
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 /**
 *
 * @type {Object}
@@ -44587,7 +44763,7 @@ var textAreaMixin = {
 
 module.exports = builder(textAreaMixin);
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 //Target
@@ -44596,9 +44772,9 @@ module.exports = builder(textAreaMixin);
   <input type="checkbox"><span class="ripple"></span><span class="check"></span> Checkbox
 </label>
  */
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var fieldGridBehaviourMixin = require("../../mixin/field-grid-behaviour");
 
 var toggleMixin = {
@@ -44674,10 +44850,10 @@ var toggleMixin = {
 
 module.exports = builder(toggleMixin);
 
-},{"../../mixin/field-grid-behaviour":39}],34:[function(require,module,exports){
+},{"../../mixin/field-grid-behaviour":41}],36:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 /**
  * Label mixin for form.
@@ -44703,11 +44879,11 @@ var labelMixin = {
 
 module.exports = builder(labelMixin);
 
-},{"../i18n/mixin":24}],35:[function(require,module,exports){
+},{"../i18n/mixin":25}],37:[function(require,module,exports){
 "use strict";
 
-//var SelectionList = focus.components.list.selection.list.component;
-var builder = window.focus.component.builder;
+//var SelectionList = Focus.components.list.selection.list.component;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var Button = require("../button/action").component;
 var selectionListMixin = require("../../list/selection/list").mixin;
@@ -44774,7 +44950,7 @@ module.exports = React.createClass({
   }
 });
 
-},{"../../list/selection/list":60,"../button/action":11,"object-assign":225}],36:[function(require,module,exports){
+},{"../../list/selection/list":62,"../button/action":11,"object-assign":228}],38:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -44794,7 +44970,7 @@ module.exports = {
    */
   fieldFor: function fieldFor(name, options) {
     options = assign({}, {
-      style: { className: "form-detail" }
+      style: { className: "" }
     }, options);
 
     var fieldProps = this._buildFieldProps(name, options, this);
@@ -44864,55 +45040,67 @@ module.exports = {
    * @returns {object} - A Reacte button.
    */
   buttonDelete: function buttonDelete() {
+    var form = this;
     return React.createElement(Button, {
       label: "delete",
       type: "button",
-      css: "delete"
+      style: { className: "delete" },
+      handleOnClick: function handleOnClickEdit() {
+        form.action["delete"](form._getId());
+      }
     });
   },
+  /**
+   * Edition button.
+   * @returns {object} - The React component for the button.
+   */
   buttonEdit: function buttonEdit() {
     var form = this;
     return React.createElement(Button, {
       label: "edit",
       type: "button",
-      css: "edit",
+      style: { className: "edit icon" },
       handleOnClick: function handleOnClickEdit() {
         form.setState({ isEdit: !form.state.isEdit });
       }
     });
   },
+  /**
+   * Cancel button.
+   * @returns {object} - The React component for the button.
+   */
   buttonCancel: function buttonCancel() {
     var form = this;
     return React.createElement(Button, {
       label: "cancel",
       type: "button",
-      css: "cancel",
+      style: { className: "cancel icon" },
       handleOnClick: function handleOnClickCancel() {
-        console.log("cancel");
+        console.log("cancel icon");
         form.setState({ isEdit: !form.state.isEdit });
       }
     });
   },
   /**
    * Button save generation.
-   * @returns {object} - A React button.
+   * @returns {object} - A React  save button.
    */
   buttonSave: function buttonSave() {
     //var form = this;
     return React.createElement(Button, {
       label: "save",
       type: "submit",
-      css: "primary"
-      /*,handleOnClick: function(e){
-        if(form.validate()){
-          form.action.save(form._getEntity());
-        }
-        return;
-      }*/
-    });
+      style: { className: "save icon primary" } });
   } };
 
-},{"../button/action":11,"../display/text":15,"../field":16,"../list":35,"./field-component-behaviour":38,"object-assign":225}],37:[function(require,module,exports){
+/*handleOnClick: function handleClickOnSave(e){
+  if(form.validate()){
+    form.action.save(form._getEntity());
+  }
+  return;
+}*/
+
+},{"../button/action":11,"../display/text":16,"../field":17,"../list":37,"./field-component-behaviour":40,"object-assign":228}],39:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -44920,7 +45108,7 @@ module.exports = {
  * Accessor on the entity informations.
  * @type {function} - Get the entity definition for a given key.
  */
-var getEntityDefinition = window.focus.definition.entity.builder.getEntityInformations;
+var getEntityDefinition = window.Focus.definition.entity.builder.getEntityInformations;
 
 var definitionMixin = {
   /**
@@ -44940,7 +45128,7 @@ var definitionMixin = {
 
 module.exports = definitionMixin;
 
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -45004,7 +45192,7 @@ var fieldBehaviourMixin = {
 
 module.exports = fieldBehaviourMixin;
 
-},{"object-assign":225}],39:[function(require,module,exports){
+},{"object-assign":228}],41:[function(require,module,exports){
 "use strict";
 
 var gridSize = 12;
@@ -45043,7 +45231,7 @@ var fieldGridBehaviourMixin = {
 };
 module.exports = fieldGridBehaviourMixin;
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -45054,10 +45242,10 @@ module.exports = {
   storeBehaviour: require("./store-behaviour")
 };
 
-},{"./definition":37,"./field-component-behaviour":38,"./field-grid-behaviour":39,"./reference-property":41,"./store-behaviour":42}],41:[function(require,module,exports){
+},{"./definition":39,"./field-component-behaviour":40,"./field-grid-behaviour":41,"./reference-property":43,"./store-behaviour":44}],43:[function(require,module,exports){
 "use strict";
 
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var referenceMixin = {
   /** @inheritdoc */
   getDefaultProps: function getDefaultProps() {
@@ -45084,7 +45272,7 @@ var referenceMixin = {
 };
 module.exports = referenceMixin;
 
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -45108,7 +45296,7 @@ var storeMixin = {
         newState[property] = storeConf.store["get" + capitalize(property)]();
       });
     });
-    return this._computeEntityFromStoresData(newState);
+    return assign(this._computeEntityFromStoresData(newState), this._getLoadingStateFromStores());
   },
   /**
    * Get the error state informations from the store.
@@ -45126,7 +45314,26 @@ var storeMixin = {
     });
     return this._computeEntityFromStoresData(newState);
   },
-
+  /**
+   * Get the isLoading state from  all the store.
+   */
+  _getLoadingStateFromStores: function getLoadingStateFromStores() {
+    if (this.getLoadingStateFromStores) {
+      return this.getLoadingStateFromStores();
+    }
+    var isLoading = false;
+    this.stores.map(function (storeConf) {
+      if (!isLoading) {
+        storeConf.properties.map(function (property) {
+          if (!isLoading) {
+            var propStatus = storeConf.store.getStatus(property) || {};
+            isLoading = propStatus.isLoading;
+          }
+        });
+      }
+    });
+    return { isLoading: isLoading };
+  },
   /**
    * Compute the data given from the stores.
    * @param {object} data -  The data ordered by store.
@@ -45194,11 +45401,11 @@ var storeMixin = {
 
 module.exports = storeMixin;
 
-},{"lodash/lang/isArray":193,"lodash/string/capitalize":219,"object-assign":225}],43:[function(require,module,exports){
+},{"lodash/lang/isArray":196,"lodash/string/capitalize":222,"object-assign":228}],45:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 /**
  * Mixin used in order to create a block.
  * @type {Object}
@@ -45241,10 +45448,10 @@ var panelMixin = {
 };
 module.exports = builder(panelMixin);
 
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var Img = require("../img").component;
 
@@ -45351,12 +45558,12 @@ var selectActionMixin = {
 
 module.exports = builder(selectActionMixin);
 
-},{"../img":25}],45:[function(require,module,exports){
+},{"../img":27}],47:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var Checkbox = require("../../input/checkbox");
 
 var checkboxMixin = {
@@ -45471,13 +45678,13 @@ var checkboxMixin = {
 
 module.exports = builder(checkboxMixin);
 
-},{"../../input/checkbox":27}],46:[function(require,module,exports){
+},{"../../input/checkbox":29}],48:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 
 /**
  * Input text mixin.
@@ -45571,7 +45778,7 @@ var selectTextMixin = {
 
 module.exports = builder(selectTextMixin);
 
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -45580,12 +45787,12 @@ module.exports = {
   checkbox: require("./checkbox")
 };
 
-},{"./checkbox":45,"./classic":46,"./radio":48}],48:[function(require,module,exports){
+},{"./checkbox":47,"./classic":48,"./radio":50}],50:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 
 var radioMixin = {
     /**
@@ -45697,11 +45904,11 @@ var radioMixin = {
 
 module.exports = builder(radioMixin);
 
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
-var type = window.focus.component.types;
+var builder = window.Focus.component.builder;
+var type = window.Focus.component.types;
 /**
  * Mixin component for the sticky navigation.
  * @type {Object}
@@ -45808,10 +46015,10 @@ var stickyNavigationMixin = {
 
 module.exports = builder(stickyNavigationMixin);
 
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 
 var titleMixin = {
 
@@ -45847,10 +46054,10 @@ var titleMixin = {
 
 module.exports = builder(titleMixin);
 
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 
 var topicDisplayerMixin = {
@@ -45914,11 +46121,11 @@ var topicDisplayerMixin = {
 
 module.exports = builder(topicDisplayerMixin);
 
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var SelectAction = require("../../common/select-action").component;
 var ActionContextual = require("../action-contextual").component;
 var TopicDisplayer = require("../../common/topic-displayer").component;
@@ -46089,11 +46296,11 @@ var actionBarMixin = {
 
 module.exports = builder(actionBarMixin);
 
-},{"../../common/select-action":44,"../../common/topic-displayer":51,"../action-contextual":53}],53:[function(require,module,exports){
+},{"../../common/select-action":46,"../../common/topic-displayer":53,"../action-contextual":55}],55:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var Button = require("../../common/button/action").component;
 var SelectAction = require("../../common/select-action").component;
 
@@ -46172,7 +46379,7 @@ var actionContextualMixin = {
 
 module.exports = builder(actionContextualMixin);
 
-},{"../../common/button/action":11,"../../common/select-action":44}],54:[function(require,module,exports){
+},{"../../common/button/action":11,"../../common/select-action":46}],56:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -46184,7 +46391,7 @@ module.exports = {
 	table: require("./table")
 };
 
-},{"./action-bar":52,"./action-contextual":53,"./selection":58,"./summary":61,"./table":62,"./timeline":65}],55:[function(require,module,exports){
+},{"./action-bar":54,"./action-contextual":55,"./selection":60,"./summary":63,"./table":64,"./timeline":67}],57:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -46278,7 +46485,7 @@ var builtInComponentsMixin = {
 
 module.exports = builtInComponentsMixin;
 
-},{"../../common/display/text":15,"../../common/field":16,"../../common/mixin/field-component-behaviour":38,"object-assign":225}],56:[function(require,module,exports){
+},{"../../common/display/text":16,"../../common/field":17,"../../common/mixin/field-component-behaviour":40,"object-assign":228}],58:[function(require,module,exports){
 "use strict";
 
 var topOfElement = (function (_topOfElement) {
@@ -46396,10 +46603,10 @@ var InfiniteScrollMixin = {
 
 module.exports = { mixin: InfiniteScrollMixin };
 
-},{"../mixin/pagination":57}],57:[function(require,module,exports){
+},{"../mixin/pagination":59}],59:[function(require,module,exports){
 "use strict";
 
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 
 var paginationMixin = {
     /**
@@ -46444,7 +46651,7 @@ var paginationMixin = {
 
 module.exports = { mixin: paginationMixin };
 
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -46452,13 +46659,13 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":59,"./list":60}],59:[function(require,module,exports){
+},{"./line":61,"./list":62}],61:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
 var React = window.React;
-var builder = window.focus.component.builder;
-var type = window.focus.component.types;
+var builder = window.Focus.component.builder;
+var type = window.Focus.component.types;
 var ContextualActions = require("../action-contextual").component;
 var CheckBox = require("../../common/input/checkbox").component;
 var translationMixin = require("../../common/i18n").mixin;
@@ -46634,19 +46841,19 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{"../../common/i18n":23,"../../common/input/checkbox":27,"../../common/mixin/definition":37,"../../common/mixin/reference-property":41,"../action-contextual":53,"../mixin/built-in-components":55}],60:[function(require,module,exports){
+},{"../../common/i18n":24,"../../common/input/checkbox":29,"../../common/mixin/definition":39,"../../common/mixin/reference-property":43,"../action-contextual":55,"../mixin/built-in-components":57}],62:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var Line = require("./line").mixin;
 var Button = require("../../common/button/action").component;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var translationMixin = require("../../common/i18n").mixin;
 var infiniteScrollMixin = require("../mixin/infinite-scroll").mixin;
 var referenceMixin = require("../../common/mixin/reference-property");
-var checkIsNotNull = window.focus.util.object.checkIsNotNull;
+var checkIsNotNull = window.Focus.util.object.checkIsNotNull;
 
 var listMixin = {
     /**
@@ -46796,11 +47003,11 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"../../common/button/action":11,"../../common/i18n":23,"../../common/mixin/reference-property":41,"../mixin/infinite-scroll":56,"./line":59}],61:[function(require,module,exports){
+},{"../../common/button/action":11,"../../common/i18n":24,"../../common/mixin/reference-property":43,"../mixin/infinite-scroll":58,"./line":61}],63:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var TopicDisplayer = require("../../common/topic-displayer").component;
 var Button = require("../../common/button/action").component;
 
@@ -46868,7 +47075,7 @@ var listSummaryMixin = {
 
 module.exports = builder(listSummaryMixin);
 
-},{"../../common/button/action":11,"../../common/i18n/mixin":24,"../../common/topic-displayer":51}],62:[function(require,module,exports){
+},{"../../common/button/action":11,"../../common/i18n/mixin":25,"../../common/topic-displayer":53}],64:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -46876,11 +47083,11 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":63,"./list":64}],63:[function(require,module,exports){
+},{"./line":65,"./list":66}],65:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var translationMixin = require("../../common/i18n").mixin;
 var referenceMixin = require("../../common/mixin/reference-property");
 var definitionMixin = require("../../common/mixin/definition");
@@ -46914,7 +47121,8 @@ var lineMixin = {
     propTypes: {
         saveAction: type("func"),
         deleteAction: type("func"),
-        onLineClick: type("func")
+        onLineClick: type("func"),
+        onSelection: type("func")
     },
 
     /**
@@ -46931,16 +47139,16 @@ module.exports = { mixin: lineMixin };
 
 //TODO ajouter les actions sur une ligne : edit save et delete
 
-},{"../../common/i18n":23,"../../common/mixin/definition":37,"../../common/mixin/reference-property":41,"../mixin/built-in-components":55}],64:[function(require,module,exports){
+},{"../../common/i18n":24,"../../common/mixin/definition":39,"../../common/mixin/reference-property":43,"../mixin/built-in-components":57}],66:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var infiniteScrollMixin = require("../mixin/infinite-scroll").mixin;
 var translationMixin = require("../../common/i18n").mixin;
 var referenceMixin = require("../../common/mixin/reference-property");
-var checkIsNotNull = window.focus.util.object.checkIsNotNull;
+var checkIsNotNull = window.Focus.util.object.checkIsNotNull;
 var Button = require("../../common/button/action").component;
 
 var tableMixin = {
@@ -46996,6 +47204,14 @@ var tableMixin = {
         );
     },
 
+    _sortColumnAction: function sortColumnAction(column, order) {
+        var currentComponent = this;
+        return function (event) {
+            event.preventDefault();
+            currentComponent.props.sortColumn(column, order);
+        };
+    },
+
     _renderColumnHeader: function _renderColumnHeader(name) {
         var colProperties = this.props.columns[name];
         var sort;
@@ -47005,7 +47221,7 @@ var tableMixin = {
             var icon = React.createElement("i", { className: iconClass });
             sort = React.createElement(
                 "a",
-                { className: "sort", href: "#", "data-name": name, onClick: this.props.sortColumn },
+                { className: "sort", href: "#", "data-name": name, onClick: this._sortColumnAction(name, order == "asc" ? "desc" : "asc") },
                 icon
             );
         }
@@ -47027,7 +47243,8 @@ var tableMixin = {
                 key: line[_this.props.idField],
                 data: line,
                 ref: "line" + lineCount++,
-                reference: _this._getReference()
+                reference: _this._getReference(),
+                onSelection: _this.props.onSelection
             });
         });
     },
@@ -47095,7 +47312,7 @@ var tableMixin = {
 
 module.exports = builder(tableMixin);
 
-},{"../../common/button/action":11,"../../common/i18n":23,"../../common/mixin/reference-property":41,"../mixin/infinite-scroll":56}],65:[function(require,module,exports){
+},{"../../common/button/action":11,"../../common/i18n":24,"../../common/mixin/reference-property":43,"../mixin/infinite-scroll":58}],67:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -47103,13 +47320,13 @@ module.exports = {
     list: require("./list")
 };
 
-},{"./line":66,"./list":67}],66:[function(require,module,exports){
+},{"./line":68,"./list":69}],68:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
 var React = window.React;
-var builder = window.focus.component.builder;
-var type = window.focus.component.types;
+var builder = window.Focus.component.builder;
+var type = window.Focus.component.types;
 var translationMixin = require("../../common/i18n").mixin;
 var referenceMixin = require("../../common/mixin/reference-property");
 var definitionMixin = require("../../common/mixin/definition");
@@ -47223,18 +47440,18 @@ var lineMixin = {
 
 module.exports = { mixin: lineMixin };
 
-},{"../../common/i18n":23,"../../common/mixin/definition":37,"../../common/mixin/reference-property":41,"../mixin/built-in-components":55}],67:[function(require,module,exports){
+},{"../../common/i18n":24,"../../common/mixin/definition":39,"../../common/mixin/reference-property":43,"../mixin/built-in-components":57}],69:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var Line = require("./line").mixin;
 var uuid = require("uuid");
 var translationMixin = require("../../common/i18n").mixin;
 var infiniteScrollMixin = require("../mixin/infinite-scroll").mixin;
 var referenceMixin = require("../../common/mixin/reference-property");
-var checkIsNotNull = window.focus.util.object.checkIsNotNull;
+var checkIsNotNull = window.Focus.util.object.checkIsNotNull;
 var Button = require("../../common/button/action").component;
 
 var listMixin = {
@@ -47347,11 +47564,11 @@ var listMixin = {
 
 module.exports = builder(listMixin);
 
-},{"../../common/button/action":11,"../../common/i18n":23,"../../common/mixin/reference-property":41,"../mixin/infinite-scroll":56,"./line":66,"uuid":227}],68:[function(require,module,exports){
+},{"../../common/button/action":11,"../../common/i18n":24,"../../common/mixin/reference-property":43,"../mixin/infinite-scroll":58,"./line":68,"uuid":230}],70:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
-var type = window.focus.component.types;
+var builder = window.Focus.component.builder;
+var type = window.Focus.component.types;
 var messageMixin = {
   /** @inheritedDoc */
   getDefaultProps: function getMessageDefaultProps() {
@@ -47417,7 +47634,30 @@ var messageMixin = {
 };
 module.exports = builder(messageMixin);
 
-},{}],69:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
+"use strict";
+
+var type = window.Focus.component.types;
+module.exports = {
+  /** @inheritedDocs */
+  getDefaultProps: function getStyllableDefaultProps() {
+    return {
+      style: { className: "" }
+    };
+  },
+  /**
+   * Get the className from the style.className props
+   * @returns {string} - the className.
+   */
+  _getStyleClassName: function getStyleClassName() {
+    if (this.props.style && this.props.style.className) {
+      return this.props.className;
+    }
+    return "";
+  }
+};
+
+},{}],72:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback');
 
 /**
@@ -47483,7 +47723,7 @@ function findIndex(array, predicate, thisArg) {
 
 module.exports = findIndex;
 
-},{"../internal/baseCallback":124}],70:[function(require,module,exports){
+},{"../internal/baseCallback":127}],73:[function(require,module,exports){
 module.exports = {
   'all': require('./collection/all'),
   'any': require('./collection/any'),
@@ -47527,13 +47767,13 @@ module.exports = {
   'where': require('./collection/where')
 };
 
-},{"./collection/all":71,"./collection/any":72,"./collection/at":73,"./collection/collect":74,"./collection/contains":75,"./collection/countBy":76,"./collection/detect":77,"./collection/each":78,"./collection/eachRight":79,"./collection/every":80,"./collection/filter":81,"./collection/find":82,"./collection/findLast":83,"./collection/findWhere":84,"./collection/foldl":85,"./collection/foldr":86,"./collection/forEach":87,"./collection/forEachRight":88,"./collection/groupBy":89,"./collection/include":90,"./collection/includes":91,"./collection/indexBy":92,"./collection/inject":93,"./collection/invoke":94,"./collection/map":95,"./collection/max":96,"./collection/min":97,"./collection/partition":98,"./collection/pluck":99,"./collection/reduce":100,"./collection/reduceRight":101,"./collection/reject":102,"./collection/sample":103,"./collection/select":104,"./collection/shuffle":105,"./collection/size":106,"./collection/some":107,"./collection/sortBy":108,"./collection/sortByAll":109,"./collection/where":110}],71:[function(require,module,exports){
+},{"./collection/all":74,"./collection/any":75,"./collection/at":76,"./collection/collect":77,"./collection/contains":78,"./collection/countBy":79,"./collection/detect":80,"./collection/each":81,"./collection/eachRight":82,"./collection/every":83,"./collection/filter":84,"./collection/find":85,"./collection/findLast":86,"./collection/findWhere":87,"./collection/foldl":88,"./collection/foldr":89,"./collection/forEach":90,"./collection/forEachRight":91,"./collection/groupBy":92,"./collection/include":93,"./collection/includes":94,"./collection/indexBy":95,"./collection/inject":96,"./collection/invoke":97,"./collection/map":98,"./collection/max":99,"./collection/min":100,"./collection/partition":101,"./collection/pluck":102,"./collection/reduce":103,"./collection/reduceRight":104,"./collection/reject":105,"./collection/sample":106,"./collection/select":107,"./collection/shuffle":108,"./collection/size":109,"./collection/some":110,"./collection/sortBy":111,"./collection/sortByAll":112,"./collection/where":113}],74:[function(require,module,exports){
 module.exports = require('./every');
 
-},{"./every":80}],72:[function(require,module,exports){
+},{"./every":83}],75:[function(require,module,exports){
 module.exports = require('./some');
 
-},{"./some":107}],73:[function(require,module,exports){
+},{"./some":110}],76:[function(require,module,exports){
 var baseAt = require('../internal/baseAt'),
     baseFlatten = require('../internal/baseFlatten'),
     isLength = require('../internal/isLength'),
@@ -47569,13 +47809,13 @@ function at(collection) {
 
 module.exports = at;
 
-},{"../internal/baseAt":123,"../internal/baseFlatten":134,"../internal/isLength":179,"../internal/toIterable":187}],74:[function(require,module,exports){
+},{"../internal/baseAt":126,"../internal/baseFlatten":137,"../internal/isLength":182,"../internal/toIterable":190}],77:[function(require,module,exports){
 module.exports = require('./map');
 
-},{"./map":95}],75:[function(require,module,exports){
+},{"./map":98}],78:[function(require,module,exports){
 module.exports = require('./includes');
 
-},{"./includes":91}],76:[function(require,module,exports){
+},{"./includes":94}],79:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /** Used for native method references. */
@@ -47631,16 +47871,16 @@ var countBy = createAggregator(function(result, value, key) {
 
 module.exports = countBy;
 
-},{"../internal/createAggregator":165}],77:[function(require,module,exports){
+},{"../internal/createAggregator":168}],80:[function(require,module,exports){
 module.exports = require('./find');
 
-},{"./find":82}],78:[function(require,module,exports){
+},{"./find":85}],81:[function(require,module,exports){
 module.exports = require('./forEach');
 
-},{"./forEach":87}],79:[function(require,module,exports){
+},{"./forEach":90}],82:[function(require,module,exports){
 module.exports = require('./forEachRight');
 
-},{"./forEachRight":88}],80:[function(require,module,exports){
+},{"./forEachRight":91}],83:[function(require,module,exports){
 var arrayEvery = require('../internal/arrayEvery'),
     baseCallback = require('../internal/baseCallback'),
     baseEvery = require('../internal/baseEvery'),
@@ -47704,7 +47944,7 @@ function every(collection, predicate, thisArg) {
 
 module.exports = every;
 
-},{"../internal/arrayEvery":115,"../internal/baseCallback":124,"../internal/baseEvery":131,"../lang/isArray":193}],81:[function(require,module,exports){
+},{"../internal/arrayEvery":118,"../internal/baseCallback":127,"../internal/baseEvery":134,"../lang/isArray":196}],84:[function(require,module,exports){
 var arrayFilter = require('../internal/arrayFilter'),
     baseCallback = require('../internal/baseCallback'),
     baseFilter = require('../internal/baseFilter'),
@@ -47767,7 +48007,7 @@ function filter(collection, predicate, thisArg) {
 
 module.exports = filter;
 
-},{"../internal/arrayFilter":116,"../internal/baseCallback":124,"../internal/baseFilter":132,"../lang/isArray":193}],82:[function(require,module,exports){
+},{"../internal/arrayFilter":119,"../internal/baseCallback":127,"../internal/baseFilter":135,"../lang/isArray":196}],85:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
     baseFind = require('../internal/baseFind'),
@@ -47835,7 +48075,7 @@ function find(collection, predicate, thisArg) {
 
 module.exports = find;
 
-},{"../array/findIndex":69,"../internal/baseCallback":124,"../internal/baseEach":129,"../internal/baseFind":133,"../lang/isArray":193}],83:[function(require,module,exports){
+},{"../array/findIndex":72,"../internal/baseCallback":127,"../internal/baseEach":132,"../internal/baseFind":136,"../lang/isArray":196}],86:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEachRight = require('../internal/baseEachRight'),
     baseFind = require('../internal/baseFind');
@@ -47866,7 +48106,7 @@ function findLast(collection, predicate, thisArg) {
 
 module.exports = findLast;
 
-},{"../internal/baseCallback":124,"../internal/baseEachRight":130,"../internal/baseFind":133}],84:[function(require,module,exports){
+},{"../internal/baseCallback":127,"../internal/baseEachRight":133,"../internal/baseFind":136}],87:[function(require,module,exports){
 var baseMatches = require('../internal/baseMatches'),
     find = require('./find');
 
@@ -47905,13 +48145,13 @@ function findWhere(collection, source) {
 
 module.exports = findWhere;
 
-},{"../internal/baseMatches":147,"./find":82}],85:[function(require,module,exports){
+},{"../internal/baseMatches":150,"./find":85}],88:[function(require,module,exports){
 module.exports = require('./reduce');
 
-},{"./reduce":100}],86:[function(require,module,exports){
+},{"./reduce":103}],89:[function(require,module,exports){
 module.exports = require('./reduceRight');
 
-},{"./reduceRight":101}],87:[function(require,module,exports){
+},{"./reduceRight":104}],90:[function(require,module,exports){
 var arrayEach = require('../internal/arrayEach'),
     baseEach = require('../internal/baseEach'),
     bindCallback = require('../internal/bindCallback'),
@@ -47955,7 +48195,7 @@ function forEach(collection, iteratee, thisArg) {
 
 module.exports = forEach;
 
-},{"../internal/arrayEach":113,"../internal/baseEach":129,"../internal/bindCallback":158,"../lang/isArray":193}],88:[function(require,module,exports){
+},{"../internal/arrayEach":116,"../internal/baseEach":132,"../internal/bindCallback":161,"../lang/isArray":196}],91:[function(require,module,exports){
 var arrayEachRight = require('../internal/arrayEachRight'),
     baseEachRight = require('../internal/baseEachRight'),
     bindCallback = require('../internal/bindCallback'),
@@ -47988,7 +48228,7 @@ function forEachRight(collection, iteratee, thisArg) {
 
 module.exports = forEachRight;
 
-},{"../internal/arrayEachRight":114,"../internal/baseEachRight":130,"../internal/bindCallback":158,"../lang/isArray":193}],89:[function(require,module,exports){
+},{"../internal/arrayEachRight":117,"../internal/baseEachRight":133,"../internal/bindCallback":161,"../lang/isArray":196}],92:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /** Used for native method references. */
@@ -48049,9 +48289,9 @@ var groupBy = createAggregator(function(result, value, key) {
 
 module.exports = groupBy;
 
-},{"../internal/createAggregator":165}],90:[function(require,module,exports){
-arguments[4][75][0].apply(exports,arguments)
-},{"./includes":91,"dup":75}],91:[function(require,module,exports){
+},{"../internal/createAggregator":168}],93:[function(require,module,exports){
+arguments[4][78][0].apply(exports,arguments)
+},{"./includes":94,"dup":78}],94:[function(require,module,exports){
 var baseIndexOf = require('../internal/baseIndexOf'),
     isArray = require('../lang/isArray'),
     isLength = require('../internal/isLength'),
@@ -48114,7 +48354,7 @@ function includes(collection, target, fromIndex) {
 
 module.exports = includes;
 
-},{"../internal/baseIndexOf":140,"../internal/isLength":179,"../lang/isArray":193,"../lang/isString":210,"../object/values":218}],92:[function(require,module,exports){
+},{"../internal/baseIndexOf":143,"../internal/isLength":182,"../lang/isArray":196,"../lang/isString":213,"../object/values":221}],95:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /**
@@ -48169,9 +48409,9 @@ var indexBy = createAggregator(function(result, value, key) {
 
 module.exports = indexBy;
 
-},{"../internal/createAggregator":165}],93:[function(require,module,exports){
-arguments[4][85][0].apply(exports,arguments)
-},{"./reduce":100,"dup":85}],94:[function(require,module,exports){
+},{"../internal/createAggregator":168}],96:[function(require,module,exports){
+arguments[4][88][0].apply(exports,arguments)
+},{"./reduce":103,"dup":88}],97:[function(require,module,exports){
 var baseInvoke = require('../internal/baseInvoke'),
     baseSlice = require('../internal/baseSlice');
 
@@ -48203,7 +48443,7 @@ function invoke(collection, methodName) {
 
 module.exports = invoke;
 
-},{"../internal/baseInvoke":141,"../internal/baseSlice":153}],95:[function(require,module,exports){
+},{"../internal/baseInvoke":144,"../internal/baseSlice":156}],98:[function(require,module,exports){
 var arrayMap = require('../internal/arrayMap'),
     baseCallback = require('../internal/baseCallback'),
     baseMap = require('../internal/baseMap'),
@@ -48273,7 +48513,7 @@ function map(collection, iteratee, thisArg) {
 
 module.exports = map;
 
-},{"../internal/arrayMap":117,"../internal/baseCallback":124,"../internal/baseMap":146,"../lang/isArray":193}],96:[function(require,module,exports){
+},{"../internal/arrayMap":120,"../internal/baseCallback":127,"../internal/baseMap":149,"../lang/isArray":196}],99:[function(require,module,exports){
 var arrayMax = require('../internal/arrayMax'),
     createExtremum = require('../internal/createExtremum');
 
@@ -48328,7 +48568,7 @@ var max = createExtremum(arrayMax);
 
 module.exports = max;
 
-},{"../internal/arrayMax":118,"../internal/createExtremum":167}],97:[function(require,module,exports){
+},{"../internal/arrayMax":121,"../internal/createExtremum":170}],100:[function(require,module,exports){
 var arrayMin = require('../internal/arrayMin'),
     createExtremum = require('../internal/createExtremum');
 
@@ -48383,7 +48623,7 @@ var min = createExtremum(arrayMin, true);
 
 module.exports = min;
 
-},{"../internal/arrayMin":119,"../internal/createExtremum":167}],98:[function(require,module,exports){
+},{"../internal/arrayMin":122,"../internal/createExtremum":170}],101:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /**
@@ -48451,7 +48691,7 @@ var partition = createAggregator(function(result, value, key) {
 
 module.exports = partition;
 
-},{"../internal/createAggregator":165}],99:[function(require,module,exports){
+},{"../internal/createAggregator":168}],102:[function(require,module,exports){
 var baseProperty = require('../internal/baseProperty'),
     map = require('./map');
 
@@ -48484,7 +48724,7 @@ function pluck(collection, key) {
 
 module.exports = pluck;
 
-},{"../internal/baseProperty":149,"./map":95}],100:[function(require,module,exports){
+},{"../internal/baseProperty":152,"./map":98}],103:[function(require,module,exports){
 var arrayReduce = require('../internal/arrayReduce'),
     baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
@@ -48534,7 +48774,7 @@ function reduce(collection, iteratee, accumulator, thisArg) {
 
 module.exports = reduce;
 
-},{"../internal/arrayReduce":120,"../internal/baseCallback":124,"../internal/baseEach":129,"../internal/baseReduce":151,"../lang/isArray":193}],101:[function(require,module,exports){
+},{"../internal/arrayReduce":123,"../internal/baseCallback":127,"../internal/baseEach":132,"../internal/baseReduce":154,"../lang/isArray":196}],104:[function(require,module,exports){
 var arrayReduceRight = require('../internal/arrayReduceRight'),
     baseCallback = require('../internal/baseCallback'),
     baseEachRight = require('../internal/baseEachRight'),
@@ -48570,7 +48810,7 @@ function reduceRight(collection, iteratee, accumulator, thisArg) {
 
 module.exports = reduceRight;
 
-},{"../internal/arrayReduceRight":121,"../internal/baseCallback":124,"../internal/baseEachRight":130,"../internal/baseReduce":151,"../lang/isArray":193}],102:[function(require,module,exports){
+},{"../internal/arrayReduceRight":124,"../internal/baseCallback":127,"../internal/baseEachRight":133,"../internal/baseReduce":154,"../lang/isArray":196}],105:[function(require,module,exports){
 var arrayFilter = require('../internal/arrayFilter'),
     baseCallback = require('../internal/baseCallback'),
     baseFilter = require('../internal/baseFilter'),
@@ -48633,7 +48873,7 @@ function reject(collection, predicate, thisArg) {
 
 module.exports = reject;
 
-},{"../internal/arrayFilter":116,"../internal/baseCallback":124,"../internal/baseFilter":132,"../lang/isArray":193}],103:[function(require,module,exports){
+},{"../internal/arrayFilter":119,"../internal/baseCallback":127,"../internal/baseFilter":135,"../lang/isArray":196}],106:[function(require,module,exports){
 var baseRandom = require('../internal/baseRandom'),
     isIterateeCall = require('../internal/isIterateeCall'),
     shuffle = require('./shuffle'),
@@ -48673,10 +48913,10 @@ function sample(collection, n, guard) {
 
 module.exports = sample;
 
-},{"../internal/baseRandom":150,"../internal/isIterateeCall":178,"../internal/toIterable":187,"./shuffle":105}],104:[function(require,module,exports){
+},{"../internal/baseRandom":153,"../internal/isIterateeCall":181,"../internal/toIterable":190,"./shuffle":108}],107:[function(require,module,exports){
 module.exports = require('./filter');
 
-},{"./filter":81}],105:[function(require,module,exports){
+},{"./filter":84}],108:[function(require,module,exports){
 var baseRandom = require('../internal/baseRandom'),
     toIterable = require('../internal/toIterable');
 
@@ -48714,7 +48954,7 @@ function shuffle(collection) {
 
 module.exports = shuffle;
 
-},{"../internal/baseRandom":150,"../internal/toIterable":187}],106:[function(require,module,exports){
+},{"../internal/baseRandom":153,"../internal/toIterable":190}],109:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     keys = require('../object/keys');
 
@@ -48745,7 +48985,7 @@ function size(collection) {
 
 module.exports = size;
 
-},{"../internal/isLength":179,"../object/keys":215}],107:[function(require,module,exports){
+},{"../internal/isLength":182,"../object/keys":218}],110:[function(require,module,exports){
 var arraySome = require('../internal/arraySome'),
     baseCallback = require('../internal/baseCallback'),
     baseSome = require('../internal/baseSome'),
@@ -48810,7 +49050,7 @@ function some(collection, predicate, thisArg) {
 
 module.exports = some;
 
-},{"../internal/arraySome":122,"../internal/baseCallback":124,"../internal/baseSome":154,"../lang/isArray":193}],108:[function(require,module,exports){
+},{"../internal/arraySome":125,"../internal/baseCallback":127,"../internal/baseSome":157,"../lang/isArray":196}],111:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
     baseSortBy = require('../internal/baseSortBy'),
@@ -48884,7 +49124,7 @@ function sortBy(collection, iteratee, thisArg) {
 
 module.exports = sortBy;
 
-},{"../internal/baseCallback":124,"../internal/baseEach":129,"../internal/baseSortBy":155,"../internal/compareAscending":163,"../internal/isIterateeCall":178,"../internal/isLength":179}],109:[function(require,module,exports){
+},{"../internal/baseCallback":127,"../internal/baseEach":132,"../internal/baseSortBy":158,"../internal/compareAscending":166,"../internal/isIterateeCall":181,"../internal/isLength":182}],112:[function(require,module,exports){
 var baseEach = require('../internal/baseEach'),
     baseFlatten = require('../internal/baseFlatten'),
     baseSortBy = require('../internal/baseSortBy'),
@@ -48939,7 +49179,7 @@ function sortByAll(collection) {
 
 module.exports = sortByAll;
 
-},{"../internal/baseEach":129,"../internal/baseFlatten":134,"../internal/baseSortBy":155,"../internal/compareMultipleAscending":164,"../internal/isIterateeCall":178,"../internal/isLength":179}],110:[function(require,module,exports){
+},{"../internal/baseEach":132,"../internal/baseFlatten":137,"../internal/baseSortBy":158,"../internal/compareMultipleAscending":167,"../internal/isIterateeCall":181,"../internal/isLength":182}],113:[function(require,module,exports){
 var baseMatches = require('../internal/baseMatches'),
     filter = require('./filter');
 
@@ -48978,7 +49218,7 @@ function where(collection, source) {
 
 module.exports = where;
 
-},{"../internal/baseMatches":147,"./filter":81}],111:[function(require,module,exports){
+},{"../internal/baseMatches":150,"./filter":84}],114:[function(require,module,exports){
 (function (global){
 var cachePush = require('./cachePush'),
     isNative = require('../lang/isNative');
@@ -49011,7 +49251,7 @@ SetCache.prototype.push = cachePush;
 module.exports = SetCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":204,"./cachePush":161}],112:[function(require,module,exports){
+},{"../lang/isNative":207,"./cachePush":164}],115:[function(require,module,exports){
 /**
  * Copies the values of `source` to `array`.
  *
@@ -49033,7 +49273,7 @@ function arrayCopy(source, array) {
 
 module.exports = arrayCopy;
 
-},{}],113:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 /**
  * A specialized version of `_.forEach` for arrays without support for callback
  * shorthands or `this` binding.
@@ -49057,7 +49297,7 @@ function arrayEach(array, iteratee) {
 
 module.exports = arrayEach;
 
-},{}],114:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 /**
  * A specialized version of `_.forEachRight` for arrays without support for
  * callback shorthands or `this` binding.
@@ -49080,7 +49320,7 @@ function arrayEachRight(array, iteratee) {
 
 module.exports = arrayEachRight;
 
-},{}],115:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 /**
  * A specialized version of `_.every` for arrays without support for callback
  * shorthands or `this` binding.
@@ -49105,7 +49345,7 @@ function arrayEvery(array, predicate) {
 
 module.exports = arrayEvery;
 
-},{}],116:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 /**
  * A specialized version of `_.filter` for arrays without support for callback
  * shorthands or `this` binding.
@@ -49132,7 +49372,7 @@ function arrayFilter(array, predicate) {
 
 module.exports = arrayFilter;
 
-},{}],117:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for callback
  * shorthands or `this` binding.
@@ -49155,7 +49395,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],118:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 /** Used as references for `-Infinity` and `Infinity`. */
 var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
 
@@ -49182,7 +49422,7 @@ function arrayMax(array) {
 
 module.exports = arrayMax;
 
-},{}],119:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 /** Used as references for `-Infinity` and `Infinity`. */
 var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
 
@@ -49209,7 +49449,7 @@ function arrayMin(array) {
 
 module.exports = arrayMin;
 
-},{}],120:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 /**
  * A specialized version of `_.reduce` for arrays without support for callback
  * shorthands or `this` binding.
@@ -49237,7 +49477,7 @@ function arrayReduce(array, iteratee, accumulator, initFromArray) {
 
 module.exports = arrayReduce;
 
-},{}],121:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 /**
  * A specialized version of `_.reduceRight` for arrays without support for
  * callback shorthands or `this` binding.
@@ -49263,7 +49503,7 @@ function arrayReduceRight(array, iteratee, accumulator, initFromArray) {
 
 module.exports = arrayReduceRight;
 
-},{}],122:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 /**
  * A specialized version of `_.some` for arrays without support for callback
  * shorthands or `this` binding.
@@ -49288,7 +49528,7 @@ function arraySome(array, predicate) {
 
 module.exports = arraySome;
 
-},{}],123:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength');
 
@@ -49322,7 +49562,7 @@ function baseAt(collection, props) {
 
 module.exports = baseAt;
 
-},{"./isIndex":177,"./isLength":179}],124:[function(require,module,exports){
+},{"./isIndex":180,"./isLength":182}],127:[function(require,module,exports){
 var baseMatches = require('./baseMatches'),
     baseMatchesProperty = require('./baseMatchesProperty'),
     baseProperty = require('./baseProperty'),
@@ -49360,7 +49600,7 @@ function baseCallback(func, thisArg, argCount) {
 
 module.exports = baseCallback;
 
-},{"../utility/identity":224,"./baseMatches":147,"./baseMatchesProperty":148,"./baseProperty":149,"./bindCallback":158,"./isBindable":176}],125:[function(require,module,exports){
+},{"../utility/identity":227,"./baseMatches":150,"./baseMatchesProperty":151,"./baseProperty":152,"./bindCallback":161,"./isBindable":179}],128:[function(require,module,exports){
 var arrayCopy = require('./arrayCopy'),
     arrayEach = require('./arrayEach'),
     baseCopy = require('./baseCopy'),
@@ -49492,7 +49732,7 @@ function baseClone(value, isDeep, customizer, key, object, stackA, stackB) {
 
 module.exports = baseClone;
 
-},{"../lang/isArray":193,"../lang/isObject":207,"../object/keys":215,"./arrayCopy":112,"./arrayEach":113,"./baseCopy":127,"./baseForOwn":137,"./initCloneArray":173,"./initCloneByTag":174,"./initCloneObject":175}],126:[function(require,module,exports){
+},{"../lang/isArray":196,"../lang/isObject":210,"../object/keys":218,"./arrayCopy":115,"./arrayEach":116,"./baseCopy":130,"./baseForOwn":140,"./initCloneArray":176,"./initCloneByTag":177,"./initCloneObject":178}],129:[function(require,module,exports){
 /**
  * The base implementation of `compareAscending` which compares values and
  * sorts them in ascending order without guaranteeing a stable sort.
@@ -49519,7 +49759,7 @@ function baseCompareAscending(value, other) {
 
 module.exports = baseCompareAscending;
 
-},{}],127:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 /**
  * Copies the properties of `source` to `object`.
  *
@@ -49546,7 +49786,7 @@ function baseCopy(source, object, props) {
 
 module.exports = baseCopy;
 
-},{}],128:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 var baseIndexOf = require('./baseIndexOf'),
     cacheIndexOf = require('./cacheIndexOf'),
     createCache = require('./createCache');
@@ -49600,7 +49840,7 @@ function baseDifference(array, values) {
 
 module.exports = baseDifference;
 
-},{"./baseIndexOf":140,"./cacheIndexOf":160,"./createCache":166}],129:[function(require,module,exports){
+},{"./baseIndexOf":143,"./cacheIndexOf":163,"./createCache":169}],132:[function(require,module,exports){
 var baseForOwn = require('./baseForOwn'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -49632,7 +49872,7 @@ function baseEach(collection, iteratee) {
 
 module.exports = baseEach;
 
-},{"./baseForOwn":137,"./isLength":179,"./toObject":188}],130:[function(require,module,exports){
+},{"./baseForOwn":140,"./isLength":182,"./toObject":191}],133:[function(require,module,exports){
 var baseForOwnRight = require('./baseForOwnRight'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -49662,7 +49902,7 @@ function baseEachRight(collection, iteratee) {
 
 module.exports = baseEachRight;
 
-},{"./baseForOwnRight":138,"./isLength":179,"./toObject":188}],131:[function(require,module,exports){
+},{"./baseForOwnRight":141,"./isLength":182,"./toObject":191}],134:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -49686,7 +49926,7 @@ function baseEvery(collection, predicate) {
 
 module.exports = baseEvery;
 
-},{"./baseEach":129}],132:[function(require,module,exports){
+},{"./baseEach":132}],135:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -49710,7 +49950,7 @@ function baseFilter(collection, predicate) {
 
 module.exports = baseFilter;
 
-},{"./baseEach":129}],133:[function(require,module,exports){
+},{"./baseEach":132}],136:[function(require,module,exports){
 /**
  * The base implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
  * without support for callback shorthands and `this` binding, which iterates
@@ -49737,7 +49977,7 @@ function baseFind(collection, predicate, eachFunc, retKey) {
 
 module.exports = baseFind;
 
-},{}],134:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isLength = require('./isLength'),
@@ -49784,7 +50024,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
 
 module.exports = baseFlatten;
 
-},{"../lang/isArguments":192,"../lang/isArray":193,"./isLength":179,"./isObjectLike":180}],135:[function(require,module,exports){
+},{"../lang/isArguments":195,"../lang/isArray":196,"./isLength":182,"./isObjectLike":183}],138:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -49816,7 +50056,7 @@ function baseFor(object, iteratee, keysFunc) {
 
 module.exports = baseFor;
 
-},{"./toObject":188}],136:[function(require,module,exports){
+},{"./toObject":191}],139:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keysIn = require('../object/keysIn');
 
@@ -49835,7 +50075,7 @@ function baseForIn(object, iteratee) {
 
 module.exports = baseForIn;
 
-},{"../object/keysIn":216,"./baseFor":135}],137:[function(require,module,exports){
+},{"../object/keysIn":219,"./baseFor":138}],140:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keys = require('../object/keys');
 
@@ -49854,7 +50094,7 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"../object/keys":215,"./baseFor":135}],138:[function(require,module,exports){
+},{"../object/keys":218,"./baseFor":138}],141:[function(require,module,exports){
 var baseForRight = require('./baseForRight'),
     keys = require('../object/keys');
 
@@ -49873,7 +50113,7 @@ function baseForOwnRight(object, iteratee) {
 
 module.exports = baseForOwnRight;
 
-},{"../object/keys":215,"./baseForRight":139}],139:[function(require,module,exports){
+},{"../object/keys":218,"./baseForRight":142}],142:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -49902,7 +50142,7 @@ function baseForRight(object, iteratee, keysFunc) {
 
 module.exports = baseForRight;
 
-},{"./toObject":188}],140:[function(require,module,exports){
+},{"./toObject":191}],143:[function(require,module,exports){
 var indexOfNaN = require('./indexOfNaN');
 
 /**
@@ -49931,7 +50171,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./indexOfNaN":172}],141:[function(require,module,exports){
+},{"./indexOfNaN":175}],144:[function(require,module,exports){
 var baseEach = require('./baseEach'),
     isLength = require('./isLength');
 
@@ -49961,7 +50201,7 @@ function baseInvoke(collection, methodName, args) {
 
 module.exports = baseInvoke;
 
-},{"./baseEach":129,"./isLength":179}],142:[function(require,module,exports){
+},{"./baseEach":132,"./isLength":182}],145:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep');
 
 /**
@@ -49997,7 +50237,7 @@ function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"./baseIsEqualDeep":143}],143:[function(require,module,exports){
+},{"./baseIsEqualDeep":146}],146:[function(require,module,exports){
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -50100,7 +50340,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, 
 
 module.exports = baseIsEqualDeep;
 
-},{"../lang/isArray":193,"../lang/isTypedArray":211,"./equalArrays":168,"./equalByTag":169,"./equalObjects":170}],144:[function(require,module,exports){
+},{"../lang/isArray":196,"../lang/isTypedArray":214,"./equalArrays":171,"./equalByTag":172,"./equalObjects":173}],147:[function(require,module,exports){
 /**
  * The base implementation of `_.isFunction` without support for environments
  * with incorrect `typeof` results.
@@ -50117,7 +50357,7 @@ function baseIsFunction(value) {
 
 module.exports = baseIsFunction;
 
-},{}],145:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual');
 
 /** Used for native method references. */
@@ -50177,7 +50417,7 @@ function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./baseIsEqual":142}],146:[function(require,module,exports){
+},{"./baseIsEqual":145}],149:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -50199,7 +50439,7 @@ function baseMap(collection, iteratee) {
 
 module.exports = baseMap;
 
-},{"./baseEach":129}],147:[function(require,module,exports){
+},{"./baseEach":132}],150:[function(require,module,exports){
 var baseIsMatch = require('./baseIsMatch'),
     isStrictComparable = require('./isStrictComparable'),
     keys = require('../object/keys');
@@ -50246,7 +50486,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"../object/keys":215,"./baseIsMatch":145,"./isStrictComparable":181}],148:[function(require,module,exports){
+},{"../object/keys":218,"./baseIsMatch":148,"./isStrictComparable":184}],151:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual'),
     isStrictComparable = require('./isStrictComparable');
 
@@ -50272,7 +50512,7 @@ function baseMatchesProperty(key, value) {
 
 module.exports = baseMatchesProperty;
 
-},{"./baseIsEqual":142,"./isStrictComparable":181}],149:[function(require,module,exports){
+},{"./baseIsEqual":145,"./isStrictComparable":184}],152:[function(require,module,exports){
 /**
  * The base implementation of `_.property` which does not coerce `key` to a string.
  *
@@ -50288,7 +50528,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],150:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 /** Native method references. */
 var floor = Math.floor;
 
@@ -50310,7 +50550,7 @@ function baseRandom(min, max) {
 
 module.exports = baseRandom;
 
-},{}],151:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 /**
  * The base implementation of `_.reduce` and `_.reduceRight` without support
  * for callback shorthands or `this` binding, which iterates over `collection`
@@ -50336,7 +50576,7 @@ function baseReduce(collection, iteratee, accumulator, initFromCollection, eachF
 
 module.exports = baseReduce;
 
-},{}],152:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 var identity = require('../utility/identity'),
     metaMap = require('./metaMap');
 
@@ -50355,7 +50595,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"../utility/identity":224,"./metaMap":182}],153:[function(require,module,exports){
+},{"../utility/identity":227,"./metaMap":185}],156:[function(require,module,exports){
 /**
  * The base implementation of `_.slice` without an iteratee call guard.
  *
@@ -50389,7 +50629,7 @@ function baseSlice(array, start, end) {
 
 module.exports = baseSlice;
 
-},{}],154:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -50414,7 +50654,7 @@ function baseSome(collection, predicate) {
 
 module.exports = baseSome;
 
-},{"./baseEach":129}],155:[function(require,module,exports){
+},{"./baseEach":132}],158:[function(require,module,exports){
 /**
  * The base implementation of `_.sortBy` and `_.sortByAll` which uses `comparer`
  * to define the sort order of `array` and replaces criteria objects with their
@@ -50437,7 +50677,7 @@ function baseSortBy(array, comparer) {
 
 module.exports = baseSortBy;
 
-},{}],156:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -50455,7 +50695,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],157:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 /**
  * The base implementation of `_.values` and `_.valuesIn` which creates an
  * array of `object` property values corresponding to the property names
@@ -50479,7 +50719,7 @@ function baseValues(object, props) {
 
 module.exports = baseValues;
 
-},{}],158:[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 var identity = require('../utility/identity');
 
 /**
@@ -50520,7 +50760,7 @@ function bindCallback(func, thisArg, argCount) {
 
 module.exports = bindCallback;
 
-},{"../utility/identity":224}],159:[function(require,module,exports){
+},{"../utility/identity":227}],162:[function(require,module,exports){
 (function (global){
 var constant = require('../utility/constant'),
     isNative = require('../lang/isNative');
@@ -50579,7 +50819,7 @@ if (!bufferSlice) {
 module.exports = bufferClone;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":204,"../utility/constant":223}],160:[function(require,module,exports){
+},{"../lang/isNative":207,"../utility/constant":226}],163:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -50600,7 +50840,7 @@ function cacheIndexOf(cache, value) {
 
 module.exports = cacheIndexOf;
 
-},{"../lang/isObject":207}],161:[function(require,module,exports){
+},{"../lang/isObject":210}],164:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -50622,7 +50862,7 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"../lang/isObject":207}],162:[function(require,module,exports){
+},{"../lang/isObject":210}],165:[function(require,module,exports){
 /**
  * Used by `_.max` and `_.min` as the default callback for string values.
  *
@@ -50636,7 +50876,7 @@ function charAtCallback(string) {
 
 module.exports = charAtCallback;
 
-},{}],163:[function(require,module,exports){
+},{}],166:[function(require,module,exports){
 var baseCompareAscending = require('./baseCompareAscending');
 
 /**
@@ -50654,7 +50894,7 @@ function compareAscending(object, other) {
 
 module.exports = compareAscending;
 
-},{"./baseCompareAscending":126}],164:[function(require,module,exports){
+},{"./baseCompareAscending":129}],167:[function(require,module,exports){
 var baseCompareAscending = require('./baseCompareAscending');
 
 /**
@@ -50690,7 +50930,7 @@ function compareMultipleAscending(object, other) {
 
 module.exports = compareMultipleAscending;
 
-},{"./baseCompareAscending":126}],165:[function(require,module,exports){
+},{"./baseCompareAscending":129}],168:[function(require,module,exports){
 var baseCallback = require('./baseCallback'),
     baseEach = require('./baseEach'),
     isArray = require('../lang/isArray');
@@ -50729,7 +50969,7 @@ function createAggregator(setter, initializer) {
 
 module.exports = createAggregator;
 
-},{"../lang/isArray":193,"./baseCallback":124,"./baseEach":129}],166:[function(require,module,exports){
+},{"../lang/isArray":196,"./baseCallback":127,"./baseEach":132}],169:[function(require,module,exports){
 (function (global){
 var SetCache = require('./SetCache'),
     constant = require('../utility/constant'),
@@ -50755,7 +50995,7 @@ var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
 module.exports = createCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":204,"../utility/constant":223,"./SetCache":111}],167:[function(require,module,exports){
+},{"../lang/isNative":207,"../utility/constant":226,"./SetCache":114}],170:[function(require,module,exports){
 var baseCallback = require('./baseCallback'),
     charAtCallback = require('./charAtCallback'),
     extremumBy = require('./extremumBy'),
@@ -50795,7 +51035,7 @@ function createExtremum(arrayFunc, isMin) {
 
 module.exports = createExtremum;
 
-},{"../lang/isArray":193,"../lang/isString":210,"./baseCallback":124,"./charAtCallback":162,"./extremumBy":171,"./isIterateeCall":178,"./toIterable":187}],168:[function(require,module,exports){
+},{"../lang/isArray":196,"../lang/isString":213,"./baseCallback":127,"./charAtCallback":165,"./extremumBy":174,"./isIterateeCall":181,"./toIterable":190}],171:[function(require,module,exports){
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
  * partial deep comparisons.
@@ -50851,7 +51091,7 @@ function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stack
 
 module.exports = equalArrays;
 
-},{}],169:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 /** `Object#toString` result references. */
 var boolTag = '[object Boolean]',
     dateTag = '[object Date]',
@@ -50902,7 +51142,7 @@ function equalByTag(object, other, tag) {
 
 module.exports = equalByTag;
 
-},{}],170:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 var keys = require('../object/keys');
 
 /** Used for native method references. */
@@ -50976,7 +51216,7 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
 
 module.exports = equalObjects;
 
-},{"../object/keys":215}],171:[function(require,module,exports){
+},{"../object/keys":218}],174:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /** Used as references for `-Infinity` and `Infinity`. */
@@ -51012,7 +51252,7 @@ function extremumBy(collection, iteratee, isMin) {
 
 module.exports = extremumBy;
 
-},{"./baseEach":129}],172:[function(require,module,exports){
+},{"./baseEach":132}],175:[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
  * If `fromRight` is provided elements of `array` are iterated from right to left.
@@ -51038,7 +51278,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = indexOfNaN;
 
-},{}],173:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 /** Used for native method references. */
 var objectProto = Object.prototype;
 
@@ -51066,7 +51306,7 @@ function initCloneArray(array) {
 
 module.exports = initCloneArray;
 
-},{}],174:[function(require,module,exports){
+},{}],177:[function(require,module,exports){
 var bufferClone = require('./bufferClone');
 
 /** `Object#toString` result references. */
@@ -51132,7 +51372,7 @@ function initCloneByTag(object, tag, isDeep) {
 
 module.exports = initCloneByTag;
 
-},{"./bufferClone":159}],175:[function(require,module,exports){
+},{"./bufferClone":162}],178:[function(require,module,exports){
 /**
  * Initializes an object clone.
  *
@@ -51150,7 +51390,7 @@ function initCloneObject(object) {
 
 module.exports = initCloneObject;
 
-},{}],176:[function(require,module,exports){
+},{}],179:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     isNative = require('../lang/isNative'),
     support = require('../support');
@@ -51190,7 +51430,7 @@ function isBindable(func) {
 
 module.exports = isBindable;
 
-},{"../lang/isNative":204,"../support":222,"./baseSetData":152}],177:[function(require,module,exports){
+},{"../lang/isNative":207,"../support":225,"./baseSetData":155}],180:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -51214,7 +51454,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],178:[function(require,module,exports){
+},{}],181:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -51248,7 +51488,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":207,"./isIndex":177,"./isLength":179}],179:[function(require,module,exports){
+},{"../lang/isObject":210,"./isIndex":180,"./isLength":182}],182:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -51273,7 +51513,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],180:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -51287,7 +51527,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],181:[function(require,module,exports){
+},{}],184:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -51304,7 +51544,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"../lang/isObject":207}],182:[function(require,module,exports){
+},{"../lang/isObject":210}],185:[function(require,module,exports){
 (function (global){
 var isNative = require('../lang/isNative');
 
@@ -51317,7 +51557,7 @@ var metaMap = WeakMap && new WeakMap;
 module.exports = metaMap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":204}],183:[function(require,module,exports){
+},{"../lang/isNative":207}],186:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -51347,7 +51587,7 @@ function pickByArray(object, props) {
 
 module.exports = pickByArray;
 
-},{"./toObject":188}],184:[function(require,module,exports){
+},{"./toObject":191}],187:[function(require,module,exports){
 var baseForIn = require('./baseForIn');
 
 /**
@@ -51371,7 +51611,7 @@ function pickByCallback(object, predicate) {
 
 module.exports = pickByCallback;
 
-},{"./baseForIn":136}],185:[function(require,module,exports){
+},{"./baseForIn":139}],188:[function(require,module,exports){
 var baseForIn = require('./baseForIn'),
     isObjectLike = require('./isObjectLike');
 
@@ -51424,7 +51664,7 @@ function shimIsPlainObject(value) {
 
 module.exports = shimIsPlainObject;
 
-},{"./baseForIn":136,"./isObjectLike":180}],186:[function(require,module,exports){
+},{"./baseForIn":139,"./isObjectLike":183}],189:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -51468,7 +51708,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":192,"../lang/isArray":193,"../object/keysIn":216,"../support":222,"./isIndex":177,"./isLength":179}],187:[function(require,module,exports){
+},{"../lang/isArguments":195,"../lang/isArray":196,"../object/keysIn":219,"../support":225,"./isIndex":180,"./isLength":182}],190:[function(require,module,exports){
 var isLength = require('./isLength'),
     isObject = require('../lang/isObject'),
     values = require('../object/values');
@@ -51492,7 +51732,7 @@ function toIterable(value) {
 
 module.exports = toIterable;
 
-},{"../lang/isObject":207,"../object/values":218,"./isLength":179}],188:[function(require,module,exports){
+},{"../lang/isObject":210,"../object/values":221,"./isLength":182}],191:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -51508,7 +51748,7 @@ function toObject(value) {
 
 module.exports = toObject;
 
-},{"../lang/isObject":207}],189:[function(require,module,exports){
+},{"../lang/isObject":210}],192:[function(require,module,exports){
 module.exports = {
   'clone': require('./lang/clone'),
   'cloneDeep': require('./lang/cloneDeep'),
@@ -51537,7 +51777,7 @@ module.exports = {
   'toPlainObject': require('./lang/toPlainObject')
 };
 
-},{"./lang/clone":190,"./lang/cloneDeep":191,"./lang/isArguments":192,"./lang/isArray":193,"./lang/isBoolean":194,"./lang/isDate":195,"./lang/isElement":196,"./lang/isEmpty":197,"./lang/isEqual":198,"./lang/isError":199,"./lang/isFinite":200,"./lang/isFunction":201,"./lang/isMatch":202,"./lang/isNaN":203,"./lang/isNative":204,"./lang/isNull":205,"./lang/isNumber":206,"./lang/isObject":207,"./lang/isPlainObject":208,"./lang/isRegExp":209,"./lang/isString":210,"./lang/isTypedArray":211,"./lang/isUndefined":212,"./lang/toArray":213,"./lang/toPlainObject":214}],190:[function(require,module,exports){
+},{"./lang/clone":193,"./lang/cloneDeep":194,"./lang/isArguments":195,"./lang/isArray":196,"./lang/isBoolean":197,"./lang/isDate":198,"./lang/isElement":199,"./lang/isEmpty":200,"./lang/isEqual":201,"./lang/isError":202,"./lang/isFinite":203,"./lang/isFunction":204,"./lang/isMatch":205,"./lang/isNaN":206,"./lang/isNative":207,"./lang/isNull":208,"./lang/isNumber":209,"./lang/isObject":210,"./lang/isPlainObject":211,"./lang/isRegExp":212,"./lang/isString":213,"./lang/isTypedArray":214,"./lang/isUndefined":215,"./lang/toArray":216,"./lang/toPlainObject":217}],193:[function(require,module,exports){
 var baseClone = require('../internal/baseClone'),
     bindCallback = require('../internal/bindCallback'),
     isIterateeCall = require('../internal/isIterateeCall');
@@ -51608,7 +51848,7 @@ function clone(value, isDeep, customizer, thisArg) {
 
 module.exports = clone;
 
-},{"../internal/baseClone":125,"../internal/bindCallback":158,"../internal/isIterateeCall":178}],191:[function(require,module,exports){
+},{"../internal/baseClone":128,"../internal/bindCallback":161,"../internal/isIterateeCall":181}],194:[function(require,module,exports){
 var baseClone = require('../internal/baseClone'),
     bindCallback = require('../internal/bindCallback');
 
@@ -51664,7 +51904,7 @@ function cloneDeep(value, customizer, thisArg) {
 
 module.exports = cloneDeep;
 
-},{"../internal/baseClone":125,"../internal/bindCallback":158}],192:[function(require,module,exports){
+},{"../internal/baseClone":128,"../internal/bindCallback":161}],195:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -51704,7 +51944,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":179,"../internal/isObjectLike":180}],193:[function(require,module,exports){
+},{"../internal/isLength":182,"../internal/isObjectLike":183}],196:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -51747,7 +51987,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":179,"../internal/isObjectLike":180,"./isNative":204}],194:[function(require,module,exports){
+},{"../internal/isLength":182,"../internal/isObjectLike":183,"./isNative":207}],197:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -51785,7 +52025,7 @@ function isBoolean(value) {
 
 module.exports = isBoolean;
 
-},{"../internal/isObjectLike":180}],195:[function(require,module,exports){
+},{"../internal/isObjectLike":183}],198:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -51823,7 +52063,7 @@ function isDate(value) {
 
 module.exports = isDate;
 
-},{"../internal/isObjectLike":180}],196:[function(require,module,exports){
+},{"../internal/isObjectLike":183}],199:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike'),
     isPlainObject = require('./isPlainObject'),
     support = require('../support');
@@ -51867,7 +52107,7 @@ if (!support.dom) {
 
 module.exports = isElement;
 
-},{"../internal/isObjectLike":180,"../support":222,"./isPlainObject":208}],197:[function(require,module,exports){
+},{"../internal/isObjectLike":183,"../support":225,"./isPlainObject":211}],200:[function(require,module,exports){
 var isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isFunction = require('./isFunction'),
@@ -51917,7 +52157,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"../internal/isLength":179,"../internal/isObjectLike":180,"../object/keys":215,"./isArguments":192,"./isArray":193,"./isFunction":201,"./isString":210}],198:[function(require,module,exports){
+},{"../internal/isLength":182,"../internal/isObjectLike":183,"../object/keys":218,"./isArguments":195,"./isArray":196,"./isFunction":204,"./isString":213}],201:[function(require,module,exports){
 var baseIsEqual = require('../internal/baseIsEqual'),
     bindCallback = require('../internal/bindCallback'),
     isStrictComparable = require('../internal/isStrictComparable');
@@ -51976,7 +52216,7 @@ function isEqual(value, other, customizer, thisArg) {
 
 module.exports = isEqual;
 
-},{"../internal/baseIsEqual":142,"../internal/bindCallback":158,"../internal/isStrictComparable":181}],199:[function(require,module,exports){
+},{"../internal/baseIsEqual":145,"../internal/bindCallback":161,"../internal/isStrictComparable":184}],202:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -52015,7 +52255,7 @@ function isError(value) {
 
 module.exports = isError;
 
-},{"../internal/isObjectLike":180}],200:[function(require,module,exports){
+},{"../internal/isObjectLike":183}],203:[function(require,module,exports){
 (function (global){
 var isNative = require('./isNative');
 
@@ -52059,7 +52299,7 @@ var isFinite = nativeNumIsFinite || function(value) {
 module.exports = isFinite;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./isNative":204}],201:[function(require,module,exports){
+},{"./isNative":207}],204:[function(require,module,exports){
 (function (global){
 var baseIsFunction = require('../internal/baseIsFunction'),
     isNative = require('./isNative');
@@ -52106,7 +52346,7 @@ var isFunction = !(baseIsFunction(/x/) || (Uint8Array && !baseIsFunction(Uint8Ar
 module.exports = isFunction;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../internal/baseIsFunction":144,"./isNative":204}],202:[function(require,module,exports){
+},{"../internal/baseIsFunction":147,"./isNative":207}],205:[function(require,module,exports){
 var baseIsMatch = require('../internal/baseIsMatch'),
     bindCallback = require('../internal/bindCallback'),
     isStrictComparable = require('../internal/isStrictComparable'),
@@ -52182,7 +52422,7 @@ function isMatch(object, source, customizer, thisArg) {
 
 module.exports = isMatch;
 
-},{"../internal/baseIsMatch":145,"../internal/bindCallback":158,"../internal/isStrictComparable":181,"../object/keys":215}],203:[function(require,module,exports){
+},{"../internal/baseIsMatch":148,"../internal/bindCallback":161,"../internal/isStrictComparable":184,"../object/keys":218}],206:[function(require,module,exports){
 var isNumber = require('./isNumber');
 
 /**
@@ -52219,7 +52459,7 @@ function isNaN(value) {
 
 module.exports = isNaN;
 
-},{"./isNumber":206}],204:[function(require,module,exports){
+},{"./isNumber":209}],207:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -52276,7 +52516,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":180,"../string/escapeRegExp":220}],205:[function(require,module,exports){
+},{"../internal/isObjectLike":183,"../string/escapeRegExp":223}],208:[function(require,module,exports){
 /**
  * Checks if `value` is `null`.
  *
@@ -52299,7 +52539,7 @@ function isNull(value) {
 
 module.exports = isNull;
 
-},{}],206:[function(require,module,exports){
+},{}],209:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -52343,7 +52583,7 @@ function isNumber(value) {
 
 module.exports = isNumber;
 
-},{"../internal/isObjectLike":180}],207:[function(require,module,exports){
+},{"../internal/isObjectLike":183}],210:[function(require,module,exports){
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -52375,7 +52615,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],208:[function(require,module,exports){
+},{}],211:[function(require,module,exports){
 var isNative = require('./isNative'),
     shimIsPlainObject = require('../internal/shimIsPlainObject');
 
@@ -52439,7 +52679,7 @@ var isPlainObject = !getPrototypeOf ? shimIsPlainObject : function(value) {
 
 module.exports = isPlainObject;
 
-},{"../internal/shimIsPlainObject":185,"./isNative":204}],209:[function(require,module,exports){
+},{"../internal/shimIsPlainObject":188,"./isNative":207}],212:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -52477,7 +52717,7 @@ function isRegExp(value) {
 
 module.exports = isRegExp;
 
-},{"../internal/isObjectLike":180}],210:[function(require,module,exports){
+},{"../internal/isObjectLike":183}],213:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -52515,7 +52755,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"../internal/isObjectLike":180}],211:[function(require,module,exports){
+},{"../internal/isObjectLike":183}],214:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -52592,7 +52832,7 @@ function isTypedArray(value) {
 
 module.exports = isTypedArray;
 
-},{"../internal/isLength":179,"../internal/isObjectLike":180}],212:[function(require,module,exports){
+},{"../internal/isLength":182,"../internal/isObjectLike":183}],215:[function(require,module,exports){
 /**
  * Checks if `value` is `undefined`.
  *
@@ -52615,7 +52855,7 @@ function isUndefined(value) {
 
 module.exports = isUndefined;
 
-},{}],213:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 var arrayCopy = require('../internal/arrayCopy'),
     isLength = require('../internal/isLength'),
     values = require('../object/values');
@@ -52648,7 +52888,7 @@ function toArray(value) {
 
 module.exports = toArray;
 
-},{"../internal/arrayCopy":112,"../internal/isLength":179,"../object/values":218}],214:[function(require,module,exports){
+},{"../internal/arrayCopy":115,"../internal/isLength":182,"../object/values":221}],217:[function(require,module,exports){
 var baseCopy = require('../internal/baseCopy'),
     keysIn = require('../object/keysIn');
 
@@ -52681,7 +52921,7 @@ function toPlainObject(value) {
 
 module.exports = toPlainObject;
 
-},{"../internal/baseCopy":127,"../object/keysIn":216}],215:[function(require,module,exports){
+},{"../internal/baseCopy":130,"../object/keysIn":219}],218:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -52731,7 +52971,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":179,"../internal/shimKeys":186,"../lang/isNative":204,"../lang/isObject":207}],216:[function(require,module,exports){
+},{"../internal/isLength":182,"../internal/shimKeys":189,"../lang/isNative":207,"../lang/isObject":210}],219:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -52798,7 +53038,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":177,"../internal/isLength":179,"../lang/isArguments":192,"../lang/isArray":193,"../lang/isObject":207,"../support":222}],217:[function(require,module,exports){
+},{"../internal/isIndex":180,"../internal/isLength":182,"../lang/isArguments":195,"../lang/isArray":196,"../lang/isObject":210,"../support":225}],220:[function(require,module,exports){
 var arrayMap = require('../internal/arrayMap'),
     baseDifference = require('../internal/baseDifference'),
     baseFlatten = require('../internal/baseFlatten'),
@@ -52851,7 +53091,7 @@ function omit(object, predicate, thisArg) {
 
 module.exports = omit;
 
-},{"../internal/arrayMap":117,"../internal/baseDifference":128,"../internal/baseFlatten":134,"../internal/bindCallback":158,"../internal/pickByArray":183,"../internal/pickByCallback":184,"./keysIn":216}],218:[function(require,module,exports){
+},{"../internal/arrayMap":120,"../internal/baseDifference":131,"../internal/baseFlatten":137,"../internal/bindCallback":161,"../internal/pickByArray":186,"../internal/pickByCallback":187,"./keysIn":219}],221:[function(require,module,exports){
 var baseValues = require('../internal/baseValues'),
     keys = require('./keys');
 
@@ -52886,7 +53126,7 @@ function values(object) {
 
 module.exports = values;
 
-},{"../internal/baseValues":157,"./keys":215}],219:[function(require,module,exports){
+},{"../internal/baseValues":160,"./keys":218}],222:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -52909,7 +53149,7 @@ function capitalize(string) {
 
 module.exports = capitalize;
 
-},{"../internal/baseToString":156}],220:[function(require,module,exports){
+},{"../internal/baseToString":159}],223:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -52943,7 +53183,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":156}],221:[function(require,module,exports){
+},{"../internal/baseToString":159}],224:[function(require,module,exports){
 var baseToString = require('../internal/baseToString'),
     isIterateeCall = require('../internal/isIterateeCall');
 
@@ -52983,7 +53223,7 @@ function words(string, pattern, guard) {
 
 module.exports = words;
 
-},{"../internal/baseToString":156,"../internal/isIterateeCall":178}],222:[function(require,module,exports){
+},{"../internal/baseToString":159,"../internal/isIterateeCall":181}],225:[function(require,module,exports){
 (function (global){
 var isNative = require('./lang/isNative');
 
@@ -53062,7 +53302,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":204}],223:[function(require,module,exports){
+},{"./lang/isNative":207}],226:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -53087,7 +53327,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],224:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 /**
  * This method returns the first argument provided to it.
  *
@@ -53109,7 +53349,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],225:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -53137,7 +53377,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],226:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 (function (global){
 
 var rng;
@@ -53172,7 +53412,7 @@ module.exports = rng;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],227:[function(require,module,exports){
+},{}],230:[function(require,module,exports){
 //     uuid.js
 //
 //     Copyright (c) 2010-2012 Robert Kieffer
@@ -53357,17 +53597,18 @@ uuid.unparse = unparse;
 
 module.exports = uuid;
 
-},{"./rng":226}],228:[function(require,module,exports){
+},{"./rng":229}],231:[function(require,module,exports){
 module.exports={
-  "name": "focus-components",
-  "version": "0.1.0",
+  "name": "focusjs-components",
+  "version": "0.1.7",
   "description": "Focus component repository.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "iojs jest",
     "example": "node static-server.js",
     "build": "gulp browserify",
-    "watch": "gulp watchify"
+    "watch": "gulp watchify",
+    "prepublish": "gulp build"
   },
   "repository": {
     "type": "git",
@@ -53420,8 +53661,16 @@ module.exports={
       "path": "common/field"
     },
     {
+      "name": "icon",
+      "path": "common/icon"
+    },
+    {
       "name": "display-checkbox",
       "path": "common/display/checkbox"
+    },
+    {
+      "name": "detail",
+      "path": "common/detail"
     },
     {
       "name": "input-text",
@@ -53546,10 +53795,11 @@ module.exports={
   ],
   "homepage": "https://github.com/KleeGroup/focus-components",
   "dependencies": {
-    "immutable": "^3.6.2",
-    "lodash": "^3.3.1",
+    "focusjs": "^0.5.5",
+    "immutable": "^3.7.3",
+    "lodash": "^3.9.1",
     "object-assign": "^2.0.0",
-    "react": "^0.13.2",
+    "react": "^0.13.3",
     "uuid": "^2.0.1"
   },
   "devDependencies": {
@@ -53593,10 +53843,10 @@ module.exports={
   }
 }
 
-},{}],229:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 "use strict";
 
-var dispatcher = window.focus.dispatcher;
+var dispatcher = window.Focus.dispatcher;
 
 var detailMixin = {
   /**
@@ -53607,19 +53857,22 @@ var detailMixin = {
       this.cartridgeConfiguration = {};
       console.warn("\n        Your detail page does not have any cartrige configuration, this is not mandarory but recommended.\n        It should be a component attribute.\n        cartridgeConfiguration = {\n          summary: {component: \"A React Component\"},\n          cartridge: {component: \"A React Component\"}\n        };\n      ");
     }
-    dispatcher.handleServerAction({
+    dispatcher.handleViewAction({
       data: {
         cartridgeComponent: this.cartridgeConfiguration.cartridge,
         summaryComponent: this.cartridgeConfiguration.summary
       },
       type: "update"
     });
+  },
+  componentWillMount: function pageMixinWillMount() {
+    this._registerCartridge();
   }
 
 };
 module.exports = { mixin: detailMixin };
 
-},{}],230:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -53627,11 +53880,11 @@ module.exports = {
   search: require("./search")
 };
 
-},{"./detail":229,"./search":235}],231:[function(require,module,exports){
+},{"./detail":232,"./search":238}],234:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 
 var groupByComponent = {
 
@@ -53681,7 +53934,7 @@ var groupByComponent = {
 
 module.exports = builder(groupByComponent);
 
-},{}],232:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 "use strict";
 
 var isArray = require("lodash/lang/isArray");
@@ -53736,7 +53989,7 @@ var GroupByMixin = {
 
 module.exports = { mixin: GroupByMixin };
 
-},{"./group-by-component":231,"lodash/lang/isArray":193}],233:[function(require,module,exports){
+},{"./group-by-component":234,"lodash/lang/isArray":196}],236:[function(require,module,exports){
 "use strict";
 
 var assign = require("object-assign");
@@ -53822,21 +54075,21 @@ var InfiniteScrollPageMixin = {
 
 module.exports = { mixin: InfiniteScrollPageMixin };
 
-},{"object-assign":225}],234:[function(require,module,exports){
+},{"object-assign":228}],237:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var LiveFilter = require("../../../search/live-filter/index").component;
 var ListActionBar = require("../../../list/action-bar/index").component;
 var ListSummary = require("../../../list/summary/index").component;
 var ListSelection = require("../../../list/selection").list.component;
-var SearchStore = window.focus.store.SearchStore;
+var SearchStore = window.Focus.store.SearchStore;
 var assign = require("object-assign");
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
 var GroupByMixin = require("../common-mixin/group-by-mixin").mixin;
-var checkIsNotNull = window.focus.util.object.checkIsNotNull;
+var checkIsNotNull = window.Focus.util.object.checkIsNotNull;
 
 var searchFilterResultMixin = {
     mixins: [InfiniteScrollPageMixin, GroupByMixin],
@@ -54154,7 +54407,7 @@ var searchFilterResultMixin = {
 
 module.exports = builder(searchFilterResultMixin, true);
 
-},{"../../../list/action-bar/index":52,"../../../list/selection":58,"../../../list/summary/index":61,"../../../search/live-filter/index":238,"../common-mixin/group-by-mixin":232,"../common-mixin/infinite-scroll-page-mixin":233,"object-assign":225}],235:[function(require,module,exports){
+},{"../../../list/action-bar/index":54,"../../../list/selection":60,"../../../list/summary/index":63,"../../../search/live-filter/index":241,"../common-mixin/group-by-mixin":235,"../common-mixin/infinite-scroll-page-mixin":236,"object-assign":228}],238:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -54162,18 +54415,18 @@ module.exports = {
     searchResult: require("./search-result")
 };
 
-},{"./filter-result":234,"./search-result":236}],236:[function(require,module,exports){
+},{"./filter-result":237,"./search-result":239}],239:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var QuickSearch = require("../../../search/quick-search").component;
 var List = require("../../../list/selection").list.component;
 var assign = require("object-assign");
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var InfiniteScrollPageMixin = require("../common-mixin/infinite-scroll-page-mixin").mixin;
 var GroupByMixin = require("../common-mixin/group-by-mixin").mixin;
-var checkIsNotNull = window.focus.util.object.checkIsNotNull;
+var checkIsNotNull = window.Focus.util.object.checkIsNotNull;
 
 var searchMixin = {
     mixins: [InfiniteScrollPageMixin, GroupByMixin],
@@ -54271,12 +54524,14 @@ var searchMixin = {
      * @param {object} item selected
      */
     _selectItem: function selectItem(item) {
-        var index = this.state.selected.indexOf(item);
+        var selected = this.state.selected;
+        var index = selected.indexOf(item);
         if (index) {
-            this.state.selected.splice(index, index);
+            selected.splice(index, index);
         } else {
-            this.state.selected.push(item);
+            selected.push(item);
         }
+        this.setState({ selected: selected });
     },
 
     /**
@@ -54343,7 +54598,7 @@ var searchMixin = {
 
 module.exports = builder(searchMixin, true);
 
-},{"../../../list/selection":58,"../../../search/quick-search":241,"../common-mixin/group-by-mixin":232,"../common-mixin/infinite-scroll-page-mixin":233,"object-assign":225}],237:[function(require,module,exports){
+},{"../../../list/selection":60,"../../../search/quick-search":244,"../common-mixin/group-by-mixin":235,"../common-mixin/infinite-scroll-page-mixin":236,"object-assign":228}],240:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -54351,21 +54606,24 @@ module.exports = {
   quickSearch: require("./quick-search")
 };
 
-},{"./live-filter":238,"./quick-search":241}],238:[function(require,module,exports){
+},{"./live-filter":241,"./quick-search":244}],241:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var LiveFilterFacet = require("./live-filter-facet").component;
-var type = window.focus.component.types;
+var type = window.Focus.component.types;
 var assign = require("object-assign");
 var omit = require("lodash/object/omit");
 var Img = require("../../common/img").component;
 
 var liveFilterMixin = {
+    /**
+     * Component's mixins
+     */
     mixins: [require("../../common/i18n/mixin")],
     /**
      * Display name.
@@ -54401,15 +54659,31 @@ var liveFilterMixin = {
     getInitialState: function getInitialState() {
         var openedFacetList = this.props.openedFacetList;
         if (Object.keys(openedFacetList).length == 0) {
-            for (var key in this.props.facetList) {
-                openedFacetList[key] = true;
-                break;
-            }
+            Object.keys(this.props.facetList).reduce(function (list, facetKey) {
+                list[facetKey] = true;
+                return list;
+            }, {});
         }
         return {
             isExpanded: true,
             openedFacetList: openedFacetList
         };
+    },
+    /**
+     * New properties set event handle
+     * @param {Object} nextProps
+     */
+    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+        var openedFacetList = nextProps.openedFacetList;
+        if (Object.keys(openedFacetList).length == 0) {
+            openedFacetList = Object.keys(nextProps.facetList).reduce(function (list, facetKey) {
+                list[facetKey] = true;
+                return list;
+            }, {});
+        }
+        this.setState({
+            openedFacetList: openedFacetList
+        });
     },
     /**
      * Render the component.
@@ -54467,7 +54741,8 @@ var liveFilterMixin = {
                     isExpanded: this.state.openedFacetList[key],
                     expandHandler: this.expandFacetHandler,
                     selectHandler: this.selectHandler,
-                    type: this.props.config[key] }));
+                    type: this.props.config[key]
+                }));
             }
         }
         return React.createElement(
@@ -54515,11 +54790,11 @@ var liveFilterMixin = {
 
 module.exports = builder(liveFilterMixin);
 
-},{"../../common/i18n/mixin":24,"../../common/img":25,"./live-filter-facet":240,"lodash/object/omit":217,"object-assign":225}],239:[function(require,module,exports){
+},{"../../common/i18n/mixin":25,"../../common/img":27,"./live-filter-facet":243,"lodash/object/omit":220,"object-assign":228}],242:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 
 var liveFilterDataMixin = {
@@ -54563,16 +54838,19 @@ var liveFilterDataMixin = {
 
 module.exports = builder(liveFilterDataMixin);
 
-},{}],240:[function(require,module,exports){
+},{}],243:[function(require,module,exports){
 "use strict";
 
 /**@jsx*/
-var builder = window.focus.component.builder;
+var builder = window.Focus.component.builder;
 var React = window.React;
 var Data = require("./live-filter-data").component;
 
 var liveFilterFacetMixin = {
-
+    /**
+     * Component's mixins
+     */
+    mixins: [require("../../common/i18n/mixin")],
     /**
      * Display name.
      */
@@ -54603,11 +54881,6 @@ var liveFilterFacetMixin = {
      * @returns {XML} Html component code.
      */
     render: function renderLiverFilterFacet() {
-        /*
-        var className = this.props.isExpanded ? "lf-facet" : "lf-facet collapsed";
-        if(this.props.selectedDataKey) {
-            className = "lf-facet selected";
-        }*/
         var className = "panel panel-primary facet";
         if (this.props.selectedDataKey) {
             className += "-selected";
@@ -54629,7 +54902,7 @@ var liveFilterFacetMixin = {
      * @returns {XML} Html component code.
      */
     renderLiveFilterFacetTitle: function renderLiveFilterFacetTitle() {
-        var title = this.props.facetKey;
+        var title = this.i18n("live.filter.facets." + this.props.facetKey); // Default facet translation path is live.filter.facets.
         var className = "panel-heading";
         if (this.props.selectedDataKey) {
             title += " : " + this.props.facet[this.props.selectedDataKey].label;
@@ -54720,16 +54993,16 @@ var liveFilterFacetMixin = {
 
 module.exports = builder(liveFilterFacetMixin);
 
-},{"./live-filter-data":239}],241:[function(require,module,exports){
+},{"../../common/i18n/mixin":25,"./live-filter-data":242}],244:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./input");
 
-},{"./input":242}],242:[function(require,module,exports){
+},{"./input":245}],245:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
-var type = window.focus.component.types;
+var builder = window.Focus.component.builder;
+var type = window.Focus.component.types;
 var React = window.React;
 var Scope = require("./scope").component;
 //var Icon = require('../common/icon').component;
@@ -54837,11 +55110,11 @@ var SearchInputMixin = {
 
 module.exports = builder(SearchInputMixin);
 
-},{"./scope":243,"lodash/string/words":221}],243:[function(require,module,exports){
+},{"./scope":246,"lodash/string/words":224}],246:[function(require,module,exports){
 "use strict";
 
-var builder = window.focus.component.builder;
-var type = window.focus.component.types;
+var builder = window.Focus.component.builder;
+var type = window.Focus.component.types;
 var React = window.React;
 
 //var type = require('../../core/validation/types');
@@ -54998,7 +55271,7 @@ var scopeMixin = {
 
 module.exports = builder(scopeMixin);
 
-},{"lodash/collection/find":82,"uuid":227}]},{},[1])(1)
+},{"lodash/collection/find":85,"uuid":230}]},{},[1])(1)
 });
 //     Backbone.js 1.1.2
 
@@ -56606,6 +56879,1311 @@ module.exports = builder(scopeMixin);
   };
 
   return Backbone;
+
+}));
+
+/**
+* @version: 1.3.21
+* @author: Dan Grossman http://www.dangrossman.info/
+* @copyright: Copyright (c) 2012-2015 Dan Grossman. All rights reserved.
+* @license: Licensed under the MIT license. See http://www.opensource.org/licenses/mit-license.php
+* @website: https://www.improvely.com/
+*/
+
+(function(root, factory) {
+
+  if (typeof define === 'function' && define.amd) {
+    define(['moment', 'jquery', 'exports'], function(momentjs, $, exports) {
+      root.daterangepicker = factory(root, exports, momentjs, $);
+    });
+
+  } else if (typeof exports !== 'undefined') {
+    var momentjs = require('moment');
+    var jQuery;
+    try {
+      jQuery = require('jquery');
+    } catch (err) {
+      jQuery = window.jQuery;
+      if (!jQuery) throw new Error('jQuery dependency not found');
+    }
+
+    factory(root, exports, momentjs, jQuery);
+
+  // Finally, as a browser global.
+  } else {
+    root.daterangepicker = factory(root, {}, root.moment, (root.jQuery || root.Zepto || root.ender || root.$));
+  }
+
+}(this, function(root, daterangepicker, moment, $) {
+
+    var DateRangePicker = function (element, options, cb) {
+
+        // by default, the daterangepicker element is placed at the bottom of HTML body
+        this.parentEl = 'body';
+
+        //element that triggered the date range picker
+        this.element = $(element);
+
+        //tracks visible state
+        this.isShowing = false;
+
+        //create the picker HTML object
+        var DRPTemplate = '<div class="daterangepicker dropdown-menu">' +
+                '<div class="calendar first left"></div>' +
+                '<div class="calendar second right"></div>' +
+                '<div class="ranges">' +
+                  '<div class="range_inputs">' +
+                    '<div class="daterangepicker_start_input">' +
+                      '<label for="daterangepicker_start"></label>' +
+                      '<input class="input-mini" type="text" name="daterangepicker_start" value="" />' +
+                    '</div>' +
+                    '<div class="daterangepicker_end_input">' +
+                      '<label for="daterangepicker_end"></label>' +
+                      '<input class="input-mini" type="text" name="daterangepicker_end" value="" />' +
+                    '</div>' +
+                    '<button class="applyBtn" disabled="disabled"></button>&nbsp;' +
+                    '<button class="cancelBtn"></button>' +
+                  '</div>' +
+                '</div>' +
+              '</div>';
+
+        //custom options
+        if (typeof options !== 'object' || options === null)
+            options = {};
+
+        this.parentEl = (typeof options === 'object' && options.parentEl && $(options.parentEl).length) ? $(options.parentEl) : $(this.parentEl);
+        this.container = $(DRPTemplate).appendTo(this.parentEl);
+
+        this.setOptions(options, cb);
+
+        //event listeners
+        this.container.find('.calendar')
+            .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
+            .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
+            .on('click.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
+            .on('mouseenter.daterangepicker', 'td.available', $.proxy(this.hoverDate, this))
+            .on('mouseleave.daterangepicker', 'td.available', $.proxy(this.updateFormInputs, this))
+            .on('change.daterangepicker', 'select.yearselect', $.proxy(this.updateMonthYear, this))
+            .on('change.daterangepicker', 'select.monthselect', $.proxy(this.updateMonthYear, this))
+            .on('change.daterangepicker', 'select.hourselect,select.minuteselect,select.secondselect,select.ampmselect', $.proxy(this.updateTime, this));
+
+        this.container.find('.ranges')
+            .on('click.daterangepicker', 'button.applyBtn', $.proxy(this.clickApply, this))
+            .on('click.daterangepicker', 'button.cancelBtn', $.proxy(this.clickCancel, this))
+            .on('click.daterangepicker', '.daterangepicker_start_input,.daterangepicker_end_input', $.proxy(this.showCalendars, this))
+            .on('change.daterangepicker', '.daterangepicker_start_input,.daterangepicker_end_input', $.proxy(this.inputsChanged, this))
+            .on('keydown.daterangepicker', '.daterangepicker_start_input,.daterangepicker_end_input', $.proxy(this.inputsKeydown, this))
+            .on('click.daterangepicker', 'li', $.proxy(this.clickRange, this))
+            .on('mouseenter.daterangepicker', 'li', $.proxy(this.enterRange, this))
+            .on('mouseleave.daterangepicker', 'li', $.proxy(this.updateFormInputs, this));
+
+        if (this.element.is('input')) {
+            this.element.on({
+                'click.daterangepicker': $.proxy(this.show, this),
+                'focus.daterangepicker': $.proxy(this.show, this),
+                'keyup.daterangepicker': $.proxy(this.updateFromControl, this),
+                'keydown.daterangepicker': $.proxy(this.keydown, this)
+            });
+        } else {
+            this.element.on('click.daterangepicker', $.proxy(this.toggle, this));
+        }
+
+    };
+
+    DateRangePicker.prototype = {
+
+        constructor: DateRangePicker,
+
+        setOptions: function(options, callback) {
+
+            this.startDate = moment().startOf('day');
+            this.endDate = moment().endOf('day');
+            this.timeZone = moment().utcOffset();
+            this.minDate = false;
+            this.maxDate = false;
+            this.dateLimit = false;
+
+            this.showDropdowns = false;
+            this.showWeekNumbers = false;
+            this.timePicker = false;
+            this.timePickerSeconds = false;
+            this.timePickerIncrement = 30;
+            this.timePicker12Hour = true;
+            this.singleDatePicker = false;
+            this.ranges = {};
+
+            this.opens = 'right';
+            if (this.element.hasClass('pull-right'))
+                this.opens = 'left';
+
+            this.drops = 'down';
+            if (this.element.hasClass('dropup'))
+                this.drops = 'up';
+
+            this.buttonClasses = ['btn', 'btn-small btn-sm'];
+            this.applyClass = 'btn-success';
+            this.cancelClass = 'btn-default';
+
+            this.format = 'MM/DD/YYYY';
+            this.separator = ' - ';
+
+            this.locale = {
+                applyLabel: 'Apply',
+                cancelLabel: 'Cancel',
+                fromLabel: 'From',
+                toLabel: 'To',
+                weekLabel: 'W',
+                customRangeLabel: 'Custom Range',
+                daysOfWeek: moment.weekdaysMin(),
+                monthNames: moment.monthsShort(),
+                firstDay: moment.localeData()._week.dow
+            };
+
+            this.cb = function () { };
+
+            if (typeof options.format === 'string')
+                this.format = options.format;
+
+            if (typeof options.separator === 'string')
+                this.separator = options.separator;
+
+            if (typeof options.startDate === 'string')
+                this.startDate = moment(options.startDate, this.format);
+
+            if (typeof options.endDate === 'string')
+                this.endDate = moment(options.endDate, this.format);
+
+            if (typeof options.minDate === 'string')
+                this.minDate = moment(options.minDate, this.format);
+
+            if (typeof options.maxDate === 'string')
+                this.maxDate = moment(options.maxDate, this.format);
+
+            if (typeof options.startDate === 'object')
+                this.startDate = moment(options.startDate);
+
+            if (typeof options.endDate === 'object')
+                this.endDate = moment(options.endDate);
+
+            if (typeof options.minDate === 'object')
+                this.minDate = moment(options.minDate);
+
+            if (typeof options.maxDate === 'object')
+                this.maxDate = moment(options.maxDate);
+
+            if (typeof options.applyClass === 'string')
+                this.applyClass = options.applyClass;
+
+            if (typeof options.cancelClass === 'string')
+                this.cancelClass = options.cancelClass;
+
+            if (typeof options.dateLimit === 'object')
+                this.dateLimit = options.dateLimit;
+
+            if (typeof options.locale === 'object') {
+
+                if (typeof options.locale.daysOfWeek === 'object') {
+                    // Create a copy of daysOfWeek to avoid modification of original
+                    // options object for reusability in multiple daterangepicker instances
+                    this.locale.daysOfWeek = options.locale.daysOfWeek.slice();
+                }
+
+                if (typeof options.locale.monthNames === 'object') {
+                  this.locale.monthNames = options.locale.monthNames.slice();
+                }
+
+                if (typeof options.locale.firstDay === 'number') {
+                  this.locale.firstDay = options.locale.firstDay;
+                }
+
+                if (typeof options.locale.applyLabel === 'string') {
+                  this.locale.applyLabel = options.locale.applyLabel;
+                }
+
+                if (typeof options.locale.cancelLabel === 'string') {
+                  this.locale.cancelLabel = options.locale.cancelLabel;
+                }
+
+                if (typeof options.locale.fromLabel === 'string') {
+                  this.locale.fromLabel = options.locale.fromLabel;
+                }
+
+                if (typeof options.locale.toLabel === 'string') {
+                  this.locale.toLabel = options.locale.toLabel;
+                }
+
+                if (typeof options.locale.weekLabel === 'string') {
+                  this.locale.weekLabel = options.locale.weekLabel;
+                }
+
+                if (typeof options.locale.customRangeLabel === 'string') {
+                  this.locale.customRangeLabel = options.locale.customRangeLabel;
+                }
+            }
+
+            if (typeof options.opens === 'string')
+                this.opens = options.opens;
+
+            if (typeof options.drops === 'string')
+                this.drops = options.drops;
+
+            if (typeof options.showWeekNumbers === 'boolean') {
+                this.showWeekNumbers = options.showWeekNumbers;
+            }
+
+            if (typeof options.buttonClasses === 'string') {
+                this.buttonClasses = [options.buttonClasses];
+            }
+
+            if (typeof options.buttonClasses === 'object') {
+                this.buttonClasses = options.buttonClasses;
+            }
+
+            if (typeof options.showDropdowns === 'boolean') {
+                this.showDropdowns = options.showDropdowns;
+            }
+
+            if (typeof options.singleDatePicker === 'boolean') {
+                this.singleDatePicker = options.singleDatePicker;
+                if (this.singleDatePicker) {
+                    this.endDate = this.startDate.clone();
+                }
+            }
+
+            if (typeof options.timePicker === 'boolean') {
+                this.timePicker = options.timePicker;
+            }
+
+            if (typeof options.timePickerSeconds === 'boolean') {
+                this.timePickerSeconds = options.timePickerSeconds;
+            }
+
+            if (typeof options.timePickerIncrement === 'number') {
+                this.timePickerIncrement = options.timePickerIncrement;
+            }
+
+            if (typeof options.timePicker12Hour === 'boolean') {
+                this.timePicker12Hour = options.timePicker12Hour;
+            }
+
+            // update day names order to firstDay
+            if (this.locale.firstDay != 0) {
+                var iterator = this.locale.firstDay;
+                while (iterator > 0) {
+                    this.locale.daysOfWeek.push(this.locale.daysOfWeek.shift());
+                    iterator--;
+                }
+            }
+
+            var start, end, range;
+
+            //if no start/end dates set, check if an input element contains initial values
+            if (typeof options.startDate === 'undefined' && typeof options.endDate === 'undefined') {
+                if ($(this.element).is('input[type=text]')) {
+                    var val = $(this.element).val(),
+                        split = val.split(this.separator);
+
+                    start = end = null;
+
+                    if (split.length == 2) {
+                        start = moment(split[0], this.format);
+                        end = moment(split[1], this.format);
+                    } else if (this.singleDatePicker && val !== "") {
+                        start = moment(val, this.format);
+                        end = moment(val, this.format);
+                    }
+                    if (start !== null && end !== null) {
+                        this.startDate = start;
+                        this.endDate = end;
+                    }
+                }
+            }
+
+            // bind the time zone used to build the calendar to either the timeZone passed in through the options or the zone of the startDate (which will be the local time zone by default)
+            if (typeof options.timeZone === 'string' || typeof options.timeZone === 'number') {
+            	if (typeof options.timeZone === 'string' && typeof moment.tz !== 'undefined') {
+            		this.timeZone = moment.tz.zone(options.timeZone).parse(new Date) * -1;	// Offset is positive if the timezone is behind UTC and negative if it is ahead.
+            	} else {
+            		this.timeZone = options.timeZone;
+            	}
+              this.startDate.utcOffset(this.timeZone);
+              this.endDate.utcOffset(this.timeZone);
+            } else {
+                this.timeZone = moment(this.startDate).utcOffset();
+            }
+
+            if (typeof options.ranges === 'object') {
+                for (range in options.ranges) {
+
+                    if (typeof options.ranges[range][0] === 'string')
+                        start = moment(options.ranges[range][0], this.format);
+                    else
+                        start = moment(options.ranges[range][0]);
+
+                    if (typeof options.ranges[range][1] === 'string')
+                        end = moment(options.ranges[range][1], this.format);
+                    else
+                        end = moment(options.ranges[range][1]);
+
+                    // If we have a min/max date set, bound this range
+                    // to it, but only if it would otherwise fall
+                    // outside of the min/max.
+                    if (this.minDate && start.isBefore(this.minDate))
+                        start = moment(this.minDate);
+
+                    if (this.maxDate && end.isAfter(this.maxDate))
+                        end = moment(this.maxDate);
+
+                    // If the end of the range is before the minimum (if min is set) OR
+                    // the start of the range is after the max (also if set) don't display this
+                    // range option.
+                    if ((this.minDate && end.isBefore(this.minDate)) || (this.maxDate && start.isAfter(this.maxDate))) {
+                        continue;
+                    }
+
+                    this.ranges[range] = [start, end];
+                }
+
+                var list = '<ul>';
+                for (range in this.ranges) {
+                    list += '<li>' + range + '</li>';
+                }
+                list += '<li>' + this.locale.customRangeLabel + '</li>';
+                list += '</ul>';
+                this.container.find('.ranges ul').remove();
+                this.container.find('.ranges').prepend(list);
+            }
+
+            if (typeof callback === 'function') {
+                this.cb = callback;
+            }
+
+            if (!this.timePicker) {
+                this.startDate = this.startDate.startOf('day');
+                this.endDate = this.endDate.endOf('day');
+            }
+
+            if (this.singleDatePicker) {
+                this.opens = 'right';
+                this.container.addClass('single');
+                this.container.find('.calendar.right').show();
+                this.container.find('.calendar.left').hide();
+                if (!this.timePicker) {
+                    this.container.find('.ranges').hide();
+                } else {
+                    this.container.find('.ranges .daterangepicker_start_input, .ranges .daterangepicker_end_input').hide();
+                }
+                if (!this.container.find('.calendar.right').hasClass('single'))
+                    this.container.find('.calendar.right').addClass('single');
+            } else {
+                this.container.removeClass('single');
+                this.container.find('.calendar.right').removeClass('single');
+                this.container.find('.ranges').show();
+            }
+
+            this.oldStartDate = this.startDate.clone();
+            this.oldEndDate = this.endDate.clone();
+            this.oldChosenLabel = this.chosenLabel;
+
+            this.leftCalendar = {
+                month: moment([this.startDate.year(), this.startDate.month(), 1, this.startDate.hour(), this.startDate.minute(), this.startDate.second()]),
+                calendar: []
+            };
+
+            this.rightCalendar = {
+                month: moment([this.endDate.year(), this.endDate.month(), 1, this.endDate.hour(), this.endDate.minute(), this.endDate.second()]),
+                calendar: []
+            };
+
+            if (this.opens == 'right' || this.opens == 'center') {
+                //swap calendar positions
+                var first = this.container.find('.calendar.first');
+                var second = this.container.find('.calendar.second');
+
+                if (second.hasClass('single')) {
+                    second.removeClass('single');
+                    first.addClass('single');
+                }
+
+                first.removeClass('left').addClass('right');
+                second.removeClass('right').addClass('left');
+
+                if (this.singleDatePicker) {
+                    first.show();
+                    second.hide();
+                }
+            }
+
+            if (typeof options.ranges === 'undefined' && !this.singleDatePicker) {
+                this.container.addClass('show-calendar');
+            }
+
+            this.container.removeClass('opensleft opensright').addClass('opens' + this.opens);
+
+            this.updateView();
+            this.updateCalendars();
+
+            //apply CSS classes and labels to buttons
+            var c = this.container;
+            $.each(this.buttonClasses, function (idx, val) {
+                c.find('button').addClass(val);
+            });
+            this.container.find('.daterangepicker_start_input label').html(this.locale.fromLabel);
+            this.container.find('.daterangepicker_end_input label').html(this.locale.toLabel);
+            if (this.applyClass.length)
+                this.container.find('.applyBtn').addClass(this.applyClass);
+            if (this.cancelClass.length)
+                this.container.find('.cancelBtn').addClass(this.cancelClass);
+            this.container.find('.applyBtn').html(this.locale.applyLabel);
+            this.container.find('.cancelBtn').html(this.locale.cancelLabel);
+        },
+
+        setStartDate: function(startDate) {
+            if (typeof startDate === 'string')
+                this.startDate = moment(startDate, this.format).utcOffset(this.timeZone);
+
+            if (typeof startDate === 'object')
+                this.startDate = moment(startDate);
+
+            if (!this.timePicker)
+                this.startDate = this.startDate.startOf('day');
+
+            this.oldStartDate = this.startDate.clone();
+
+            this.updateView();
+            this.updateCalendars();
+            this.updateInputText();
+        },
+
+        setEndDate: function(endDate) {
+            if (typeof endDate === 'string')
+                this.endDate = moment(endDate, this.format).utcOffset(this.timeZone);
+
+            if (typeof endDate === 'object')
+                this.endDate = moment(endDate);
+
+            if (!this.timePicker)
+                this.endDate = this.endDate.endOf('day');
+
+            this.oldEndDate = this.endDate.clone();
+
+            this.updateView();
+            this.updateCalendars();
+            this.updateInputText();
+        },
+
+        updateView: function () {
+            this.leftCalendar.month.month(this.startDate.month()).year(this.startDate.year()).hour(this.startDate.hour()).minute(this.startDate.minute());
+            this.rightCalendar.month.month(this.endDate.month()).year(this.endDate.year()).hour(this.endDate.hour()).minute(this.endDate.minute());
+            this.updateFormInputs();
+        },
+
+        updateFormInputs: function () {
+            this.container.find('input[name=daterangepicker_start]').val(this.startDate.format(this.format));
+            this.container.find('input[name=daterangepicker_end]').val(this.endDate.format(this.format));
+
+            if (this.startDate.isSame(this.endDate) || this.startDate.isBefore(this.endDate)) {
+                this.container.find('button.applyBtn').removeAttr('disabled');
+            } else {
+                this.container.find('button.applyBtn').attr('disabled', 'disabled');
+            }
+        },
+
+        updateFromControl: function () {
+            if (!this.element.is('input')) return;
+            if (!this.element.val().length) return;
+
+            var dateString = this.element.val().split(this.separator),
+                start = null,
+                end = null;
+
+            if(dateString.length === 2) {
+                start = moment(dateString[0], this.format).utcOffset(this.timeZone);
+                end = moment(dateString[1], this.format).utcOffset(this.timeZone);
+            }
+
+            if (this.singleDatePicker || start === null || end === null) {
+                start = moment(this.element.val(), this.format).utcOffset(this.timeZone);
+                end = start;
+            }
+
+            if (end.isBefore(start)) return;
+
+            this.oldStartDate = this.startDate.clone();
+            this.oldEndDate = this.endDate.clone();
+
+            this.startDate = start;
+            this.endDate = end;
+
+            if (!this.startDate.isSame(this.oldStartDate) || !this.endDate.isSame(this.oldEndDate))
+                this.notify();
+
+            this.updateCalendars();
+        },
+        
+        keydown: function (e) {
+            //hide on tab or enter
+        	if ((e.keyCode === 9) || (e.keyCode === 13)) {
+        		this.hide();
+        	}
+        },
+
+        notify: function () {
+            this.updateView();
+            this.cb(this.startDate, this.endDate, this.chosenLabel);
+        },
+
+        move: function () {
+            var parentOffset = { top: 0, left: 0 },
+            	containerTop;
+            var parentRightEdge = $(window).width();
+            if (!this.parentEl.is('body')) {
+                parentOffset = {
+                    top: this.parentEl.offset().top - this.parentEl.scrollTop(),
+                    left: this.parentEl.offset().left - this.parentEl.scrollLeft()
+                };
+                parentRightEdge = this.parentEl[0].clientWidth + this.parentEl.offset().left;
+            }
+            
+            if (this.drops == 'up')
+            	containerTop = this.element.offset().top - this.container.outerHeight() - parentOffset.top;
+            else
+            	containerTop = this.element.offset().top + this.element.outerHeight() - parentOffset.top;
+            this.container[this.drops == 'up' ? 'addClass' : 'removeClass']('dropup');
+
+            if (this.opens == 'left') {
+                this.container.css({
+                    top: containerTop,
+                    right: parentRightEdge - this.element.offset().left - this.element.outerWidth(),
+                    left: 'auto'
+                });
+                if (this.container.offset().left < 0) {
+                    this.container.css({
+                        right: 'auto',
+                        left: 9
+                    });
+                }
+            } else if (this.opens == 'center') {
+                this.container.css({
+                    top: containerTop,
+                    left: this.element.offset().left - parentOffset.left + this.element.outerWidth() / 2
+                            - this.container.outerWidth() / 2,
+                    right: 'auto'
+                });
+                if (this.container.offset().left < 0) {
+                    this.container.css({
+                        right: 'auto',
+                        left: 9
+                    });
+                }
+            } else {
+                this.container.css({
+                    top: containerTop,
+                    left: this.element.offset().left - parentOffset.left,
+                    right: 'auto'
+                });
+                if (this.container.offset().left + this.container.outerWidth() > $(window).width()) {
+                    this.container.css({
+                        left: 'auto',
+                        right: 0
+                    });
+                }
+            }
+        },
+
+        toggle: function (e) {
+            if (this.element.hasClass('active')) {
+                this.hide();
+            } else {
+                this.show();
+            }
+        },
+
+        show: function (e) {
+            if (this.isShowing) return;
+
+            this.element.addClass('active');
+            this.container.show();
+            this.move();
+
+            // Create a click proxy that is private to this instance of datepicker, for unbinding
+            this._outsideClickProxy = $.proxy(function (e) { this.outsideClick(e); }, this);
+            // Bind global datepicker mousedown for hiding and
+            $(document)
+              .on('mousedown.daterangepicker', this._outsideClickProxy)
+              // also support mobile devices
+              .on('touchend.daterangepicker', this._outsideClickProxy)
+              // also explicitly play nice with Bootstrap dropdowns, which stopPropagation when clicking them
+              .on('click.daterangepicker', '[data-toggle=dropdown]', this._outsideClickProxy)
+              // and also close when focus changes to outside the picker (eg. tabbing between controls)
+              .on('focusin.daterangepicker', this._outsideClickProxy);
+
+            this.isShowing = true;
+            this.element.trigger('show.daterangepicker', this);
+        },
+
+        outsideClick: function (e) {
+            var target = $(e.target);
+            // if the page is clicked anywhere except within the daterangerpicker/button
+            // itself then call this.hide()
+            if (
+                // ie modal dialog fix
+                e.type == "focusin" ||
+                target.closest(this.element).length ||
+                target.closest(this.container).length ||
+                target.closest('.calendar-date').length
+                ) return;
+            this.hide();
+        },
+
+        hide: function (e) {
+            if (!this.isShowing) return;
+
+            $(document)
+              .off('.daterangepicker');
+
+            this.element.removeClass('active');
+            this.container.hide();
+
+            if (!this.startDate.isSame(this.oldStartDate) || !this.endDate.isSame(this.oldEndDate))
+                this.notify();
+
+            this.oldStartDate = this.startDate.clone();
+            this.oldEndDate = this.endDate.clone();
+
+            this.isShowing = false;
+            this.element.trigger('hide.daterangepicker', this);
+        },
+
+        enterRange: function (e) {
+            // mouse pointer has entered a range label
+            var label = e.target.innerHTML;
+            if (label == this.locale.customRangeLabel) {
+                this.updateView();
+            } else {
+                var dates = this.ranges[label];
+                this.container.find('input[name=daterangepicker_start]').val(dates[0].format(this.format));
+                this.container.find('input[name=daterangepicker_end]').val(dates[1].format(this.format));
+            }
+        },
+
+        showCalendars: function() {
+            this.container.addClass('show-calendar');
+            this.move();
+            this.element.trigger('showCalendar.daterangepicker', this);
+        },
+
+        hideCalendars: function() {
+            this.container.removeClass('show-calendar');
+            this.element.trigger('hideCalendar.daterangepicker', this);
+        },
+
+        // when a date is typed into the start to end date textboxes
+        inputsChanged: function (e) {
+            var el = $(e.target);
+            var date = moment(el.val(), this.format);
+            if (!date.isValid()) return;
+
+            var startDate, endDate;
+            if (el.attr('name') === 'daterangepicker_start') {
+                startDate = (false !== this.minDate && date.isBefore(this.minDate)) ? this.minDate : date;
+                endDate = this.endDate;
+            } else {
+                startDate = this.startDate;
+                endDate = (false !== this.maxDate && date.isAfter(this.maxDate)) ? this.maxDate : date;
+            }
+            this.setCustomDates(startDate, endDate);
+        },
+
+        inputsKeydown: function(e) {
+            if (e.keyCode === 13) {
+                this.inputsChanged(e);
+                this.notify();
+            }
+        },
+
+        updateInputText: function() {
+            if (this.element.is('input') && !this.singleDatePicker) {
+                this.element.val(this.startDate.format(this.format) + this.separator + this.endDate.format(this.format));
+                this.element.trigger('change');
+            } else if (this.element.is('input')) {
+                this.element.val(this.endDate.format(this.format));
+                this.element.trigger('change');
+            }
+        },
+
+        clickRange: function (e) {
+            var label = e.target.innerHTML;
+            this.chosenLabel = label;
+            if (label == this.locale.customRangeLabel) {
+                this.showCalendars();
+            } else {
+                var dates = this.ranges[label];
+
+                this.startDate = dates[0];
+                this.endDate = dates[1];
+
+                if (!this.timePicker) {
+                    this.startDate.startOf('day');
+                    this.endDate.endOf('day');
+                }
+
+                this.leftCalendar.month.month(this.startDate.month()).year(this.startDate.year()).hour(this.startDate.hour()).minute(this.startDate.minute());
+                this.rightCalendar.month.month(this.endDate.month()).year(this.endDate.year()).hour(this.endDate.hour()).minute(this.endDate.minute());
+                this.updateCalendars();
+
+                this.updateInputText();
+
+                this.hideCalendars();
+                this.hide();
+                this.element.trigger('apply.daterangepicker', this);
+            }
+        },
+
+        clickPrev: function (e) {
+            var cal = $(e.target).parents('.calendar');
+            if (cal.hasClass('left')) {
+                this.leftCalendar.month.subtract(1, 'month');
+            } else {
+                this.rightCalendar.month.subtract(1, 'month');
+            }
+            this.updateCalendars();
+        },
+
+        clickNext: function (e) {
+            var cal = $(e.target).parents('.calendar');
+            if (cal.hasClass('left')) {
+                this.leftCalendar.month.add(1, 'month');
+            } else {
+                this.rightCalendar.month.add(1, 'month');
+            }
+            this.updateCalendars();
+        },
+
+        hoverDate: function (e) {
+            var title = $(e.target).attr('data-title');
+            var row = title.substr(1, 1);
+            var col = title.substr(3, 1);
+            var cal = $(e.target).parents('.calendar');
+
+            if (cal.hasClass('left')) {
+                this.container.find('input[name=daterangepicker_start]').val(this.leftCalendar.calendar[row][col].format(this.format));
+            } else {
+                this.container.find('input[name=daterangepicker_end]').val(this.rightCalendar.calendar[row][col].format(this.format));
+            }
+        },
+
+        setCustomDates: function(startDate, endDate) {
+            this.chosenLabel = this.locale.customRangeLabel;
+            if (startDate.isAfter(endDate)) {
+                var difference = this.endDate.diff(this.startDate);
+                endDate = moment(startDate).add(difference, 'ms');
+                if (this.maxDate && endDate.isAfter(this.maxDate)) {
+                  endDate = this.maxDate.clone();
+                }
+            }
+            this.startDate = startDate;
+            this.endDate = endDate;
+
+            this.updateView();
+            this.updateCalendars();
+        },
+
+        clickDate: function (e) {
+            var title = $(e.target).attr('data-title');
+            var row = title.substr(1, 1);
+            var col = title.substr(3, 1);
+            var cal = $(e.target).parents('.calendar');
+
+            var startDate, endDate;
+            if (cal.hasClass('left')) {
+                startDate = this.leftCalendar.calendar[row][col];
+                endDate = this.endDate;
+                if (typeof this.dateLimit === 'object') {
+                    var maxDate = moment(startDate).add(this.dateLimit).startOf('day');
+                    if (endDate.isAfter(maxDate)) {
+                        endDate = maxDate;
+                    }
+                }
+            } else {
+                startDate = this.startDate;
+                endDate = this.rightCalendar.calendar[row][col];
+                if (typeof this.dateLimit === 'object') {
+                    var minDate = moment(endDate).subtract(this.dateLimit).startOf('day');
+                    if (startDate.isBefore(minDate)) {
+                        startDate = minDate;
+                    }
+                }
+            }
+
+            if (this.singleDatePicker && cal.hasClass('left')) {
+                endDate = startDate.clone();
+            } else if (this.singleDatePicker && cal.hasClass('right')) {
+                startDate = endDate.clone();
+            }
+
+            cal.find('td').removeClass('active');
+
+            $(e.target).addClass('active');
+
+            this.setCustomDates(startDate, endDate);
+
+            if (!this.timePicker)
+                endDate.endOf('day');
+
+            if (this.singleDatePicker && !this.timePicker)
+                this.clickApply();
+        },
+
+        clickApply: function (e) {
+            this.updateInputText();
+            this.hide();
+            this.element.trigger('apply.daterangepicker', this);
+        },
+
+        clickCancel: function (e) {
+            this.startDate = this.oldStartDate;
+            this.endDate = this.oldEndDate;
+            this.chosenLabel = this.oldChosenLabel;
+            this.updateView();
+            this.updateCalendars();
+            this.hide();
+            this.element.trigger('cancel.daterangepicker', this);
+        },
+
+        updateMonthYear: function (e) {
+            var isLeft = $(e.target).closest('.calendar').hasClass('left'),
+                leftOrRight = isLeft ? 'left' : 'right',
+                cal = this.container.find('.calendar.'+leftOrRight);
+
+            // Month must be Number for new moment versions
+            var month = parseInt(cal.find('.monthselect').val(), 10);
+            var year = cal.find('.yearselect').val();
+
+            if (!isLeft && !this.singleDatePicker) {
+                if (year < this.startDate.year() || (year == this.startDate.year() && month < this.startDate.month())) {
+                    month = this.startDate.month();
+                    year = this.startDate.year();
+                }
+            }
+
+            if (this.minDate) {
+                if (year < this.minDate.year() || (year == this.minDate.year() && month < this.minDate.month())) {
+                    month = this.minDate.month();
+                    year = this.minDate.year();
+                }
+            }
+
+            if (this.maxDate) {
+                if (year > this.maxDate.year() || (year == this.maxDate.year() && month > this.maxDate.month())) {
+                    month = this.maxDate.month();
+                    year = this.maxDate.year();
+                }
+            }
+
+
+            this[leftOrRight+'Calendar'].month.month(month).year(year);
+            this.updateCalendars();
+        },
+
+        updateTime: function(e) {
+
+            var cal = $(e.target).closest('.calendar'),
+                isLeft = cal.hasClass('left');
+
+            var hour = parseInt(cal.find('.hourselect').val(), 10);
+            var minute = parseInt(cal.find('.minuteselect').val(), 10);
+            var second = 0;
+
+            if (this.timePickerSeconds) {
+                second = parseInt(cal.find('.secondselect').val(), 10);
+            }
+
+            if (this.timePicker12Hour) {
+                var ampm = cal.find('.ampmselect').val();
+                if (ampm === 'PM' && hour < 12)
+                    hour += 12;
+                if (ampm === 'AM' && hour === 12)
+                    hour = 0;
+            }
+
+            if (isLeft) {
+                var start = this.startDate.clone();
+                start.hour(hour);
+                start.minute(minute);
+                start.second(second);
+                this.startDate = start;
+                this.leftCalendar.month.hour(hour).minute(minute).second(second);
+                if (this.singleDatePicker)
+                    this.endDate = start.clone();
+            } else {
+                var end = this.endDate.clone();
+                end.hour(hour);
+                end.minute(minute);
+                end.second(second);
+                this.endDate = end;
+                if (this.singleDatePicker)
+                    this.startDate = end.clone();
+                this.rightCalendar.month.hour(hour).minute(minute).second(second);
+            }
+
+            this.updateView();
+            this.updateCalendars();
+        },
+
+        updateCalendars: function () {
+            this.leftCalendar.calendar = this.buildCalendar(this.leftCalendar.month.month(), this.leftCalendar.month.year(), this.leftCalendar.month.hour(), this.leftCalendar.month.minute(), this.leftCalendar.month.second(), 'left');
+            this.rightCalendar.calendar = this.buildCalendar(this.rightCalendar.month.month(), this.rightCalendar.month.year(), this.rightCalendar.month.hour(), this.rightCalendar.month.minute(), this.rightCalendar.month.second(), 'right');
+            this.container.find('.calendar.left').empty().html(this.renderCalendar(this.leftCalendar.calendar, this.startDate, this.minDate, this.maxDate, 'left'));
+            this.container.find('.calendar.right').empty().html(this.renderCalendar(this.rightCalendar.calendar, this.endDate, this.singleDatePicker ? this.minDate : this.startDate, this.maxDate, 'right'));
+
+            this.container.find('.ranges li').removeClass('active');
+            var customRange = true;
+            var i = 0;
+            for (var range in this.ranges) {
+                if (this.timePicker) {
+                    if (this.startDate.isSame(this.ranges[range][0]) && this.endDate.isSame(this.ranges[range][1])) {
+                        customRange = false;
+                        this.chosenLabel = this.container.find('.ranges li:eq(' + i + ')')
+                            .addClass('active').html();
+                    }
+                } else {
+                    //ignore times when comparing dates if time picker is not enabled
+                    if (this.startDate.format('YYYY-MM-DD') == this.ranges[range][0].format('YYYY-MM-DD') && this.endDate.format('YYYY-MM-DD') == this.ranges[range][1].format('YYYY-MM-DD')) {
+                        customRange = false;
+                        this.chosenLabel = this.container.find('.ranges li:eq(' + i + ')')
+                            .addClass('active').html();
+                    }
+                }
+                i++;
+            }
+            if (customRange) {
+                this.chosenLabel = this.container.find('.ranges li:last').addClass('active').html();
+                this.showCalendars();
+            }
+        },
+
+        buildCalendar: function (month, year, hour, minute, second, side) {
+            var daysInMonth = moment([year, month]).daysInMonth();
+            var firstDay = moment([year, month, 1]);
+            var lastDay = moment([year, month, daysInMonth]);
+            var lastMonth = moment(firstDay).subtract(1, 'month').month();
+            var lastYear = moment(firstDay).subtract(1, 'month').year();
+
+            var daysInLastMonth = moment([lastYear, lastMonth]).daysInMonth();
+
+            var dayOfWeek = firstDay.day();
+
+            var i;
+
+            //initialize a 6 rows x 7 columns array for the calendar
+            var calendar = [];
+            calendar.firstDay = firstDay;
+            calendar.lastDay = lastDay;
+
+            for (i = 0; i < 6; i++) {
+                calendar[i] = [];
+            }
+
+            //populate the calendar with date objects
+            var startDay = daysInLastMonth - dayOfWeek + this.locale.firstDay + 1;
+            if (startDay > daysInLastMonth)
+                startDay -= 7;
+
+            if (dayOfWeek == this.locale.firstDay)
+                startDay = daysInLastMonth - 6;
+
+            var curDate = moment([lastYear, lastMonth, startDay, 12, minute, second]).utcOffset(this.timeZone);
+
+            var col, row;
+            for (i = 0, col = 0, row = 0; i < 42; i++, col++, curDate = moment(curDate).add(24, 'hour')) {
+                if (i > 0 && col % 7 === 0) {
+                    col = 0;
+                    row++;
+                }
+                calendar[row][col] = curDate.clone().hour(hour);
+                curDate.hour(12);
+
+                if (this.minDate && calendar[row][col].format('YYYY-MM-DD') == this.minDate.format('YYYY-MM-DD') && calendar[row][col].isBefore(this.minDate) && side == 'left') {
+                    calendar[row][col] = this.minDate.clone();
+                }
+
+                if (this.maxDate && calendar[row][col].format('YYYY-MM-DD') == this.maxDate.format('YYYY-MM-DD') && calendar[row][col].isAfter(this.maxDate) && side == 'right') {
+                    calendar[row][col] = this.maxDate.clone();
+                }
+
+            }
+
+            return calendar;
+        },
+
+        renderDropdowns: function (selected, minDate, maxDate) {
+            var currentMonth = selected.month();
+            var currentYear = selected.year();
+            var maxYear = (maxDate && maxDate.year()) || (currentYear + 5);
+            var minYear = (minDate && minDate.year()) || (currentYear - 50);
+
+            var monthHtml = '<select class="monthselect">';
+            var inMinYear = currentYear == minYear;
+            var inMaxYear = currentYear == maxYear;
+
+            for (var m = 0; m < 12; m++) {
+                if ((!inMinYear || m >= minDate.month()) && (!inMaxYear || m <= maxDate.month())) {
+                    monthHtml += "<option value='" + m + "'" +
+                        (m === currentMonth ? " selected='selected'" : "") +
+                        ">" + this.locale.monthNames[m] + "</option>";
+                }
+            }
+            monthHtml += "</select>";
+
+            var yearHtml = '<select class="yearselect">';
+
+            for (var y = minYear; y <= maxYear; y++) {
+                yearHtml += '<option value="' + y + '"' +
+                    (y === currentYear ? ' selected="selected"' : '') +
+                    '>' + y + '</option>';
+            }
+
+            yearHtml += '</select>';
+
+            return monthHtml + yearHtml;
+        },
+
+        renderCalendar: function (calendar, selected, minDate, maxDate, side) {
+
+            var html = '<div class="calendar-date">';
+            html += '<table class="table-condensed">';
+            html += '<thead>';
+            html += '<tr>';
+
+            // add empty cell for week number
+            if (this.showWeekNumbers)
+                html += '<th></th>';
+
+            if (!minDate || minDate.isBefore(calendar.firstDay)) {
+                html += '<th class="prev available"><i class="fa fa-arrow-left icon icon-arrow-left glyphicon glyphicon-arrow-left"></i></th>';
+            } else {
+                html += '<th></th>';
+            }
+
+            var dateHtml = this.locale.monthNames[calendar[1][1].month()] + calendar[1][1].format(" YYYY");
+
+            if (this.showDropdowns) {
+                dateHtml = this.renderDropdowns(calendar[1][1], minDate, maxDate);
+            }
+
+            html += '<th colspan="5" class="month">' + dateHtml + '</th>';
+            if (!maxDate || maxDate.isAfter(calendar.lastDay)) {
+                html += '<th class="next available"><i class="fa fa-arrow-right icon icon-arrow-right glyphicon glyphicon-arrow-right"></i></th>';
+            } else {
+                html += '<th></th>';
+            }
+
+            html += '</tr>';
+            html += '<tr>';
+
+            // add week number label
+            if (this.showWeekNumbers)
+                html += '<th class="week">' + this.locale.weekLabel + '</th>';
+
+            $.each(this.locale.daysOfWeek, function (index, dayOfWeek) {
+                html += '<th>' + dayOfWeek + '</th>';
+            });
+
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            for (var row = 0; row < 6; row++) {
+                html += '<tr>';
+
+                // add week number
+                if (this.showWeekNumbers)
+                    html += '<td class="week">' + calendar[row][0].week() + '</td>';
+
+                for (var col = 0; col < 7; col++) {
+                    var cname = 'available ';
+                    cname += (calendar[row][col].month() == calendar[1][1].month()) ? '' : 'off';
+
+                    if ((minDate && calendar[row][col].isBefore(minDate, 'day')) || (maxDate && calendar[row][col].isAfter(maxDate, 'day'))) {
+                        cname = ' off disabled ';
+                    } else if (calendar[row][col].format('YYYY-MM-DD') == selected.format('YYYY-MM-DD')) {
+                        cname += ' active ';
+                        if (calendar[row][col].format('YYYY-MM-DD') == this.startDate.format('YYYY-MM-DD')) {
+                            cname += ' start-date ';
+                        }
+                        if (calendar[row][col].format('YYYY-MM-DD') == this.endDate.format('YYYY-MM-DD')) {
+                            cname += ' end-date ';
+                        }
+                    } else if (calendar[row][col] >= this.startDate && calendar[row][col] <= this.endDate) {
+                        cname += ' in-range ';
+                        if (calendar[row][col].isSame(this.startDate)) { cname += ' start-date '; }
+                        if (calendar[row][col].isSame(this.endDate)) { cname += ' end-date '; }
+                    }
+
+                    var title = 'r' + row + 'c' + col;
+                    html += '<td class="' + cname.replace(/\s+/g, ' ').replace(/^\s?(.*?)\s?$/, '$1') + '" data-title="' + title + '">' + calendar[row][col].date() + '</td>';
+                }
+                html += '</tr>';
+            }
+
+            html += '</tbody>';
+            html += '</table>';
+            html += '</div>';
+
+            var i;
+            if (this.timePicker) {
+
+                html += '<div class="calendar-time">';
+                html += '<select class="hourselect">';
+
+                // Disallow selections before the minDate or after the maxDate
+                var min_hour = 0;
+                var max_hour = 23;
+
+                if (minDate && (side == 'left' || this.singleDatePicker) && selected.format('YYYY-MM-DD') == minDate.format('YYYY-MM-DD')) {
+                    min_hour = minDate.hour();
+                    if (selected.hour() < min_hour)
+                        selected.hour(min_hour);
+                    if (this.timePicker12Hour && min_hour >= 12 && selected.hour() >= 12)
+                        min_hour -= 12;
+                    if (this.timePicker12Hour && min_hour == 12)
+                        min_hour = 1;
+                }
+
+                if (maxDate && (side == 'right' || this.singleDatePicker) && selected.format('YYYY-MM-DD') == maxDate.format('YYYY-MM-DD')) {
+                    max_hour = maxDate.hour();
+                    if (selected.hour() > max_hour)
+                        selected.hour(max_hour);
+                    if (this.timePicker12Hour && max_hour >= 12 && selected.hour() >= 12)
+                        max_hour -= 12;
+                }
+
+                var start = 0;
+                var end = 23;
+                var selected_hour = selected.hour();
+                if (this.timePicker12Hour) {
+                    start = 1;
+                    end = 12;
+                    if (selected_hour >= 12)
+                        selected_hour -= 12;
+                    if (selected_hour === 0)
+                        selected_hour = 12;
+                }
+
+                for (i = start; i <= end; i++) {
+
+                    if (i == selected_hour) {
+                        html += '<option value="' + i + '" selected="selected">' + i + '</option>';
+                    } else if (i < min_hour || i > max_hour) {
+                        html += '<option value="' + i + '" disabled="disabled" class="disabled">' + i + '</option>';
+                    } else {
+                        html += '<option value="' + i + '">' + i + '</option>';
+                    }
+                }
+
+                html += '</select> : ';
+
+                html += '<select class="minuteselect">';
+
+                // Disallow selections before the minDate or after the maxDate
+                var min_minute = 0;
+                var max_minute = 59;
+
+                if (minDate && (side == 'left' || this.singleDatePicker) && selected.format('YYYY-MM-DD h A') == minDate.format('YYYY-MM-DD h A')) {
+                    min_minute = minDate.minute();
+                    if (selected.minute() < min_minute)
+                        selected.minute(min_minute);
+                }
+
+                if (maxDate && (side == 'right' || this.singleDatePicker) && selected.format('YYYY-MM-DD h A') == maxDate.format('YYYY-MM-DD h A')) {
+                    max_minute = maxDate.minute();
+                    if (selected.minute() > max_minute)
+                        selected.minute(max_minute);
+                }
+
+                for (i = 0; i < 60; i += this.timePickerIncrement) {
+                    var num = i;
+                    if (num < 10)
+                        num = '0' + num;
+                    if (i == selected.minute()) {
+                        html += '<option value="' + i + '" selected="selected">' + num + '</option>';
+                    } else if (i < min_minute || i > max_minute) {
+                        html += '<option value="' + i + '" disabled="disabled" class="disabled">' + num + '</option>';
+                    } else {
+                        html += '<option value="' + i + '">' + num + '</option>';
+                    }
+                }
+
+                html += '</select> ';
+
+                if (this.timePickerSeconds) {
+                    html += ': <select class="secondselect">';
+
+                    for (i = 0; i < 60; i += this.timePickerIncrement) {
+                        var num = i;
+                        if (num < 10)
+                            num = '0' + num;
+                        if (i == selected.second()) {
+                            html += '<option value="' + i + '" selected="selected">' + num + '</option>';
+                        } else {
+                            html += '<option value="' + i + '">' + num + '</option>';
+                        }
+                    }
+
+                    html += '</select>';
+                }
+
+                if (this.timePicker12Hour) {
+                    html += '<select class="ampmselect">';
+
+                    // Disallow selection before the minDate or after the maxDate
+                    var am_html = '';
+                    var pm_html = '';
+
+                    if (minDate && (side == 'left' || this.singleDatePicker) && selected.format('YYYY-MM-DD') == minDate.format('YYYY-MM-DD') && minDate.hour() >= 12) {
+                        am_html = ' disabled="disabled" class="disabled"';
+                    }
+
+                    if (maxDate && (side == 'right' || this.singleDatePicker) && selected.format('YYYY-MM-DD') == maxDate.format('YYYY-MM-DD') && maxDate.hour() < 12) {
+                        pm_html = ' disabled="disabled" class="disabled"';
+                    }
+
+                    if (selected.hour() >= 12) {
+                        html += '<option value="AM"' + am_html + '>AM</option><option value="PM" selected="selected"' + pm_html + '>PM</option>';
+                    } else {
+                        html += '<option value="AM" selected="selected"' + am_html + '>AM</option><option value="PM"' + pm_html + '>PM</option>';
+                    }
+                    html += '</select>';
+                }
+
+                html += '</div>';
+
+            }
+
+            return html;
+
+        },
+
+        remove: function() {
+
+            this.container.remove();
+            this.element.off('.daterangepicker');
+            this.element.removeData('daterangepicker');
+
+        }
+
+    };
+
+    $.fn.daterangepicker = function (options, cb) {
+        this.each(function () {
+            var el = $(this);
+            if (el.data('daterangepicker'))
+                el.data('daterangepicker').remove();
+            el.data('daterangepicker', new DateRangePicker(el, options, cb));
+        });
+        return this;
+    };
 
 }));
 
@@ -58785,7 +60363,1620 @@ module.exports = builder(scopeMixin);
 
 })(typeof exports === 'undefined' ? window : exports);
 
-/* Zepto v1.1.6 - zepto event ajax form ie - zeptojs.com/license */
+//! moment.js
+//! version : 2.9.0
+//! authors : Tim Wood, Iskren Chernev, Moment.js contributors
+//! license : MIT
+//! momentjs.com
+(function(a){function b(a,b,c){switch(arguments.length){case 2:return null!=a?a:b;case 3:return null!=a?a:null!=b?b:c;default:throw new Error("Implement me")}}function c(a,b){return Bb.call(a,b)}function d(){return{empty:!1,unusedTokens:[],unusedInput:[],overflow:-2,charsLeftOver:0,nullInput:!1,invalidMonth:null,invalidFormat:!1,userInvalidated:!1,iso:!1}}function e(a){vb.suppressDeprecationWarnings===!1&&"undefined"!=typeof console&&console.warn&&console.warn("Deprecation warning: "+a)}function f(a,b){var c=!0;return o(function(){return c&&(e(a),c=!1),b.apply(this,arguments)},b)}function g(a,b){sc[a]||(e(b),sc[a]=!0)}function h(a,b){return function(c){return r(a.call(this,c),b)}}function i(a,b){return function(c){return this.localeData().ordinal(a.call(this,c),b)}}function j(a,b){var c,d,e=12*(b.year()-a.year())+(b.month()-a.month()),f=a.clone().add(e,"months");return 0>b-f?(c=a.clone().add(e-1,"months"),d=(b-f)/(f-c)):(c=a.clone().add(e+1,"months"),d=(b-f)/(c-f)),-(e+d)}function k(a,b,c){var d;return null==c?b:null!=a.meridiemHour?a.meridiemHour(b,c):null!=a.isPM?(d=a.isPM(c),d&&12>b&&(b+=12),d||12!==b||(b=0),b):b}function l(){}function m(a,b){b!==!1&&H(a),p(this,a),this._d=new Date(+a._d),uc===!1&&(uc=!0,vb.updateOffset(this),uc=!1)}function n(a){var b=A(a),c=b.year||0,d=b.quarter||0,e=b.month||0,f=b.week||0,g=b.day||0,h=b.hour||0,i=b.minute||0,j=b.second||0,k=b.millisecond||0;this._milliseconds=+k+1e3*j+6e4*i+36e5*h,this._days=+g+7*f,this._months=+e+3*d+12*c,this._data={},this._locale=vb.localeData(),this._bubble()}function o(a,b){for(var d in b)c(b,d)&&(a[d]=b[d]);return c(b,"toString")&&(a.toString=b.toString),c(b,"valueOf")&&(a.valueOf=b.valueOf),a}function p(a,b){var c,d,e;if("undefined"!=typeof b._isAMomentObject&&(a._isAMomentObject=b._isAMomentObject),"undefined"!=typeof b._i&&(a._i=b._i),"undefined"!=typeof b._f&&(a._f=b._f),"undefined"!=typeof b._l&&(a._l=b._l),"undefined"!=typeof b._strict&&(a._strict=b._strict),"undefined"!=typeof b._tzm&&(a._tzm=b._tzm),"undefined"!=typeof b._isUTC&&(a._isUTC=b._isUTC),"undefined"!=typeof b._offset&&(a._offset=b._offset),"undefined"!=typeof b._pf&&(a._pf=b._pf),"undefined"!=typeof b._locale&&(a._locale=b._locale),Kb.length>0)for(c in Kb)d=Kb[c],e=b[d],"undefined"!=typeof e&&(a[d]=e);return a}function q(a){return 0>a?Math.ceil(a):Math.floor(a)}function r(a,b,c){for(var d=""+Math.abs(a),e=a>=0;d.length<b;)d="0"+d;return(e?c?"+":"":"-")+d}function s(a,b){var c={milliseconds:0,months:0};return c.months=b.month()-a.month()+12*(b.year()-a.year()),a.clone().add(c.months,"M").isAfter(b)&&--c.months,c.milliseconds=+b-+a.clone().add(c.months,"M"),c}function t(a,b){var c;return b=M(b,a),a.isBefore(b)?c=s(a,b):(c=s(b,a),c.milliseconds=-c.milliseconds,c.months=-c.months),c}function u(a,b){return function(c,d){var e,f;return null===d||isNaN(+d)||(g(b,"moment()."+b+"(period, number) is deprecated. Please use moment()."+b+"(number, period)."),f=c,c=d,d=f),c="string"==typeof c?+c:c,e=vb.duration(c,d),v(this,e,a),this}}function v(a,b,c,d){var e=b._milliseconds,f=b._days,g=b._months;d=null==d?!0:d,e&&a._d.setTime(+a._d+e*c),f&&pb(a,"Date",ob(a,"Date")+f*c),g&&nb(a,ob(a,"Month")+g*c),d&&vb.updateOffset(a,f||g)}function w(a){return"[object Array]"===Object.prototype.toString.call(a)}function x(a){return"[object Date]"===Object.prototype.toString.call(a)||a instanceof Date}function y(a,b,c){var d,e=Math.min(a.length,b.length),f=Math.abs(a.length-b.length),g=0;for(d=0;e>d;d++)(c&&a[d]!==b[d]||!c&&C(a[d])!==C(b[d]))&&g++;return g+f}function z(a){if(a){var b=a.toLowerCase().replace(/(.)s$/,"$1");a=lc[a]||mc[b]||b}return a}function A(a){var b,d,e={};for(d in a)c(a,d)&&(b=z(d),b&&(e[b]=a[d]));return e}function B(b){var c,d;if(0===b.indexOf("week"))c=7,d="day";else{if(0!==b.indexOf("month"))return;c=12,d="month"}vb[b]=function(e,f){var g,h,i=vb._locale[b],j=[];if("number"==typeof e&&(f=e,e=a),h=function(a){var b=vb().utc().set(d,a);return i.call(vb._locale,b,e||"")},null!=f)return h(f);for(g=0;c>g;g++)j.push(h(g));return j}}function C(a){var b=+a,c=0;return 0!==b&&isFinite(b)&&(c=b>=0?Math.floor(b):Math.ceil(b)),c}function D(a,b){return new Date(Date.UTC(a,b+1,0)).getUTCDate()}function E(a,b,c){return jb(vb([a,11,31+b-c]),b,c).week}function F(a){return G(a)?366:365}function G(a){return a%4===0&&a%100!==0||a%400===0}function H(a){var b;a._a&&-2===a._pf.overflow&&(b=a._a[Db]<0||a._a[Db]>11?Db:a._a[Eb]<1||a._a[Eb]>D(a._a[Cb],a._a[Db])?Eb:a._a[Fb]<0||a._a[Fb]>24||24===a._a[Fb]&&(0!==a._a[Gb]||0!==a._a[Hb]||0!==a._a[Ib])?Fb:a._a[Gb]<0||a._a[Gb]>59?Gb:a._a[Hb]<0||a._a[Hb]>59?Hb:a._a[Ib]<0||a._a[Ib]>999?Ib:-1,a._pf._overflowDayOfYear&&(Cb>b||b>Eb)&&(b=Eb),a._pf.overflow=b)}function I(b){return null==b._isValid&&(b._isValid=!isNaN(b._d.getTime())&&b._pf.overflow<0&&!b._pf.empty&&!b._pf.invalidMonth&&!b._pf.nullInput&&!b._pf.invalidFormat&&!b._pf.userInvalidated,b._strict&&(b._isValid=b._isValid&&0===b._pf.charsLeftOver&&0===b._pf.unusedTokens.length&&b._pf.bigHour===a)),b._isValid}function J(a){return a?a.toLowerCase().replace("_","-"):a}function K(a){for(var b,c,d,e,f=0;f<a.length;){for(e=J(a[f]).split("-"),b=e.length,c=J(a[f+1]),c=c?c.split("-"):null;b>0;){if(d=L(e.slice(0,b).join("-")))return d;if(c&&c.length>=b&&y(e,c,!0)>=b-1)break;b--}f++}return null}function L(a){var b=null;if(!Jb[a]&&Lb)try{b=vb.locale(),require("./locale/"+a),vb.locale(b)}catch(c){}return Jb[a]}function M(a,b){var c,d;return b._isUTC?(c=b.clone(),d=(vb.isMoment(a)||x(a)?+a:+vb(a))-+c,c._d.setTime(+c._d+d),vb.updateOffset(c,!1),c):vb(a).local()}function N(a){return a.match(/\[[\s\S]/)?a.replace(/^\[|\]$/g,""):a.replace(/\\/g,"")}function O(a){var b,c,d=a.match(Pb);for(b=0,c=d.length;c>b;b++)d[b]=rc[d[b]]?rc[d[b]]:N(d[b]);return function(e){var f="";for(b=0;c>b;b++)f+=d[b]instanceof Function?d[b].call(e,a):d[b];return f}}function P(a,b){return a.isValid()?(b=Q(b,a.localeData()),nc[b]||(nc[b]=O(b)),nc[b](a)):a.localeData().invalidDate()}function Q(a,b){function c(a){return b.longDateFormat(a)||a}var d=5;for(Qb.lastIndex=0;d>=0&&Qb.test(a);)a=a.replace(Qb,c),Qb.lastIndex=0,d-=1;return a}function R(a,b){var c,d=b._strict;switch(a){case"Q":return _b;case"DDDD":return bc;case"YYYY":case"GGGG":case"gggg":return d?cc:Tb;case"Y":case"G":case"g":return ec;case"YYYYYY":case"YYYYY":case"GGGGG":case"ggggg":return d?dc:Ub;case"S":if(d)return _b;case"SS":if(d)return ac;case"SSS":if(d)return bc;case"DDD":return Sb;case"MMM":case"MMMM":case"dd":case"ddd":case"dddd":return Wb;case"a":case"A":return b._locale._meridiemParse;case"x":return Zb;case"X":return $b;case"Z":case"ZZ":return Xb;case"T":return Yb;case"SSSS":return Vb;case"MM":case"DD":case"YY":case"GG":case"gg":case"HH":case"hh":case"mm":case"ss":case"ww":case"WW":return d?ac:Rb;case"M":case"D":case"d":case"H":case"h":case"m":case"s":case"w":case"W":case"e":case"E":return Rb;case"Do":return d?b._locale._ordinalParse:b._locale._ordinalParseLenient;default:return c=new RegExp($(Z(a.replace("\\","")),"i"))}}function S(a){a=a||"";var b=a.match(Xb)||[],c=b[b.length-1]||[],d=(c+"").match(jc)||["-",0,0],e=+(60*d[1])+C(d[2]);return"+"===d[0]?e:-e}function T(a,b,c){var d,e=c._a;switch(a){case"Q":null!=b&&(e[Db]=3*(C(b)-1));break;case"M":case"MM":null!=b&&(e[Db]=C(b)-1);break;case"MMM":case"MMMM":d=c._locale.monthsParse(b,a,c._strict),null!=d?e[Db]=d:c._pf.invalidMonth=b;break;case"D":case"DD":null!=b&&(e[Eb]=C(b));break;case"Do":null!=b&&(e[Eb]=C(parseInt(b.match(/\d{1,2}/)[0],10)));break;case"DDD":case"DDDD":null!=b&&(c._dayOfYear=C(b));break;case"YY":e[Cb]=vb.parseTwoDigitYear(b);break;case"YYYY":case"YYYYY":case"YYYYYY":e[Cb]=C(b);break;case"a":case"A":c._meridiem=b;break;case"h":case"hh":c._pf.bigHour=!0;case"H":case"HH":e[Fb]=C(b);break;case"m":case"mm":e[Gb]=C(b);break;case"s":case"ss":e[Hb]=C(b);break;case"S":case"SS":case"SSS":case"SSSS":e[Ib]=C(1e3*("0."+b));break;case"x":c._d=new Date(C(b));break;case"X":c._d=new Date(1e3*parseFloat(b));break;case"Z":case"ZZ":c._useUTC=!0,c._tzm=S(b);break;case"dd":case"ddd":case"dddd":d=c._locale.weekdaysParse(b),null!=d?(c._w=c._w||{},c._w.d=d):c._pf.invalidWeekday=b;break;case"w":case"ww":case"W":case"WW":case"d":case"e":case"E":a=a.substr(0,1);case"gggg":case"GGGG":case"GGGGG":a=a.substr(0,2),b&&(c._w=c._w||{},c._w[a]=C(b));break;case"gg":case"GG":c._w=c._w||{},c._w[a]=vb.parseTwoDigitYear(b)}}function U(a){var c,d,e,f,g,h,i;c=a._w,null!=c.GG||null!=c.W||null!=c.E?(g=1,h=4,d=b(c.GG,a._a[Cb],jb(vb(),1,4).year),e=b(c.W,1),f=b(c.E,1)):(g=a._locale._week.dow,h=a._locale._week.doy,d=b(c.gg,a._a[Cb],jb(vb(),g,h).year),e=b(c.w,1),null!=c.d?(f=c.d,g>f&&++e):f=null!=c.e?c.e+g:g),i=kb(d,e,f,h,g),a._a[Cb]=i.year,a._dayOfYear=i.dayOfYear}function V(a){var c,d,e,f,g=[];if(!a._d){for(e=X(a),a._w&&null==a._a[Eb]&&null==a._a[Db]&&U(a),a._dayOfYear&&(f=b(a._a[Cb],e[Cb]),a._dayOfYear>F(f)&&(a._pf._overflowDayOfYear=!0),d=fb(f,0,a._dayOfYear),a._a[Db]=d.getUTCMonth(),a._a[Eb]=d.getUTCDate()),c=0;3>c&&null==a._a[c];++c)a._a[c]=g[c]=e[c];for(;7>c;c++)a._a[c]=g[c]=null==a._a[c]?2===c?1:0:a._a[c];24===a._a[Fb]&&0===a._a[Gb]&&0===a._a[Hb]&&0===a._a[Ib]&&(a._nextDay=!0,a._a[Fb]=0),a._d=(a._useUTC?fb:eb).apply(null,g),null!=a._tzm&&a._d.setUTCMinutes(a._d.getUTCMinutes()-a._tzm),a._nextDay&&(a._a[Fb]=24)}}function W(a){var b;a._d||(b=A(a._i),a._a=[b.year,b.month,b.day||b.date,b.hour,b.minute,b.second,b.millisecond],V(a))}function X(a){var b=new Date;return a._useUTC?[b.getUTCFullYear(),b.getUTCMonth(),b.getUTCDate()]:[b.getFullYear(),b.getMonth(),b.getDate()]}function Y(b){if(b._f===vb.ISO_8601)return void ab(b);b._a=[],b._pf.empty=!0;var c,d,e,f,g,h=""+b._i,i=h.length,j=0;for(e=Q(b._f,b._locale).match(Pb)||[],c=0;c<e.length;c++)f=e[c],d=(h.match(R(f,b))||[])[0],d&&(g=h.substr(0,h.indexOf(d)),g.length>0&&b._pf.unusedInput.push(g),h=h.slice(h.indexOf(d)+d.length),j+=d.length),rc[f]?(d?b._pf.empty=!1:b._pf.unusedTokens.push(f),T(f,d,b)):b._strict&&!d&&b._pf.unusedTokens.push(f);b._pf.charsLeftOver=i-j,h.length>0&&b._pf.unusedInput.push(h),b._pf.bigHour===!0&&b._a[Fb]<=12&&(b._pf.bigHour=a),b._a[Fb]=k(b._locale,b._a[Fb],b._meridiem),V(b),H(b)}function Z(a){return a.replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g,function(a,b,c,d,e){return b||c||d||e})}function $(a){return a.replace(/[-\/\\^$*+?.()|[\]{}]/g,"\\$&")}function _(a){var b,c,e,f,g;if(0===a._f.length)return a._pf.invalidFormat=!0,void(a._d=new Date(0/0));for(f=0;f<a._f.length;f++)g=0,b=p({},a),null!=a._useUTC&&(b._useUTC=a._useUTC),b._pf=d(),b._f=a._f[f],Y(b),I(b)&&(g+=b._pf.charsLeftOver,g+=10*b._pf.unusedTokens.length,b._pf.score=g,(null==e||e>g)&&(e=g,c=b));o(a,c||b)}function ab(a){var b,c,d=a._i,e=fc.exec(d);if(e){for(a._pf.iso=!0,b=0,c=hc.length;c>b;b++)if(hc[b][1].exec(d)){a._f=hc[b][0]+(e[6]||" ");break}for(b=0,c=ic.length;c>b;b++)if(ic[b][1].exec(d)){a._f+=ic[b][0];break}d.match(Xb)&&(a._f+="Z"),Y(a)}else a._isValid=!1}function bb(a){ab(a),a._isValid===!1&&(delete a._isValid,vb.createFromInputFallback(a))}function cb(a,b){var c,d=[];for(c=0;c<a.length;++c)d.push(b(a[c],c));return d}function db(b){var c,d=b._i;d===a?b._d=new Date:x(d)?b._d=new Date(+d):null!==(c=Mb.exec(d))?b._d=new Date(+c[1]):"string"==typeof d?bb(b):w(d)?(b._a=cb(d.slice(0),function(a){return parseInt(a,10)}),V(b)):"object"==typeof d?W(b):"number"==typeof d?b._d=new Date(d):vb.createFromInputFallback(b)}function eb(a,b,c,d,e,f,g){var h=new Date(a,b,c,d,e,f,g);return 1970>a&&h.setFullYear(a),h}function fb(a){var b=new Date(Date.UTC.apply(null,arguments));return 1970>a&&b.setUTCFullYear(a),b}function gb(a,b){if("string"==typeof a)if(isNaN(a)){if(a=b.weekdaysParse(a),"number"!=typeof a)return null}else a=parseInt(a,10);return a}function hb(a,b,c,d,e){return e.relativeTime(b||1,!!c,a,d)}function ib(a,b,c){var d=vb.duration(a).abs(),e=Ab(d.as("s")),f=Ab(d.as("m")),g=Ab(d.as("h")),h=Ab(d.as("d")),i=Ab(d.as("M")),j=Ab(d.as("y")),k=e<oc.s&&["s",e]||1===f&&["m"]||f<oc.m&&["mm",f]||1===g&&["h"]||g<oc.h&&["hh",g]||1===h&&["d"]||h<oc.d&&["dd",h]||1===i&&["M"]||i<oc.M&&["MM",i]||1===j&&["y"]||["yy",j];return k[2]=b,k[3]=+a>0,k[4]=c,hb.apply({},k)}function jb(a,b,c){var d,e=c-b,f=c-a.day();return f>e&&(f-=7),e-7>f&&(f+=7),d=vb(a).add(f,"d"),{week:Math.ceil(d.dayOfYear()/7),year:d.year()}}function kb(a,b,c,d,e){var f,g,h=fb(a,0,1).getUTCDay();return h=0===h?7:h,c=null!=c?c:e,f=e-h+(h>d?7:0)-(e>h?7:0),g=7*(b-1)+(c-e)+f+1,{year:g>0?a:a-1,dayOfYear:g>0?g:F(a-1)+g}}function lb(b){var c,d=b._i,e=b._f;return b._locale=b._locale||vb.localeData(b._l),null===d||e===a&&""===d?vb.invalid({nullInput:!0}):("string"==typeof d&&(b._i=d=b._locale.preparse(d)),vb.isMoment(d)?new m(d,!0):(e?w(e)?_(b):Y(b):db(b),c=new m(b),c._nextDay&&(c.add(1,"d"),c._nextDay=a),c))}function mb(a,b){var c,d;if(1===b.length&&w(b[0])&&(b=b[0]),!b.length)return vb();for(c=b[0],d=1;d<b.length;++d)b[d][a](c)&&(c=b[d]);return c}function nb(a,b){var c;return"string"==typeof b&&(b=a.localeData().monthsParse(b),"number"!=typeof b)?a:(c=Math.min(a.date(),D(a.year(),b)),a._d["set"+(a._isUTC?"UTC":"")+"Month"](b,c),a)}function ob(a,b){return a._d["get"+(a._isUTC?"UTC":"")+b]()}function pb(a,b,c){return"Month"===b?nb(a,c):a._d["set"+(a._isUTC?"UTC":"")+b](c)}function qb(a,b){return function(c){return null!=c?(pb(this,a,c),vb.updateOffset(this,b),this):ob(this,a)}}function rb(a){return 400*a/146097}function sb(a){return 146097*a/400}function tb(a){vb.duration.fn[a]=function(){return this._data[a]}}function ub(a){"undefined"==typeof ender&&(wb=zb.moment,zb.moment=a?f("Accessing Moment through the global scope is deprecated, and will be removed in an upcoming release.",vb):vb)}for(var vb,wb,xb,yb="2.9.0",zb="undefined"==typeof global||"undefined"!=typeof window&&window!==global.window?this:global,Ab=Math.round,Bb=Object.prototype.hasOwnProperty,Cb=0,Db=1,Eb=2,Fb=3,Gb=4,Hb=5,Ib=6,Jb={},Kb=[],Lb="undefined"!=typeof module&&module&&module.exports,Mb=/^\/?Date\((\-?\d+)/i,Nb=/(\-)?(?:(\d*)\.)?(\d+)\:(\d+)(?:\:(\d+)\.?(\d{3})?)?/,Ob=/^(-)?P(?:(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?|([0-9,.]*)W)$/,Pb=/(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Q|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,4}|x|X|zz?|ZZ?|.)/g,Qb=/(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,Rb=/\d\d?/,Sb=/\d{1,3}/,Tb=/\d{1,4}/,Ub=/[+\-]?\d{1,6}/,Vb=/\d+/,Wb=/[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i,Xb=/Z|[\+\-]\d\d:?\d\d/gi,Yb=/T/i,Zb=/[\+\-]?\d+/,$b=/[\+\-]?\d+(\.\d{1,3})?/,_b=/\d/,ac=/\d\d/,bc=/\d{3}/,cc=/\d{4}/,dc=/[+-]?\d{6}/,ec=/[+-]?\d+/,fc=/^\s*(?:[+-]\d{6}|\d{4})-(?:(\d\d-\d\d)|(W\d\d$)|(W\d\d-\d)|(\d\d\d))((T| )(\d\d(:\d\d(:\d\d(\.\d+)?)?)?)?([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/,gc="YYYY-MM-DDTHH:mm:ssZ",hc=[["YYYYYY-MM-DD",/[+-]\d{6}-\d{2}-\d{2}/],["YYYY-MM-DD",/\d{4}-\d{2}-\d{2}/],["GGGG-[W]WW-E",/\d{4}-W\d{2}-\d/],["GGGG-[W]WW",/\d{4}-W\d{2}/],["YYYY-DDD",/\d{4}-\d{3}/]],ic=[["HH:mm:ss.SSSS",/(T| )\d\d:\d\d:\d\d\.\d+/],["HH:mm:ss",/(T| )\d\d:\d\d:\d\d/],["HH:mm",/(T| )\d\d:\d\d/],["HH",/(T| )\d\d/]],jc=/([\+\-]|\d\d)/gi,kc=("Date|Hours|Minutes|Seconds|Milliseconds".split("|"),{Milliseconds:1,Seconds:1e3,Minutes:6e4,Hours:36e5,Days:864e5,Months:2592e6,Years:31536e6}),lc={ms:"millisecond",s:"second",m:"minute",h:"hour",d:"day",D:"date",w:"week",W:"isoWeek",M:"month",Q:"quarter",y:"year",DDD:"dayOfYear",e:"weekday",E:"isoWeekday",gg:"weekYear",GG:"isoWeekYear"},mc={dayofyear:"dayOfYear",isoweekday:"isoWeekday",isoweek:"isoWeek",weekyear:"weekYear",isoweekyear:"isoWeekYear"},nc={},oc={s:45,m:45,h:22,d:26,M:11},pc="DDD w W M D d".split(" "),qc="M D H h m s w W".split(" "),rc={M:function(){return this.month()+1},MMM:function(a){return this.localeData().monthsShort(this,a)},MMMM:function(a){return this.localeData().months(this,a)},D:function(){return this.date()},DDD:function(){return this.dayOfYear()},d:function(){return this.day()},dd:function(a){return this.localeData().weekdaysMin(this,a)},ddd:function(a){return this.localeData().weekdaysShort(this,a)},dddd:function(a){return this.localeData().weekdays(this,a)},w:function(){return this.week()},W:function(){return this.isoWeek()},YY:function(){return r(this.year()%100,2)},YYYY:function(){return r(this.year(),4)},YYYYY:function(){return r(this.year(),5)},YYYYYY:function(){var a=this.year(),b=a>=0?"+":"-";return b+r(Math.abs(a),6)},gg:function(){return r(this.weekYear()%100,2)},gggg:function(){return r(this.weekYear(),4)},ggggg:function(){return r(this.weekYear(),5)},GG:function(){return r(this.isoWeekYear()%100,2)},GGGG:function(){return r(this.isoWeekYear(),4)},GGGGG:function(){return r(this.isoWeekYear(),5)},e:function(){return this.weekday()},E:function(){return this.isoWeekday()},a:function(){return this.localeData().meridiem(this.hours(),this.minutes(),!0)},A:function(){return this.localeData().meridiem(this.hours(),this.minutes(),!1)},H:function(){return this.hours()},h:function(){return this.hours()%12||12},m:function(){return this.minutes()},s:function(){return this.seconds()},S:function(){return C(this.milliseconds()/100)},SS:function(){return r(C(this.milliseconds()/10),2)},SSS:function(){return r(this.milliseconds(),3)},SSSS:function(){return r(this.milliseconds(),3)},Z:function(){var a=this.utcOffset(),b="+";return 0>a&&(a=-a,b="-"),b+r(C(a/60),2)+":"+r(C(a)%60,2)},ZZ:function(){var a=this.utcOffset(),b="+";return 0>a&&(a=-a,b="-"),b+r(C(a/60),2)+r(C(a)%60,2)},z:function(){return this.zoneAbbr()},zz:function(){return this.zoneName()},x:function(){return this.valueOf()},X:function(){return this.unix()},Q:function(){return this.quarter()}},sc={},tc=["months","monthsShort","weekdays","weekdaysShort","weekdaysMin"],uc=!1;pc.length;)xb=pc.pop(),rc[xb+"o"]=i(rc[xb],xb);for(;qc.length;)xb=qc.pop(),rc[xb+xb]=h(rc[xb],2);rc.DDDD=h(rc.DDD,3),o(l.prototype,{set:function(a){var b,c;for(c in a)b=a[c],"function"==typeof b?this[c]=b:this["_"+c]=b;this._ordinalParseLenient=new RegExp(this._ordinalParse.source+"|"+/\d{1,2}/.source)},_months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_"),months:function(a){return this._months[a.month()]},_monthsShort:"Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),monthsShort:function(a){return this._monthsShort[a.month()]},monthsParse:function(a,b,c){var d,e,f;for(this._monthsParse||(this._monthsParse=[],this._longMonthsParse=[],this._shortMonthsParse=[]),d=0;12>d;d++){if(e=vb.utc([2e3,d]),c&&!this._longMonthsParse[d]&&(this._longMonthsParse[d]=new RegExp("^"+this.months(e,"").replace(".","")+"$","i"),this._shortMonthsParse[d]=new RegExp("^"+this.monthsShort(e,"").replace(".","")+"$","i")),c||this._monthsParse[d]||(f="^"+this.months(e,"")+"|^"+this.monthsShort(e,""),this._monthsParse[d]=new RegExp(f.replace(".",""),"i")),c&&"MMMM"===b&&this._longMonthsParse[d].test(a))return d;if(c&&"MMM"===b&&this._shortMonthsParse[d].test(a))return d;if(!c&&this._monthsParse[d].test(a))return d}},_weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),weekdays:function(a){return this._weekdays[a.day()]},_weekdaysShort:"Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"),weekdaysShort:function(a){return this._weekdaysShort[a.day()]},_weekdaysMin:"Su_Mo_Tu_We_Th_Fr_Sa".split("_"),weekdaysMin:function(a){return this._weekdaysMin[a.day()]},weekdaysParse:function(a){var b,c,d;for(this._weekdaysParse||(this._weekdaysParse=[]),b=0;7>b;b++)if(this._weekdaysParse[b]||(c=vb([2e3,1]).day(b),d="^"+this.weekdays(c,"")+"|^"+this.weekdaysShort(c,"")+"|^"+this.weekdaysMin(c,""),this._weekdaysParse[b]=new RegExp(d.replace(".",""),"i")),this._weekdaysParse[b].test(a))return b},_longDateFormat:{LTS:"h:mm:ss A",LT:"h:mm A",L:"MM/DD/YYYY",LL:"MMMM D, YYYY",LLL:"MMMM D, YYYY LT",LLLL:"dddd, MMMM D, YYYY LT"},longDateFormat:function(a){var b=this._longDateFormat[a];return!b&&this._longDateFormat[a.toUpperCase()]&&(b=this._longDateFormat[a.toUpperCase()].replace(/MMMM|MM|DD|dddd/g,function(a){return a.slice(1)}),this._longDateFormat[a]=b),b},isPM:function(a){return"p"===(a+"").toLowerCase().charAt(0)},_meridiemParse:/[ap]\.?m?\.?/i,meridiem:function(a,b,c){return a>11?c?"pm":"PM":c?"am":"AM"},_calendar:{sameDay:"[Today at] LT",nextDay:"[Tomorrow at] LT",nextWeek:"dddd [at] LT",lastDay:"[Yesterday at] LT",lastWeek:"[Last] dddd [at] LT",sameElse:"L"},calendar:function(a,b,c){var d=this._calendar[a];return"function"==typeof d?d.apply(b,[c]):d},_relativeTime:{future:"in %s",past:"%s ago",s:"a few seconds",m:"a minute",mm:"%d minutes",h:"an hour",hh:"%d hours",d:"a day",dd:"%d days",M:"a month",MM:"%d months",y:"a year",yy:"%d years"},relativeTime:function(a,b,c,d){var e=this._relativeTime[c];return"function"==typeof e?e(a,b,c,d):e.replace(/%d/i,a)},pastFuture:function(a,b){var c=this._relativeTime[a>0?"future":"past"];return"function"==typeof c?c(b):c.replace(/%s/i,b)},ordinal:function(a){return this._ordinal.replace("%d",a)},_ordinal:"%d",_ordinalParse:/\d{1,2}/,preparse:function(a){return a},postformat:function(a){return a},week:function(a){return jb(a,this._week.dow,this._week.doy).week},_week:{dow:0,doy:6},firstDayOfWeek:function(){return this._week.dow},firstDayOfYear:function(){return this._week.doy},_invalidDate:"Invalid date",invalidDate:function(){return this._invalidDate}}),vb=function(b,c,e,f){var g;return"boolean"==typeof e&&(f=e,e=a),g={},g._isAMomentObject=!0,g._i=b,g._f=c,g._l=e,g._strict=f,g._isUTC=!1,g._pf=d(),lb(g)},vb.suppressDeprecationWarnings=!1,vb.createFromInputFallback=f("moment construction falls back to js Date. This is discouraged and will be removed in upcoming major release. Please refer to https://github.com/moment/moment/issues/1407 for more info.",function(a){a._d=new Date(a._i+(a._useUTC?" UTC":""))}),vb.min=function(){var a=[].slice.call(arguments,0);return mb("isBefore",a)},vb.max=function(){var a=[].slice.call(arguments,0);return mb("isAfter",a)},vb.utc=function(b,c,e,f){var g;return"boolean"==typeof e&&(f=e,e=a),g={},g._isAMomentObject=!0,g._useUTC=!0,g._isUTC=!0,g._l=e,g._i=b,g._f=c,g._strict=f,g._pf=d(),lb(g).utc()},vb.unix=function(a){return vb(1e3*a)},vb.duration=function(a,b){var d,e,f,g,h=a,i=null;return vb.isDuration(a)?h={ms:a._milliseconds,d:a._days,M:a._months}:"number"==typeof a?(h={},b?h[b]=a:h.milliseconds=a):(i=Nb.exec(a))?(d="-"===i[1]?-1:1,h={y:0,d:C(i[Eb])*d,h:C(i[Fb])*d,m:C(i[Gb])*d,s:C(i[Hb])*d,ms:C(i[Ib])*d}):(i=Ob.exec(a))?(d="-"===i[1]?-1:1,f=function(a){var b=a&&parseFloat(a.replace(",","."));return(isNaN(b)?0:b)*d},h={y:f(i[2]),M:f(i[3]),d:f(i[4]),h:f(i[5]),m:f(i[6]),s:f(i[7]),w:f(i[8])}):null==h?h={}:"object"==typeof h&&("from"in h||"to"in h)&&(g=t(vb(h.from),vb(h.to)),h={},h.ms=g.milliseconds,h.M=g.months),e=new n(h),vb.isDuration(a)&&c(a,"_locale")&&(e._locale=a._locale),e},vb.version=yb,vb.defaultFormat=gc,vb.ISO_8601=function(){},vb.momentProperties=Kb,vb.updateOffset=function(){},vb.relativeTimeThreshold=function(b,c){return oc[b]===a?!1:c===a?oc[b]:(oc[b]=c,!0)},vb.lang=f("moment.lang is deprecated. Use moment.locale instead.",function(a,b){return vb.locale(a,b)}),vb.locale=function(a,b){var c;return a&&(c="undefined"!=typeof b?vb.defineLocale(a,b):vb.localeData(a),c&&(vb.duration._locale=vb._locale=c)),vb._locale._abbr},vb.defineLocale=function(a,b){return null!==b?(b.abbr=a,Jb[a]||(Jb[a]=new l),Jb[a].set(b),vb.locale(a),Jb[a]):(delete Jb[a],null)},vb.langData=f("moment.langData is deprecated. Use moment.localeData instead.",function(a){return vb.localeData(a)}),vb.localeData=function(a){var b;if(a&&a._locale&&a._locale._abbr&&(a=a._locale._abbr),!a)return vb._locale;if(!w(a)){if(b=L(a))return b;a=[a]}return K(a)},vb.isMoment=function(a){return a instanceof m||null!=a&&c(a,"_isAMomentObject")},vb.isDuration=function(a){return a instanceof n};for(xb=tc.length-1;xb>=0;--xb)B(tc[xb]);vb.normalizeUnits=function(a){return z(a)},vb.invalid=function(a){var b=vb.utc(0/0);return null!=a?o(b._pf,a):b._pf.userInvalidated=!0,b},vb.parseZone=function(){return vb.apply(null,arguments).parseZone()},vb.parseTwoDigitYear=function(a){return C(a)+(C(a)>68?1900:2e3)},vb.isDate=x,o(vb.fn=m.prototype,{clone:function(){return vb(this)},valueOf:function(){return+this._d-6e4*(this._offset||0)},unix:function(){return Math.floor(+this/1e3)},toString:function(){return this.clone().locale("en").format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ")},toDate:function(){return this._offset?new Date(+this):this._d},toISOString:function(){var a=vb(this).utc();return 0<a.year()&&a.year()<=9999?"function"==typeof Date.prototype.toISOString?this.toDate().toISOString():P(a,"YYYY-MM-DD[T]HH:mm:ss.SSS[Z]"):P(a,"YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]")},toArray:function(){var a=this;return[a.year(),a.month(),a.date(),a.hours(),a.minutes(),a.seconds(),a.milliseconds()]},isValid:function(){return I(this)},isDSTShifted:function(){return this._a?this.isValid()&&y(this._a,(this._isUTC?vb.utc(this._a):vb(this._a)).toArray())>0:!1},parsingFlags:function(){return o({},this._pf)},invalidAt:function(){return this._pf.overflow},utc:function(a){return this.utcOffset(0,a)},local:function(a){return this._isUTC&&(this.utcOffset(0,a),this._isUTC=!1,a&&this.subtract(this._dateUtcOffset(),"m")),this},format:function(a){var b=P(this,a||vb.defaultFormat);return this.localeData().postformat(b)},add:u(1,"add"),subtract:u(-1,"subtract"),diff:function(a,b,c){var d,e,f=M(a,this),g=6e4*(f.utcOffset()-this.utcOffset());return b=z(b),"year"===b||"month"===b||"quarter"===b?(e=j(this,f),"quarter"===b?e/=3:"year"===b&&(e/=12)):(d=this-f,e="second"===b?d/1e3:"minute"===b?d/6e4:"hour"===b?d/36e5:"day"===b?(d-g)/864e5:"week"===b?(d-g)/6048e5:d),c?e:q(e)},from:function(a,b){return vb.duration({to:this,from:a}).locale(this.locale()).humanize(!b)},fromNow:function(a){return this.from(vb(),a)},calendar:function(a){var b=a||vb(),c=M(b,this).startOf("day"),d=this.diff(c,"days",!0),e=-6>d?"sameElse":-1>d?"lastWeek":0>d?"lastDay":1>d?"sameDay":2>d?"nextDay":7>d?"nextWeek":"sameElse";return this.format(this.localeData().calendar(e,this,vb(b)))},isLeapYear:function(){return G(this.year())},isDST:function(){return this.utcOffset()>this.clone().month(0).utcOffset()||this.utcOffset()>this.clone().month(5).utcOffset()},day:function(a){var b=this._isUTC?this._d.getUTCDay():this._d.getDay();return null!=a?(a=gb(a,this.localeData()),this.add(a-b,"d")):b},month:qb("Month",!0),startOf:function(a){switch(a=z(a)){case"year":this.month(0);case"quarter":case"month":this.date(1);case"week":case"isoWeek":case"day":this.hours(0);case"hour":this.minutes(0);case"minute":this.seconds(0);case"second":this.milliseconds(0)}return"week"===a?this.weekday(0):"isoWeek"===a&&this.isoWeekday(1),"quarter"===a&&this.month(3*Math.floor(this.month()/3)),this},endOf:function(b){return b=z(b),b===a||"millisecond"===b?this:this.startOf(b).add(1,"isoWeek"===b?"week":b).subtract(1,"ms")},isAfter:function(a,b){var c;return b=z("undefined"!=typeof b?b:"millisecond"),"millisecond"===b?(a=vb.isMoment(a)?a:vb(a),+this>+a):(c=vb.isMoment(a)?+a:+vb(a),c<+this.clone().startOf(b))},isBefore:function(a,b){var c;return b=z("undefined"!=typeof b?b:"millisecond"),"millisecond"===b?(a=vb.isMoment(a)?a:vb(a),+a>+this):(c=vb.isMoment(a)?+a:+vb(a),+this.clone().endOf(b)<c)},isBetween:function(a,b,c){return this.isAfter(a,c)&&this.isBefore(b,c)},isSame:function(a,b){var c;return b=z(b||"millisecond"),"millisecond"===b?(a=vb.isMoment(a)?a:vb(a),+this===+a):(c=+vb(a),+this.clone().startOf(b)<=c&&c<=+this.clone().endOf(b))},min:f("moment().min is deprecated, use moment.min instead. https://github.com/moment/moment/issues/1548",function(a){return a=vb.apply(null,arguments),this>a?this:a}),max:f("moment().max is deprecated, use moment.max instead. https://github.com/moment/moment/issues/1548",function(a){return a=vb.apply(null,arguments),a>this?this:a}),zone:f("moment().zone is deprecated, use moment().utcOffset instead. https://github.com/moment/moment/issues/1779",function(a,b){return null!=a?("string"!=typeof a&&(a=-a),this.utcOffset(a,b),this):-this.utcOffset()}),utcOffset:function(a,b){var c,d=this._offset||0;return null!=a?("string"==typeof a&&(a=S(a)),Math.abs(a)<16&&(a=60*a),!this._isUTC&&b&&(c=this._dateUtcOffset()),this._offset=a,this._isUTC=!0,null!=c&&this.add(c,"m"),d!==a&&(!b||this._changeInProgress?v(this,vb.duration(a-d,"m"),1,!1):this._changeInProgress||(this._changeInProgress=!0,vb.updateOffset(this,!0),this._changeInProgress=null)),this):this._isUTC?d:this._dateUtcOffset()},isLocal:function(){return!this._isUTC},isUtcOffset:function(){return this._isUTC},isUtc:function(){return this._isUTC&&0===this._offset},zoneAbbr:function(){return this._isUTC?"UTC":""},zoneName:function(){return this._isUTC?"Coordinated Universal Time":""},parseZone:function(){return this._tzm?this.utcOffset(this._tzm):"string"==typeof this._i&&this.utcOffset(S(this._i)),this},hasAlignedHourOffset:function(a){return a=a?vb(a).utcOffset():0,(this.utcOffset()-a)%60===0},daysInMonth:function(){return D(this.year(),this.month())},dayOfYear:function(a){var b=Ab((vb(this).startOf("day")-vb(this).startOf("year"))/864e5)+1;return null==a?b:this.add(a-b,"d")},quarter:function(a){return null==a?Math.ceil((this.month()+1)/3):this.month(3*(a-1)+this.month()%3)},weekYear:function(a){var b=jb(this,this.localeData()._week.dow,this.localeData()._week.doy).year;return null==a?b:this.add(a-b,"y")},isoWeekYear:function(a){var b=jb(this,1,4).year;return null==a?b:this.add(a-b,"y")},week:function(a){var b=this.localeData().week(this);return null==a?b:this.add(7*(a-b),"d")},isoWeek:function(a){var b=jb(this,1,4).week;return null==a?b:this.add(7*(a-b),"d")},weekday:function(a){var b=(this.day()+7-this.localeData()._week.dow)%7;return null==a?b:this.add(a-b,"d")},isoWeekday:function(a){return null==a?this.day()||7:this.day(this.day()%7?a:a-7)},isoWeeksInYear:function(){return E(this.year(),1,4)},weeksInYear:function(){var a=this.localeData()._week;return E(this.year(),a.dow,a.doy)},get:function(a){return a=z(a),this[a]()},set:function(a,b){var c;if("object"==typeof a)for(c in a)this.set(c,a[c]);else a=z(a),"function"==typeof this[a]&&this[a](b);return this},locale:function(b){var c;return b===a?this._locale._abbr:(c=vb.localeData(b),null!=c&&(this._locale=c),this)},lang:f("moment().lang() is deprecated. Instead, use moment().localeData() to get the language configuration. Use moment().locale() to change languages.",function(b){return b===a?this.localeData():this.locale(b)}),localeData:function(){return this._locale},_dateUtcOffset:function(){return 15*-Math.round(this._d.getTimezoneOffset()/15)}}),vb.fn.millisecond=vb.fn.milliseconds=qb("Milliseconds",!1),vb.fn.second=vb.fn.seconds=qb("Seconds",!1),vb.fn.minute=vb.fn.minutes=qb("Minutes",!1),vb.fn.hour=vb.fn.hours=qb("Hours",!0),vb.fn.date=qb("Date",!0),vb.fn.dates=f("dates accessor is deprecated. Use date instead.",qb("Date",!0)),vb.fn.year=qb("FullYear",!0),vb.fn.years=f("years accessor is deprecated. Use year instead.",qb("FullYear",!0)),vb.fn.days=vb.fn.day,vb.fn.months=vb.fn.month,vb.fn.weeks=vb.fn.week,vb.fn.isoWeeks=vb.fn.isoWeek,vb.fn.quarters=vb.fn.quarter,vb.fn.toJSON=vb.fn.toISOString,vb.fn.isUTC=vb.fn.isUtc,o(vb.duration.fn=n.prototype,{_bubble:function(){var a,b,c,d=this._milliseconds,e=this._days,f=this._months,g=this._data,h=0;g.milliseconds=d%1e3,a=q(d/1e3),g.seconds=a%60,b=q(a/60),g.minutes=b%60,c=q(b/60),g.hours=c%24,e+=q(c/24),h=q(rb(e)),e-=q(sb(h)),f+=q(e/30),e%=30,h+=q(f/12),f%=12,g.days=e,g.months=f,g.years=h},abs:function(){return this._milliseconds=Math.abs(this._milliseconds),this._days=Math.abs(this._days),this._months=Math.abs(this._months),this._data.milliseconds=Math.abs(this._data.milliseconds),this._data.seconds=Math.abs(this._data.seconds),this._data.minutes=Math.abs(this._data.minutes),this._data.hours=Math.abs(this._data.hours),this._data.months=Math.abs(this._data.months),this._data.years=Math.abs(this._data.years),this},weeks:function(){return q(this.days()/7)},valueOf:function(){return this._milliseconds+864e5*this._days+this._months%12*2592e6+31536e6*C(this._months/12)
+},humanize:function(a){var b=ib(this,!a,this.localeData());return a&&(b=this.localeData().pastFuture(+this,b)),this.localeData().postformat(b)},add:function(a,b){var c=vb.duration(a,b);return this._milliseconds+=c._milliseconds,this._days+=c._days,this._months+=c._months,this._bubble(),this},subtract:function(a,b){var c=vb.duration(a,b);return this._milliseconds-=c._milliseconds,this._days-=c._days,this._months-=c._months,this._bubble(),this},get:function(a){return a=z(a),this[a.toLowerCase()+"s"]()},as:function(a){var b,c;if(a=z(a),"month"===a||"year"===a)return b=this._days+this._milliseconds/864e5,c=this._months+12*rb(b),"month"===a?c:c/12;switch(b=this._days+Math.round(sb(this._months/12)),a){case"week":return b/7+this._milliseconds/6048e5;case"day":return b+this._milliseconds/864e5;case"hour":return 24*b+this._milliseconds/36e5;case"minute":return 24*b*60+this._milliseconds/6e4;case"second":return 24*b*60*60+this._milliseconds/1e3;case"millisecond":return Math.floor(24*b*60*60*1e3)+this._milliseconds;default:throw new Error("Unknown unit "+a)}},lang:vb.fn.lang,locale:vb.fn.locale,toIsoString:f("toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)",function(){return this.toISOString()}),toISOString:function(){var a=Math.abs(this.years()),b=Math.abs(this.months()),c=Math.abs(this.days()),d=Math.abs(this.hours()),e=Math.abs(this.minutes()),f=Math.abs(this.seconds()+this.milliseconds()/1e3);return this.asSeconds()?(this.asSeconds()<0?"-":"")+"P"+(a?a+"Y":"")+(b?b+"M":"")+(c?c+"D":"")+(d||e||f?"T":"")+(d?d+"H":"")+(e?e+"M":"")+(f?f+"S":""):"P0D"},localeData:function(){return this._locale},toJSON:function(){return this.toISOString()}}),vb.duration.fn.toString=vb.duration.fn.toISOString;for(xb in kc)c(kc,xb)&&tb(xb.toLowerCase());vb.duration.fn.asMilliseconds=function(){return this.as("ms")},vb.duration.fn.asSeconds=function(){return this.as("s")},vb.duration.fn.asMinutes=function(){return this.as("m")},vb.duration.fn.asHours=function(){return this.as("h")},vb.duration.fn.asDays=function(){return this.as("d")},vb.duration.fn.asWeeks=function(){return this.as("weeks")},vb.duration.fn.asMonths=function(){return this.as("M")},vb.duration.fn.asYears=function(){return this.as("y")},vb.locale("en",{ordinalParse:/\d{1,2}(th|st|nd|rd)/,ordinal:function(a){var b=a%10,c=1===C(a%100/10)?"th":1===b?"st":2===b?"nd":3===b?"rd":"th";return a+c}}),Lb?module.exports=vb:"function"==typeof define&&define.amd?(define(function(a,b,c){return c.config&&c.config()&&c.config().noGlobal===!0&&(zb.moment=wb),vb}),ub(!0)):ub()}).call(this);
+//
+// showdown.js -- A javascript port of Markdown.
+//
+// Copyright (c) 2007 John Fraser.
+//
+// Original Markdown Copyright (c) 2004-2005 John Gruber
+//   <http://daringfireball.net/projects/markdown/>
+//
+// Redistributable under a BSD-style open source license.
+// See license.txt for more information.
+//
+// The full source distribution is at:
+//
+//				A A L
+//				T C A
+//				T K B
+//
+//   <http://www.attacklab.net/>
+//
+
+//
+// Wherever possible, Showdown is a straight, line-by-line port
+// of the Perl version of Markdown.
+//
+// This is not a normal parser design; it's basically just a
+// series of string substitutions.  It's hard to read and
+// maintain this way,  but keeping Showdown close to the original
+// design makes it easier to port new features.
+//
+// More importantly, Showdown behaves like markdown.pl in most
+// edge cases.  So web applications can do client-side preview
+// in Javascript, and then build identical HTML on the server.
+//
+// This port needs the new RegExp functionality of ECMA 262,
+// 3rd Edition (i.e. Javascript 1.5).  Most modern web browsers
+// should do fine.  Even with the new regular expression features,
+// We do a lot of work to emulate Perl's regex functionality.
+// The tricky changes in this file mostly have the "attacklab:"
+// label.  Major or self-explanatory changes don't.
+//
+// Smart diff tools like Araxis Merge will be able to match up
+// this file with markdown.pl in a useful way.  A little tweaking
+// helps: in a copy of markdown.pl, replace "#" with "//" and
+// replace "$text" with "text".  Be sure to ignore whitespace
+// and line endings.
+//
+
+
+//
+// Showdown usage:
+//
+//   var text = "Markdown *rocks*.";
+//
+//   var converter = new Showdown.converter();
+//   var html = converter.makeHtml(text);
+//
+//   alert(html);
+//
+// Note: move the sample code to the bottom of this
+// file before uncommenting it.
+//
+
+
+//
+// Showdown namespace
+//
+var Showdown = {extensions: {}};
+
+//
+// forEach
+//
+var forEach = Showdown.forEach = function (obj, callback) {
+    if (typeof obj.forEach === 'function') {
+        obj.forEach(callback);
+    } else {
+        var i, len = obj.length;
+        for (i = 0; i < len; i++) {
+            callback(obj[i], i, obj);
+        }
+    }
+};
+
+//
+// Standard extension naming
+//
+var stdExtName = function (s) {
+    return s.replace(/[_-]||\s/g, '').toLowerCase();
+};
+
+//
+// converter
+//
+// Wraps all "globals" so that the only thing
+// exposed is makeHtml().
+//
+Showdown.converter = function (converter_options) {
+
+//
+// Globals:
+//
+
+// Global hashes, used by various utility routines
+    var g_urls;
+    var g_titles;
+    var g_html_blocks;
+
+// Used to track when we're inside an ordered or unordered list
+// (see _ProcessListItems() for details):
+    var g_list_level = 0;
+
+// Global extensions
+    var g_lang_extensions = [];
+    var g_output_modifiers = [];
+
+
+//
+// Automatic Extension Loading (node only):
+//
+    if (typeof module !== 'undefined' && typeof exports !== 'undefined' && typeof require !== 'undefined') {
+        var fs = require('fs');
+
+        if (fs) {
+            // Search extensions folder
+            var extensions = fs.readdirSync((__dirname || '.') + '/extensions').filter(function (file) {
+                return ~file.indexOf('.js');
+            }).map(function (file) {
+                return file.replace(/\.js$/, '');
+            });
+            // Load extensions into Showdown namespace
+            Showdown.forEach(extensions, function (ext) {
+                var name = stdExtName(ext);
+                Showdown.extensions[name] = require('./extensions/' + ext);
+            });
+        }
+    }
+
+    this.makeHtml = function (text) {
+//
+// Main function. The order in which other subs are called here is
+// essential. Link and image substitutions need to happen before
+// _EscapeSpecialCharsWithinTagAttributes(), so that any *'s or _'s in the <a>
+// and <img> tags get encoded.
+//
+
+        // Clear the global hashes. If we don't clear these, you get conflicts
+        // from other articles when generating a page which contains more than
+        // one article (e.g. an index page that shows the N most recent
+        // articles):
+        g_urls = {};
+        g_titles = {};
+        g_html_blocks = [];
+
+        // attacklab: Replace ~ with ~T
+        // This lets us use tilde as an escape char to avoid md5 hashes
+        // The choice of character is arbitray; anything that isn't
+        // magic in Markdown will work.
+        text = text.replace(/~/g, "~T");
+
+        // attacklab: Replace $ with ~D
+        // RegExp interprets $ as a special character
+        // when it's in a replacement string
+        text = text.replace(/\$/g, "~D");
+
+        // Standardize line endings
+        text = text.replace(/\r\n/g, "\n"); // DOS to Unix
+        text = text.replace(/\r/g, "\n"); // Mac to Unix
+
+        // Make sure text begins and ends with a couple of newlines:
+        text = "\n\n" + text + "\n\n";
+
+        // Convert all tabs to spaces.
+        text = _Detab(text);
+
+        // Strip any lines consisting only of spaces and tabs.
+        // This makes subsequent regexen easier to write, because we can
+        // match consecutive blank lines with /\n+/ instead of something
+        // contorted like /[ \t]*\n+/ .
+        text = text.replace(/^[ \t]+$/mg, "");
+
+        // Run language extensions
+        Showdown.forEach(g_lang_extensions, function (x) {
+            text = _ExecuteExtension(x, text);
+        });
+
+        // Handle github codeblocks prior to running HashHTML so that
+        // HTML contained within the codeblock gets escaped propertly
+        text = _DoGithubCodeBlocks(text);
+
+        // Turn block-level HTML blocks into hash entries
+        text = _HashHTMLBlocks(text);
+
+        // Strip link definitions, store in hashes.
+        text = _StripLinkDefinitions(text);
+
+        text = _RunBlockGamut(text);
+
+        text = _UnescapeSpecialChars(text);
+
+        // attacklab: Restore dollar signs
+        text = text.replace(/~D/g, "$$");
+
+        // attacklab: Restore tildes
+        text = text.replace(/~T/g, "~");
+
+        // Run output modifiers
+        Showdown.forEach(g_output_modifiers, function (x) {
+            text = _ExecuteExtension(x, text);
+        });
+
+        return text;
+    };
+
+
+//
+// Options:
+//
+
+// Parse extensions options into separate arrays
+    if (converter_options && converter_options.extensions) {
+
+        var self = this;
+
+        // Iterate over each plugin
+        Showdown.forEach(converter_options.extensions, function (plugin) {
+
+            // Assume it's a bundled plugin if a string is given
+            if (typeof plugin === 'string') {
+                plugin = Showdown.extensions[stdExtName(plugin)];
+            }
+
+            if (typeof plugin === 'function') {
+                // Iterate over each extension within that plugin
+                Showdown.forEach(plugin(self), function (ext) {
+                    // Sort extensions by type
+                    if (ext.type) {
+                        if (ext.type === 'language' || ext.type === 'lang') {
+                            g_lang_extensions.push(ext);
+                        } else if (ext.type === 'output' || ext.type === 'html') {
+                            g_output_modifiers.push(ext);
+                        }
+                    } else {
+                        // Assume language extension
+                        g_output_modifiers.push(ext);
+                    }
+                });
+            } else {
+                throw "Extension '" + plugin + "' could not be loaded.  It was either not found or is not a valid extension.";
+            }
+        });
+    }
+
+
+    var _ExecuteExtension = function (ext, text) {
+        if (ext.regex) {
+            var re = new RegExp(ext.regex, 'g');
+            return text.replace(re, ext.replace);
+        } else if (ext.filter) {
+            return ext.filter(text);
+        }
+    };
+
+    var _StripLinkDefinitions = function (text) {
+//
+// Strips link definitions from text, stores the URLs and titles in
+// hash references.
+//
+
+        // Link defs are in the form: ^[id]: url "optional title"
+
+        /*
+         var text = text.replace(/
+         ^[ ]{0,3}\[(.+)\]:  // id = $1  attacklab: g_tab_width - 1
+         [ \t]*
+         \n?				// maybe *one* newline
+         [ \t]*
+         <?(\S+?)>?			// url = $2
+         [ \t]*
+         \n?				// maybe one newline
+         [ \t]*
+         (?:
+         (\n*)				// any lines skipped = $3 attacklab: lookbehind removed
+         ["(]
+         (.+?)				// title = $4
+         [")]
+         [ \t]*
+         )?					// title is optional
+         (?:\n+|$)
+         /gm,
+         function(){...});
+         */
+
+        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+        text += "~0";
+
+        text = text.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?[ \t]*\n?[ \t]*(?:(\n*)["(](.+?)[")][ \t]*)?(?:\n+|(?=~0))/gm,
+            function (wholeMatch, m1, m2, m3, m4) {
+                m1 = m1.toLowerCase();
+                g_urls[m1] = _EncodeAmpsAndAngles(m2);  // Link IDs are case-insensitive
+                if (m3) {
+                    // Oops, found blank lines, so it's not a title.
+                    // Put back the parenthetical statement we stole.
+                    return m3 + m4;
+                } else if (m4) {
+                    g_titles[m1] = m4.replace(/"/g, "&quot;");
+                }
+
+                // Completely remove the definition from the text
+                return "";
+            }
+        );
+
+        // attacklab: strip sentinel
+        text = text.replace(/~0/, "");
+
+        return text;
+    }
+
+    var _HashHTMLBlocks = function (text) {
+        // attacklab: Double up blank lines to reduce lookaround
+        text = text.replace(/\n/g, "\n\n");
+
+        // Hashify HTML blocks:
+        // We only want to do this for block-level HTML tags, such as headers,
+        // lists, and tables. That's because we still want to wrap <p>s around
+        // "paragraphs" that are wrapped in non-block-level tags, such as anchors,
+        // phrase emphasis, and spans. The list of tags we're looking for is
+        // hard-coded:
+        var block_tags_a = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|style|section|header|footer|nav|article|aside";
+        var block_tags_b = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside";
+
+        // First, look for nested blocks, e.g.:
+        //   <div>
+        //     <div>
+        //     tags for inner block must be indented.
+        //     </div>
+        //   </div>
+        //
+        // The outermost tags must start at the left margin for this to match, and
+        // the inner nested divs must be indented.
+        // We need to do this before the next, more liberal match, because the next
+        // match will start at the first `<div>` and stop at the first `</div>`.
+
+        // attacklab: This regex can be expensive when it fails.
+        /*
+         var text = text.replace(/
+         (						// save in $1
+         ^					// start of line  (with /m)
+         <($block_tags_a)	// start tag = $2
+         \b					// word break
+         // attacklab: hack around khtml/pcre bug...
+         [^\r]*?\n			// any number of lines, minimally matching
+         </\2>				// the matching end tag
+         [ \t]*				// trailing spaces/tabs
+         (?=\n+)				// followed by a newline
+         )						// attacklab: there are sentinel newlines at end of document
+         /gm,function(){...}};
+         */
+        text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm, hashElement);
+
+        //
+        // Now match more liberally, simply from `\n<tag>` to `</tag>\n`
+        //
+
+        /*
+         var text = text.replace(/
+         (						// save in $1
+         ^					// start of line  (with /m)
+         <($block_tags_b)	// start tag = $2
+         \b					// word break
+         // attacklab: hack around khtml/pcre bug...
+         [^\r]*?				// any number of lines, minimally matching
+         </\2>				// the matching end tag
+         [ \t]*				// trailing spaces/tabs
+         (?=\n+)				// followed by a newline
+         )						// attacklab: there are sentinel newlines at end of document
+         /gm,function(){...}};
+         */
+        text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside)\b[^\r]*?<\/\2>[ \t]*(?=\n+)\n)/gm, hashElement);
+
+        // Special case just for <hr />. It was easier to make a special case than
+        // to make the other regex more complicated.
+
+        /*
+         text = text.replace(/
+         (						// save in $1
+         \n\n				// Starting after a blank line
+         [ ]{0,3}
+         (<(hr)				// start tag = $2
+         \b					// word break
+         ([^<>])*?			//
+         \/?>)				// the matching end tag
+         [ \t]*
+         (?=\n{2,})			// followed by a blank line
+         )
+         /g,hashElement);
+         */
+        text = text.replace(/(\n[ ]{0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g, hashElement);
+
+        // Special case for standalone HTML comments:
+
+        /*
+         text = text.replace(/
+         (						// save in $1
+         \n\n				// Starting after a blank line
+         [ ]{0,3}			// attacklab: g_tab_width - 1
+         <!
+         (--[^\r]*?--\s*)+
+         >
+         [ \t]*
+         (?=\n{2,})			// followed by a blank line
+         )
+         /g,hashElement);
+         */
+        text = text.replace(/(\n\n[ ]{0,3}<!(--[^\r]*?--\s*)+>[ \t]*(?=\n{2,}))/g, hashElement);
+
+        // PHP and ASP-style processor instructions (<?...?> and <%...%>)
+
+        /*
+         text = text.replace(/
+         (?:
+         \n\n				// Starting after a blank line
+         )
+         (						// save in $1
+         [ ]{0,3}			// attacklab: g_tab_width - 1
+         (?:
+         <([?%])			// $2
+         [^\r]*?
+         \2>
+         )
+         [ \t]*
+         (?=\n{2,})			// followed by a blank line
+         )
+         /g,hashElement);
+         */
+        text = text.replace(/(?:\n\n)([ ]{0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g, hashElement);
+
+        // attacklab: Undo double lines (see comment at top of this function)
+        text = text.replace(/\n\n/g, "\n");
+        return text;
+    }
+
+    var hashElement = function (wholeMatch, m1) {
+        var blockText = m1;
+
+        // Undo double lines
+        blockText = blockText.replace(/\n\n/g, "\n");
+        blockText = blockText.replace(/^\n/, "");
+
+        // strip trailing blank lines
+        blockText = blockText.replace(/\n+$/g, "");
+
+        // Replace the element text with a marker ("~KxK" where x is its key)
+        blockText = "\n\n~K" + (g_html_blocks.push(blockText) - 1) + "K\n\n";
+
+        return blockText;
+    };
+
+    var _RunBlockGamut = function (text) {
+//
+// These are all the transformations that form block-level
+// tags like paragraphs, headers, and list items.
+//
+        text = _DoHeaders(text);
+
+        // Do Horizontal Rules:
+        var key = hashBlock("<hr />");
+        text = text.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm, key);
+        text = text.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm, key);
+        text = text.replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm, key);
+
+        text = _DoLists(text);
+        text = _DoCodeBlocks(text);
+        text = _DoBlockQuotes(text);
+
+        // We already ran _HashHTMLBlocks() before, in Markdown(), but that
+        // was to escape raw HTML in the original Markdown source. This time,
+        // we're escaping the markup we've just created, so that we don't wrap
+        // <p> tags around block-level tags.
+        text = _HashHTMLBlocks(text);
+        text = _FormParagraphs(text);
+
+        return text;
+    };
+
+    var _RunSpanGamut = function (text) {
+//
+// These are all the transformations that occur *within* block-level
+// tags like paragraphs, headers, and list items.
+//
+
+        text = _DoCodeSpans(text);
+        text = _EscapeSpecialCharsWithinTagAttributes(text);
+        text = _EncodeBackslashEscapes(text);
+
+        // Process anchor and image tags. Images must come first,
+        // because ![foo][f] looks like an anchor.
+        text = _DoImages(text);
+        text = _DoAnchors(text);
+
+        // Make links out of things like `<http://example.com/>`
+        // Must come after _DoAnchors(), because you can use < and >
+        // delimiters in inline links like [this](<url>).
+        text = _DoAutoLinks(text);
+        text = _EncodeAmpsAndAngles(text);
+        text = _DoItalicsAndBold(text);
+
+        // Do hard breaks:
+        text = text.replace(/  +\n/g, " <br />\n");
+
+        return text;
+    }
+
+    var _EscapeSpecialCharsWithinTagAttributes = function (text) {
+//
+// Within tags -- meaning between < and > -- encode [\ ` * _] so they
+// don't conflict with their use in Markdown for code, italics and strong.
+//
+
+        // Build a regex to find HTML tags and comments.  See Friedl's
+        // "Mastering Regular Expressions", 2nd Ed., pp. 200-201.
+        var regex = /(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--.*?--\s*)+>)/gi;
+
+        text = text.replace(regex, function (wholeMatch) {
+            var tag = wholeMatch.replace(/(.)<\/?code>(?=.)/g, "$1`");
+            tag = escapeCharacters(tag, "\\`*_");
+            return tag;
+        });
+
+        return text;
+    }
+
+    var _DoAnchors = function (text) {
+//
+// Turn Markdown link shortcuts into XHTML <a> tags.
+//
+        //
+        // First, handle reference-style links: [link text] [id]
+        //
+
+        /*
+         text = text.replace(/
+         (							// wrap whole match in $1
+         \[
+         (
+         (?:
+         \[[^\]]*\]		// allow brackets nested one level
+         |
+         [^\[]			// or anything else
+         )*
+         )
+         \]
+
+         [ ]?					// one optional space
+         (?:\n[ ]*)?				// one optional newline followed by spaces
+
+         \[
+         (.*?)					// id = $3
+         \]
+         )()()()()					// pad remaining backreferences
+         /g,_DoAnchors_callback);
+         */
+        text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g, writeAnchorTag);
+
+        //
+        // Next, inline-style links: [link text](url "optional title")
+        //
+
+        /*
+         text = text.replace(/
+         (						// wrap whole match in $1
+         \[
+         (
+         (?:
+         \[[^\]]*\]	// allow brackets nested one level
+         |
+         [^\[\]]			// or anything else
+         )
+         )
+         \]
+         \(						// literal paren
+         [ \t]*
+         ()						// no id, so leave $3 empty
+         <?(.*?)>?				// href = $4
+         [ \t]*
+         (						// $5
+         (['"])				// quote char = $6
+         (.*?)				// Title = $7
+         \6					// matching quote
+         [ \t]*				// ignore any spaces/tabs between closing quote and )
+         )?						// title is optional
+         \)
+         )
+         /g,writeAnchorTag);
+         */
+        text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\]\([ \t]*()<?(.*?(?:\(.*?\).*?)?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeAnchorTag);
+
+        //
+        // Last, handle reference-style shortcuts: [link text]
+        // These must come last in case you've also got [link test][1]
+        // or [link test](/foo)
+        //
+
+        /*
+         text = text.replace(/
+         (		 					// wrap whole match in $1
+         \[
+         ([^\[\]]+)				// link text = $2; can't contain '[' or ']'
+         \]
+         )()()()()()					// pad rest of backreferences
+         /g, writeAnchorTag);
+         */
+        text = text.replace(/(\[([^\[\]]+)\])()()()()()/g, writeAnchorTag);
+
+        return text;
+    }
+
+    var writeAnchorTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
+        if (m7 == undefined) m7 = "";
+        var whole_match = m1;
+        var link_text = m2;
+        var link_id = m3.toLowerCase();
+        var url = m4;
+        var title = m7;
+
+        if (url == "") {
+            if (link_id == "") {
+                // lower-case and turn embedded newlines into spaces
+                link_id = link_text.toLowerCase().replace(/ ?\n/g, " ");
+            }
+            url = "#" + link_id;
+
+            if (g_urls[link_id] != undefined) {
+                url = g_urls[link_id];
+                if (g_titles[link_id] != undefined) {
+                    title = g_titles[link_id];
+                }
+            }
+            else {
+                if (whole_match.search(/\(\s*\)$/m) > -1) {
+                    // Special case for explicit empty url
+                    url = "";
+                } else {
+                    return whole_match;
+                }
+            }
+        }
+
+        url = escapeCharacters(url, "*_");
+        var result = "<a href=\"" + url + "\"";
+
+        if (title != "") {
+            title = title.replace(/"/g, "&quot;");
+            title = escapeCharacters(title, "*_");
+            result += " title=\"" + title + "\"";
+        }
+
+        result += ">" + link_text + "</a>";
+
+        return result;
+    }
+
+    var _DoImages = function (text) {
+//
+// Turn Markdown image shortcuts into <img> tags.
+//
+
+        //
+        // First, handle reference-style labeled images: ![alt text][id]
+        //
+
+        /*
+         text = text.replace(/
+         (						// wrap whole match in $1
+         !\[
+         (.*?)				// alt text = $2
+         \]
+
+         [ ]?				// one optional space
+         (?:\n[ ]*)?			// one optional newline followed by spaces
+
+         \[
+         (.*?)				// id = $3
+         \]
+         )()()()()				// pad rest of backreferences
+         /g,writeImageTag);
+         */
+        text = text.replace(/(!\[(.*?)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g, writeImageTag);
+
+        //
+        // Next, handle inline images:  ![alt text](url "optional title")
+        // Don't forget: encode * and _
+
+        /*
+         text = text.replace(/
+         (						// wrap whole match in $1
+         !\[
+         (.*?)				// alt text = $2
+         \]
+         \s?					// One optional whitespace character
+         \(					// literal paren
+         [ \t]*
+         ()					// no id, so leave $3 empty
+         <?(\S+?)>?			// src url = $4
+         [ \t]*
+         (					// $5
+         (['"])			// quote char = $6
+         (.*?)			// title = $7
+         \6				// matching quote
+         [ \t]*
+         )?					// title is optional
+         \)
+         )
+         /g,writeImageTag);
+         */
+        text = text.replace(/(!\[(.*?)\]\s?\([ \t]*()<?(\S+?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeImageTag);
+
+        return text;
+    }
+
+    var writeImageTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
+        var whole_match = m1;
+        var alt_text = m2;
+        var link_id = m3.toLowerCase();
+        var url = m4;
+        var title = m7;
+
+        if (!title) title = "";
+
+        if (url == "") {
+            if (link_id == "") {
+                // lower-case and turn embedded newlines into spaces
+                link_id = alt_text.toLowerCase().replace(/ ?\n/g, " ");
+            }
+            url = "#" + link_id;
+
+            if (g_urls[link_id] != undefined) {
+                url = g_urls[link_id];
+                if (g_titles[link_id] != undefined) {
+                    title = g_titles[link_id];
+                }
+            }
+            else {
+                return whole_match;
+            }
+        }
+
+        alt_text = alt_text.replace(/"/g, "&quot;");
+        url = escapeCharacters(url, "*_");
+        var result = "<img src=\"" + url + "\" alt=\"" + alt_text + "\"";
+
+        // attacklab: Markdown.pl adds empty title attributes to images.
+        // Replicate this bug.
+
+        //if (title != "") {
+        title = title.replace(/"/g, "&quot;");
+        title = escapeCharacters(title, "*_");
+        result += " title=\"" + title + "\"";
+        //}
+
+        result += " />";
+
+        return result;
+    }
+
+    var _DoHeaders = function (text) {
+
+        // Setext-style headers:
+        //	Header 1
+        //	========
+        //
+        //	Header 2
+        //	--------
+        //
+        text = text.replace(/^(.+)[ \t]*\n=+[ \t]*\n+/gm,
+            function (wholeMatch, m1) {
+                return hashBlock('<h1 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h1>");
+            });
+
+        text = text.replace(/^(.+)[ \t]*\n-+[ \t]*\n+/gm,
+            function (matchFound, m1) {
+                return hashBlock('<h2 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h2>");
+            });
+
+        // atx-style headers:
+        //  # Header 1
+        //  ## Header 2
+        //  ## Header 2 with closing hashes ##
+        //  ...
+        //  ###### Header 6
+        //
+
+        /*
+         text = text.replace(/
+         ^(\#{1,6})				// $1 = string of #'s
+         [ \t]*
+         (.+?)					// $2 = Header text
+         [ \t]*
+         \#*						// optional closing #'s (not counted)
+         \n+
+         /gm, function() {...});
+         */
+
+        text = text.replace(/^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm,
+            function (wholeMatch, m1, m2) {
+                var h_level = m1.length;
+                return hashBlock("<h" + h_level + ' id="' + headerId(m2) + '">' + _RunSpanGamut(m2) + "</h" + h_level + ">");
+            });
+
+        function headerId(m) {
+            return m.replace(/[^\w]/g, '').toLowerCase();
+        }
+
+        return text;
+    }
+
+// This declaration keeps Dojo compressor from outputting garbage:
+    var _ProcessListItems;
+
+    var _DoLists = function (text) {
+//
+// Form HTML ordered (numbered) and unordered (bulleted) lists.
+//
+
+        // attacklab: add sentinel to hack around khtml/safari bug:
+        // http://bugs.webkit.org/show_bug.cgi?id=11231
+        text += "~0";
+
+        // Re-usable pattern to match any entirel ul or ol list:
+
+        /*
+         var whole_list = /
+         (									// $1 = whole list
+         (								// $2
+         [ ]{0,3}					// attacklab: g_tab_width - 1
+         ([*+-]|\d+[.])				// $3 = first list item marker
+         [ \t]+
+         )
+         [^\r]+?
+         (								// $4
+         ~0							// sentinel for workaround; should be $
+         |
+         \n{2,}
+         (?=\S)
+         (?!							// Negative lookahead for another list item marker
+         [ \t]*
+         (?:[*+-]|\d+[.])[ \t]+
+         )
+         )
+         )/g
+         */
+        var whole_list = /^(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm;
+
+        if (g_list_level) {
+            text = text.replace(whole_list, function (wholeMatch, m1, m2) {
+                var list = m1;
+                var list_type = (m2.search(/[*+-]/g) > -1) ? "ul" : "ol";
+
+                // Turn double returns into triple returns, so that we can make a
+                // paragraph for the last item in a list, if necessary:
+                list = list.replace(/\n{2,}/g, "\n\n\n");
+                ;
+                var result = _ProcessListItems(list);
+
+                // Trim any trailing whitespace, to put the closing `</$list_type>`
+                // up on the preceding line, to get it past the current stupid
+                // HTML block parser. This is a hack to work around the terrible
+                // hack that is the HTML block parser.
+                result = result.replace(/\s+$/, "");
+                result = "<" + list_type + ">" + result + "</" + list_type + ">\n";
+                return result;
+            });
+        } else {
+            whole_list = /(\n\n|^\n?)(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/g;
+            text = text.replace(whole_list, function (wholeMatch, m1, m2, m3) {
+                var runup = m1;
+                var list = m2;
+
+                var list_type = (m3.search(/[*+-]/g) > -1) ? "ul" : "ol";
+                // Turn double returns into triple returns, so that we can make a
+                // paragraph for the last item in a list, if necessary:
+                var list = list.replace(/\n{2,}/g, "\n\n\n");
+                ;
+                var result = _ProcessListItems(list);
+                result = runup + "<" + list_type + ">\n" + result + "</" + list_type + ">\n";
+                return result;
+            });
+        }
+
+        // attacklab: strip sentinel
+        text = text.replace(/~0/, "");
+
+        return text;
+    }
+
+    _ProcessListItems = function (list_str) {
+//
+//  Process the contents of a single ordered or unordered list, splitting it
+//  into individual list items.
+//
+        // The $g_list_level global keeps track of when we're inside a list.
+        // Each time we enter a list, we increment it; when we leave a list,
+        // we decrement. If it's zero, we're not in a list anymore.
+        //
+        // We do this because when we're not inside a list, we want to treat
+        // something like this:
+        //
+        //    I recommend upgrading to version
+        //    8. Oops, now this line is treated
+        //    as a sub-list.
+        //
+        // As a single paragraph, despite the fact that the second line starts
+        // with a digit-period-space sequence.
+        //
+        // Whereas when we're inside a list (or sub-list), that line will be
+        // treated as the start of a sub-list. What a kludge, huh? This is
+        // an aspect of Markdown's syntax that's hard to parse perfectly
+        // without resorting to mind-reading. Perhaps the solution is to
+        // change the syntax rules such that sub-lists must start with a
+        // starting cardinal number; e.g. "1." or "a.".
+
+        g_list_level++;
+
+        // trim trailing blank lines:
+        list_str = list_str.replace(/\n{2,}$/, "\n");
+
+        // attacklab: add sentinel to emulate \z
+        list_str += "~0";
+
+        /*
+         list_str = list_str.replace(/
+         (\n)?							// leading line = $1
+         (^[ \t]*)						// leading whitespace = $2
+         ([*+-]|\d+[.]) [ \t]+			// list marker = $3
+         ([^\r]+?						// list item text   = $4
+         (\n{1,2}))
+         (?= \n* (~0 | \2 ([*+-]|\d+[.]) [ \t]+))
+         /gm, function(){...});
+         */
+        list_str = list_str.replace(/(\n)?(^[ \t]*)([*+-]|\d+[.])[ \t]+([^\r]+?(\n{1,2}))(?=\n*(~0|\2([*+-]|\d+[.])[ \t]+))/gm,
+            function (wholeMatch, m1, m2, m3, m4) {
+                var item = m4;
+                var leading_line = m1;
+                var leading_space = m2;
+
+                if (leading_line || (item.search(/\n{2,}/) > -1)) {
+                    item = _RunBlockGamut(_Outdent(item));
+                }
+                else {
+                    // Recursion for sub-lists:
+                    item = _DoLists(_Outdent(item));
+                    item = item.replace(/\n$/, ""); // chomp(item)
+                    item = _RunSpanGamut(item);
+                }
+
+                return "<li>" + item + "</li>\n";
+            }
+        );
+
+        // attacklab: strip sentinel
+        list_str = list_str.replace(/~0/g, "");
+
+        g_list_level--;
+        return list_str;
+    }
+
+    var _DoCodeBlocks = function (text) {
+//
+//  Process Markdown `<pre><code>` blocks.
+//
+
+        /*
+         text = text.replace(text,
+         /(?:\n\n|^)
+         (								// $1 = the code block -- one or more lines, starting with a space/tab
+         (?:
+         (?:[ ]{4}|\t)			// Lines must start with a tab or a tab-width of spaces - attacklab: g_tab_width
+         .*\n+
+         )+
+         )
+         (\n*[ ]{0,3}[^ \t\n]|(?=~0))	// attacklab: g_tab_width
+         /g,function(){...});
+         */
+
+        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+        text += "~0";
+
+        text = text.replace(/(?:\n\n|^)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g,
+            function (wholeMatch, m1, m2) {
+                var codeblock = m1;
+                var nextChar = m2;
+
+                codeblock = _EncodeCode(_Outdent(codeblock));
+                codeblock = _Detab(codeblock);
+                codeblock = codeblock.replace(/^\n+/g, ""); // trim leading newlines
+                codeblock = codeblock.replace(/\n+$/g, ""); // trim trailing whitespace
+
+                codeblock = "<pre><code>" + codeblock + "\n</code></pre>";
+
+                return hashBlock(codeblock) + nextChar;
+            }
+        );
+
+        // attacklab: strip sentinel
+        text = text.replace(/~0/, "");
+
+        return text;
+    };
+
+    var _DoGithubCodeBlocks = function (text) {
+//
+//  Process Github-style code blocks
+//  Example:
+//  ```ruby
+//  def hello_world(x)
+//    puts "Hello, #{x}"
+//  end
+//  ```
+//
+
+
+        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+        text += "~0";
+
+        text = text.replace(/(?:^|\n)```(.*)\n([\s\S]*?)\n```/g,
+            function (wholeMatch, m1, m2) {
+                var language = m1;
+                var codeblock = m2;
+
+                codeblock = _EncodeCode(codeblock);
+                codeblock = _Detab(codeblock);
+                codeblock = codeblock.replace(/^\n+/g, ""); // trim leading newlines
+                codeblock = codeblock.replace(/\n+$/g, ""); // trim trailing whitespace
+
+                codeblock = "<pre><code" + (language ? " class=\"" + language + '"' : "") + ">" + codeblock + "\n</code></pre>";
+
+                return hashBlock(codeblock);
+            }
+        );
+
+        // attacklab: strip sentinel
+        text = text.replace(/~0/, "");
+
+        return text;
+    }
+
+    var hashBlock = function (text) {
+        text = text.replace(/(^\n+|\n+$)/g, "");
+        return "\n\n~K" + (g_html_blocks.push(text) - 1) + "K\n\n";
+    }
+
+    var _DoCodeSpans = function (text) {
+//
+//   *  Backtick quotes are used for <code></code> spans.
+//
+//   *  You can use multiple backticks as the delimiters if you want to
+//	 include literal backticks in the code span. So, this input:
+//
+//		 Just type ``foo `bar` baz`` at the prompt.
+//
+//	   Will translate to:
+//
+//		 <p>Just type <code>foo `bar` baz</code> at the prompt.</p>
+//
+//	There's no arbitrary limit to the number of backticks you
+//	can use as delimters. If you need three consecutive backticks
+//	in your code, use four for delimiters, etc.
+//
+//  *  You can use spaces to get literal backticks at the edges:
+//
+//		 ... type `` `bar` `` ...
+//
+//	   Turns to:
+//
+//		 ... type <code>`bar`</code> ...
+//
+
+        /*
+         text = text.replace(/
+         (^|[^\\])					// Character before opening ` can't be a backslash
+         (`+)						// $2 = Opening run of `
+         (							// $3 = The code block
+         [^\r]*?
+         [^`]					// attacklab: work around lack of lookbehind
+         )
+         \2							// Matching closer
+         (?!`)
+         /gm, function(){...});
+         */
+
+        text = text.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm,
+            function (wholeMatch, m1, m2, m3, m4) {
+                var c = m3;
+                c = c.replace(/^([ \t]*)/g, "");	// leading whitespace
+                c = c.replace(/[ \t]*$/g, "");	// trailing whitespace
+                c = _EncodeCode(c);
+                return m1 + "<code>" + c + "</code>";
+            });
+
+        return text;
+    }
+
+    var _EncodeCode = function (text) {
+//
+// Encode/escape certain characters inside Markdown code runs.
+// The point is that in code, these characters are literals,
+// and lose their special Markdown meanings.
+//
+        // Encode all ampersands; HTML entities are not
+        // entities within a Markdown code span.
+        text = text.replace(/&/g, "&amp;");
+
+        // Do the angle bracket song and dance:
+        text = text.replace(/</g, "&lt;");
+        text = text.replace(/>/g, "&gt;");
+
+        // Now, escape characters that are magic in Markdown:
+        text = escapeCharacters(text, "\*_{}[]\\", false);
+
+// jj the line above breaks this:
+//---
+
+//* Item
+
+//   1. Subitem
+
+//            special char: *
+//---
+
+        return text;
+    }
+
+    var _DoItalicsAndBold = function (text) {
+
+        // <strong> must go first:
+        text = text.replace(/(\*\*|__)(?=\S)([^\r]*?\S[*_]*)\1/g,
+            "<strong>$2</strong>");
+
+        text = text.replace(/(\*|_)(?=\S)([^\r]*?\S)\1/g,
+            "<em>$2</em>");
+
+        return text;
+    }
+
+    var _DoBlockQuotes = function (text) {
+
+        /*
+         text = text.replace(/
+         (								// Wrap whole match in $1
+         (
+         ^[ \t]*>[ \t]?			// '>' at the start of a line
+         .+\n					// rest of the first line
+         (.+\n)*					// subsequent consecutive lines
+         \n*						// blanks
+         )+
+         )
+         /gm, function(){...});
+         */
+
+        text = text.replace(/((^[ \t]*>[ \t]?.+\n(.+\n)*\n*)+)/gm,
+            function (wholeMatch, m1) {
+                var bq = m1;
+
+                // attacklab: hack around Konqueror 3.5.4 bug:
+                // "----------bug".replace(/^-/g,"") == "bug"
+
+                bq = bq.replace(/^[ \t]*>[ \t]?/gm, "~0");	// trim one level of quoting
+
+                // attacklab: clean up hack
+                bq = bq.replace(/~0/g, "");
+
+                bq = bq.replace(/^[ \t]+$/gm, "");		// trim whitespace-only lines
+                bq = _RunBlockGamut(bq);				// recurse
+
+                bq = bq.replace(/(^|\n)/g, "$1  ");
+                // These leading spaces screw with <pre> content, so we need to fix that:
+                bq = bq.replace(
+                    /(\s*<pre>[^\r]+?<\/pre>)/gm,
+                    function (wholeMatch, m1) {
+                        var pre = m1;
+                        // attacklab: hack around Konqueror 3.5.4 bug:
+                        pre = pre.replace(/^  /mg, "~0");
+                        pre = pre.replace(/~0/g, "");
+                        return pre;
+                    });
+
+                return hashBlock("<blockquote>\n" + bq + "\n</blockquote>");
+            });
+        return text;
+    }
+
+    var _FormParagraphs = function (text) {
+//
+//  Params:
+//    $text - string to process with html <p> tags
+//
+
+        // Strip leading and trailing lines:
+        text = text.replace(/^\n+/g, "");
+        text = text.replace(/\n+$/g, "");
+
+        var grafs = text.split(/\n{2,}/g);
+        var grafsOut = [];
+
+        //
+        // Wrap <p> tags.
+        //
+        var end = grafs.length;
+        for (var i = 0; i < end; i++) {
+            var str = grafs[i];
+
+            // if this is an HTML marker, copy it
+            if (str.search(/~K(\d+)K/g) >= 0) {
+                grafsOut.push(str);
+            }
+            else if (str.search(/\S/) >= 0) {
+                str = _RunSpanGamut(str);
+                str = str.replace(/^([ \t]*)/g, "<p>");
+                str += "</p>"
+                grafsOut.push(str);
+            }
+
+        }
+
+        //
+        // Unhashify HTML blocks
+        //
+        end = grafsOut.length;
+        for (var i = 0; i < end; i++) {
+            // if this is a marker for an html block...
+            while (grafsOut[i].search(/~K(\d+)K/) >= 0) {
+                var blockText = g_html_blocks[RegExp.$1];
+                blockText = blockText.replace(/\$/g, "$$$$"); // Escape any dollar signs
+                grafsOut[i] = grafsOut[i].replace(/~K\d+K/, blockText);
+            }
+        }
+
+        return grafsOut.join("\n\n");
+    }
+
+    var _EncodeAmpsAndAngles = function (text) {
+// Smart processing for ampersands and angle brackets that need to be encoded.
+
+        // Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
+        //   http://bumppo.net/projects/amputator/
+        text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g, "&amp;");
+
+        // Encode naked <'s
+        text = text.replace(/<(?![a-z\/?\$!])/gi, "&lt;");
+
+        return text;
+    }
+
+    var _EncodeBackslashEscapes = function (text) {
+//
+//   Parameter:  String.
+//   Returns:	The string, with after processing the following backslash
+//			   escape sequences.
+//
+
+        // attacklab: The polite way to do this is with the new
+        // escapeCharacters() function:
+        //
+        // 	text = escapeCharacters(text,"\\",true);
+        // 	text = escapeCharacters(text,"`*_{}[]()>#+-.!",true);
+        //
+        // ...but we're sidestepping its use of the (slow) RegExp constructor
+        // as an optimization for Firefox.  This function gets called a LOT.
+
+        text = text.replace(/\\(\\)/g, escapeCharacters_callback);
+        text = text.replace(/\\([`*_{}\[\]()>#+-.!])/g, escapeCharacters_callback);
+        return text;
+    }
+
+    var _DoAutoLinks = function (text) {
+
+        text = text.replace(/<((https?|ftp|dict):[^'">\s]+)>/gi, "<a href=\"$1\">$1</a>");
+
+        // Email addresses: <address@domain.foo>
+
+        /*
+         text = text.replace(/
+         <
+         (?:mailto:)?
+         (
+         [-.\w]+
+         \@
+         [-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+
+         )
+         >
+         /gi, _DoAutoLinks_callback());
+         */
+        text = text.replace(/<(?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi,
+            function (wholeMatch, m1) {
+                return _EncodeEmailAddress(_UnescapeSpecialChars(m1));
+            }
+        );
+
+        return text;
+    }
+
+    var _EncodeEmailAddress = function (addr) {
+//
+//  Input: an email address, e.g. "foo@example.com"
+//
+//  Output: the email address as a mailto link, with each character
+//	of the address encoded as either a decimal or hex entity, in
+//	the hopes of foiling most address harvesting spam bots. E.g.:
+//
+//	<a href="&#x6D;&#97;&#105;&#108;&#x74;&#111;:&#102;&#111;&#111;&#64;&#101;
+//	   x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;">&#102;&#111;&#111;
+//	   &#64;&#101;x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;</a>
+//
+//  Based on a filter by Matthew Wickline, posted to the BBEdit-Talk
+//  mailing list: <http://tinyurl.com/yu7ue>
+//
+
+        var encode = [
+            function (ch) {
+                return "&#" + ch.charCodeAt(0) + ";";
+            },
+            function (ch) {
+                return "&#x" + ch.charCodeAt(0).toString(16) + ";";
+            },
+            function (ch) {
+                return ch;
+            }
+        ];
+
+        addr = "mailto:" + addr;
+
+        addr = addr.replace(/./g, function (ch) {
+            if (ch == "@") {
+                // this *must* be encoded. I insist.
+                ch = encode[Math.floor(Math.random() * 2)](ch);
+            } else if (ch != ":") {
+                // leave ':' alone (to spot mailto: later)
+                var r = Math.random();
+                // roughly 10% raw, 45% hex, 45% dec
+                ch = (
+                    r > .9 ? encode[2](ch) :
+                        r > .45 ? encode[1](ch) :
+                            encode[0](ch)
+                );
+            }
+            return ch;
+        });
+
+        addr = "<a href=\"" + addr + "\">" + addr + "</a>";
+        addr = addr.replace(/">.+:/g, "\">"); // strip the mailto: from the visible part
+
+        return addr;
+    }
+
+    var _UnescapeSpecialChars = function (text) {
+//
+// Swap back in all the special characters we've hidden.
+//
+        text = text.replace(/~E(\d+)E/g,
+            function (wholeMatch, m1) {
+                var charCodeToReplace = parseInt(m1);
+                return String.fromCharCode(charCodeToReplace);
+            }
+        );
+        return text;
+    }
+
+    var _Outdent = function (text) {
+//
+// Remove one level of line-leading tabs or spaces
+//
+
+        // attacklab: hack around Konqueror 3.5.4 bug:
+        // "----------bug".replace(/^-/g,"") == "bug"
+
+        text = text.replace(/^(\t|[ ]{1,4})/gm, "~0"); // attacklab: g_tab_width
+
+        // attacklab: clean up hack
+        text = text.replace(/~0/g, "")
+
+        return text;
+    }
+
+    var _Detab = function (text) {
+// attacklab: Detab's completely rewritten for speed.
+// In perl we could fix it by anchoring the regexp with \G.
+// In javascript we're less fortunate.
+
+        // expand first n-1 tabs
+        text = text.replace(/\t(?=\t)/g, "    "); // attacklab: g_tab_width
+
+        // replace the nth with two sentinels
+        text = text.replace(/\t/g, "~A~B");
+
+        // use the sentinel to anchor our regex so it doesn't explode
+        text = text.replace(/~B(.+?)~A/g,
+            function (wholeMatch, m1, m2) {
+                var leadingText = m1;
+                var numSpaces = 4 - leadingText.length % 4;  // attacklab: g_tab_width
+
+                // there *must* be a better way to do this:
+                for (var i = 0; i < numSpaces; i++) leadingText += " ";
+
+                return leadingText;
+            }
+        );
+
+        // clean up sentinels
+        text = text.replace(/~A/g, "    ");  // attacklab: g_tab_width
+        text = text.replace(/~B/g, "");
+
+        return text;
+    }
+
+
+//
+//  attacklab: Utility functions
+//
+
+
+    var escapeCharacters = function (text, charsToEscape, afterBackslash) {
+        // First we have to escape the escape characters so that
+        // we can build a character class out of them
+        var regexString = "([" + charsToEscape.replace(/([\[\]\\])/g, "\\$1") + "])";
+
+        if (afterBackslash) {
+            regexString = "\\\\" + regexString;
+        }
+
+        var regex = new RegExp(regexString, "g");
+        text = text.replace(regex, escapeCharacters_callback);
+
+        return text;
+    }
+
+
+    var escapeCharacters_callback = function (wholeMatch, m1) {
+        var charCodeToEscape = m1.charCodeAt(0);
+        return "~E" + charCodeToEscape + "E";
+    }
+
+} // end of Showdown.converter
+
+
+// export
+if (typeof module !== 'undefined') module.exports = Showdown;
+
+// stolen from AMD branch of underscore
+// AMD define happens at the end for compatibility with AMD loaders
+// that don't enforce next-turn semantics on modules.
+if (typeof define === 'function' && define.amd) {
+    define('showdown', function () {
+        return Showdown;
+    });
+}
+;/**
+ * Created by Tivie on 04-11-2014.
+ */
+
+
+//Check if AngularJs and Showdown is defined and only load ng-Showdown if both are present
+if (typeof angular !== 'undefined'  && typeof Showdown !== 'undefined') {
+
+    (function (module, Showdown) {
+
+        module
+            .provider('$Showdown', provider)
+            .directive('sdModelToHtml', ['$Showdown', markdownToHtmlDirective])
+            .filter('sdStripHtml', stripHtmlFilter);
+
+        /**
+         * Angular Provider
+         * Enables configuration of showdown via angular.config and Dependency Injection into controllers, views
+         * directives, etc... This assures the directives and filters provided by the library itself stay consistent
+         * with the user configurations.
+         * If the user wants to use a different configuration in a determined context, he can use the "classic" Showdown
+         * object instead.
+         *
+         */
+        function provider() {
+
+            // Configuration parameters for Showdown
+            var config = {
+                extensions: [],
+                stripHtml: true
+            };
+
+            /**
+             * Sets a configuration option
+             *
+             * @param {string} key Config parameter key
+             * @param {string} value Config parameter value
+             */
+            this.setOption = function (key, value) {
+                config.key = value;
+
+                return this;
+            };
+
+            /**
+             * Gets the value of the configuration parameter specified by key
+             *
+             * @param {string} key The config parameter key
+             * @returns {string|null} Returns the value of the config parameter. (or null if the config parameter is not set)
+             */
+            this.getOption = function (key) {
+                if (config.hasOwnProperty(key)) {
+                    return config.key;
+                } else {
+                    return null;
+                }
+            };
+
+            /**
+             * Loads a Showdown Extension
+             *
+             * @param {string} extensionName The name of the extension to load
+             */
+            this.loadExtension = function (extensionName) {
+                config.extensions.push(extensionName);
+
+                return this;
+            };
+
+            function SDObject() {
+                var converter = new Showdown.converter(config);
+
+                /**
+                 * Converts a markdown text into HTML
+                 *
+                 * @param {string} markdown The markdown string to be converted to HTML
+                 * @returns {string} The converted HTML
+                 */
+                this.makeHtml = function (markdown) {
+                    return converter.makeHtml(markdown);
+                };
+
+                /**
+                 * Strips a text of it's HTML tags
+                 *
+                 * @param {string} text
+                 * @returns {string}
+                 */
+                this.stripHtml = function (text) {
+                    return String(text).replace(/<[^>]+>/gm, '');
+                };
+            }
+
+            // The object returned by service provider
+            this.$get = function () {
+                return new SDObject();
+            };
+        }
+
+        /**
+         * AngularJS Directive to Md to HTML transformation
+         *
+         * Usage example:
+         * <div sd-md-to-html-model="markdownText" ></div>
+         *
+         * @param $Showdown
+         * @returns {*}
+         */
+        function markdownToHtmlDirective($Showdown) {
+
+            var link = function (scope, element) {
+                scope.$watch('model', function (newValue) {
+                    var val;
+                    if (typeof newValue === 'string') {
+                        val = $Showdown.makeHtml(newValue);
+                    } else {
+                        val = typeof newValue;
+                    }
+                    element.html(val);
+                });
+            };
+
+            return {
+                restrict: 'A',
+                link: link,
+                scope: {
+                    model: '=sdModelToHtml'
+                }
+            }
+        }
+
+        /**
+         * AngularJS Filter to Strip HTML tags from text
+         *
+         * @returns {Function}
+         */
+        function stripHtmlFilter() {
+            return function (text) {
+                return String(text).replace(/<[^>]+>/gm, '');
+            };
+        }
+
+    })(angular.module('Showdown', []), Showdown);
+
+} else {
+
+    /** TODO Since this library is opt out, maybe we should not throw an error so we can concatenate this
+             script with the main lib */
+    // throw new Error("ng-showdown was not loaded because one of it's dependencies (AngularJS or Showdown) wasn't met");
+}
+
+//# sourceMappingURL=showdown.js.map
+;/* Zepto v1.1.6 - zepto event ajax form ie - zeptojs.com/license */
 
 var Zepto = (function() {
   var undefined, key, $, classList, emptyArray = [], slice = emptyArray.slice, filter = emptyArray.filter,
