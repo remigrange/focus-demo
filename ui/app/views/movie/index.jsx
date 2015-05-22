@@ -1,6 +1,6 @@
-
+/*global React, Focus*/
 //Récupération des dépendances.
-var detailMixin = Focus.components.page.detail.mixin;
+var createDetail = Focus.components.page.createDetail;
 var Detail = Focus.components.common.detail.component;
 
 //Blocs composants la page.
@@ -10,35 +10,32 @@ var MovieProducers = require('./movieProducers');
 var MovieDirectors = require('./movieDirectors');
 var MoviePictures = require('./moviePictures');
 //Composants du cartouche
-var SummaryMovie = React.createClass({render: function(){<div>SUMMARY ..............</div>}});
-var CartridgeMovie = React.createClass({render: function(){<div>CARTRIDGE ..............</div>}});
+var SummaryMovie = React.createClass({
+  render: function(){return (<div>SUMMARY ..............</div>); }
+});
+
+var CartridgeMovie = React.createClass({
+  render: function(){return (<div>Cartouche du Film</div>); }
+});
 
 /**
  * Page représentant le détail de la fiche d'un film.
  */
-module.exports = React.createClass({
-    mixins: [detailMixin],
-    cartridgeConfiguration : {
-      summary: SummaryMovie,
-      cartridge: CartridgeMovie
-    },
-    /** @inheritedDoc */
-    displayName: 'MovieView',
-    /** @inheritedDoc */
-    render: function renderMovieView() {
-        return (
-          <Detail>
-            <MovieDetails id={this.props.id}/>
-            <Castings id={this.props.id}/>
-            <MovieProducers id={this.props.id}/>
-            <MovieDirectors id={this.props.id}/>
-            <MoviePictures id={this.props.id}/>
-          </Detail>
-        );
+module.exports = createDetail({
+  displayName: 'MovieView',
+  cartridgeConfiguration: {
+      summary: {component: SummaryMovie},
+      cartridge: {component: CartridgeMovie}
+  },
+  render: function renderMovieView() {
+    return (
+      <Detail>
+        <MovieDetails id={this.props.id}/>
+        <Castings id={this.props.id}/>
+        <MovieProducers id={this.props.id}/>
+        <MovieDirectors id={this.props.id}/>
+        <MoviePictures id={this.props.id}/>
+      </Detail>
+    );
     }
 });
-
-
-/*
-
- */
