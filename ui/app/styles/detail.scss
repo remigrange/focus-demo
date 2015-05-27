@@ -7,23 +7,3 @@
 .detail-content {
   margin-left:270px;
 }
-
-.slidingBloc {
-  ul.selection-list {
-    li.sl-line:hover {
-      background: none;
-    }
-    li.sl-line {
-      cursor: auto;
-    }
-  }
-}
-
-.catridgeContainer {
-  z-index: 10;
-  width: 500px;
-  border-left: solid 1px $color-gris2;
-  border-bottom: solid 1px $color-gris2;
-  border-bottom: none;
-  float:right;
-}
