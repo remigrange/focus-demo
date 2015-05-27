@@ -1,4 +1,4 @@
-/*global React, Focus*/
+/*global React, Focus */
 //Récupération des dépendances.
 var createDetail = Focus.components.page.createDetail;
 var Detail = Focus.components.common.detail.component;
