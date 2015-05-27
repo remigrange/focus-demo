@@ -1,7 +1,7 @@
 module.exports = {
     'live': {
         'filter': {
-           'title': 'Filter results'
+            'title': 'Filter results'
         }
     },
     'result': {
@@ -9,14 +9,23 @@ module.exports = {
     },
 
     'movie': {
-      'title': 'Movie',
-      'detail': {
-        'identity': {
-          'title': 'Identity'
-        },
-        'directors': {
-          'title': 'Directors'
+        'title': 'Movie',
+        'detail': {
+            'identity': {
+                'title': 'Identity'
+            },
+            'cast': {
+                'title': 'Cast'
+            },
+            'producers': {
+                'title': 'Producers'
+            },
+            'directors': {
+                'title': 'Directors'
+            },
+            'pictures': {
+                'title': 'Pictures'
+            }
         }
-      }
     }
 };

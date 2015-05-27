@@ -26,9 +26,9 @@ module.exports = React.createClass({
   },
   renderContent: function render() {
     return (
-      <Block title="DIRECTORS" style={{className: "slidingBlock", titleId: "directors"}}>
-        {this.listFor("directors", {LineComponent: line})}
-      </Block>
+        <Block title='movie.detail.directors.title'>
+          {this.listFor("directors", {LineComponent: line})}
+        </Block>
     );
   }
 });

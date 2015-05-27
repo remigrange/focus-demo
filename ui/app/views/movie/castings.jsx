@@ -25,7 +25,7 @@ module.exports = React.createClass({
   },
   renderContent: function renderContentCastings() {
     return (
-      <Block title="CAST" style={{className: "slidingBlock", titleId: "cast"}}>
+        <Block title='movie.detail.cast.title'>
         {this.listFor("castings", {LineComponent: line})}
       </Block>
     );
