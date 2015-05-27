@@ -39,3 +39,22 @@ header[data-focus-header] {
 .actions-left {
   margin-top: 10px;
 }
+
+//Le résumé de la fich n'est pas affiché en mode medium.
+/*header[data-focus="header"]{
+  //When the size is medium, the summary-bar is not visible.
+  &[data-size="medium"]{
+    div[data-focus="bar"]{
+      div:nth-child(2){
+        display:none;
+    }
+  }
+  //When the size is small, the cartridge is not visible.
+  &[data-size="small"]{
+    div[data-focus="cartridge"]{
+      display: none;
+    }
+  }
+}
+}*/
+//Le cartouche de la fiche est invisible dans le cas d'une taille small.
