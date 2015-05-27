@@ -30,9 +30,7 @@ exports.config = {
       joinTo: 'stylesheets/app.css',
       order: {
         before: [
-          'app/styles/variables.scss',
           'app/styles/font.scss',
-          'app/styles/default.scss'
         ]
       }
     },
