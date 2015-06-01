@@ -1,0 +1,90 @@
+Création de la table de sélection des données
+
+create table MOV_SEL
+(
+    MOV_ID      	 NUMERIC     	not null,
+    constraint PK_MOV_SEL primary key (MOV_ID)
+);
+
+
+Remplissage de la table  avec les films après 1976 ayant eu des acteurs ayant participé dans des films STAR WARS
+
+insert into MOV_SEL(MOV_ID) select mov.mov_id from 
+( select distinct c2.mov_id from movie mv1 inner join casting c1 on c1.mov_id = mv1.mov_id inner join casting c2 on c2.peo_id = c1.peo_id
+where (mv1.title like 'Star Wars (%' or mv1.title like 'Star Wars: Ep%' ) and not mv1.title like '%(V%'  and not mv1.title like '%V)%') mv
+inner join movie mov on mov.mov_id = mv.mov_id and mov.released > '1977-01-01'
+
+
+where  (mv1.title like 'Star Wars (%' or mv1.title like 'Star Wars: Ep%' ) and not mv1.title like '%(V%'  and not mv1.title like '%V)%'
+and released > '1977-01-01'
+
+
+Exécution des requêtes avec export des données dans des fichiers CSV, délimité par des ,
+
+Table ALIAS
+select distinct als.* from  mov_sel m 
+inner join mov_als ma on ma.mov_id = m.mov_id
+inner join alias als on als.als_id = ma.als_id
+
+Table CASTING
+select distinct cas.* from  mov_sel m 
+inner join casting cas on cas.mov_id = m.mov_id
+
+Table COUNTRY
+select * from country
+
+Table GENRE
+select * from genre
+
+Table LANGUAGE
+select * from language
+
+Table MOV_ALS
+select distinct ma.* from  mov_sel m 
+inner join mov_als ma on ma.mov_id = m.mov_id
+
+Table MOV_COU
+select distinct mc.* from  mov_sel m 
+inner join mov_cou mc on mc.mov_id = m.mov_id
+
+Table MOV_GEN
+select distinct mg.* from  mov_sel m 
+inner join mov_gen mg on mg.mov_id = m.mov_id
+
+Table MOV_LAN
+select distinct ml.* from  mov_sel m 
+inner join mov_lan ml on ml.mov_id = m.mov_id
+
+Table MOVIE
+select mov.mov_id, mov.title, mov.released, mov.runtime, regexp_replace(mov.description, '\n', ' ','g')  as description, mov.metadas_json, mov.imdbid, mov.year
+from  mov_sel m 
+inner join movie mov on mov.mov_id = m.mov_id
+
+Table PEOPLE
+select distinct peo.* from  mov_sel m 
+inner join role_people rlp on rlp.mov_id = m.mov_id
+inner join people peo on peo.peo_id = rlp.peo_id
+
+Table ROLE_MOVIE
+select * from role_movie
+
+Table ROLE_PEOPLE
+select distinct rlp.* from  mov_sel m 
+inner join role_people rlp on rlp.mov_id = m.mov_id
+
+Table TITLE
+select * from title
+
+
+
+
+
+
+
+
+
+
+
+
+
+

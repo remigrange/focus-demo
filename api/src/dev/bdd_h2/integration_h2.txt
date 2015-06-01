@@ -1,0 +1,13 @@
+Dans le répertoire src/main/database/scripts/installation, créer la base de données avec la ligne de commande suivante:
+java  -cp ..\..\..\webapp\WEB-INF\lib\h2-1.4.187.jar org.h2.tools.RunScript  -url jdbc:h2:~/test -user sa -script 01_CREBAS.sql
+
+Dans le répertoire src/dev/bdd_h2, dézipper le fichier data.zip puis alimentater de la base de données avec la ligne de commande suivante:
+java  -cp ..\..\main\webapp\WEB-INF\lib\h2-1.4.187.jar org.h2.tools.RunScript  -url jdbc:h2:~/test -user sa -script load_data.sql
+
+Ca peut prendre un peu de temps, la base ainsi générée fera environ 1 Go
+
+Pour consulter le contenu de la base après que la reprise de données ait été faite,
+Il faut exécuter dans le répertoir où les données ont été reprises :
+java  -jar ..\..\main\webapp\WEB-INF\lib\h2-1.4.187.jar
+et se connecter via l'interface WEB
+
