@@ -28,12 +28,12 @@ module.exports = createDetail({
       cartridge: {component: CartridgeMovie, props: props},
       actions: {
         primary: [
-          {label: 'imprimer', onClick: ()=>{console.log('action'); }, className: 'print'},
-          {label: 'archiver', onClick: ()=>{console.log('archiver'); }, className: 'archive'}
+          {label: 'imprimer', action: ()=>{console.log('print primaire'); }, className: 'print'},
+          {label: 'archiver', action: ()=>{console.log('archiver primaire'); }, className: 'archive'}
         ],
         secondary: [
-          {label: 'imprimer Secondaire', onClick: ()=>{console.log('action'); }, className: 'print'},
-          {label: 'archiver', onClick: ()=>{console.log('archiver'); }, className: 'archive'}]
+          {label: 'imprimer Secondaire', action: ()=>{console.log('print secondaire'); }, className: 'print'},
+          {label: 'archiver', action: ()=>{console.log('archiver secondaire'); }, className: 'archive'}]
       }
     };
   },
