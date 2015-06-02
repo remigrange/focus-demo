@@ -11,21 +11,31 @@ var MovieDirectors = require('./movieDirectors');
 var MoviePictures = require('./moviePictures');
 //Composants du cartouche
 var SummaryMovie = React.createClass({
-  render: function(){return (<div>SUMMARY ..............</div>); }
+  render: function(){return (<div>SUMMARY {this.props.id || 'no Id'} ..............</div>); }
 });
 
-var CartridgeMovie = React.createClass({
-  render: function(){return (<div>Cartouche du Film</div>); }
-});
+var CartridgeMovie = require('./cartridge');
 
 /**
  * Page représentant le détail de la fiche d'un film.
  */
 module.exports = createDetail({
   displayName: 'MovieView',
-  cartridgeConfiguration: {
-      summary: {component: SummaryMovie},
-      cartridge: {component: CartridgeMovie}
+  cartridgeConfiguration: function() {
+     var props = {id: this.props.id, hasForm: false};
+     return {
+      summary: {component: SummaryMovie, props: props},
+      cartridge: {component: CartridgeMovie, props: props},
+      actions: {
+        primary: [
+          {label: 'imprimer', onClick: ()=>{console.log('action'); }, className: 'print'},
+          {label: 'archiver', onClick: ()=>{console.log('archiver'); }, className: 'archive'}
+        ],
+        secondary: [
+          {label: 'imprimer Secondaire', onClick: ()=>{console.log('action'); }, className: 'print'},
+          {label: 'archiver', onClick: ()=>{console.log('archiver'); }, className: 'archive'}]
+      }
+    };
   },
   render: function renderMovieView() {
     return (
