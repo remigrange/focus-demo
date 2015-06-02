@@ -3,6 +3,7 @@ var Header = Focus.components.application.header.component;
 var Cartridge = Focus.components.application.cartridge.component;
 var ContentBar = Focus.components.application.contentBar.component;
 var Bar = Focus.components.application.bar.component;
+var ContentActions = Focus.components.application.contentActions.component;
 
 module.exports = React.createClass({
   displayName: 'AppHeader',
@@ -13,11 +14,7 @@ module.exports = React.createClass({
           <Bar appName='FOCUS'/>
           <Cartridge />
         </ContentBar>
-        <div data-focus='content-actions'>
-          <button className="btn btn-success btn-fab btn-raised mdi-action-language"></button>
-          <button className="btn btn-danger btn-fab btn-raised mdi-social-notifications"></button>
-          <button className="btn btn-primary btn-fab btn-raised mdi-action-account-circle"></button>
-        </div>
+        <ContentActions />
       </Header>
     );
   }
