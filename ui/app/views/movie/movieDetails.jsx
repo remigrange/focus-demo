@@ -1,6 +1,6 @@
 /*global React, Focus*/
 var formMixin = Focus.components.common.form.mixin;
-var movieActions = require('../../action/movie');
+var movieActions = require('../../action/movie').movie;
 var movieStore = require('../../stores/movie');
 var Block = Focus.components.common.block.component;
 

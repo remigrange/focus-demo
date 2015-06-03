@@ -1,58 +1,37 @@
-var AppDispatcher = Focus.dispatcher;
 var movieServices = require('../../services').movie;
+var actionBuilder = Focus.application.actionBuilder;
 module.exports = {
-    load: function(id){
-        movieServices.getMovieViewById(id).then(
-            function(data){
-              AppDispatcher.handleServerAction({
-                    data: {movie: data},
-                    type: "update"
-                });
-            }
-        );
+    movie: {
+      load: actionBuilder({
+        service: movieServices.getMovieViewById,
+        node: 'movie',
+        status: 'loaded'
+      }),
+      save: actionBuilder({
+        service: movieServices.updateMovie,
+        node: 'movie',
+        status: 'saved'
+      })
     },
-
-    loadCastings: function(id){
-        movieServices.getMovieCastingsById(id).then(
-            function(data){
-              AppDispatcher.handleServerAction({
-                    data: {castings: data},
-                    type: "update"
-                });
-            }
-        );
+    castings: {
+      load: actionBuilder({
+        service: movieServices.getMovieCastingsById,
+        node: 'castings',
+        status: 'loaded'
+      })
     },
-
-    loadProducers: function(id){
-      movieServices.getMovieProducersById(id).then(
-        function(data){
-          AppDispatcher.handleServerAction({
-            data: {producers: data},
-            type: "update"
-          });
-        }
-      );
+    producers: {
+      load: actionBuilder({
+        service: movieServices.getMovieProducersById,
+        node: 'producers',
+        status: 'loaded'
+      })
     },
-
-    loadDirectors: function(id){
-      movieServices.getMovieDirectorsById(id).then(
-        function(data){
-          AppDispatcher.handleServerAction({
-            data: {directors: data},
-            type: "update"
-          });
-        }
-      );
-    },
-    save: function saveMovie(jsonMovie){
-      jsonMovie.movId = jsonMovie.movId || 1;
-      return movieServices.updateMovie(jsonMovie).then(
-        function(data){
-          AppDispatcher.handleServerAction({
-            data: {movie: data},
-            type: "update"
-          });
-        }
-      );
+    directors: {
+      load: actionBuilder({
+        service: movieServices.getMovieDirectorsById,
+        node: 'directors',
+        status: 'loaded'
+      })
     }
 };
