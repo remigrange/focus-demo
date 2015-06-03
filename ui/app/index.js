@@ -1,22 +1,15 @@
 /*global Backbone*/
 
 console.log('Application demo rodoplphe');
+
+//Write focusComponents into Focus.components
 Focus.components = FocusComponents;
-////Require dependencies.
+
+//Initialisation des configurations et du layout.
 require('./initializer');
 
-//render menu modules
-var render = Focus.application.render;
-var LeftMenuView = require('../views/menu/leftMenu');
-var PageHeader = require('../views/menu/appHeader');
-//render(PageHeader, '#header');
-var Header = require('../views/header');
-render(Header, '#header');
-render(LeftMenuView, '#leftMenu');
-
-//Start the application.
-require('./router');
-Backbone.history.start();
+// Démarrage de l'application
+require('./application');
 
 
 //Render all application modules for the first time.
