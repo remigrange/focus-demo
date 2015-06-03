@@ -10,5 +10,5 @@ var domains = Object.keys(require('../config/domain'));
 console.info('########################## DOMAINS ##############################');
 console.info('Entity definitions domains: ', appDomains);
 console.info('Domains with a definition',domains);
-console.info('Missing domain\'s definition', _.difference(appDomains, domains));
+console.warn('Missing domain\'s definition', _.difference(appDomains, domains));
 console.info('####################################################################');
