@@ -223,11 +223,11 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'imdbID'. */
 		IMDBID,
-		/** Propriété 'Movie's genres identifiers'. */
+		/** Propriété 'Genres'. */
 		GENRE_IDS,
-		/** Propriété 'Movie's contries identifiers'. */
+		/** Propriété 'Contries'. */
 		COUNTRY_IDS,
-		/** Propriété 'Movie's languages identifiers'. */
+		/** Propriété 'Languages'. */
 		LANGUAGE_IDS,
 	}
 
@@ -289,11 +289,11 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		DESCRIPTION,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
-		/** Propriété 'Movie's genres identifiers'. */
+		/** Propriété 'Genres'. */
 		GENRE_IDS,
-		/** Propriété 'Movie's contries identifiers'. */
+		/** Propriété 'Contries'. */
 		COUNTRY_IDS,
-		/** Propriété 'Movie's languages identifiers'. */
+		/** Propriété 'Languages'. */
 		LANGUAGE_IDS,
 		/** Propriété 'rank'. */
 		RANK,
@@ -319,11 +319,11 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
-		/** Propriété 'Movie's genres identifiers'. */
+		/** Propriété 'Genres'. */
 		GENRE_IDS,
-		/** Propriété 'Movie's contries identifiers'. */
+		/** Propriété 'Contries'. */
 		COUNTRY_IDS,
-		/** Propriété 'Movie's languages identifiers'. */
+		/** Propriété 'Languages'. */
 		LANGUAGE_IDS,
 	}
 
@@ -349,11 +349,11 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
-		/** Propriété 'Movie's genres identifiers'. */
+		/** Propriété 'Genres'. */
 		GENRE_IDS,
-		/** Propriété 'Movie's contries identifiers'. */
+		/** Propriété 'Contries'. */
 		COUNTRY_IDS,
-		/** Propriété 'Movie's languages identifiers'. */
+		/** Propriété 'Languages'. */
 		LANGUAGE_IDS,
 		/** Propriété 'rank'. */
 		RANK,
@@ -441,7 +441,7 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Name'. */
 		PEO_NAME_SORT_ONLY,
-		/** Propriété 'People's professions'. */
+		/** Propriété 'Professions'. */
 		PROFESSIONS,
 		/** Propriété 'rank'. */
 		RANK,
@@ -463,7 +463,7 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		PEO_NAME,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
-		/** Propriété 'People's professions'. */
+		/** Propriété 'Professions'. */
 		PROFESSIONS,
 		/** Propriété 'rank'. */
 		RANK,
@@ -487,7 +487,7 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		PEO_NAME_SORT_ONLY,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
-		/** Propriété 'People's professions'. */
+		/** Propriété 'Professions'. */
 		PROFESSIONS,
 		/** Propriété 'rank'. */
 		RANK,

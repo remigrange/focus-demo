@@ -20,6 +20,7 @@ exports.config = {
             'vendor/ripples.min.js',
             'vendor/material.min.js',
             'vendor/lodash.js',
+            'vendor/backbone.js',
             'vendor/focus.js',
             'vendor/focus-components.js'
         ],

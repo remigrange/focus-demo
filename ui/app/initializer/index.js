@@ -18,7 +18,13 @@ $(document).on("click", "a:not([data-bypass])", function(evt) {
     Backbone.history.navigate(href.attr, true);
   }
 });
+
+//Initialisation des congfigurations
 require('./domain-initializer');
 require('./definition-initializer');
 require('./reference_list_initializer').initialize();
 require('./i18n-initializer');
+
+//Initialisation du layout
+//
+require('./layout-initializer');

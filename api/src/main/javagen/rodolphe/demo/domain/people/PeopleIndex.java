@@ -159,17 +159,17 @@ public final class PeopleIndex implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'People's professions'. 
+	 * Récupère la valeur de la propriété 'Professions'. 
 	 * @return String professions 
 	 */
-	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "People's professions")
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Professions")
 	public String getProfessions() {
 		return professions;
 	}
 
 	/**
 	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'People's professions'.
+	 * Définit la valeur de la propriété 'Professions'.
 	 * @param professions String 
 	 */
 	public void setProfessions(final String professions) {
