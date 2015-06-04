@@ -19,7 +19,9 @@ var files = [
   'focusjs/dist/focus.js',
   //focusjs-components
   'focusjs-components/dist/js/focus-components.js',
-  'focusjs-components/dist/css/focus-components.css'
+  'focusjs-components/dist/css/focus-components.css',
+  //font awesome
+  'font-awesome/css/font-awesome.css'
   ];
 
 
@@ -27,7 +29,9 @@ var fonts = [
   //Fonts
   'bootstrap/dist/fonts/glyphicons-halflings-regular.eot',
   'bootstrap-material/dist/fonts/Material-Design-Icons.eot',
-  'bootstrap-material/dist/fonts/Material-Design-Icons.svg'
+  'bootstrap-material/dist/fonts/Material-Design-Icons.svg',
+  'font-awesome/fonts/fontawesome-webfont.eot',
+  'font-awesome/fonts/fontawesome-webfont.svg'
 ];
 
 
