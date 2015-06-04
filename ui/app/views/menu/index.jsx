@@ -70,17 +70,20 @@ let Wrapper = React.createClass({
     },
     render() {
         return (
-            <Menu
-                open={true}
-                position='left'
-                direction='vertical'
-                title=''
-                items={this._getItems()}
-                ref='menu'>
-                <Popin ref='quick-search-popin' type='from-menu'>
-                    <QuickSearch/>
+            <div>
+                <Menu
+                    open={true}
+                    position='left'
+                    direction='vertical'
+                    title=''
+                    items={this._getItems()}
+                    ref='menu'
+                    >
+                </Menu>
+                <Popin data-focus='quick-search-popin' ref='quick-search-popin' type='from-menu'>
+                    <QuickSearch closePopin={this._closeQuickSearchPopin}/>
                 </Popin>
-            </Menu>
+            </div>
         );
     }
 });

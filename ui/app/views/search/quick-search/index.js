@@ -6,6 +6,9 @@ let MovieLineComponent = require('../lines/movieLineComponent');
 let PeoplePreview = require('../previews/peoplePreview');
 let PeopleLineComponent = require('../lines/peopleLineComponent');
 
+let Title = FocusComponents.common.title.component;
+let Button = FocusComponents.common.button.action.component;
+
 // Mixins
 
 let QuickSearchMixin = Focus.components.page.search.quickSearch.mixin;
@@ -13,25 +16,74 @@ let QuickSearchMixin = Focus.components.page.search.quickSearch.mixin;
 // Actions
 
 let navigationAction = require('action/navigation');
+let searchAction = require('action/search');
 
+// Stores
 
-let resultLineActionsList = [{
-    label: '',
-    action(data) {
-        let PreviewComponent = data.movId ? MoviePreview : PeoplePreview;
-
-    }
-}];
-
+let searchStore = require('stores/search');
 
 let QuickSearch = React.createClass({
+    getDefaultProps() {
+        let operationList = [
+            {
+                action() {
+
+                },
+                style: {className: 'preview fa fa-eye'},
+                priority: 1
+            }
+        ];
+        let scopeList = [];
+        return ({
+            lineMap: {
+                'Movie': MovieLineComponent,
+                'People': PeopleLineComponent
+            },
+            onLineClick: this._onLineClick,
+            operationList,
+            scopeList
+        });
+    },
     mixins: [QuickSearchMixin],
+    actions: searchAction,
+    store: searchStore,
     render() {
+        let list = this.isSimpleList() ? this.getSimpleListComponent({type: this._getListType()}) : this.getGroupByListComponent();
         return (
             <div data-focus='quick-search'>
-
+                {this.getSearchBarComponent()}
+                {list}
             </div>
         );
+    },
+    renderGroupByBlock(groupKey, list, maxRows) {
+        return (
+            <div data-focus='group-result-container'>
+                <Title title={groupKey}/>
+                <a onClick={this._advancedSearchClickHandler(groupKey)}>Advanced search</a>
+                {this.getSimpleListComponent({
+                    type: this._getListType(list),
+                    list,
+                    maxRows
+                })}
+                <Button handleOnClick={this.changeGroupByMaxRows(groupKey, 5)} label='Show more'></Button>
+            </div>
+        );
+    },
+    _onLineClick(line) {
+        let route = line.movId ? `movies/${line.id}` : `people/${line.id}`;
+        navigationAction.navigate(route);
+    },
+    _getListType(list) {
+        list = list || this.store.getList() || [{movId:0}];
+        return this.isSimpleList() && list[0].movId ? 'Movie' : 'People';
+    },
+    _advancedSearchClickHandler(scope) {
+        return () => {
+            let route = `search/advanced/scope/${scope}/query/${this.getCriteria().query}`;
+            this.props.closePopin();
+            navigationAction.navigate(route);
+        }
     }
 });
 

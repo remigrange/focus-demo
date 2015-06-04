@@ -1852,7 +1852,7 @@ require.register("initializer/layout-initializer", function(exports, require, mo
 
 var render = Focus.application.render;
 var Layout = Focus.components.application.layout.component;
-var MenuLeft = require('../../views/menu');
+var MenuLeft = require('views/menu');
 
 render(Layout, 'body', {
     props: {
@@ -2150,6 +2150,13 @@ module.exports = referenceStore;
 
 });
 
+require.register("stores/search", function(exports, require, module) {
+"use strict";
+
+module.exports = new Focus.store.SearchStore();
+
+});
+
 require.register("views/filter-result/filterResult", function(exports, require, module) {
 /*global React, Focus.components */
 'use strict';
@@ -2398,19 +2405,20 @@ var Wrapper = React.createClass({
     },
     render: function render() {
         return React.createElement(
-            Menu,
-            {
+            'div',
+            null,
+            React.createElement(Menu, {
                 open: true,
                 position: 'left',
                 direction: 'vertical',
                 title: '',
                 items: this._getItems(),
                 ref: 'menu'
-            },
+            }),
             React.createElement(
                 Popin,
-                { ref: 'quick-search-popin', type: 'from-menu' },
-                React.createElement(QuickSearch, null)
+                { 'data-focus': 'quick-search-popin', ref: 'quick-search-popin', type: 'from-menu' },
+                React.createElement(QuickSearch, { closePopin: this._closeQuickSearchPopin })
             )
         );
     }
@@ -2992,6 +3000,28 @@ module.exports = React.createClass({
         );
     }
 });
+});
+
+require.register("views/popin/quick-search", function(exports, require, module) {
+'use strict';
+
+var Popin = Focus.components.application.popin.component;
+var QuickSearch = require('views/search/quick-search');
+
+var QuickSearchPopin = React.createClass({
+    displayName: 'QuickSearchPopin',
+
+    render: function render() {
+        return React.createElement(
+            Popin,
+            { 'data-focus': 'quick-search-popin', ref: 'quick-search-popin', type: 'from-menu' },
+            React.createElement(QuickSearch, { togglePopin: this.refs['quick-search-popin'].toggleOpen })
+        );
+    }
+});
+
+module.exports = QuickSearchPopin;
+
 });
 
 require.register("views/search-result/index", function(exports, require, module) {
@@ -3795,6 +3825,9 @@ var MovieLineComponent = require('../lines/movieLineComponent');
 var PeoplePreview = require('../previews/peoplePreview');
 var PeopleLineComponent = require('../lines/peopleLineComponent');
 
+var Title = FocusComponents.common.title.component;
+var Button = FocusComponents.common.button.action.component;
+
 // Mixins
 
 var QuickSearchMixin = Focus.components.page.search.quickSearch.mixin;
@@ -3802,20 +3835,78 @@ var QuickSearchMixin = Focus.components.page.search.quickSearch.mixin;
 // Actions
 
 var navigationAction = require('action/navigation');
+var searchAction = require('action/search');
 
-var resultLineActionsList = [{
-    label: '',
-    action: function action(data) {
-        var PreviewComponent = data.movId ? MoviePreview : PeoplePreview;
-    }
-}];
+// Stores
+
+var searchStore = require('stores/search');
 
 var QuickSearch = React.createClass({
     displayName: 'QuickSearch',
 
+    getDefaultProps: function getDefaultProps() {
+        var operationList = [{
+            action: function action() {},
+            style: { className: 'preview fa fa-eye' },
+            priority: 1
+        }];
+        var scopeList = [];
+        return {
+            lineMap: {
+                'Movie': MovieLineComponent,
+                'People': PeopleLineComponent
+            },
+            onLineClick: this._onLineClick,
+            operationList: operationList,
+            scopeList: scopeList
+        };
+    },
     mixins: [QuickSearchMixin],
+    actions: searchAction,
+    store: searchStore,
     render: function render() {
-        return React.createElement('div', { 'data-focus': 'quick-search' });
+        var list = this.isSimpleList() ? this.getSimpleListComponent({ type: this._getListType() }) : this.getGroupByListComponent();
+        return React.createElement(
+            'div',
+            { 'data-focus': 'quick-search' },
+            this.getSearchBarComponent(),
+            list
+        );
+    },
+    renderGroupByBlock: function renderGroupByBlock(groupKey, list, maxRows) {
+        return React.createElement(
+            'div',
+            { 'data-focus': 'group-result-container' },
+            React.createElement(Title, { title: groupKey }),
+            React.createElement(
+                'a',
+                { onClick: this._advancedSearchClickHandler(groupKey) },
+                'Advanced search'
+            ),
+            this.getSimpleListComponent({
+                type: this._getListType(list),
+                list: list,
+                maxRows: maxRows
+            }),
+            React.createElement(Button, { handleOnClick: this.changeGroupByMaxRows(groupKey, 5), label: 'Show more' })
+        );
+    },
+    _onLineClick: function _onLineClick(line) {
+        var route = line.movId ? 'movies/' + line.id : 'people/' + line.id;
+        navigationAction.navigate(route);
+    },
+    _getListType: function _getListType(list) {
+        list = list || this.store.getList() || [{ movId: 0 }];
+        return this.isSimpleList() && list[0].movId ? 'Movie' : 'People';
+    },
+    _advancedSearchClickHandler: function _advancedSearchClickHandler(scope) {
+        var _this = this;
+
+        return function () {
+            var route = 'search/advanced/scope/' + scope + '/query/' + _this.getCriteria().query;
+            _this.props.closePopin();
+            navigationAction.navigate(route);
+        };
     }
 });
 

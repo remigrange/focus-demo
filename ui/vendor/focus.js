@@ -13896,20 +13896,25 @@ module.exports = ReferenceStore;
 },{"../CoreStore":206,"./definition":214}],217:[function(require,module,exports){
 "use strict";
 
-var Immutable = require("immutable");
 module.exports = {
   /**
    * Metadata defintion informations for the search.
    * @type {Object}
    */
   search: {
-    facet: "facet",
-    list: "list",
-    pageInfos: "pageInfos"
+    facet: {
+      domain: "DO_TEXT"
+    },
+    list: {
+      domain: "DO_TEXT"
+    },
+    pageInfos: {
+      domain: "DO_TEXT"
+    }
   }
 };
 
-},{"immutable":36}],218:[function(require,module,exports){
+},{}],218:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
