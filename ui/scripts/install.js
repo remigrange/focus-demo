@@ -35,6 +35,8 @@ var fonts = [
   'bootstrap/dist/fonts/glyphicons-halflings-regular.eot',
   'bootstrap-material/dist/fonts/Material-Design-Icons.eot',
   'bootstrap-material/dist/fonts/Material-Design-Icons.svg',
+  'bootstrap-material/dist/fonts/Material-Design-Icons.woff',
+  'bootstrap-material/dist/fonts/Material-Design-Icons.ttf',
   'font-awesome/fonts/fontawesome-webfont.eot',
   'font-awesome/fonts/fontawesome-webfont.svg'
 ];
