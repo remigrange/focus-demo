@@ -25,16 +25,36 @@ let Menu = React.createClass({
 
 
 let Wrapper = React.createClass({
-    _getLinks() {
+    _getItems() {
         return ([
             {
                 icon: 'home',
                 route: 'home',
-                clickHandler: this._closeQuickSearchPopin
+                onClick: this._closeQuickSearchPopin
             },
             {
                 icon: 'search',
-                clickHandler: this._toggleQuickSearchPopin
+                onClick: this._toggleQuickSearchPopin
+            },
+            {
+                icon: 'video-camera',
+                route: '',
+                onClick: this._closeQuickSearchPopin
+            },
+            {
+                icon: 'user',
+                route: '',
+                onClick: this._closeQuickSearchPopin
+            },
+            {
+                icon: 'cog',
+                route: '',
+                onClick: this._closeQuickSearchPopin
+            },
+            {
+                icon: 'info-circle',
+                route: '',
+                onClick: this._closeQuickSearchPopin
             }
         ]);
     },
@@ -54,9 +74,8 @@ let Wrapper = React.createClass({
                 position='left'
                 direction='vertical'
                 title=''
-                links={this._getLinks()}
+                items={this._getItems()}
                 ref='menu'
-                brand='static/img/brand.png'
             >
                 <Popin ref='quick-search-popin' type='from-menu'>
                     <QuickSearch/>

@@ -38,28 +38,62 @@ module.exports = {
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 
 var dispatcher = require("../dispatcher");
+function preServiceCall(config) {
+  dispatcher.handleViewAction({
+    data: _defineProperty({}, config.node, undefined),
+    type: config.type,
+    status: (function () {
+      var _status = {};
+
+      _defineProperty(_status, config.type, config.preStatus);
+
+      _defineProperty(_status, "isLoading", true);
+
+      return _status;
+    })()
+  });
+}
+function postServiceCall(config, json) {
+  dispatcher.handleServerAction({
+    data: _defineProperty({}, config.node, json),
+    type: config.type,
+    status: (function () {
+      var _status = {};
+
+      _defineProperty(_status, config.type, config.status);
+
+      _defineProperty(_status, "isLoading", false);
+
+      return _status;
+    })()
+  });
+}
+
 module.exports = function (config) {
   config = config || {};
   config.type = config.type || "update";
-  if (!config.service) {
-    throw new Error("You need to provide a service");
-  }
+  config.preStatus = config.preStatus || "loading";
   if (!config.service) {
     throw new Error("You need to provide a service to call");
   }
-
-  if (!config.data) {
-    throw new Error("You need to provide an action data");
+  if (!config.status) {
+    throw new Error("You need to provide a status to your action");
   }
-  return config.service(config.data).then(function (jsonData) {
-    dispatcher.handleServerAction({
-      data: _defineProperty({}, config.property, jsonData),
-      type: config.type
+  /*if(!config.data){
+    throw new Error('You need to provide an action data');
+  }*/
+  //Exposes a function consumes by the compoennt.
+  return function (criteria) {
+    preServiceCall(config);
+    //todo: add middleware see slack for more informations
+    return config.service(criteria).then(function (jsonData) {
+      postServiceCall(config, jsonData);
+    }, function actionError(err) {
+      console.warn("Error in action", err);
+      //Get code back from a project
+      throw new Error("An errror occurs");
     });
-  }, function actionError(err) {
-    console.warn("Error in action", err);
-    throw new Error("An errror occurs");
-  });
+  };
 };
 
 },{"../dispatcher":18}],3:[function(require,module,exports){
@@ -102,10 +136,11 @@ module.exports = {
   render: require("./render"),
   builtInStore: require("./built-in-store"),
   actionBuilder: require("./action-builder"),
-  clear: require("./clear")
+  clear: require("./clear"),
+  mountedComponents: require("./mounted-components")
 };
 
-},{"./action-builder":2,"./built-in-store":3,"./clear":4,"./render":7}],6:[function(require,module,exports){
+},{"./action-builder":2,"./built-in-store":3,"./clear":4,"./mounted-components":6,"./render":7}],6:[function(require,module,exports){
 /**
  * Map containing all the mounted components' selectors.
  * The map has the shape {'selector1': true, 'selector2': true, ...}
@@ -120,6 +155,7 @@ module.exports = {}; // Empty by default
 "use strict";
 /*global document*/
 var React = window.React;
+var keys = require("lodash/object/keys");
 /**
  * Map containing all the mounted components.
  * @type {Object}
@@ -134,15 +170,20 @@ var clearComponent = require("./clear");
  * @param {string} selector  - A selector on a DOM node.
  * @param {object} options   - Options for the component rendering.
  */
-module.exports = function (component, selector, options) {
+module.exports = function renderComponent(component, selector, options) {
   options = options || {};
   // Clear a potential previously mounted component
   clearComponent(selector);
+  var targetDOMContainer = document.querySelector(selector);
+  if (!targetDOMContainer) {
+    throw new Error("You are trying to render a component in a DOM element which is not existing, your selector is  " + selector);
+  }
   // Render the component
-  React.render(React.createElement(component, options.props, options.data), document.querySelector(selector));
+  var mountedComponent = React.render(React.createElement(component, options.props, options.data), targetDOMContainer);
   //Save the fact that a component is mounted.
-  mountedComponents[selector] = true;
-  console.info("Mounted components : ", Object.keys(mountedComponents));
+  mountedComponents[selector] = mountedComponent;
+  console.info("Mounted components : ", keys(mountedComponents));
+  return mountedComponent;
 };
 /*
   Exemple
@@ -151,7 +192,7 @@ module.exports = function (component, selector, options) {
   render(MyComponent, 'div.component-container', {props: {id: '12'}});
  */
 
-},{"./clear":4,"./mounted-components":6}],8:[function(require,module,exports){
+},{"./clear":4,"./mounted-components":6,"lodash/object/keys":182}],8:[function(require,module,exports){
 "use strict";
 var React = window.React;
 var assign = require("object-assign");
@@ -13002,6 +13043,7 @@ module.exports={
     "test": "test"
   },
   "dependencies": {
+    "backbone": "^1.2.0",
     "flux": "^2.0.3",
     "immutable": "^3.7.3",
     "keymirror": "^0.1.1",
@@ -13246,9 +13288,18 @@ module.exports = {
 },{"./builder":200,"./built-in-action":201,"./built-in-store":202,"./config":203}],205:[function(require,module,exports){
 "use strict";
 
-module.exports = {};
+var render = require("../application/render");
+var Backbone = window.Backbone;
+module.exports = Backbone.Router.extend({
+  /**
+   * Render the compoennt into the page content.
+   */
+  _pageContent: function _pageContent(component, options) {
+    return render(component, "[data-focus=\"page-content\"]", options);
+  }
+});
 
-},{}],206:[function(require,module,exports){
+},{"../application/render":7}],206:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -13525,7 +13576,8 @@ module.exports = CoreStore;
 module.exports = function () {
   return {
     summaryComponent: "summaryComponent",
-    cartridgeComponent: "cartridgeComponent"
+    cartridgeComponent: "cartridgeComponent",
+    actions: "actions"
   };
 };
 
@@ -13851,15 +13903,9 @@ module.exports = {
    * @type {Object}
    */
   search: {
-    facet: {
-      domain: "DO_TEXT"
-    },
-    list: {
-      domain: "DO_TEXT"
-    },
-    pageInfos: {
-      domain: "DO_TEXT"
-    }
+    facet: "facet",
+    list: "list",
+    pageInfos: "pageInfos"
   }
 };
 
