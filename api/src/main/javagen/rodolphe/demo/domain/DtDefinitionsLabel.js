@@ -64,7 +64,7 @@ module.exports = {
         "metadasJson" : "metadas Json",
         "imdbid" : "imdbID",
         "genreIds" : "Genres",
-        "countryIds" : "Contries",
+        "countryIds" : "Countries",
         "languageIds" : "Languages"
     },
     "movieCasting": {
@@ -92,24 +92,12 @@ module.exports = {
         "year" : "Year",
         "runtime" : "Runtime",
         "description" : "Description",
-        "imdbid" : "Id imdb",
-        "genreIds" : "Genres",
-        "countryIds" : "Contries",
-        "languageIds" : "Languages",
-        "rank" : "rank"
-    },
-    "movieResult": {
-        "movId" : "primary key",
-        "title" : "Title",
-        "released" : "Released",
-        "year" : "Year",
-        "runtime" : "Runtime",
-        "description" : "Description",
         "metadasJson" : "Meta Data JSON",
         "imdbid" : "Id imdb",
         "genreIds" : "Genres",
-        "countryIds" : "Contries",
-        "languageIds" : "Languages"
+        "countryIds" : "Countries",
+        "languageIds" : "Languages",
+        "rank" : "rank"
     },
     "movieView": {
         "movId" : "primary key",
@@ -163,16 +151,6 @@ module.exports = {
         "peoName" : "Name",
         "imdbid" : "Id imdb",
         "peoNameSortOnly" : "Name",
-        "professions" : "Professions",
-        "rank" : "rank"
-    },
-    "peopleResult": {
-        "peoId" : "primary key",
-        "lastName" : "Last name",
-        "firstName" : "First Name",
-        "titCd" : "Title",
-        "peoName" : "Name",
-        "imdbid" : "Id imdb",
         "professions" : "Professions",
         "rank" : "rank"
     },

@@ -1,13 +1,20 @@
 package rodolphe.demo.services.people;
 
+import io.vertigo.core.Home;
+import io.vertigo.dynamo.collections.ListFilter;
+import io.vertigo.dynamo.collections.metamodel.FacetDefinition;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.domain.model.DtListState;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
 import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
+import io.vertigo.dynamo.search.model.SearchQuery;
+import io.vertigo.dynamo.search.model.SearchQueryBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
-import io.vertigo.util.StringUtil;
 import io.vertigo.vega.rest.model.UiListState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -19,14 +26,11 @@ import rodolphe.demo.domain.DtDefinitions.RolePeopleFields;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
-import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.people.PeopleIndex;
 import rodolphe.demo.domain.people.PeopleView;
 import rodolphe.demo.domain.people.RolePeople;
-import rodolphe.demo.domain.search.FacetConst;
-import rodolphe.demo.domain.search.FacetedSearchConst;
 import rodolphe.demo.services.search.FacetSelection;
-import rodolphe.demo.services.search.SearchCriterium;
-import rodolphe.demo.services.search.SearchServices;
+import rodolphe.demo.util.DtListStateUtil;
 
 /**
  * Implementation of People Services.
@@ -35,92 +39,81 @@ import rodolphe.demo.services.search.SearchServices;
  */
 public class PeopleServicesImpl implements PeopleServices {
 
-    private static final int MAX_ROWS = 50;
-    @Inject
-    private PeopleDAO peopleDAO;
-    @Inject
-    private SearchServices searchServices;
-    @Inject
-    private RolePeopleDAO rolePeopleDAO;
-    @Inject
-    private PeoplePAO peoplePAO;
-    @Inject
-    private MovieDAO movieDAO;
+	private static final int MAX_ROWS = 50;
+	@Inject
+	private PeopleDAO peopleDAO;
+	// @Inject
+	// private SearchServices searchServices;
+	@Inject
+	private RolePeopleDAO rolePeopleDAO;
+	@Inject
+	private PeoplePAO peoplePAO;
+	@Inject
+	private MovieDAO movieDAO;
 
-    /** {@inheritDoc} */
-    @Override
-    @Transactional
-    public FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> getPeopleByCriteria(
-            final PeopleCriteria crit, final UiListState uiListState, final String clusteringFacetName,
-            final FacetSelection... selection) {
-        final SearchCriterium<PeopleCriteria> criteria = new SearchCriterium<>(
-                FacetedSearchConst.QRY_PEOPLE_WITH_FCT.getQuery());
-        criteria.setCriteria(crit);
-        for (final FacetSelection sel : selection) {
-            criteria.addFacet(sel.getFacetName(), sel.getFacetValueKey(), sel.getFacetQuery());
-        }
-        if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
-            criteria.setSortAsc(!uiListState.isSortDesc());
-            criteria.setSortFieldName(uiListState.getSortFieldName());
-        }
-        String sortFieldName = null;
-        boolean isSortDesc = false;
-        final DtListState listState;
-        if (!StringUtil.isEmpty(uiListState.getSortFieldName())) {
-            sortFieldName = uiListState.getSortFieldName();
-            isSortDesc = uiListState.isSortDesc();
-        }
-        if (uiListState.getSkip() > 0) {
-            listState = new DtListState(MAX_ROWS, (uiListState.getSkip() - 1) * MAX_ROWS, sortFieldName, isSortDesc);
-        } else {
-            listState = new DtListState(MAX_ROWS, 0, sortFieldName, isSortDesc);
-        }
-        final FacetConst facetConst = FacetConst.getFacetByName(clusteringFacetName);
-        if (facetConst != null) {
-            criteria.setClusteringFacetName(facetConst.name());
-        }
-        return searchServices.searchPeople(criteria, listState);
-    }
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public FacetedQueryResult<PeopleIndex, SearchQuery> getPeopleByCriteria(final PeopleCriteria crit,
+			final UiListState uiListState, final String clusteringFacetName, final FacetSelection... facetSelections) {
+		final DtListState listState = DtListStateUtil.readUiListState(uiListState);
+		//----
+		final SearchQueryBuilder searchQueryBuilder = peopleDAO.createSearchQueryBuilderPeopleWithFct(crit, toListFilters(facetSelections));
+		if (clusteringFacetName != null && !clusteringFacetName.isEmpty()) {
+			final FacetDefinition clusterFacetDefinition = Home.getDefinitionSpace().resolve(clusteringFacetName, FacetDefinition.class);
+			searchQueryBuilder.withFacetClustering(clusterFacetDefinition);
+		}
+		// -----
+		return peopleDAO.loadList(searchQueryBuilder.build(), listState);
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public People getPeople(final Long peopId) {
-        return peopleDAO.get(peopId);
-    }
+	private List<ListFilter> toListFilters(final FacetSelection... facetSelections) {
+		final List<ListFilter> facetListFilters = new ArrayList<>(facetSelections.length);
+		for (final FacetSelection facetSelection : facetSelections) {
+			facetListFilters.add(facetSelection.getFacetQuery());
+		}
+		return facetListFilters;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    public People savePeople(final People people) {
-        peopleDAO.save(people);
-        searchServices.indexPeople(people.getPeoId());
-        return people;
-    }
+	/** {@inheritDoc} */
+	@Override
+	public People getPeople(final Long peopId) {
+		return peopleDAO.get(peopId);
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    @Transactional
-    public DtList<Movie> getMoviesByPeo(final Long peoId) {
-        final DtList<Movie> ret = new DtList<>(Movie.class);
-        final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>().withFilter(
-                RolePeopleFields.PEO_ID.name(), peoId).build();
-        final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
-        for (final RolePeople rolePeople : rolePeopleList) {
-            ret.add(rolePeople.getMovie());
-        }
-        return ret;
-    }
+	/** {@inheritDoc} */
+	@Override
+	public People savePeople(final People people) {
+		peopleDAO.save(people);
+		//done by searchManager : searchServices.indexPeople(people.getPeoId());
+		return people;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    @Transactional
-    public PeopleView getPeopleDetails(final long peoId) {
-        return peoplePAO.getPeopleViewForPeopleDetailsByPeoId(peoId);
-    }
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public DtList<Movie> getMoviesByPeo(final Long peoId) {
+		final DtList<Movie> ret = new DtList<>(Movie.class);
+		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>().withFilter(
+				RolePeopleFields.PEO_ID.name(), peoId).build();
+		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
+		for (final RolePeople rolePeople : rolePeopleList) {
+			ret.add(rolePeople.getMovie());
+		}
+		return ret;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    @Transactional
-    public DtList<Movie> getFilmographyByPeo(final Long peoId) {
-        return movieDAO.getFilmographyByPeoId(peoId);
-    }
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public PeopleView getPeopleDetails(final long peoId) {
+		return peoplePAO.getPeopleViewForPeopleDetailsByPeoId(peoId);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	@Transactional
+	public DtList<Movie> getFilmographyByPeo(final Long peoId) {
+		return movieDAO.getFilmographyByPeoId(peoId);
+	}
 }

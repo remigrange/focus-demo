@@ -2,16 +2,16 @@ package rodolphe.demo.services.movie;
 
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.dynamo.search.model.SearchQuery;
 import io.vertigo.lang.Component;
 import io.vertigo.vega.rest.model.UiListState;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCasting;
 import rodolphe.demo.domain.movies.MovieCriteria;
-import rodolphe.demo.domain.movies.MovieResult;
+import rodolphe.demo.domain.movies.MovieIndex;
 import rodolphe.demo.domain.movies.MovieView;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.services.search.FacetSelection;
-import rodolphe.demo.services.search.SearchCriterium;
 
 /**
  * Services about Movie.
@@ -29,8 +29,8 @@ public interface MovieServices extends Component {
      * @param selection selected facets.
      * @return result
      */
-    FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> getMoviesByCriteria(MovieCriteria crit,
-            UiListState uiListState, String clusteringFacetName, FacetSelection... selection);
+    FacetedQueryResult<MovieIndex, SearchQuery> getMoviesByCriteria(MovieCriteria crit, UiListState uiListState,
+            String clusteringFacetName, FacetSelection... selection);
 
     /**
      * Get a movie by its primary key.

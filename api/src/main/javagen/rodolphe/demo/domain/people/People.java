@@ -2,14 +2,14 @@ package rodolphe.demo.domain.people;
 
 import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;
-import io.vertigo.dynamo.domain.model.DtObject;
+import io.vertigo.dynamo.domain.model.DtSubject;
 import io.vertigo.dynamo.domain.util.DtObjectUtil;
 /**
  * Attention cette classe est générée automatiquement !
  * Objet de données People
  */
 @DtDefinition
-public final class People implements DtObject {
+public final class People implements DtSubject {
 
 	/** SerialVersionUID. */
 	private static final long serialVersionUID = 1L;

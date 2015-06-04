@@ -2,14 +2,14 @@ package rodolphe.demo.domain.movies;
 
 import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;
-import io.vertigo.dynamo.domain.model.DtObject;
+import io.vertigo.dynamo.domain.model.DtSubject;
 import io.vertigo.dynamo.domain.util.DtObjectUtil;
 /**
  * Attention cette classe est générée automatiquement !
  * Objet de données Movie
  */
 @DtDefinition
-public final class Movie implements DtObject {
+public final class Movie implements DtSubject {
 
 	/** SerialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -204,17 +204,17 @@ public final class Movie implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'Contries'. 
+	 * Récupère la valeur de la propriété 'Countries'. 
 	 * @return String countryIds 
 	 */
-	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Contries")
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Countries")
 	public String getCountryIds() {
 		return countryIds;
 	}
 
 	/**
 	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'Contries'.
+	 * Définit la valeur de la propriété 'Countries'.
 	 * @param countryIds String 
 	 */
 	public void setCountryIds(final String countryIds) {

@@ -15,9 +15,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -25,19 +23,16 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 
 import rodolphe.demo.services.search.ElasticSearchHandler;
-import rodolphe.demo.services.search.MovieSearchHandler;
-import rodolphe.demo.services.search.PeopleSearchHandler;
 import rodolphe.demo.util.MemorizeTnrData;
 
 /**
  * Parent class for all tests.
- * 
+ *
  * @author jmforhan
  */
 public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 
     private static final int MEM_TIMEOUT_MS = 1 * 1000;
-    private final Set<Class<? extends MemorizeTnrData>> memComponent = new HashSet<>();
     @Inject
     private VTransactionManager transactionManager;
     @Inject
@@ -53,8 +48,6 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
      */
     public AbstractRodolpheTestCase() {
         super();
-        memComponent.add(MovieSearchHandler.class);
-        memComponent.add(PeopleSearchHandler.class);
     }
 
     /**
@@ -107,30 +100,6 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
             session = (TnrUserSession) securityManager.createUserSession();
         }
         startMemorizeTnrDataAll();
-    }
-
-    private void startMemorizeTnrDataAll() {
-        if (memDataStarted) {
-            // RAF
-            return;
-        }
-        for (final Class<? extends MemorizeTnrData> memClass : memComponent) {
-            final MemorizeTnrData item = Home.getComponentSpace().resolve(memClass);
-            item.startMemorizeTnrData();
-        }
-        memDataStarted = true;
-    }
-
-    private void removeMemorizedTnrDataAll() {
-        for (final Class<? extends MemorizeTnrData> memClass : memComponent) {
-            final MemorizeTnrData item = Home.getComponentSpace().resolve(memClass);
-            try {
-                item.removeMemorizedTnrData();
-            } catch (final Throwable t) {
-                getLogger().error("problème arret composant " + item.toString(), t);
-            }
-        }
-        memDataStarted = false;
     }
 
     /**

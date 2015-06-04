@@ -274,6 +274,10 @@ module.exports = {
 				"domain": "DO_TEXTE",
 				"required": false
 			},		
+			"metadasJson": {
+				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"required": false
+			},		
 			"imdbid": {
 				"domain": "DO_LIBELLE_100",
 				"required": false
@@ -293,52 +297,6 @@ module.exports = {
 			"rank": {
 				"domain": "DO_ID",
 				"required": true
-			}		
-	},
-	"movieResult": {
-			"movId": {
-				"domain": "DO_ID",
-				"required": true
-			},		
-			"title": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"released": {
-				"domain": "DO_DATE",
-				"required": false
-			},		
-			"year": {
-				"domain": "DO_ENTIER",
-				"required": false
-			},		
-			"runtime": {
-				"domain": "DO_ENTIER",
-				"required": false
-			},		
-			"description": {
-				"domain": "DO_TEXTE",
-				"required": false
-			},		
-			"metadasJson": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"imdbid": {
-				"domain": "DO_LIBELLE_100",
-				"required": false
-			},		
-			"genreIds": {
-				"domain": "DO_MULTI_VALUES_FIELD",
-				"required": false
-			},		
-			"countryIds": {
-				"domain": "DO_MULTI_VALUES_FIELD",
-				"required": false
-			},		
-			"languageIds": {
-				"domain": "DO_MULTI_VALUES_FIELD",
-				"required": false
 			}		
 	},
 	"movieView": {
@@ -520,40 +478,6 @@ module.exports = {
 			},		
 			"peoNameSortOnly": {
 				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
-				"required": false
-			},		
-			"professions": {
-				"domain": "DO_MULTI_VALUES_FIELD",
-				"required": false
-			},		
-			"rank": {
-				"domain": "DO_ID",
-				"required": true
-			}		
-	},
-	"peopleResult": {
-			"peoId": {
-				"domain": "DO_ID",
-				"required": true
-			},		
-			"lastName": {
-				"domain": "DO_LIBELLE_50",
-				"required": false
-			},		
-			"firstName": {
-				"domain": "DO_LIBELLE_50",
-				"required": false
-			},		
-			"titCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
-				"required": false
-			},		
-			"peoName": {
-				"domain": "DO_LIBELLE_250",
-				"required": false
-			},		
-			"imdbid": {
-				"domain": "DO_LIBELLE_100",
 				"required": false
 			},		
 			"professions": {

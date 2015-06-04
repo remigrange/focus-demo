@@ -21,6 +21,7 @@ public final class MovieIndex implements DtObject {
 	private Integer year;
 	private Integer runtime;
 	private String description;
+	private String metadasJson;
 	private String imdbid;
 	private String genreIds;
 	private String countryIds;
@@ -162,6 +163,25 @@ public final class MovieIndex implements DtObject {
 
 	/**
 	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Meta Data JSON'. 
+	 * @return String metadasJson 
+	 */
+	@Field(domain = "DO_COMMENTAIRE_NOT_ANALYZED", persistent = false, label = "Meta Data JSON")
+	public String getMetadasJson() {
+		return metadasJson;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Meta Data JSON'.
+	 * @param metadasJson String 
+	 */
+	public void setMetadasJson(final String metadasJson) {
+		this.metadasJson = metadasJson;
+	}
+
+	/**
+	 * Champ : DATA.
 	 * Récupère la valeur de la propriété 'Id imdb'. 
 	 * @return String imdbid 
 	 */
@@ -200,17 +220,17 @@ public final class MovieIndex implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'Contries'. 
+	 * Récupère la valeur de la propriété 'Countries'. 
 	 * @return String countryIds 
 	 */
-	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Contries")
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Countries")
 	public String getCountryIds() {
 		return countryIds;
 	}
 
 	/**
 	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'Contries'.
+	 * Définit la valeur de la propriété 'Countries'.
 	 * @param countryIds String 
 	 */
 	public void setCountryIds(final String countryIds) {

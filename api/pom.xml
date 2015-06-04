@@ -15,7 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<maven.test.error.ignore>true</maven.test.error.ignore>
-		<vertigo.version>0.7.5a</vertigo.version>
+		<vertigo.version>0.8.0-SNAPSHOT</vertigo.version>
 		<sonar.sources>src/main/java</sonar.sources>
 		<sonar.exclusions>src/main/java/io/**</sonar.exclusions>
 	</properties>
