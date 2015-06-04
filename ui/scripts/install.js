@@ -9,8 +9,11 @@ var files = [
   'bootstrap/dist/css/bootstrap.css',
   'bootstrap/dist/js/bootstrap.js',
   //bootstrap-material
-
-//moment
+  'bootstrap-material/dist/css/material.min.css',
+  'bootstrap-material/dist/js/material.min.js',
+  'bootstrap-material/dist/css/ripples.min.css',
+  'bootstrap-material/dist/js/ripples.min.js',
+  //moment
   'moment/min/moment.min.js',
   //focusjs
   'focusjs/dist/focus.js',
@@ -22,8 +25,9 @@ var files = [
 
 var fonts = [
   //Fonts
-  'bootstrap/dist/fonts/glyphicons-halflings-regular.eot'//,
-  //'focusjs-components/dist/'
+  'bootstrap/dist/fonts/glyphicons-halflings-regular.eot',
+  'bootstrap-material/dist/fonts/Material-Design-Icons.eot',
+  'bootstrap-material/dist/fonts/Material-Design-Icons.svg'
 ];
 
 
