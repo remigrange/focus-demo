@@ -30,6 +30,7 @@ api/target
 ui/node_modules
 ui/bower_components
 ui/.npmrc
+ui/vendor
 .idea
 *.iml
 *.bak
