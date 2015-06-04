@@ -27,15 +27,9 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 api/target
-api/src/main/webapp/static/
 ui/node_modules
 ui/bower_components
 ui/.npmrc
-ui/vendor
-ui/app/assets/fonts/*.svg
-ui/app/assets/fonts/*.eot
-ui/app/assets/fonts/*.ttf
-ui/app/assets/fonts/*.woff
 .idea
 *.iml
 *.bak
