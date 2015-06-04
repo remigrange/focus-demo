@@ -1,5 +1,4 @@
 // Mixins
-
 let menuMixin = Focus.components.application.menu.mixin;
 
 // Components
@@ -75,8 +74,7 @@ let Wrapper = React.createClass({
                 direction='vertical'
                 title=''
                 items={this._getItems()}
-                ref='menu'
-            >
+                ref='menu'>
                 <Popin ref='quick-search-popin' type='from-menu'>
                     <QuickSearch/>
                 </Popin>

@@ -1,7 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto:400italic,700italic,300,700,300italic,400|Raleway:700,400,300);
-/* line 20, app/styles/variables.scss */
+/* line 19, app/styles/variables.scss */
 body {
-  border: none; }
+  border: 0; }
 
 
 /*!
@@ -5725,6 +5725,7 @@ header[data-focus='header'] {
     text-align: right;
     padding-right: 200px; }
 
+<<<<<<< Updated upstream
 /* General styles for all menus */
 .menu {
   background: #47a3da;
@@ -5799,51 +5800,87 @@ header[data-focus='header'] {
 
 .menu-bottom {
   bottom: -150px; }
+=======
+body {
+  min-width: 1300px;
+  background-color: #f8f8f8; }
 
-.menu-top.menu-open {
-  top: 0px; }
+[data-focus='page-content'] {
+  margin-left: 60px;
+  padding: 10px 25px; }
+>>>>>>> Stashed changes
 
-.menu-bottom.menu-open {
-  bottom: 0px; }
+[data-focus='footer'] {
+  margin-top: 30px;
+  padding: 10px;
+  text-align: center;
+  margin-left: 60px; }
 
-/* Push classes applied to the body */
-.menu-push {
-  overflow-x: hidden;
-  position: relative;
-  left: 0; }
+/* color of the scrollbar */
+::-webkit-scrollbar {
+  width: 10px; }
 
-.menu-push-toright {
-  left: 240px; }
+::-webkit-scrollbar-track {
+  background-color: #e2e2e2; }
 
-.menu-push-toleft {
-  left: -240px; }
+::-webkit-scrollbar-thumb {
+  background-color: #36b7b9; }
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6AB2E5; }
 
 /* Transitions */
-.menu, .menu-push {
+/* General styles for all menus */
+[data-focus="menu"] {
+  background: #36b7b9;
+  position: fixed;
+  z-index: 2000;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
-  transition: all 0.3s ease; }
-
-/* Example media queries */
-@media screen and (max-width: 55.1875em) {
-  .menu-horizontal {
-    font-size: 75%;
-    height: 110px; }
-  .menu-top {
-    top: -110px; }
-  .menu-bottom {
-    bottom: -110px; } }
-
-@media screen and (max-height: 26.375em) {
-  .menu-vertical {
-    font-size: 90%;
-    width: 190px; }
-  .menu-left, .menu-push-toleft {
-    left: -190px; }
-  .menu-right {
-    right: -190px; }
-  .menu-push-toright {
-    left: 190px; } }
+  transition: all 0.3s ease;
+  /* Orientation-dependent styles for the content of the menu */
+  /* Vertical menu that slides from the left or right */
+  /* Horizontal menu that slides from the top or bottom */ }
+  [data-focus="menu"] [data-focus="menu-brand"] {
+    text-align: center;
+    background-color: #424950;
+    height: 60px; }
+  [data-focus="menu"].menu-vertical {
+    width: 60px;
+    position: fixed;
+    top: 0;
+    bottom: 0; }
+  [data-focus="menu"].menu-horizontal {
+    height: 60px;
+    width: 100%;
+    left: 0; }
+  [data-focus="menu"].menu-left {
+    left: -60px; }
+  [data-focus="menu"].menu-right {
+    right: -60px; }
+  [data-focus="menu"].menu-left.menu-open {
+    left: 0px; }
+  [data-focus="menu"].menu-right.menu-open {
+    right: 0px; }
+  [data-focus="menu"].menu-top {
+    top: -60px; }
+  [data-focus="menu"].menu-bottom {
+    bottom: -60px; }
+  [data-focus="menu"].menu-top.menu-open {
+    top: 0px; }
+  [data-focus="menu"].menu-bottom.menu-open {
+    bottom: 0px; }
+  [data-focus="menu"].menu-push {
+    overflow-x: hidden;
+    position: relative;
+    left: 0;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    transition: all 0.3s ease; }
+  [data-focus="menu"].menu-push-toright {
+    left: 60px; }
+  [data-focus="menu"].menu-push-toleft {
+    left: -60px; }
 
 [data-focus='popin'][data-type='full'][data-size='small'] [data-focus='popin-window'] {
   min-width: 33.33333vw;
@@ -84356,96 +84393,71 @@ Copyright (c) 2014 Daniel Eden
   -webkit-animation-name: slideOutUp;
   animation-name: slideOutUp; }
 
-/* line 20, app/styles/variables.scss */
+/* line 19, app/styles/variables.scss */
 body {
-  border: none; }
+  border: 0; }
 
-/* line 4, stdin */
-.cartridge .header {
-  background-color: #EEECE1;
-  height: 150px;
-  border-bottom: solid 1px #e2e2e2; }
-  /* line 8, stdin */
-  .cartridge .header .picture {
+/*
+.cartridge {
+  .header {
+    background-color: #EEECE1;
+    height: 150px;
+    border-bottom: solid 1px $color-gris2;
+    .picture {
+      float: left;
+      width: 100px;
+      height: 100px;
+      margin: 20px 20px;
+    }
+    .title {
+      padding-top: 30px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .link {
+      float: left;
+      margin-top: 120px;
+      margin-left: -85px;
+    }
+  }
+  .field {
+    background-color: #F2F2F2;
     float: left;
-    width: 100px;
-    height: 100px;
-    margin: 20px 20px; }
-  /* line 14, stdin */
-  .cartridge .header .title {
-    padding-top: 30px;
-    font-weight: bold;
-    font-size: 18px; }
-  /* line 19, stdin */
-  .cartridge .header .link {
-    float: left;
-    margin-top: 120px;
-    margin-left: -85px; }
-/* line 25, stdin */
-.cartridge .field {
-  background-color: #F2F2F2;
-  float: left;
-  width: 100%;
-  padding: 10px;
-  border-bottom: solid 1px #e2e2e2; }
-  /* line 31, stdin */
-  .cartridge .field .title {
-    width: 30%;
-    float: left;
-    font-weight: bold; }
-  /* line 36, stdin */
-  .cartridge .field .content {
-    width: 70%;
-    float: right; }
-
-/* line 20, app/styles/variables.scss */
+    width: 100%;
+    padding: 10px;
+    border-bottom: solid 1px $color-gris2;
+    .title{
+      width: 30%;
+      float: left;
+      font-weight: bold;
+    }
+    .content{
+      width: 70%;
+      float: right;
+    }
+  }
+}
+*/
+/* line 19, app/styles/variables.scss */
 body {
-  border: none; }
+  border: 0; }
 
-/* line 3, stdin */
-hr {
-  border-top: solid 1px #e2e2e2; }
-
-/* line 7, stdin */
+/* line 19, app/styles/variables.scss */
 body {
-  background-color: #f8f8f8;
-  font-family: "Roboto";
-  font-size: 12pt;
-  word-wrap: break-word; }
+  border: 0; }
 
-/* line 14, stdin */
-::-webkit-scrollbar {
-  width: 5px; }
-
-/* line 18, stdin */
-::-webkit-scrollbar-track {
-  border-radius: 10px;
-  background-color: #e2e2e2; }
-
-/* line 23, stdin */
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: #36b7b9; }
-
-/* line 28, stdin */
-::-webkit-scrollbar-thumb:hover {
-  background-color: #6acacb; }
-
-/* line 20, app/styles/variables.scss */
-body {
-  border: none; }
-
-/* line 3, stdin */
+/*
 .detail {
-  padding: 85px 0 40px 0; }
+  padding: 85px 0 40px 0;
+}
 
-/* line 7, stdin */
 .detail-content {
-  margin-left: 270px; }
-
-/* line 20, app/styles/variables.scss */
+  margin-left:270px;
+}
+*/
+/* line 19, app/styles/variables.scss */
 body {
-  border: none; }
+  border: 0; }
 
 /* line 3, stdin */
 ul.selection-list li.sl-line {
@@ -84492,50 +84504,48 @@ ul.selection-list li.sl-line {
   width: 100%;
   text-align: center; }
 
-/* line 20, app/styles/variables.scss */
+/* line 19, app/styles/variables.scss */
 body {
-  border: none; }
+  border: 0; }
 
-/* line 3, stdin */
+/*
 .user-infos i {
-  font-size: 24px; }
-
-/* line 6, stdin */
+  font-size: 24px;
+}
 .user-infos .header-menu-item {
   text-align: center;
   height: 60px;
   width: 80px;
   padding-top: 18px;
   display: inline-block;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
-/* line 15, stdin */
 .badge-alerte {
-  background-color: #f82239;
+  background-color: $color-rouge2;
   margin-left: -10px;
   margin-top: -5px;
   padding: 3px 4px;
-  position: absolute; }
-
-/* line 22, stdin */
+  position: absolute;
+}
 .badge-warning {
-  background-color: #ffbe60;
+  background-color: $color-jaune;
   padding: 3px 4px;
   margin-left: -5px;
   margin-top: -2px;
-  position: absolute; }
+  position: absolute;
+}
 
-/* line 30, stdin */
 .header-title {
   font-size: 28px;
   text-transform: none;
   font-weight: bold;
-  margin-left: 12px; }
-
-/* line 36, stdin */
+  margin-left: 12px;
+}
 .actions-left {
-  margin-top: 10px; }
-
+  margin-top: 10px;
+}
+*/
 /*header[data-focus="header"]{
   //When the size is medium, the summary-bar is not visible.
   &[data-size="medium"]{
@@ -84552,107 +84562,120 @@ body {
   }
 }
 }*/
-/* line 20, app/styles/variables.scss */
-body {
-  border: none; }
+/*
+@import "./variables";
 
-/* line 6, stdin */
+ $menu-item-width:100px;
+ $taille-image-petite:40px;
+
 .menu-horizontal {
-  height: 60px; }
+  height: 60px;
+}
 
-/* line 10, stdin */
 .menu-vertical {
-  width: 60px; }
+  width: 60px;
+}
 
-/* line 14, stdin */
 .header-menu {
   margin-left: 60px;
-  border-bottom: 1px solid #e2e2e2;
-  background: #FFF; }
-  /* line 18, stdin */
-  .header-menu h3 {
-    color: #242a30;
+  border-bottom: 1px solid  $color-gris2;
+  background:  $color-blanc;
+  h3 {
+    color: $color-noir2;
     font-size: 24px;
     margin: 0;
     font-family: RalewayExtraBold;
-    background: #FFF;
-    width: 100px;
+    background: $color-blanc;
+    width: $menu-item-width;
     padding: 18px 0 18px 10px;
-    text-transform: uppercase; }
-  /* line 28, stdin */
-  .header-menu a {
+    text-transform: uppercase;
+  }
+  a{
     border-left: none;
     border-bottom: none;
-    padding: 0;
+    padding:0;
     text-decoration: none;
     font-size: 20px;
     font-weight: bold;
     text-align: center;
-    width: 100px;
-    height: 60px; }
-  /* line 39, stdin */
-  .header-menu .top-menu-item {
+    width:  $menu-item-width;
+    height: 60px;
+  }
+  .top-menu-item {
     font-size: 24px;
     text-align: center;
-    border-left: 1px solid #e2e2e2;
+    border-left: 1px solid  $color-gris2;
     height: 60px;
-    width: 100px;
+    width: $menu-item-width;
     padding-top: 18px;
     display: inline-block;
-    cursor: pointer; }
-  /* line 49, stdin */
-  .header-menu .top-menu-items-container {
+    cursor: pointer;
+  }
+  .top-menu-items-container  {
     float: right;
     width: 320px;
-    margin-right: 50px; }
+    margin-right: 50px;
+  }
 
-/* line 57, stdin */
-.header-menu a:hover, .left-menu a:hover {
-  background: #6acacb; }
+}
+  .header-menu a:hover,
+  .left-menu a:hover {
+    background:  $color-vert2;
+  }
 
-/* line 63, stdin */
-#leftMenu .brand {
-  text-align: center;
-  background-color: #424950;
-  height: 60px;
-  padding-top: 20px; }
-/* line 69, stdin */
-#leftMenu .left-menu {
-  background: #36b7b9; }
-  /* line 71, stdin */
-  #leftMenu .left-menu a {
-    border-left: none;
-    border-bottom: none;
-    padding: 0;
-    text-decoration: none;
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    padding-top: 20px;
-    height: 60px;
-    width: 60px;
-    color: #FFF; }
-  /* line 84, stdin */
-  #leftMenu .left-menu a img {
-    width: 20px;
-    height: 20px; }
 
-/* line 91, stdin */
-.user-image {
-  background-color: rgba(5, 29, 49, 0.5);
-  width: 40px;
-  height: 40px;
-  position: relative; }
+  #leftMenu {
+    .brand {
+      text-align: center;
+      background-color: $color-gris;
+      height: 60px;
+      padding-top: 20px;
+    }
+    .left-menu {
+      background:  $color-vert;
+      a {
+        border-left: none;
+        border-bottom: none;
+        padding:0;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        padding-top: 20px;
+        height: 60px;
+        width: 60px;
+        color: $color-blanc;
+      }
+      a img {
+        width:20px;
+        height: 20px;
+      }
+    }
+  }
 
-/* line 98, stdin */
-#quick-search-link {
-  cursor: pointer; }
+  .user-image {
+    background-color: rgba(5,29,49,0.5);
+    width:$taille-image-petite;
+    height: $taille-image-petite;
+    position: relative;
+  }
 
+<<<<<<< Updated upstream
 /* line 4, stdin */
 [data-focus='header'] .cartridge-movie {
   display: flex;
   flex-direction: row; }
   /* line 8, stdin */
+=======
+  #quick-search-link {
+    cursor: pointer;
+  }*/
+/* line 3, stdin */
+[data-focus='header'] .cartridge-movie {
+  display: flex;
+  flex-direction: row; }
+  /* line 7, stdin */
+>>>>>>> Stashed changes
   [data-focus='header'] .cartridge-movie .poster {
     border: 1px solid red;
     width: 250px;
@@ -84661,6 +84684,7 @@ body {
     background-color: #F8F8F8;
     text-align: center;
     color: #B2B2B2; }
+<<<<<<< Updated upstream
   /* line 17, stdin */
   [data-focus='header'] .cartridge-movie .summary {
     padding: 0 30px; }
@@ -84678,30 +84702,57 @@ body {
 /* line 20, app/styles/variables.scss */
 body {
   border: none; }
+=======
+  /* line 16, stdin */
+  [data-focus='header'] .cartridge-movie .summary {
+    padding: 0 30px; }
+    /* line 19, stdin */
+    [data-focus='header'] .cartridge-movie .summary h1 {
+      margin: 0 0 10px 0;
+      color: #36b7b9; }
+    /* line 23, stdin */
+    [data-focus='header'] .cartridge-movie .summary h2 {
+      margin: 0 0 10px 0; }
+    /* line 26, stdin */
+    [data-focus='header'] .cartridge-movie .summary h3 {
+      margin: 0 0 10px 0; }
 
-/* line 5, stdin */
+/*
+@import "./variables";
+ $sidebar-width:60px;
+ $border-color: #c3c3c3;
+>>>>>>> Stashed changes
+
 #leftMenu {
   height: 100%;
-  width: 60px;
-  top: 0;
-  left: 0;
+  width:  $sidebar-width;
+  top:0;
+  left:0;
   position: fixed;
   text-align: center;
-  z-index: 1006; }
+  z-index: 1006;
+}
 
-/* line 15, stdin */
 #page {
   min-width: 1300px;
   padding: 10px 25px 25px 25px;
+<<<<<<< Updated upstream
   padding-left: 85px; }
 
 /* line 21, stdin */
 .clear {
   clear: both; }
+=======
+  padding-left:  $sidebar-width+25px;
+}
+>>>>>>> Stashed changes
 
-/* line 20, app/styles/variables.scss */
+.clear{
+  clear: both;
+}*/
+/* line 19, app/styles/variables.scss */
 body {
-  border: none; }
+  border: 0; }
 
 /* line 4, stdin */
 div.qs-quick-search div.qs-scope {
@@ -84747,9 +84798,9 @@ div.qs-quick-search input[type=search] {
   margin-left: 100px;
   width: 88%; }
 
-/* line 20, app/styles/variables.scss */
+/* line 19, app/styles/variables.scss */
 body {
-  border: none; }
+  border: 0; }
 
 /** links to filter result css */
 /* line 5, stdin */
@@ -84991,9 +85042,9 @@ body {
   position: inherit; }
 
 
-/* line 20, app/styles/variables.scss */
+/* line 19, app/styles/variables.scss */
 body {
-  border: none; }
+  border: 0; }
 
 /* line 4, stdin */
 ul.selection-list li.sl-line:hover {
@@ -85075,9 +85126,9 @@ ul.selection-list li.sl-line:hover {
 .item {
   margin-left: 55px; }
 
-/* line 20, stdin */
+/* line 19, stdin */
 body {
-  border: none; }
+  border: 0; }
 
 /* line 2, stdin */
 .selection-list .sl-line {
