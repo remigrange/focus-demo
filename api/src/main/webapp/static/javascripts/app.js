@@ -110,62 +110,41 @@ module.exports = {
 });
 
 require.register("action/movie/index", function(exports, require, module) {
-var AppDispatcher = Focus.dispatcher;
 var movieServices = require('../../services').movie;
+var actionBuilder = Focus.application.actionBuilder;
 module.exports = {
-    load: function(id){
-        movieServices.getMovieViewById(id).then(
-            function(data){
-              AppDispatcher.handleServerAction({
-                    data: {movie: data},
-                    type: "update"
-                });
-            }
-        );
+    movie: {
+      load: actionBuilder({
+        service: movieServices.getMovieViewById,
+        node: 'movie',
+        status: 'loaded'
+      }),
+      save: actionBuilder({
+        service: movieServices.updateMovie,
+        node: 'movie',
+        status: 'saved'
+      })
     },
-
-    loadCastings: function(id){
-        movieServices.getMovieCastingsById(id).then(
-            function(data){
-              AppDispatcher.handleServerAction({
-                    data: {castings: data},
-                    type: "update"
-                });
-            }
-        );
+    castings: {
+      load: actionBuilder({
+        service: movieServices.getMovieCastingsById,
+        node: 'castings',
+        status: 'loaded'
+      })
     },
-
-    loadProducers: function(id){
-      movieServices.getMovieProducersById(id).then(
-        function(data){
-          AppDispatcher.handleServerAction({
-            data: {producers: data},
-            type: "update"
-          });
-        }
-      );
+    producers: {
+      load: actionBuilder({
+        service: movieServices.getMovieProducersById,
+        node: 'producers',
+        status: 'loaded'
+      })
     },
-
-    loadDirectors: function(id){
-      movieServices.getMovieDirectorsById(id).then(
-        function(data){
-          AppDispatcher.handleServerAction({
-            data: {directors: data},
-            type: "update"
-          });
-        }
-      );
-    },
-    save: function saveMovie(jsonMovie){
-      jsonMovie.movId = jsonMovie.movId || 1;
-      return movieServices.updateMovie(jsonMovie).then(
-        function(data){
-          AppDispatcher.handleServerAction({
-            data: {movie: data},
-            type: "update"
-          });
-        }
-      );
+    directors: {
+      load: actionBuilder({
+        service: movieServices.getMovieDirectorsById,
+        node: 'directors',
+        status: 'loaded'
+      })
     }
 };
 
@@ -360,7 +339,13 @@ module.exports = {
 });
 
 require.register("application", function(exports, require, module) {
-console.log('Application');
+console.info('############# Application starting ############');
+//Start the application.
+console.info('Load all the routes.');
+require('./router');
+//Start the router.
+Backbone.history.start();
+
 });
 
 require.register("config/domain/index", function(exports, require, module) {
@@ -376,17 +361,7 @@ module.exports = {
             "value": function(data){return data;}
         },'InputComponent': Focus.components.common.input.date.component,
         'formatter': function(date){
-            var monthNames = [
-                'January', "February", "March",
-                "April", "May", "June", "July",
-                "August", "September", "October",
-                "November", "December"
-            ];
-            date = new Date(date);
-            var day = date.getDate();
-            var monthIndex = date.getMonth();
-            var year = date.getFullYear();
-            return "" + day +" "+ monthNames[monthIndex] +" "+ year;
+            return moment(date).format('L')
         }
 
     },
@@ -656,6 +631,7 @@ module.exports = {
         "style": "texte_13"
     }
 };
+
 });
 
 require.register("config/entityDefinition/index", function(exports, require, module) {
@@ -1432,7 +1408,7 @@ module.exports = {
 module.exports = {
     'live': {
         'filter': {
-           'title': 'Filter results'
+            'title': 'Filter results'
         }
     },
     'result': {
@@ -1440,15 +1416,24 @@ module.exports = {
     },
 
     'movie': {
-      'title': 'Movie',
-      'detail': {
-        'identity': {
-          'title': 'Identity'
-        },
-        'directors': {
-          'title': 'Directors'
+        'title': 'Movie',
+        'detail': {
+            'identity': {
+                'title': 'Identity'
+            },
+            'cast': {
+                'title': 'Cast'
+            },
+            'producers': {
+                'title': 'Producers'
+            },
+            'directors': {
+                'title': 'Directors'
+            },
+            'pictures': {
+                'title': 'Pictures'
+            }
         }
-      }
     }
 };
 
@@ -1520,9 +1505,9 @@ module.exports = {
         "description" : "Description",
         "metadasJson" : "metadas Json",
         "imdbid" : "imdbID",
-        "genreIds" : "Movie's genres identifiers",
-        "countryIds" : "Movie's contries identifiers",
-        "languageIds" : "Movie's languages identifiers"
+        "genreIds" : "Genres",
+        "countryIds" : "Contries",
+        "languageIds" : "Languages"
     },
     "movieCasting": {
         "castId" : "primary key",
@@ -1550,9 +1535,9 @@ module.exports = {
         "runtime" : "Runtime",
         "description" : "Description",
         "imdbid" : "Id imdb",
-        "genreIds" : "Movie's genres identifiers",
-        "countryIds" : "Movie's contries identifiers",
-        "languageIds" : "Movie's languages identifiers",
+        "genreIds" : "Genres",
+        "countryIds" : "Contries",
+        "languageIds" : "Languages",
         "rank" : "rank"
     },
     "movieResult": {
@@ -1564,9 +1549,9 @@ module.exports = {
         "description" : "Description",
         "metadasJson" : "Meta Data JSON",
         "imdbid" : "Id imdb",
-        "genreIds" : "Movie's genres identifiers",
-        "countryIds" : "Movie's contries identifiers",
-        "languageIds" : "Movie's languages identifiers"
+        "genreIds" : "Genres",
+        "countryIds" : "Contries",
+        "languageIds" : "Languages"
     },
     "movieView": {
         "movId" : "primary key",
@@ -1578,9 +1563,9 @@ module.exports = {
         "description" : "Description",
         "metadasJson" : "Meta Data JSON",
         "imdbid" : "Id imdb",
-        "genreIds" : "Movie's genres identifiers",
-        "countryIds" : "Movie's contries identifiers",
-        "languageIds" : "Movie's languages identifiers",
+        "genreIds" : "Genres",
+        "countryIds" : "Contries",
+        "languageIds" : "Languages",
         "rank" : "rank",
         "actors" : "Actors",
         "producers" : "Producers",
@@ -1620,7 +1605,7 @@ module.exports = {
         "peoName" : "Name",
         "imdbid" : "Id imdb",
         "peoNameSortOnly" : "Name",
-        "professions" : "People's professions",
+        "professions" : "Professions",
         "rank" : "rank"
     },
     "peopleResult": {
@@ -1630,7 +1615,7 @@ module.exports = {
         "titCd" : "Title",
         "peoName" : "Name",
         "imdbid" : "Id imdb",
-        "professions" : "People's professions",
+        "professions" : "Professions",
         "rank" : "rank"
     },
     "peopleView": {
@@ -1641,7 +1626,7 @@ module.exports = {
         "peoName" : "Name",
         "peoNameSortOnly" : "Name",
         "imdbid" : "Id imdb",
-        "professions" : "People's professions",
+        "professions" : "Professions",
         "rank" : "rank"
     },
     "rolePeople": {
@@ -1688,19 +1673,16 @@ require.register("index", function(exports, require, module) {
 /*global Backbone*/
 
 console.log('Application demo rodoplphe');
-Focus.components = FocusComponents;
-////Require dependencies.
-require('./initializer');
-//Start the application.
-require('./router');
-Backbone.history.start();
 
-//render menu modules
-var render = Focus.application.render;
-var LeftMenuView = require('../views/menu/leftMenu');
-var PageHeader = require('../views/menu/appHeader');
-render(PageHeader, '#header');
-render(LeftMenuView, '#leftMenu');
+//Write focusComponents into Focus.components
+Focus.components = FocusComponents;
+
+//Initialisation des configurations et du layout.
+require('./initializer');
+
+// Démarrage de l'application
+require('./application');
+
 
 //Render all application modules for the first time.
 //React.render(<AlertModule />, document.querySelector('#notification-center'));
@@ -1710,6 +1692,18 @@ render(LeftMenuView, '#leftMenu');
 require.register("initializer/definition-initializer", function(exports, require, module) {
 /*global focus*/
 Focus.definition.entity.container.setEntityConfiguration(require('../config/entityDefinition'));
+
+//Display domaines utilisés
+var entityDef = require('../config/entityDefinition');
+var arr = [];
+for (var node in entityDef){for(var sub in entityDef[node]){arr.push(entityDef[node][sub].domain)} };
+var appDomains = _.uniq(arr);
+var domains = Object.keys(require('../config/domain'));
+console.info('########################## DOMAINS ##############################');
+console.info('Entity definitions domains: ', appDomains);
+console.info('Domains with a definition',domains);
+console.warn('Missing domain\'s definition', _.difference(appDomains, domains));
+console.info('####################################################################');
 
 });
 
@@ -1759,11 +1753,36 @@ Backbone.$ = $;*/
 //Check this repo:
 //https://github.com/zilverline/react-tap-event-plugin
 //injectTapEventPlugin();
+$(document).on("click", "a:not([data-bypass])", function(evt) {
+  var href = { prop: $(this).prop("href"), attr: $(this).attr("href") };
+  var root = location.protocol + "//" + location.host + '/';
 
+  if (href.prop && href.prop.slice(0, root.length) === root) {
+    evt.preventDefault();
+    Backbone.history.navigate(href.attr, true);
+  }
+});
+
+//Initialisation des congfigurations
 require('./domain-initializer');
 require('./definition-initializer');
 require('./reference_list_initializer').initialize();
 require('./i18n-initializer');
+
+//Initialisation du layout
+//
+require('./layout-initializer');
+
+});
+
+require.register("initializer/layout-initializer", function(exports, require, module) {
+var render = Focus.application.render;
+var Layout = Focus.components.application.layout.component;
+var MenuLeft = require('../../views/menu/leftMenu');
+render(Layout, 'body', {
+  props: {
+  MenuLeft: MenuLeft
+}});
 
 });
 
@@ -1856,7 +1875,7 @@ module.exports = {
 require.register("router/index", function(exports, require, module) {
 /*global Backbone, focus, Focus.components */
 //Dependencies.
-var Router = Backbone.Router;
+var Router = Focus.router;
 var render = Focus.application.render;
 
 //var AlertModule = require('../component/alert');
@@ -1882,20 +1901,18 @@ var AppRouter = Router.extend({
   home: function handleHomeRoute() {
     console.log('ROUTE: HOME');
     var HomeView = require('../views/home');
-   // renderMenu();
-    render(HomeView, '#page', {props: {position: 'left', open: true, style: {className: 'home-popin'}}});
+    this._pageContent(HomeView, {props: {position: 'left', open: true, style: {className: 'home-popin'}}});
   },
   movie: function handleMovieRoute(id) {
     console.log('ROUTE: MOVIE');
     var MovieDetailView = require('../views/movie');
-  //  renderMenu();
-    render(MovieDetailView, '#page', {props: {id: id}});
+    this._pageContent(MovieDetailView, {props: {id: id}});
   },
   people: function handlePeopleRoute(id) {
     console.log('ROUTE: PEOPLE');
     var PeopleDetailView = require('../views/people');
    // renderMenu();
-    render(PeopleDetailView, '#page', {props: {id: id}});
+    this._pageContent(PeopleDetailView, {props: {id: id}});
   },
   filterResult: function handleFilterResult(scope, query) {
     console.log('ROUTE: FILTER RESULT');
@@ -1909,14 +1926,14 @@ var AppRouter = Router.extend({
     }
     var FilterResultView = require('../views/filter-result');
     //renderMenu();
-    render(FilterResultView, '#page', {props: {scope: scope, query: query}});
+    this._pageContent(FilterResultView, {props: {scope: scope, query: query}});
   },
 
   searchResult: function handleSearchResult() {
     console.log('ROUTE: SEARCH RESULT');
     var SearchResultView = require('../views/search-result');
    // renderMenu();
-    render(SearchResultView, '#page', {props: {position: 'left', open: true, displaySelector: 'a[href="#search/quick"]', style: {className: 'quick-search-popin'}}});
+    this._pageContent(SearchResultView, {props: {position: 'left', open: true, displaySelector: 'a[href="#search/quick"]', style: {className: 'quick-search-popin'}}});
   }
 });
 module.exports = new AppRouter();
@@ -2165,6 +2182,31 @@ module.exports = React.createClass({displayName: "exports",
             groupMaxRows: config.groupMaxRows}
         );
     }
+});
+
+});
+
+require.register("views/header/index", function(exports, require, module) {
+//Needed components
+var Header = Focus.components.application.header.component;
+var Cartridge = Focus.components.application.cartridge.component;
+var ContentBar = Focus.components.application.contentBar.component;
+var Bar = Focus.components.application.bar.component;
+var ContentActions = Focus.components.application.contentActions.component;
+
+module.exports = React.createClass({
+  displayName: 'AppHeader',
+  render: function renderApplicationHeader() {
+    return (
+      React.createElement(Header, null, 
+        React.createElement(ContentBar, null, 
+          React.createElement(Bar, {appName: "FOCUS"}), 
+          React.createElement(Cartridge, null)
+        ), 
+        React.createElement(ContentActions, null)
+      )
+    );
+  }
 });
 
 });
@@ -2441,78 +2483,42 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 require.register("views/movie/cartridge", function(exports, require, module) {
+/*global React*/
 var formMixin = Focus.components.common.form.mixin;
-var movieActions = require('../../action/movie');
+var movieActions = require('../../action/movie').movie;
 var movieStore = require('../../stores/movie');
+
+var Field = React.createClass({displayName: "Field",
+  getDefaultProps: function(){
+    return {
+      title: ''
+    };
+  },
+  render: function renderField(){
+    return (
+      React.createElement("div", {className: "field"}, 
+        React.createElement("div", {className: "title"}, this.props.title), 
+        React.createElement("div", {className: "content"}, this.props.children)
+      )
+    );
+  }
+
+});
+
+
 module.exports = React.createClass({
-    definitionPath: "movie",
-    displayName: "cartridge",
-    getInitialState: function () {
-        return {
-          actors: [],
-          producers: [],
-          directors: []
-        };
-    },
+    definitionPath: 'movie',
+    displayName: 'MovieCartridge',
     mixins: [formMixin],
-    stores: [{store: movieStore, properties: ["movie"]}],
+    stores: [{store: movieStore, properties: ['movie']}],
     action: movieActions,
     renderContent: function renderMovieCartridge() {
         return (
-            React.createElement("div", {className: "cartridge"}, 
-                React.createElement("div", {className: "header"}, 
-                    React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png", width: "100%", height: "100%"})), 
-                    React.createElement("div", {className: "title"}, this.state.title), 
-                    React.createElement("div", {className: "year"}, this.state.year)
-                ), 
-                React.createElement("div", {className: "field"}, 
-                    React.createElement("div", {className: "title"}, "GENRES"), 
-                    React.createElement("div", {className: "content"}, 
-                        this.state.genreIds
-                    )
-                ), 
-                React.createElement("div", {className: "field"}, 
-                    React.createElement("div", {className: "title"}, "DIRECTORS"), 
-                    React.createElement("div", {className: "content"}, 
-                        this.state.directors.map(function (people) {
-                            return (
-                                React.createElement("div", null, people.peoName)
-                            )
-                        })
-                    )
-                ), 
-                React.createElement("div", {className: "field"}, 
-                    React.createElement("div", {className: "title"}, "PRODUCERS"), 
-                    React.createElement("div", {className: "content"}, 
-                        this.state.producers.map(function (people) {
-                            return (
-                                React.createElement("div", null, people.peoName, " ", people.comment)
-                            )
-                        })
-                    )
-                ), 
-                React.createElement("div", {className: "field"}, 
-                    React.createElement("div", {className: "title"}, "MAIN ACTORS"), 
-                    React.createElement("div", {className: "content"}, 
-                        this.state.actors.map(function (people) {
-                            return (
-                                React.createElement("div", null, people.peoName)
-                            )
-                        })
-                    )
-                ), 
-                React.createElement("div", {className: "field"}, 
-                    React.createElement("div", {className: "title"}, "COUNTRIES"), 
-                    React.createElement("div", {className: "content"}, 
-                        this.state.countryIds
-                    )
-                ), 
-                React.createElement("div", {className: "field"}, 
-                    React.createElement("div", {className: "title"}, "LANGUAGES"), 
-                    React.createElement("div", {className: "content"}, 
-                        this.state.languageIds
-                    )
-                )
+            React.createElement("div", {className: "movie-cartridge"}, 
+              React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png"})), 
+              React.createElement("div", {className: "title"}, this.state.title), 
+              React.createElement("div", {className: "year"}, this.state.year), 
+              React.createElement("div", {className: "country"}, this.state.countryIds)
             )
         );
     }
@@ -2523,7 +2529,7 @@ module.exports = React.createClass({
 require.register("views/movie/castings", function(exports, require, module) {
 //TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = Focus.components.common.form.mixin;
-var movieActions = require('../../action/movie');
+var movieCastingActions = require('../../action/movie').castings;
 var movieStore = require('../../stores/movie');
 var Block = Focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
@@ -2541,14 +2547,10 @@ module.exports = React.createClass({
   displayName: "movieCastings",
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["castings"]}],
-  action: {
-    load: function (id) {
-      movieActions.loadCastings(id);
-    }
-  },
+  action: movieCastingActions,
   renderContent: function renderContentCastings() {
     return (
-      React.createElement(Block, {title: "CAST", style: {className: "slidingBlock", titleId: "cast"}}, 
+        React.createElement(Block, {title: "movie.detail.cast.title"}, 
         this.listFor("castings", {LineComponent: line})
       )
     );
@@ -2561,10 +2563,10 @@ require.register("views/movie/component/peopleCard", function(exports, require, 
 module.exports = React.createClass({displayName: "exports",
     render: function renderPeopleCard() {
         return (
-            React.createElement("div", {className: "card"}, 
-                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/peopleLogo.png", width: "100%", height: "100%"})), 
-                React.createElement("div", {className: "name"}, this.props.name), 
-                React.createElement("div", {className: "subName"}, this.props.subName)
+            React.createElement("div", {className: "people-line"}, 
+                React.createElement("div", {className: "icon"}, React.createElement("i", {className: "fa fa-user fa-3x"})), 
+                React.createElement("div", {className: "name level1"}, this.props.name), 
+                React.createElement("div", {className: "subName level2"}, this.props.subName)
             )
         );
     }
@@ -2573,10 +2575,10 @@ module.exports = React.createClass({displayName: "exports",
 });
 
 require.register("views/movie/index", function(exports, require, module) {
-
+/*global React, Focus */
 //Récupération des dépendances.
-var StickyNavigation = Focus.components.common.stickyNavigation.component;
-var Title = Focus.components.common.title.component;
+var createDetail = Focus.components.page.createDetail;
+var Detail = Focus.components.common.detail.component;
 
 //Blocs composants la page.
 var MovieDetails = require('./movieDetails');
@@ -2584,49 +2586,53 @@ var Castings = require('./castings');
 var MovieProducers = require('./movieProducers');
 var MovieDirectors = require('./movieDirectors');
 var MoviePictures = require('./moviePictures');
+//Composants du cartouche
+var SummaryMovie = React.createClass({displayName: "SummaryMovie",
+  render: function(){return (React.createElement("div", null, "SUMMARY ", this.props.id || 'no Id', " ..............")); }
+});
 
+var CartridgeMovie = require('./cartridge');
 
 /**
  * Page représentant le détail de la fiche d'un film.
  */
-module.exports = React.createClass({
-    /** @inheritedDoc */
-    displayName: 'MovieView',
-    /** @inheritedDoc */
-    render: function renderMovieView() {
-        return (
-
-            React.createElement("div", {className: "detail movie-view"}, 
-                React.createElement(StickyNavigation, {contentSelector: "body"}), 
-                React.createElement("div", {className: "detail-content"}, 
-                  React.createElement(MovieDetails, {id: this.props.id}), 
-                  React.createElement(Castings, {id: this.props.id}), 
-                  React.createElement(MovieProducers, {id: this.props.id}), 
-                  React.createElement(MovieDirectors, {id: this.props.id}), 
-                  React.createElement(MoviePictures, {id: this.props.id})
-                )
-            )
-        );
+module.exports = createDetail({
+  displayName: 'MovieView',
+  cartridgeConfiguration: function() {
+     var props = {id: this.props.id, hasForm: false};
+     return {
+      summary: {component: SummaryMovie, props: props},
+      cartridge: {component: CartridgeMovie, props: props},
+      actions: {
+        primary: [
+          {label: 'imprimer', action: ()=>{console.log('print primaire'); }, className: 'print'},
+          {label: 'archiver', action: ()=>{console.log('archiver primaire'); }, className: 'archive'}
+        ],
+        secondary: [
+          {label: 'imprimer Secondaire', action: ()=>{console.log('print secondaire'); }, className: 'print'},
+          {label: 'archiver', action: ()=>{console.log('archiver secondaire'); }, className: 'archive'}]
+      }
+    };
+  },
+  render: function renderMovieView() {
+    return (
+      React.createElement(Detail, null, 
+        React.createElement(MovieDetails, {id: this.props.id}), 
+        React.createElement(Castings, {id: this.props.id}), 
+        React.createElement(MovieProducers, {id: this.props.id}), 
+        React.createElement(MovieDirectors, {id: this.props.id}), 
+        React.createElement(MoviePictures, {id: this.props.id})
+      )
+    );
     }
 });
 
-
-/*
-<Detail navigation={false}>
-  <MovieDetails id={this.props.id}/>
-  <Castings id={this.props.id}/>
-  <MovieProducers id={this.props.id}/>
-  <MovieDirectors id={this.props.id}/>
-  <MoviePictures id={this.props.id}/>
-</Detail>
- */
-
 });
 
-;require.register("views/movie/movieDetails", function(exports, require, module) {
+require.register("views/movie/movieDetails", function(exports, require, module) {
 /*global React, Focus*/
 var formMixin = Focus.components.common.form.mixin;
-var movieActions = require('../../action/movie');
+var movieActions = require('../../action/movie').movie;
 var movieStore = require('../../stores/movie');
 var Block = Focus.components.common.block.component;
 
@@ -2660,7 +2666,7 @@ module.exports = React.createClass({
 ;require.register("views/movie/movieDirectors", function(exports, require, module) {
 //TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = Focus.components.common.form.mixin;
-var movieActions = require('../../action/movie');
+var movieDirectorsActions = require('../../action/movie').directors;
 var movieStore = require('../../stores/movie');
 var Block = Focus.components.common.block.component;
 var PeopleCard = require('./component/peopleCard');
@@ -2678,17 +2684,12 @@ module.exports = React.createClass({
   displayName: "movieDirectors",
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["directors"]}],
-  renderActions: function renderActions(){},
-  action: {
-    load: function (id) {
-      movieActions.loadDirectors(id);
-    }
-  },
+  action: movieDirectorsActions,
   renderContent: function render() {
     return (
-      React.createElement(Block, {title: "DIRECTORS", style: {className: "slidingBlock", titleId: "directors"}}, 
-        this.listFor("directors", {LineComponent: line})
-      )
+        React.createElement(Block, {title: "movie.detail.directors.title"}, 
+          this.listFor("directors", {LineComponent: line})
+        )
     );
   }
 });
@@ -2701,7 +2702,7 @@ module.exports = React.createClass({
   displayName: "moviePictures",
   render: function render() {
     return (
-      React.createElement(Block, {title: "PICTURES", style: {className: "slidingBlocK noBorderBottom", titleId: "pictures"}}
+      React.createElement(Block, {title: "movie.detail.pictures.title"}
       )
 
     );
@@ -2713,11 +2714,12 @@ module.exports = React.createClass({
 require.register("views/movie/movieProducers", function(exports, require, module) {
 //TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
 var formMixin = Focus.components.common.form.mixin;
-var movieActions = require('../../action/movie');
+var movieProducersActions = require('../../action/movie').producers;
 var movieStore = require('../../stores/movie');
 var Title = Focus.components.common.title.component;
 var PeopleCard = require('./component/peopleCard');
 var Block = Focus.components.common.block.component;
+
 var line = React.createClass({displayName: "line",
   definitionPath: 'people',
   mixins: [Focus.components.list.selection.line.mixin],
@@ -2732,49 +2734,14 @@ module.exports = React.createClass({
   displayName: "movieProducers",
   mixins: [formMixin],
   stores: [{store: movieStore, properties: ["producers"]}],
-  action: {
-    load: function (id) {
-      movieActions.loadProducers(id);
-    }
-  },
+  action: movieProducersActions,
   renderContent: function render() {
     return (
-      React.createElement(Block, {title: "PRODUCERS", style: {className: "slidingBlock", titleId: "producers"}}, 
+      React.createElement(Block, {title: "movie.detail.producers.title"}, 
         this.listFor("producers", {LineComponent: line})
       )
     );
   }
-});
-
-});
-
-require.register("views/movie/slidingContent", function(exports, require, module) {
-var Title = Focus.components.common.title.component;
-var MovieDetails = require('./movieDetails');
-var Castings = require('./castings');
-var MovieProducers = require('./movieProducers');
-var MovieDirectors = require('./movieDirectors');
-var MoviePictures = require('./moviePictures');
-
-var MovieCartridge = require('./cartridge');
-
-module.exports = React.createClass({
-    displayName: 'slidingContent',
-    render: function renderSlidingContent() {
-        return (
-            React.createElement("div", {className: "detail-content"}, 
-                React.createElement(MovieCartridge, {id: this.props.id, style: {className: 'catridgeContainer'}}), 
-                React.createElement("div", {id: "slidingContent"}, 
-                    React.createElement(MovieDetails, {id: this.props.id}), 
-                    React.createElement(Castings, {id: this.props.id}), 
-                    React.createElement(MovieProducers, {id: this.props.id}), 
-                    React.createElement(MovieDirectors, {id: this.props.id}), 
-                    React.createElement(MoviePictures, {id: this.props.id})
-                )
-
-            )
-        );
-    }
 });
 
 });
@@ -2838,7 +2805,7 @@ module.exports = React.createClass({displayName: "exports",
     render: function renderMovieCard() {
         return (
             React.createElement("div", {className: "card"}, 
-                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png", width: "100%", height: "100%"})), 
+                React.createElement("div", {className: "picture"}, React.createElement("img", {src: "./static/img/logoMovie.png"})), 
                 React.createElement("div", null, 
                   React.createElement("div", {className: "name"}, this.props.name), 
                   React.createElement("div", {className: "middleName"}, this.props.middleName), 

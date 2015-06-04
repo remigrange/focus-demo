@@ -32,37 +32,71 @@ module.exports = {
   }
 };
 
-},{"./application":4,"./component":7,"./definition":14,"./dispatcher":16,"./exception":22,"./helper":23,"./message":25,"./network":28,"./package.json":120,"./reference":125,"./router":126,"./store":131,"./user":145,"./util":150}],2:[function(require,module,exports){
+},{"./application":5,"./component":9,"./definition":16,"./dispatcher":18,"./exception":24,"./helper":25,"./message":27,"./network":31,"./package.json":176,"./reference":181,"./router":182,"./store":187,"./user":200,"./util":205}],2:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 
 var dispatcher = require("../dispatcher");
+function preServiceCall(config) {
+  dispatcher.handleViewAction({
+    data: _defineProperty({}, config.node, undefined),
+    type: config.type,
+    status: (function () {
+      var _status = {};
+
+      _defineProperty(_status, config.type, config.preStatus);
+
+      _defineProperty(_status, "isLoading", true);
+
+      return _status;
+    })()
+  });
+}
+function postServiceCall(config, json) {
+  dispatcher.handleServerAction({
+    data: _defineProperty({}, config.node, json),
+    type: config.type,
+    status: (function () {
+      var _status = {};
+
+      _defineProperty(_status, config.type, config.status);
+
+      _defineProperty(_status, "isLoading", false);
+
+      return _status;
+    })()
+  });
+}
+
 module.exports = function (config) {
   config = config || {};
   config.type = config.type || "update";
-  if (!config.service) {
-    throw new Error("You need to provide a service");
-  }
+  config.preStatus = config.preStatus || "loading";
   if (!config.service) {
     throw new Error("You need to provide a service to call");
   }
-
-  if (!config.data) {
-    throw new Error("You need to provide an action data");
+  if (!config.status) {
+    throw new Error("You need to provide a status to your action");
   }
-  return config.service(config.data).then(function (jsonData) {
-    dispatcher.handleServerAction({
-      data: _defineProperty({}, config.property, jsonData),
-      type: config.type
+  /*if(!config.data){
+    throw new Error('You need to provide an action data');
+  }*/
+  //Exposes a function consumes by the compoennt.
+  return function (criteria) {
+    preServiceCall(config);
+    //todo: add middleware see slack for more informations
+    return config.service(criteria).then(function (jsonData) {
+      postServiceCall(config, jsonData);
+    }, function actionError(err) {
+      console.warn("Error in action", err);
+      //Get code back from a project
+      throw new Error("An errror occurs");
     });
-  }, function actionError(err) {
-    console.warn("Error in action", err);
-    throw new Error("An errror occurs");
-  });
+  };
 };
 
-},{"../dispatcher":16}],3:[function(require,module,exports){
+},{"../dispatcher":18}],3:[function(require,module,exports){
 "use strict";
 
 var ApplicationStore = require("../store/application");
@@ -78,24 +112,57 @@ module.exports = function builtInStore() {
   return instanciatedApplicationStore;
 };
 
-},{"../store/application":129}],4:[function(require,module,exports){
+},{"../store/application":185}],4:[function(require,module,exports){
+"use strict";
+
+var mountedComponents = require("./mounted-components");
+
+/**
+ * Clear a react component.
+ * @param {String} targetSelector - the component's DOM selector
+ */
+module.exports = function clearComponent(targetSelector) {
+    if (mountedComponents[targetSelector]) {
+        React.unmountComponentAtNode(document.querySelector(targetSelector));
+        delete mountedComponents[targetSelector];
+        console.info("Component " + targetSelector + " unmounted.");
+    }
+};
+
+},{"./mounted-components":6}],5:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   render: require("./render"),
   builtInStore: require("./built-in-store"),
-  actionBuilder: require("./action-builder")
+  actionBuilder: require("./action-builder"),
+  clear: require("./clear"),
+  mountedComponents: require("./mounted-components")
 };
 
-},{"./action-builder":2,"./built-in-store":3,"./render":5}],5:[function(require,module,exports){
+},{"./action-builder":2,"./built-in-store":3,"./clear":4,"./mounted-components":6,"./render":7}],6:[function(require,module,exports){
+/**
+ * Map containing all the mounted components' selectors.
+ * The map has the shape {'selector1': true, 'selector2': true, ...}
+ * @type {Object}
+ */
+
+"use strict";
+
+module.exports = {}; // Empty by default
+
+},{}],7:[function(require,module,exports){
 "use strict";
 /*global document*/
 var React = window.React;
+var keys = require("lodash/object/keys");
 /**
  * Map containing all the mounted components.
  * @type {Object}
  */
-var mountedComponents = {};
+var mountedComponents = require("./mounted-components");
+
+var clearComponent = require("./clear");
 
 /**
  *  Render a react component in a DOM selector.
@@ -103,17 +170,20 @@ var mountedComponents = {};
  * @param {string} selector  - A selector on a DOM node.
  * @param {object} options   - Options for the component rendering.
  */
-module.exports = function (component, selector, options) {
+module.exports = function renderComponent(component, selector, options) {
   options = options || {};
-  //Unmount component if there is one mounted.
-  if (mountedComponents[selector]) {
-    React.unmountComponentAtNode(document.querySelector(selector));
-    console.log("component unmounted");
+  // Clear a potential previously mounted component
+  clearComponent(selector);
+  var targetDOMContainer = document.querySelector(selector);
+  if (!targetDOMContainer) {
+    throw new Error("You are trying to render a component in a DOM element which is not existing, your selector is  " + selector);
   }
-  React.render(React.createElement(component, options.props, options.data), document.querySelector(selector));
-  //Save the fact that a comonent is mounted.
-  mountedComponents[selector] = true;
-  console.log("Mounted components : ", mountedComponents);
+  // Render the component
+  var mountedComponent = React.render(React.createElement(component, options.props, options.data), targetDOMContainer);
+  //Save the fact that a component is mounted.
+  mountedComponents[selector] = mountedComponent;
+  console.info("Mounted components : ", keys(mountedComponents));
+  return mountedComponent;
 };
 /*
   Exemple
@@ -122,7 +192,7 @@ module.exports = function (component, selector, options) {
   render(MyComponent, 'div.component-container', {props: {id: '12'}});
  */
 
-},{}],6:[function(require,module,exports){
+},{"./clear":4,"./mounted-components":6,"lodash/object/keys":160}],8:[function(require,module,exports){
 "use strict";
 var React = window.React;
 var assign = require("object-assign");
@@ -164,14 +234,14 @@ module.exports = function (componentMixin, isMixinOnly) {
   }, createComponent(componentMixin, isMixinOnly));
 };
 
-},{"object-assign":117}],7:[function(require,module,exports){
+},{"object-assign":173}],9:[function(require,module,exports){
 "use strict";
 module.exports = {
   builder: require("./builder"),
   types: require("./types")
 };
 
-},{"./builder":6,"./types":8}],8:[function(require,module,exports){
+},{"./builder":8,"./types":10}],10:[function(require,module,exports){
 "use strict";
 //Dependencies.
 var React = window.React;
@@ -207,7 +277,7 @@ module.exports = function (type, isRequired) {
   return propTypeToReturn;
 };
 
-},{"lodash/lang/isArray":83,"lodash/lang/isString":100}],9:[function(require,module,exports){
+},{"lodash/lang/isArray":137,"lodash/lang/isString":154}],11:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -271,7 +341,7 @@ module.exports = {
   get: getDomain
 };
 
-},{"../../util/object/check":151,"../../util/string/check":154,"immutable":34,"lodash/lang/isObject":97,"lodash/lang/isString":100}],10:[function(require,module,exports){
+},{"../../util/object/check":206,"../../util/string/check":209,"immutable":36,"lodash/lang/isObject":151,"lodash/lang/isString":154}],12:[function(require,module,exports){
 /**
  * Application domain gestion.
  * @type {Object}
@@ -282,7 +352,7 @@ module.exports = {
   container: require("./container")
 };
 
-},{"./container":9}],11:[function(require,module,exports){
+},{"./container":11}],13:[function(require,module,exports){
 "use strict";
 
 var Immutable = require("immutable");
@@ -368,7 +438,7 @@ module.exports = {
   getFieldInformations: getFieldInformations
 };
 
-},{"../../util/object/check":151,"../../util/object/checkIsNotNull":152,"../../util/string/check":154,"../domain/container":9,"./container":12,"immutable":34}],12:[function(require,module,exports){
+},{"../../util/object/check":206,"../../util/object/checkIsNotNull":207,"../../util/string/check":209,"../domain/container":11,"./container":14,"immutable":36}],14:[function(require,module,exports){
 "use strict";
 
 //Dependencies.
@@ -446,7 +516,7 @@ module.exports = {
   getFieldConfiguration: getFieldConfiguration
 };
 
-},{"../../store/search/definition":138,"../../util/object/check":151,"../../util/string/check":154,"immutable":34}],13:[function(require,module,exports){
+},{"../../store/search/definition":194,"../../util/object/check":206,"../../util/string/check":209,"immutable":36}],15:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -454,7 +524,7 @@ module.exports = {
 	container: require("./container")
 };
 
-},{"./builder":11,"./container":12}],14:[function(require,module,exports){
+},{"./builder":13,"./container":14}],16:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -462,7 +532,7 @@ module.exports = {
 	entity: require("./entity")
 };
 
-},{"./domain":10,"./entity":13}],15:[function(require,module,exports){
+},{"./domain":12,"./entity":15}],17:[function(require,module,exports){
 //By default use the facebook flux dispatcher.
 "use strict";
 
@@ -473,7 +543,7 @@ var Dispatcher = require("flux").Dispatcher;
  */
 module.exports = Dispatcher;
 
-},{"flux":31}],16:[function(require,module,exports){
+},{"flux":33}],18:[function(require,module,exports){
 "use strict";
 
 var Dispatcher = require("./Dispatcher");
@@ -512,7 +582,7 @@ var AppDispaytcher = assign(new Dispatcher(), {
  */
 module.exports = AppDispaytcher;
 
-},{"./Dispatcher":15,"object-assign":117}],17:[function(require,module,exports){
+},{"./Dispatcher":17,"object-assign":173}],19:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -546,7 +616,7 @@ var ArgumentInvalidException = (function (_CustomException) {
 
 module.exports = ArgumentInvalidException;
 
-},{"./CustomException":19}],18:[function(require,module,exports){
+},{"./CustomException":21}],20:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -580,7 +650,7 @@ var ArgumentNullException = (function (_CustomException) {
 
 module.exports = ArgumentNullException;
 
-},{"./CustomException":19}],19:[function(require,module,exports){
+},{"./CustomException":21}],21:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -647,7 +717,7 @@ var CustomException = (function (_Error) {
 
 module.exports = CustomException;
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -681,7 +751,7 @@ var DependencyException = (function (_CustomException) {
 
 module.exports = DependencyException;
 
-},{"./CustomException":19}],21:[function(require,module,exports){
+},{"./CustomException":21}],23:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -715,7 +785,7 @@ var NotImplementedException = (function (_CustomException) {
 
 module.exports = NotImplementedException;
 
-},{"./CustomException":19}],22:[function(require,module,exports){
+},{"./CustomException":21}],24:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -726,10 +796,10 @@ module.exports = {
 	NotImplementedException: require("./NotImplementedException")
 };
 
-},{"./ArgumentInvalidException":17,"./ArgumentNullException":18,"./CustomException":19,"./DependencyException":20,"./NotImplementedException":21}],23:[function(require,module,exports){
+},{"./ArgumentInvalidException":19,"./ArgumentNullException":20,"./CustomException":21,"./DependencyException":22,"./NotImplementedException":23}],25:[function(require,module,exports){
 "use strict";
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 var MessageStore = require("../store/message");
@@ -745,7 +815,7 @@ module.exports = function builtInStore() {
   return instanciatedMessageStore;
 };
 
-},{"../store/message":133}],25:[function(require,module,exports){
+},{"../store/message":189}],27:[function(require,module,exports){
 "use strict";
 
 var dispatcher = require("../dispatcher");
@@ -827,7 +897,51 @@ module.exports = {
   builtInStore: require("./built-in-store")
 };
 
-},{"../dispatcher":16,"./built-in-store":24,"lodash/lang/isString":100}],26:[function(require,module,exports){
+},{"../dispatcher":18,"./built-in-store":26,"lodash/lang/isString":154}],28:[function(require,module,exports){
+/**
+ * Check if the given argument is a function.
+ * @param {Function} functionToCheck
+ * @returns {boolean} the check result
+ */
+"use strict";
+
+function isFunction(functionToCheck) {
+    var getType = {};
+    return functionToCheck && getType.toString.call(functionToCheck) === "[object Function]";
+}
+
+/**
+ * Create a cancellable promise object, with an optional cancel handler function given as an argument.
+ * @param {Function} promiseFn
+ * @param {Function} cancelHandler
+ * @returns {Promise} the resulting Promise, with a cancel() method attached.
+ */
+function cancellablePromiseBuilder(promiseFn, cancelHandler) {
+    if (!isFunction(promiseFn)) {
+        throw new Error("Promise function " + promiseFn + " is not a function.");
+    }
+    if (cancelHandler && !isFunction(cancelHandler)) {
+        throw new Error("Cancel handler " + cancelHandler + " is not a function.");
+    }
+    var p = new Promise(promiseFn);
+    p.cancel = function cancelCurrentPromise() {
+        if (cancelHandler) {
+            // cancel handler exists, call it
+            cancelHandler.call(this, arguments);
+        } else {
+            // cancel handler does not exist but was called, send a warning
+            console.warn("Cancel() called on a CancellablePromise but no cancel handler function was provided at object creation.", this);
+        }
+    };
+    p.isCancellable = function () {
+        return cancelHandler !== undefined;
+    };
+    return p;
+}
+
+module.exports = cancellablePromiseBuilder;
+
+},{}],29:[function(require,module,exports){
 "use strict";
 /*global XMLHttpRequest, XDomainRequest*/
 /**
@@ -875,19 +989,20 @@ module.exports = function createCORSRequest(method, url, options) {
   return xhr;
 };
 
-},{}],27:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 /**
  * Dependency on the CORS module.
  * @type {object}
  */
 var createCORSRequest = require("./cors");
+var cancellablePromiseBuilder = require("./cancellable-promise-builder");
 
 /**
- * Fecth function to ease http request.
+ * Fetch function to ease http request.
  * @param  {object} obj - method: http verb, url: http url, data:The json to save.
  * @param  {object} options - The options object.
- * @return {Promise} The promise of the execution of the HTTP request.
+ * @return {CancellablePromise} The promise of the execution of the HTTP request.
  */
 function fetch(obj, options) {
   options = options || {};
@@ -898,7 +1013,7 @@ function fetch(obj, options) {
   if (!request) {
     throw new Error("You cannot perform ajax request on other domains.");
   }
-  return new Promise(function (success, failure) {
+  return cancellablePromiseBuilder(function promiseFn(success, failure) {
     //Request error handler
     request.onerror = function (error) {
       failure(error);
@@ -922,20 +1037,654 @@ function fetch(obj, options) {
     };
     //Execute the request.
     request.send(JSON.stringify(obj.data));
+  }, function cancelHandler() {
+    // Promise cancel handler
+    if (request.status === 0) {
+      // request has not yet ended
+      request.abort();
+      return true;
+    } else {
+      // trying to abort an ended request, send a warning to the console
+      console.warn("Tried to abort an already ended request", request);
+      return false;
+    }
   });
 }
 
 module.exports = fetch;
 
-},{"./cors":26}],28:[function(require,module,exports){
+},{"./cancellable-promise-builder":28,"./cors":29}],31:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   cors: require("./cors"),
-  fetch: require("./fetch")
+  fetch: require("./fetch"),
+  cancellablePromiseBuilder: require("./cancellable-promise-builder")
 };
 
-},{"./cors":26,"./fetch":27}],29:[function(require,module,exports){
+},{"./cancellable-promise-builder":28,"./cors":29,"./fetch":30}],32:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+function EventEmitter() {
+  this._events = this._events || {};
+  this._maxListeners = this._maxListeners || undefined;
+}
+module.exports = EventEmitter;
+
+// Backwards-compat with node 0.10.x
+EventEmitter.EventEmitter = EventEmitter;
+
+EventEmitter.prototype._events = undefined;
+EventEmitter.prototype._maxListeners = undefined;
+
+// By default EventEmitters will print a warning if more than 10 listeners are
+// added to it. This is a useful default which helps finding memory leaks.
+EventEmitter.defaultMaxListeners = 10;
+
+// Obviously not all Emitters should be limited to 10. This function allows
+// that to be increased. Set to zero for unlimited.
+EventEmitter.prototype.setMaxListeners = function(n) {
+  if (!isNumber(n) || n < 0 || isNaN(n))
+    throw TypeError('n must be a positive number');
+  this._maxListeners = n;
+  return this;
+};
+
+EventEmitter.prototype.emit = function(type) {
+  var er, handler, len, args, i, listeners;
+
+  if (!this._events)
+    this._events = {};
+
+  // If there is no 'error' event listener then throw.
+  if (type === 'error') {
+    if (!this._events.error ||
+        (isObject(this._events.error) && !this._events.error.length)) {
+      er = arguments[1];
+      if (er instanceof Error) {
+        throw er; // Unhandled 'error' event
+      }
+      throw TypeError('Uncaught, unspecified "error" event.');
+    }
+  }
+
+  handler = this._events[type];
+
+  if (isUndefined(handler))
+    return false;
+
+  if (isFunction(handler)) {
+    switch (arguments.length) {
+      // fast cases
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      // slower
+      default:
+        len = arguments.length;
+        args = new Array(len - 1);
+        for (i = 1; i < len; i++)
+          args[i - 1] = arguments[i];
+        handler.apply(this, args);
+    }
+  } else if (isObject(handler)) {
+    len = arguments.length;
+    args = new Array(len - 1);
+    for (i = 1; i < len; i++)
+      args[i - 1] = arguments[i];
+
+    listeners = handler.slice();
+    len = listeners.length;
+    for (i = 0; i < len; i++)
+      listeners[i].apply(this, args);
+  }
+
+  return true;
+};
+
+EventEmitter.prototype.addListener = function(type, listener) {
+  var m;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events)
+    this._events = {};
+
+  // To avoid recursion in the case that type === "newListener"! Before
+  // adding it to the listeners, first emit "newListener".
+  if (this._events.newListener)
+    this.emit('newListener', type,
+              isFunction(listener.listener) ?
+              listener.listener : listener);
+
+  if (!this._events[type])
+    // Optimize the case of one listener. Don't need the extra array object.
+    this._events[type] = listener;
+  else if (isObject(this._events[type]))
+    // If we've already got an array, just append.
+    this._events[type].push(listener);
+  else
+    // Adding the second element, need to change to array.
+    this._events[type] = [this._events[type], listener];
+
+  // Check for listener leak
+  if (isObject(this._events[type]) && !this._events[type].warned) {
+    var m;
+    if (!isUndefined(this._maxListeners)) {
+      m = this._maxListeners;
+    } else {
+      m = EventEmitter.defaultMaxListeners;
+    }
+
+    if (m && m > 0 && this._events[type].length > m) {
+      this._events[type].warned = true;
+      console.error('(node) warning: possible EventEmitter memory ' +
+                    'leak detected. %d listeners added. ' +
+                    'Use emitter.setMaxListeners() to increase limit.',
+                    this._events[type].length);
+      if (typeof console.trace === 'function') {
+        // not supported in IE 10
+        console.trace();
+      }
+    }
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once = function(type, listener) {
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  var fired = false;
+
+  function g() {
+    this.removeListener(type, g);
+
+    if (!fired) {
+      fired = true;
+      listener.apply(this, arguments);
+    }
+  }
+
+  g.listener = listener;
+  this.on(type, g);
+
+  return this;
+};
+
+// emits a 'removeListener' event iff the listener was removed
+EventEmitter.prototype.removeListener = function(type, listener) {
+  var list, position, length, i;
+
+  if (!isFunction(listener))
+    throw TypeError('listener must be a function');
+
+  if (!this._events || !this._events[type])
+    return this;
+
+  list = this._events[type];
+  length = list.length;
+  position = -1;
+
+  if (list === listener ||
+      (isFunction(list.listener) && list.listener === listener)) {
+    delete this._events[type];
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+
+  } else if (isObject(list)) {
+    for (i = length; i-- > 0;) {
+      if (list[i] === listener ||
+          (list[i].listener && list[i].listener === listener)) {
+        position = i;
+        break;
+      }
+    }
+
+    if (position < 0)
+      return this;
+
+    if (list.length === 1) {
+      list.length = 0;
+      delete this._events[type];
+    } else {
+      list.splice(position, 1);
+    }
+
+    if (this._events.removeListener)
+      this.emit('removeListener', type, listener);
+  }
+
+  return this;
+};
+
+EventEmitter.prototype.removeAllListeners = function(type) {
+  var key, listeners;
+
+  if (!this._events)
+    return this;
+
+  // not listening for removeListener, no need to emit
+  if (!this._events.removeListener) {
+    if (arguments.length === 0)
+      this._events = {};
+    else if (this._events[type])
+      delete this._events[type];
+    return this;
+  }
+
+  // emit removeListener for all listeners on all events
+  if (arguments.length === 0) {
+    for (key in this._events) {
+      if (key === 'removeListener') continue;
+      this.removeAllListeners(key);
+    }
+    this.removeAllListeners('removeListener');
+    this._events = {};
+    return this;
+  }
+
+  listeners = this._events[type];
+
+  if (isFunction(listeners)) {
+    this.removeListener(type, listeners);
+  } else {
+    // LIFO order
+    while (listeners.length)
+      this.removeListener(type, listeners[listeners.length - 1]);
+  }
+  delete this._events[type];
+
+  return this;
+};
+
+EventEmitter.prototype.listeners = function(type) {
+  var ret;
+  if (!this._events || !this._events[type])
+    ret = [];
+  else if (isFunction(this._events[type]))
+    ret = [this._events[type]];
+  else
+    ret = this._events[type].slice();
+  return ret;
+};
+
+EventEmitter.listenerCount = function(emitter, type) {
+  var ret;
+  if (!emitter._events || !emitter._events[type])
+    ret = 0;
+  else if (isFunction(emitter._events[type]))
+    ret = 1;
+  else
+    ret = emitter._events[type].length;
+  return ret;
+};
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+
+},{}],33:[function(require,module,exports){
+/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+module.exports.Dispatcher = require('./lib/Dispatcher')
+
+},{"./lib/Dispatcher":34}],34:[function(require,module,exports){
+/*
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule Dispatcher
+ * @typechecks
+ */
+
+"use strict";
+
+var invariant = require('./invariant');
+
+var _lastID = 1;
+var _prefix = 'ID_';
+
+/**
+ * Dispatcher is used to broadcast payloads to registered callbacks. This is
+ * different from generic pub-sub systems in two ways:
+ *
+ *   1) Callbacks are not subscribed to particular events. Every payload is
+ *      dispatched to every registered callback.
+ *   2) Callbacks can be deferred in whole or part until other callbacks have
+ *      been executed.
+ *
+ * For example, consider this hypothetical flight destination form, which
+ * selects a default city when a country is selected:
+ *
+ *   var flightDispatcher = new Dispatcher();
+ *
+ *   // Keeps track of which country is selected
+ *   var CountryStore = {country: null};
+ *
+ *   // Keeps track of which city is selected
+ *   var CityStore = {city: null};
+ *
+ *   // Keeps track of the base flight price of the selected city
+ *   var FlightPriceStore = {price: null}
+ *
+ * When a user changes the selected city, we dispatch the payload:
+ *
+ *   flightDispatcher.dispatch({
+ *     actionType: 'city-update',
+ *     selectedCity: 'paris'
+ *   });
+ *
+ * This payload is digested by `CityStore`:
+ *
+ *   flightDispatcher.register(function(payload) {
+ *     if (payload.actionType === 'city-update') {
+ *       CityStore.city = payload.selectedCity;
+ *     }
+ *   });
+ *
+ * When the user selects a country, we dispatch the payload:
+ *
+ *   flightDispatcher.dispatch({
+ *     actionType: 'country-update',
+ *     selectedCountry: 'australia'
+ *   });
+ *
+ * This payload is digested by both stores:
+ *
+ *    CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
+ *     if (payload.actionType === 'country-update') {
+ *       CountryStore.country = payload.selectedCountry;
+ *     }
+ *   });
+ *
+ * When the callback to update `CountryStore` is registered, we save a reference
+ * to the returned token. Using this token with `waitFor()`, we can guarantee
+ * that `CountryStore` is updated before the callback that updates `CityStore`
+ * needs to query its data.
+ *
+ *   CityStore.dispatchToken = flightDispatcher.register(function(payload) {
+ *     if (payload.actionType === 'country-update') {
+ *       // `CountryStore.country` may not be updated.
+ *       flightDispatcher.waitFor([CountryStore.dispatchToken]);
+ *       // `CountryStore.country` is now guaranteed to be updated.
+ *
+ *       // Select the default city for the new country
+ *       CityStore.city = getDefaultCityForCountry(CountryStore.country);
+ *     }
+ *   });
+ *
+ * The usage of `waitFor()` can be chained, for example:
+ *
+ *   FlightPriceStore.dispatchToken =
+ *     flightDispatcher.register(function(payload) {
+ *       switch (payload.actionType) {
+ *         case 'country-update':
+ *           flightDispatcher.waitFor([CityStore.dispatchToken]);
+ *           FlightPriceStore.price =
+ *             getFlightPriceStore(CountryStore.country, CityStore.city);
+ *           break;
+ *
+ *         case 'city-update':
+ *           FlightPriceStore.price =
+ *             FlightPriceStore(CountryStore.country, CityStore.city);
+ *           break;
+ *     }
+ *   });
+ *
+ * The `country-update` payload will be guaranteed to invoke the stores'
+ * registered callbacks in order: `CountryStore`, `CityStore`, then
+ * `FlightPriceStore`.
+ */
+
+  function Dispatcher() {
+    this.$Dispatcher_callbacks = {};
+    this.$Dispatcher_isPending = {};
+    this.$Dispatcher_isHandled = {};
+    this.$Dispatcher_isDispatching = false;
+    this.$Dispatcher_pendingPayload = null;
+  }
+
+  /**
+   * Registers a callback to be invoked with every dispatched payload. Returns
+   * a token that can be used with `waitFor()`.
+   *
+   * @param {function} callback
+   * @return {string}
+   */
+  Dispatcher.prototype.register=function(callback) {
+    var id = _prefix + _lastID++;
+    this.$Dispatcher_callbacks[id] = callback;
+    return id;
+  };
+
+  /**
+   * Removes a callback based on its token.
+   *
+   * @param {string} id
+   */
+  Dispatcher.prototype.unregister=function(id) {
+    invariant(
+      this.$Dispatcher_callbacks[id],
+      'Dispatcher.unregister(...): `%s` does not map to a registered callback.',
+      id
+    );
+    delete this.$Dispatcher_callbacks[id];
+  };
+
+  /**
+   * Waits for the callbacks specified to be invoked before continuing execution
+   * of the current callback. This method should only be used by a callback in
+   * response to a dispatched payload.
+   *
+   * @param {array<string>} ids
+   */
+  Dispatcher.prototype.waitFor=function(ids) {
+    invariant(
+      this.$Dispatcher_isDispatching,
+      'Dispatcher.waitFor(...): Must be invoked while dispatching.'
+    );
+    for (var ii = 0; ii < ids.length; ii++) {
+      var id = ids[ii];
+      if (this.$Dispatcher_isPending[id]) {
+        invariant(
+          this.$Dispatcher_isHandled[id],
+          'Dispatcher.waitFor(...): Circular dependency detected while ' +
+          'waiting for `%s`.',
+          id
+        );
+        continue;
+      }
+      invariant(
+        this.$Dispatcher_callbacks[id],
+        'Dispatcher.waitFor(...): `%s` does not map to a registered callback.',
+        id
+      );
+      this.$Dispatcher_invokeCallback(id);
+    }
+  };
+
+  /**
+   * Dispatches a payload to all registered callbacks.
+   *
+   * @param {object} payload
+   */
+  Dispatcher.prototype.dispatch=function(payload) {
+    invariant(
+      !this.$Dispatcher_isDispatching,
+      'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.'
+    );
+    this.$Dispatcher_startDispatching(payload);
+    try {
+      for (var id in this.$Dispatcher_callbacks) {
+        if (this.$Dispatcher_isPending[id]) {
+          continue;
+        }
+        this.$Dispatcher_invokeCallback(id);
+      }
+    } finally {
+      this.$Dispatcher_stopDispatching();
+    }
+  };
+
+  /**
+   * Is this Dispatcher currently dispatching.
+   *
+   * @return {boolean}
+   */
+  Dispatcher.prototype.isDispatching=function() {
+    return this.$Dispatcher_isDispatching;
+  };
+
+  /**
+   * Call the callback stored with the given id. Also do some internal
+   * bookkeeping.
+   *
+   * @param {string} id
+   * @internal
+   */
+  Dispatcher.prototype.$Dispatcher_invokeCallback=function(id) {
+    this.$Dispatcher_isPending[id] = true;
+    this.$Dispatcher_callbacks[id](this.$Dispatcher_pendingPayload);
+    this.$Dispatcher_isHandled[id] = true;
+  };
+
+  /**
+   * Set up bookkeeping needed when dispatching.
+   *
+   * @param {object} payload
+   * @internal
+   */
+  Dispatcher.prototype.$Dispatcher_startDispatching=function(payload) {
+    for (var id in this.$Dispatcher_callbacks) {
+      this.$Dispatcher_isPending[id] = false;
+      this.$Dispatcher_isHandled[id] = false;
+    }
+    this.$Dispatcher_pendingPayload = payload;
+    this.$Dispatcher_isDispatching = true;
+  };
+
+  /**
+   * Clear bookkeeping used for dispatching.
+   *
+   * @internal
+   */
+  Dispatcher.prototype.$Dispatcher_stopDispatching=function() {
+    this.$Dispatcher_pendingPayload = null;
+    this.$Dispatcher_isDispatching = false;
+  };
+
+
+module.exports = Dispatcher;
+
+},{"./invariant":35}],35:[function(require,module,exports){
+/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule invariant
+ */
+
+"use strict";
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+var invariant = function(condition, format, a, b, c, d, e, f) {
+  if (false) {
+    if (format === undefined) {
+      throw new Error('invariant requires an error message argument');
+    }
+  }
+
+  if (!condition) {
+    var error;
+    if (format === undefined) {
+      error = new Error(
+        'Minified exception occurred; use the non-minified dev environment ' +
+        'for the full error message and additional helpful warnings.'
+      );
+    } else {
+      var args = [a, b, c, d, e, f];
+      var argIndex = 0;
+      error = new Error(
+        'Invariant Violation: ' +
+        format.replace(/%s/g, function() { return args[argIndex++]; })
+      );
+    }
+
+    error.framesToPop = 1; // we don't care about invariant's own frame
+    throw error;
+  }
+};
+
+module.exports = invariant;
+
+},{}],36:[function(require,module,exports){
 /**
  *  Copyright (c) 2014-2015, Facebook, Inc.
  *  All rights reserved.
@@ -5793,631 +6542,7 @@ module.exports = {
   return Immutable;
 
 }));
-},{}],30:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      }
-      throw TypeError('Uncaught, unspecified "error" event.');
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        len = arguments.length;
-        args = new Array(len - 1);
-        for (i = 1; i < len; i++)
-          args[i - 1] = arguments[i];
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    len = arguments.length;
-    args = new Array(len - 1);
-    for (i = 1; i < len; i++)
-      args[i - 1] = arguments[i];
-
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    var m;
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  var ret;
-  if (!emitter._events || !emitter._events[type])
-    ret = 0;
-  else if (isFunction(emitter._events[type]))
-    ret = 1;
-  else
-    ret = emitter._events[type].length;
-  return ret;
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],31:[function(require,module,exports){
-/**
- * Copyright (c) 2014, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
-module.exports.Dispatcher = require('./lib/Dispatcher')
-
-},{"./lib/Dispatcher":32}],32:[function(require,module,exports){
-/*
- * Copyright (c) 2014, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule Dispatcher
- * @typechecks
- */
-
-"use strict";
-
-var invariant = require('./invariant');
-
-var _lastID = 1;
-var _prefix = 'ID_';
-
-/**
- * Dispatcher is used to broadcast payloads to registered callbacks. This is
- * different from generic pub-sub systems in two ways:
- *
- *   1) Callbacks are not subscribed to particular events. Every payload is
- *      dispatched to every registered callback.
- *   2) Callbacks can be deferred in whole or part until other callbacks have
- *      been executed.
- *
- * For example, consider this hypothetical flight destination form, which
- * selects a default city when a country is selected:
- *
- *   var flightDispatcher = new Dispatcher();
- *
- *   // Keeps track of which country is selected
- *   var CountryStore = {country: null};
- *
- *   // Keeps track of which city is selected
- *   var CityStore = {city: null};
- *
- *   // Keeps track of the base flight price of the selected city
- *   var FlightPriceStore = {price: null}
- *
- * When a user changes the selected city, we dispatch the payload:
- *
- *   flightDispatcher.dispatch({
- *     actionType: 'city-update',
- *     selectedCity: 'paris'
- *   });
- *
- * This payload is digested by `CityStore`:
- *
- *   flightDispatcher.register(function(payload) {
- *     if (payload.actionType === 'city-update') {
- *       CityStore.city = payload.selectedCity;
- *     }
- *   });
- *
- * When the user selects a country, we dispatch the payload:
- *
- *   flightDispatcher.dispatch({
- *     actionType: 'country-update',
- *     selectedCountry: 'australia'
- *   });
- *
- * This payload is digested by both stores:
- *
- *    CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
- *     if (payload.actionType === 'country-update') {
- *       CountryStore.country = payload.selectedCountry;
- *     }
- *   });
- *
- * When the callback to update `CountryStore` is registered, we save a reference
- * to the returned token. Using this token with `waitFor()`, we can guarantee
- * that `CountryStore` is updated before the callback that updates `CityStore`
- * needs to query its data.
- *
- *   CityStore.dispatchToken = flightDispatcher.register(function(payload) {
- *     if (payload.actionType === 'country-update') {
- *       // `CountryStore.country` may not be updated.
- *       flightDispatcher.waitFor([CountryStore.dispatchToken]);
- *       // `CountryStore.country` is now guaranteed to be updated.
- *
- *       // Select the default city for the new country
- *       CityStore.city = getDefaultCityForCountry(CountryStore.country);
- *     }
- *   });
- *
- * The usage of `waitFor()` can be chained, for example:
- *
- *   FlightPriceStore.dispatchToken =
- *     flightDispatcher.register(function(payload) {
- *       switch (payload.actionType) {
- *         case 'country-update':
- *           flightDispatcher.waitFor([CityStore.dispatchToken]);
- *           FlightPriceStore.price =
- *             getFlightPriceStore(CountryStore.country, CityStore.city);
- *           break;
- *
- *         case 'city-update':
- *           FlightPriceStore.price =
- *             FlightPriceStore(CountryStore.country, CityStore.city);
- *           break;
- *     }
- *   });
- *
- * The `country-update` payload will be guaranteed to invoke the stores'
- * registered callbacks in order: `CountryStore`, `CityStore`, then
- * `FlightPriceStore`.
- */
-
-  function Dispatcher() {
-    this.$Dispatcher_callbacks = {};
-    this.$Dispatcher_isPending = {};
-    this.$Dispatcher_isHandled = {};
-    this.$Dispatcher_isDispatching = false;
-    this.$Dispatcher_pendingPayload = null;
-  }
-
-  /**
-   * Registers a callback to be invoked with every dispatched payload. Returns
-   * a token that can be used with `waitFor()`.
-   *
-   * @param {function} callback
-   * @return {string}
-   */
-  Dispatcher.prototype.register=function(callback) {
-    var id = _prefix + _lastID++;
-    this.$Dispatcher_callbacks[id] = callback;
-    return id;
-  };
-
-  /**
-   * Removes a callback based on its token.
-   *
-   * @param {string} id
-   */
-  Dispatcher.prototype.unregister=function(id) {
-    invariant(
-      this.$Dispatcher_callbacks[id],
-      'Dispatcher.unregister(...): `%s` does not map to a registered callback.',
-      id
-    );
-    delete this.$Dispatcher_callbacks[id];
-  };
-
-  /**
-   * Waits for the callbacks specified to be invoked before continuing execution
-   * of the current callback. This method should only be used by a callback in
-   * response to a dispatched payload.
-   *
-   * @param {array<string>} ids
-   */
-  Dispatcher.prototype.waitFor=function(ids) {
-    invariant(
-      this.$Dispatcher_isDispatching,
-      'Dispatcher.waitFor(...): Must be invoked while dispatching.'
-    );
-    for (var ii = 0; ii < ids.length; ii++) {
-      var id = ids[ii];
-      if (this.$Dispatcher_isPending[id]) {
-        invariant(
-          this.$Dispatcher_isHandled[id],
-          'Dispatcher.waitFor(...): Circular dependency detected while ' +
-          'waiting for `%s`.',
-          id
-        );
-        continue;
-      }
-      invariant(
-        this.$Dispatcher_callbacks[id],
-        'Dispatcher.waitFor(...): `%s` does not map to a registered callback.',
-        id
-      );
-      this.$Dispatcher_invokeCallback(id);
-    }
-  };
-
-  /**
-   * Dispatches a payload to all registered callbacks.
-   *
-   * @param {object} payload
-   */
-  Dispatcher.prototype.dispatch=function(payload) {
-    invariant(
-      !this.$Dispatcher_isDispatching,
-      'Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch.'
-    );
-    this.$Dispatcher_startDispatching(payload);
-    try {
-      for (var id in this.$Dispatcher_callbacks) {
-        if (this.$Dispatcher_isPending[id]) {
-          continue;
-        }
-        this.$Dispatcher_invokeCallback(id);
-      }
-    } finally {
-      this.$Dispatcher_stopDispatching();
-    }
-  };
-
-  /**
-   * Is this Dispatcher currently dispatching.
-   *
-   * @return {boolean}
-   */
-  Dispatcher.prototype.isDispatching=function() {
-    return this.$Dispatcher_isDispatching;
-  };
-
-  /**
-   * Call the callback stored with the given id. Also do some internal
-   * bookkeeping.
-   *
-   * @param {string} id
-   * @internal
-   */
-  Dispatcher.prototype.$Dispatcher_invokeCallback=function(id) {
-    this.$Dispatcher_isPending[id] = true;
-    this.$Dispatcher_callbacks[id](this.$Dispatcher_pendingPayload);
-    this.$Dispatcher_isHandled[id] = true;
-  };
-
-  /**
-   * Set up bookkeeping needed when dispatching.
-   *
-   * @param {object} payload
-   * @internal
-   */
-  Dispatcher.prototype.$Dispatcher_startDispatching=function(payload) {
-    for (var id in this.$Dispatcher_callbacks) {
-      this.$Dispatcher_isPending[id] = false;
-      this.$Dispatcher_isHandled[id] = false;
-    }
-    this.$Dispatcher_pendingPayload = payload;
-    this.$Dispatcher_isDispatching = true;
-  };
-
-  /**
-   * Clear bookkeeping used for dispatching.
-   *
-   * @internal
-   */
-  Dispatcher.prototype.$Dispatcher_stopDispatching=function() {
-    this.$Dispatcher_pendingPayload = null;
-    this.$Dispatcher_isDispatching = false;
-  };
-
-
-module.exports = Dispatcher;
-
-},{"./invariant":33}],33:[function(require,module,exports){
-/**
- * Copyright (c) 2014, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule invariant
- */
-
-"use strict";
-
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
-
-var invariant = function(condition, format, a, b, c, d, e, f) {
-  if (false) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
-    }
-  }
-
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error(
-        'Minified exception occurred; use the non-minified dev environment ' +
-        'for the full error message and additional helpful warnings.'
-      );
-    } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(
-        'Invariant Violation: ' +
-        format.replace(/%s/g, function() { return args[argIndex++]; })
-      );
-    }
-
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
-  }
-};
-
-module.exports = invariant;
-
-},{}],34:[function(require,module,exports){
-arguments[4][29][0].apply(exports,arguments)
-},{"dup":29}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /**
  * Copyright 2013-2014 Facebook, Inc.
  *
@@ -6472,7 +6597,7 @@ var keyMirror = function(obj) {
 
 module.exports = keyMirror;
 
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var baseIndexOf = require('../internal/baseIndexOf'),
     cacheIndexOf = require('../internal/cacheIndexOf'),
     createCache = require('../internal/createCache'),
@@ -6541,7 +6666,1253 @@ function intersection() {
 
 module.exports = intersection;
 
-},{"../internal/baseIndexOf":47,"../internal/cacheIndexOf":56,"../internal/createCache":58,"../lang/isArguments":82,"../lang/isArray":83}],37:[function(require,module,exports){
+},{"../internal/baseIndexOf":81,"../internal/cacheIndexOf":92,"../internal/createCache":97,"../lang/isArguments":136,"../lang/isArray":137}],39:[function(require,module,exports){
+var isNative = require('../lang/isNative');
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeNow = isNative(nativeNow = Date.now) && nativeNow;
+
+/**
+ * Gets the number of milliseconds that have elapsed since the Unix epoch
+ * (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @category Date
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => logs the number of milliseconds it took for the deferred function to be invoked
+ */
+var now = nativeNow || function() {
+  return new Date().getTime();
+};
+
+module.exports = now;
+
+},{"../lang/isNative":148}],40:[function(require,module,exports){
+module.exports = {
+  'after': require('./function/after'),
+  'ary': require('./function/ary'),
+  'backflow': require('./function/backflow'),
+  'before': require('./function/before'),
+  'bind': require('./function/bind'),
+  'bindAll': require('./function/bindAll'),
+  'bindKey': require('./function/bindKey'),
+  'compose': require('./function/compose'),
+  'curry': require('./function/curry'),
+  'curryRight': require('./function/curryRight'),
+  'debounce': require('./function/debounce'),
+  'defer': require('./function/defer'),
+  'delay': require('./function/delay'),
+  'flow': require('./function/flow'),
+  'flowRight': require('./function/flowRight'),
+  'memoize': require('./function/memoize'),
+  'negate': require('./function/negate'),
+  'once': require('./function/once'),
+  'partial': require('./function/partial'),
+  'partialRight': require('./function/partialRight'),
+  'rearg': require('./function/rearg'),
+  'spread': require('./function/spread'),
+  'throttle': require('./function/throttle'),
+  'wrap': require('./function/wrap')
+};
+
+},{"./function/after":41,"./function/ary":42,"./function/backflow":43,"./function/before":44,"./function/bind":45,"./function/bindAll":46,"./function/bindKey":47,"./function/compose":48,"./function/curry":49,"./function/curryRight":50,"./function/debounce":51,"./function/defer":52,"./function/delay":53,"./function/flow":54,"./function/flowRight":55,"./function/memoize":56,"./function/negate":57,"./function/once":58,"./function/partial":59,"./function/partialRight":60,"./function/rearg":61,"./function/spread":62,"./function/throttle":63,"./function/wrap":64}],41:[function(require,module,exports){
+(function (global){
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeIsFinite = global.isFinite;
+
+/**
+ * The opposite of `_.before`; this method creates a function that invokes
+ * `func` once it is called `n` or more times.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {number} n The number of calls before `func` is invoked.
+ * @param {Function} func The function to restrict.
+ * @returns {Function} Returns the new restricted function.
+ * @example
+ *
+ * var saves = ['profile', 'settings'];
+ *
+ * var done = _.after(saves.length, function() {
+ *   console.log('done saving!');
+ * });
+ *
+ * _.forEach(saves, function(type) {
+ *   asyncSave({ 'type': type, 'complete': done });
+ * });
+ * // => logs 'done saving!' after the two async saves have completed
+ */
+function after(n, func) {
+  if (typeof func != 'function') {
+    if (typeof n == 'function') {
+      var temp = n;
+      n = func;
+      func = temp;
+    } else {
+      throw new TypeError(FUNC_ERROR_TEXT);
+    }
+  }
+  n = nativeIsFinite(n = +n) ? n : 0;
+  return function() {
+    if (--n < 1) {
+      return func.apply(this, arguments);
+    }
+  };
+}
+
+module.exports = after;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],42:[function(require,module,exports){
+var createWrapper = require('../internal/createWrapper'),
+    isIterateeCall = require('../internal/isIterateeCall');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var ARY_FLAG = 256;
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * Creates a function that accepts up to `n` arguments ignoring any
+ * additional arguments.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to cap arguments for.
+ * @param {number} [n=func.length] The arity cap.
+ * @param- {Object} [guard] Enables use as a callback for functions like `_.map`.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * _.map(['6', '8', '10'], _.ary(parseInt, 1));
+ * // => [6, 8, 10]
+ */
+function ary(func, n, guard) {
+  if (guard && isIterateeCall(func, n, guard)) {
+    n = null;
+  }
+  n = (func && n == null) ? func.length : nativeMax(+n || 0, 0);
+  return createWrapper(func, ARY_FLAG, null, null, null, null, n);
+}
+
+module.exports = ary;
+
+},{"../internal/createWrapper":102,"../internal/isIterateeCall":114}],43:[function(require,module,exports){
+module.exports = require('./flowRight');
+
+},{"./flowRight":55}],44:[function(require,module,exports){
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a function that invokes `func`, with the `this` binding and arguments
+ * of the created function, while it is called less than `n` times. Subsequent
+ * calls to the created function return the result of the last `func` invocation.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {number} n The number of calls at which `func` is no longer invoked.
+ * @param {Function} func The function to restrict.
+ * @returns {Function} Returns the new restricted function.
+ * @example
+ *
+ * jQuery('#add').on('click', _.before(5, addContactToList));
+ * // => allows adding up to 4 contacts to the list
+ */
+function before(n, func) {
+  var result;
+  if (typeof func != 'function') {
+    if (typeof n == 'function') {
+      var temp = n;
+      n = func;
+      func = temp;
+    } else {
+      throw new TypeError(FUNC_ERROR_TEXT);
+    }
+  }
+  return function() {
+    if (--n > 0) {
+      result = func.apply(this, arguments);
+    } else {
+      func = null;
+    }
+    return result;
+  };
+}
+
+module.exports = before;
+
+},{}],45:[function(require,module,exports){
+var baseSlice = require('../internal/baseSlice'),
+    createWrapper = require('../internal/createWrapper'),
+    replaceHolders = require('../internal/replaceHolders');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var BIND_FLAG = 1,
+    PARTIAL_FLAG = 32;
+
+/**
+ * Creates a function that invokes `func` with the `this` binding of `thisArg`
+ * and prepends any additional `_.bind` arguments to those provided to the
+ * bound function.
+ *
+ * The `_.bind.placeholder` value, which defaults to `_` in monolithic builds,
+ * may be used as a placeholder for partially applied arguments.
+ *
+ * **Note:** Unlike native `Function#bind` this method does not set the `length`
+ * property of bound functions.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to bind.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {...*} [args] The arguments to be partially applied.
+ * @returns {Function} Returns the new bound function.
+ * @example
+ *
+ * var greet = function(greeting, punctuation) {
+ *   return greeting + ' ' + this.user + punctuation;
+ * };
+ *
+ * var object = { 'user': 'fred' };
+ *
+ * var bound = _.bind(greet, object, 'hi');
+ * bound('!');
+ * // => 'hi fred!'
+ *
+ * // using placeholders
+ * var bound = _.bind(greet, object, _, '!');
+ * bound('hi');
+ * // => 'hi fred!'
+ */
+function bind(func, thisArg) {
+  var bitmask = BIND_FLAG;
+  if (arguments.length > 2) {
+    var partials = baseSlice(arguments, 2),
+        holders = replaceHolders(partials, bind.placeholder);
+
+    bitmask |= PARTIAL_FLAG;
+  }
+  return createWrapper(func, bitmask, thisArg, partials, holders);
+}
+
+// Assign default placeholders.
+bind.placeholder = {};
+
+module.exports = bind;
+
+},{"../internal/baseSlice":87,"../internal/createWrapper":102,"../internal/replaceHolders":128}],46:[function(require,module,exports){
+var baseBindAll = require('../internal/baseBindAll'),
+    baseFlatten = require('../internal/baseFlatten'),
+    functions = require('../object/functions');
+
+/**
+ * Binds methods of an object to the object itself, overwriting the existing
+ * method. Method names may be specified as individual arguments or as arrays
+ * of method names. If no method names are provided all enumerable function
+ * properties, own and inherited, of `object` are bound.
+ *
+ * **Note:** This method does not set the `length` property of bound functions.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Object} object The object to bind and assign the bound methods to.
+ * @param {...(string|string[])} [methodNames] The object method names to bind,
+ *  specified as individual method names or arrays of method names.
+ * @returns {Object} Returns `object`.
+ * @example
+ *
+ * var view = {
+ *   'label': 'docs',
+ *   'onClick': function() {
+ *     console.log('clicked ' + this.label);
+ *   }
+ * };
+ *
+ * _.bindAll(view);
+ * jQuery('#docs').on('click', view.onClick);
+ * // => logs 'clicked docs' when the element is clicked
+ */
+function bindAll(object) {
+  return baseBindAll(object,
+    arguments.length > 1
+      ? baseFlatten(arguments, false, false, 1)
+      : functions(object)
+  );
+}
+
+module.exports = bindAll;
+
+},{"../internal/baseBindAll":71,"../internal/baseFlatten":76,"../object/functions":159}],47:[function(require,module,exports){
+var baseSlice = require('../internal/baseSlice'),
+    createWrapper = require('../internal/createWrapper'),
+    replaceHolders = require('../internal/replaceHolders');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var BIND_FLAG = 1,
+    BIND_KEY_FLAG = 2,
+    PARTIAL_FLAG = 32;
+
+/**
+ * Creates a function that invokes the method at `object[key]` and prepends
+ * any additional `_.bindKey` arguments to those provided to the bound function.
+ *
+ * This method differs from `_.bind` by allowing bound functions to reference
+ * methods that may be redefined or don't yet exist.
+ * See [Peter Michaux's article](http://michaux.ca/articles/lazy-function-definition-pattern)
+ * for more details.
+ *
+ * The `_.bindKey.placeholder` value, which defaults to `_` in monolithic
+ * builds, may be used as a placeholder for partially applied arguments.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Object} object The object the method belongs to.
+ * @param {string} key The key of the method.
+ * @param {...*} [args] The arguments to be partially applied.
+ * @returns {Function} Returns the new bound function.
+ * @example
+ *
+ * var object = {
+ *   'user': 'fred',
+ *   'greet': function(greeting, punctuation) {
+ *     return greeting + ' ' + this.user + punctuation;
+ *   }
+ * };
+ *
+ * var bound = _.bindKey(object, 'greet', 'hi');
+ * bound('!');
+ * // => 'hi fred!'
+ *
+ * object.greet = function(greeting, punctuation) {
+ *   return greeting + 'ya ' + this.user + punctuation;
+ * };
+ *
+ * bound('!');
+ * // => 'hiya fred!'
+ *
+ * // using placeholders
+ * var bound = _.bindKey(object, 'greet', _, '!');
+ * bound('hi');
+ * // => 'hiya fred!'
+ */
+function bindKey(object, key) {
+  var bitmask = BIND_FLAG | BIND_KEY_FLAG;
+  if (arguments.length > 2) {
+    var partials = baseSlice(arguments, 2),
+        holders = replaceHolders(partials, bindKey.placeholder);
+
+    bitmask |= PARTIAL_FLAG;
+  }
+  return createWrapper(key, bitmask, object, partials, holders);
+}
+
+// Assign default placeholders.
+bindKey.placeholder = {};
+
+module.exports = bindKey;
+
+},{"../internal/baseSlice":87,"../internal/createWrapper":102,"../internal/replaceHolders":128}],48:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"./flowRight":55,"dup":43}],49:[function(require,module,exports){
+var createWrapper = require('../internal/createWrapper'),
+    isIterateeCall = require('../internal/isIterateeCall');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var CURRY_FLAG = 8;
+
+/**
+ * Creates a function that accepts one or more arguments of `func` that when
+ * called either invokes `func` returning its result, if all `func` arguments
+ * have been provided, or returns a function that accepts one or more of the
+ * remaining `func` arguments, and so on. The arity of `func` may be specified
+ * if `func.length` is not sufficient.
+ *
+ * The `_.curry.placeholder` value, which defaults to `_` in monolithic builds,
+ * may be used as a placeholder for provided arguments.
+ *
+ * **Note:** This method does not set the `length` property of curried functions.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to curry.
+ * @param {number} [arity=func.length] The arity of `func`.
+ * @param- {Object} [guard] Enables use as a callback for functions like `_.map`.
+ * @returns {Function} Returns the new curried function.
+ * @example
+ *
+ * var abc = function(a, b, c) {
+ *   return [a, b, c];
+ * };
+ *
+ * var curried = _.curry(abc);
+ *
+ * curried(1)(2)(3);
+ * // => [1, 2, 3]
+ *
+ * curried(1, 2)(3);
+ * // => [1, 2, 3]
+ *
+ * curried(1, 2, 3);
+ * // => [1, 2, 3]
+ *
+ * // using placeholders
+ * curried(1)(_, 3)(2);
+ * // => [1, 2, 3]
+ */
+function curry(func, arity, guard) {
+  if (guard && isIterateeCall(func, arity, guard)) {
+    arity = null;
+  }
+  var result = createWrapper(func, CURRY_FLAG, null, null, null, null, null, arity);
+  result.placeholder = curry.placeholder;
+  return result;
+}
+
+// Assign default placeholders.
+curry.placeholder = {};
+
+module.exports = curry;
+
+},{"../internal/createWrapper":102,"../internal/isIterateeCall":114}],50:[function(require,module,exports){
+var createWrapper = require('../internal/createWrapper'),
+    isIterateeCall = require('../internal/isIterateeCall');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var CURRY_RIGHT_FLAG = 16;
+
+/**
+ * This method is like `_.curry` except that arguments are applied to `func`
+ * in the manner of `_.partialRight` instead of `_.partial`.
+ *
+ * The `_.curryRight.placeholder` value, which defaults to `_` in monolithic
+ * builds, may be used as a placeholder for provided arguments.
+ *
+ * **Note:** This method does not set the `length` property of curried functions.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to curry.
+ * @param {number} [arity=func.length] The arity of `func`.
+ * @param- {Object} [guard] Enables use as a callback for functions like `_.map`.
+ * @returns {Function} Returns the new curried function.
+ * @example
+ *
+ * var abc = function(a, b, c) {
+ *   return [a, b, c];
+ * };
+ *
+ * var curried = _.curryRight(abc);
+ *
+ * curried(3)(2)(1);
+ * // => [1, 2, 3]
+ *
+ * curried(2, 3)(1);
+ * // => [1, 2, 3]
+ *
+ * curried(1, 2, 3);
+ * // => [1, 2, 3]
+ *
+ * // using placeholders
+ * curried(3)(1, _)(2);
+ * // => [1, 2, 3]
+ */
+function curryRight(func, arity, guard) {
+  if (guard && isIterateeCall(func, arity, guard)) {
+    arity = null;
+  }
+  var result = createWrapper(func, CURRY_RIGHT_FLAG, null, null, null, null, null, arity);
+  result.placeholder = curryRight.placeholder;
+  return result;
+}
+
+// Assign default placeholders.
+curryRight.placeholder = {};
+
+module.exports = curryRight;
+
+},{"../internal/createWrapper":102,"../internal/isIterateeCall":114}],51:[function(require,module,exports){
+var isObject = require('../lang/isObject'),
+    now = require('../date/now');
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * Creates a function that delays invoking `func` until after `wait` milliseconds
+ * have elapsed since the last time it was invoked. The created function comes
+ * with a `cancel` method to cancel delayed invocations. Provide an options
+ * object to indicate that `func` should be invoked on the leading and/or
+ * trailing edge of the `wait` timeout. Subsequent calls to the debounced
+ * function return the result of the last `func` invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is invoked
+ * on the trailing edge of the timeout only if the the debounced function is
+ * invoked more than once during the `wait` timeout.
+ *
+ * See [David Corbacho's article](http://drupalmotion.com/article/debounce-and-throttle-visual-explanation)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options] The options object.
+ * @param {boolean} [options.leading=false] Specify invoking on the leading
+ *  edge of the timeout.
+ * @param {number} [options.maxWait] The maximum time `func` is allowed to be
+ *  delayed before it is invoked.
+ * @param {boolean} [options.trailing=true] Specify invoking on the trailing
+ *  edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // avoid costly calculations while the window size is in flux
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // invoke `sendMail` when the click event is fired, debouncing subsequent calls
+ * jQuery('#postbox').on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // ensure `batchLog` is invoked once after 1 second of debounced calls
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', _.debounce(batchLog, 250, {
+ *   'maxWait': 1000
+ * }));
+ *
+ * // cancel a debounced call
+ * var todoChanges = _.debounce(batchLog, 1000);
+ * Object.observe(models.todo, todoChanges);
+ *
+ * Object.observe(models, function(changes) {
+ *   if (_.find(changes, { 'user': 'todo', 'type': 'delete'})) {
+ *     todoChanges.cancel();
+ *   }
+ * }, ['delete']);
+ *
+ * // ...at some point `models.todo` is changed
+ * models.todo.completed = true;
+ *
+ * // ...before 1 second has passed `models.todo` is deleted
+ * // which cancels the debounced `todoChanges` call
+ * delete models.todo;
+ */
+function debounce(func, wait, options) {
+  var args,
+      maxTimeoutId,
+      result,
+      stamp,
+      thisArg,
+      timeoutId,
+      trailingCall,
+      lastCalled = 0,
+      maxWait = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  wait = wait < 0 ? 0 : (+wait || 0);
+  if (options === true) {
+    var leading = true;
+    trailing = false;
+  } else if (isObject(options)) {
+    leading = options.leading;
+    maxWait = 'maxWait' in options && nativeMax(+options.maxWait || 0, wait);
+    trailing = 'trailing' in options ? options.trailing : trailing;
+  }
+
+  function cancel() {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    if (maxTimeoutId) {
+      clearTimeout(maxTimeoutId);
+    }
+    maxTimeoutId = timeoutId = trailingCall = undefined;
+  }
+
+  function delayed() {
+    var remaining = wait - (now() - stamp);
+    if (remaining <= 0 || remaining > wait) {
+      if (maxTimeoutId) {
+        clearTimeout(maxTimeoutId);
+      }
+      var isCalled = trailingCall;
+      maxTimeoutId = timeoutId = trailingCall = undefined;
+      if (isCalled) {
+        lastCalled = now();
+        result = func.apply(thisArg, args);
+        if (!timeoutId && !maxTimeoutId) {
+          args = thisArg = null;
+        }
+      }
+    } else {
+      timeoutId = setTimeout(delayed, remaining);
+    }
+  }
+
+  function maxDelayed() {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    maxTimeoutId = timeoutId = trailingCall = undefined;
+    if (trailing || (maxWait !== wait)) {
+      lastCalled = now();
+      result = func.apply(thisArg, args);
+      if (!timeoutId && !maxTimeoutId) {
+        args = thisArg = null;
+      }
+    }
+  }
+
+  function debounced() {
+    args = arguments;
+    stamp = now();
+    thisArg = this;
+    trailingCall = trailing && (timeoutId || !leading);
+
+    if (maxWait === false) {
+      var leadingCall = leading && !timeoutId;
+    } else {
+      if (!maxTimeoutId && !leading) {
+        lastCalled = stamp;
+      }
+      var remaining = maxWait - (stamp - lastCalled),
+          isCalled = remaining <= 0 || remaining > maxWait;
+
+      if (isCalled) {
+        if (maxTimeoutId) {
+          maxTimeoutId = clearTimeout(maxTimeoutId);
+        }
+        lastCalled = stamp;
+        result = func.apply(thisArg, args);
+      }
+      else if (!maxTimeoutId) {
+        maxTimeoutId = setTimeout(maxDelayed, remaining);
+      }
+    }
+    if (isCalled && timeoutId) {
+      timeoutId = clearTimeout(timeoutId);
+    }
+    else if (!timeoutId && wait !== maxWait) {
+      timeoutId = setTimeout(delayed, wait);
+    }
+    if (leadingCall) {
+      isCalled = true;
+      result = func.apply(thisArg, args);
+    }
+    if (isCalled && !timeoutId && !maxTimeoutId) {
+      args = thisArg = null;
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  return debounced;
+}
+
+module.exports = debounce;
+
+},{"../date/now":39,"../lang/isObject":151}],52:[function(require,module,exports){
+var baseDelay = require('../internal/baseDelay');
+
+/**
+ * Defers invoking the `func` until the current call stack has cleared. Any
+ * additional arguments are provided to `func` when it is invoked.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to defer.
+ * @param {...*} [args] The arguments to invoke the function with.
+ * @returns {number} Returns the timer id.
+ * @example
+ *
+ * _.defer(function(text) {
+ *   console.log(text);
+ * }, 'deferred');
+ * // logs 'deferred' after one or more milliseconds
+ */
+function defer(func) {
+  return baseDelay(func, 1, arguments, 1);
+}
+
+module.exports = defer;
+
+},{"../internal/baseDelay":75}],53:[function(require,module,exports){
+var baseDelay = require('../internal/baseDelay');
+
+/**
+ * Invokes `func` after `wait` milliseconds. Any additional arguments are
+ * provided to `func` when it is invoked.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to delay.
+ * @param {number} wait The number of milliseconds to delay invocation.
+ * @param {...*} [args] The arguments to invoke the function with.
+ * @returns {number} Returns the timer id.
+ * @example
+ *
+ * _.delay(function(text) {
+ *   console.log(text);
+ * }, 1000, 'later');
+ * // => logs 'later' after one second
+ */
+function delay(func, wait) {
+  return baseDelay(func, wait, arguments, 2);
+}
+
+module.exports = delay;
+
+},{"../internal/baseDelay":75}],54:[function(require,module,exports){
+var createComposer = require('../internal/createComposer');
+
+/**
+ * Creates a function that returns the result of invoking the provided
+ * functions with the `this` binding of the created function, where each
+ * successive invocation is supplied the return value of the previous.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {...Function} [funcs] Functions to invoke.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * function square(n) {
+ *   return n * n;
+ * }
+ *
+ * var addSquare = _.flow(_.add, square);
+ * addSquare(1, 2);
+ * // => 9
+ */
+var flow = createComposer();
+
+module.exports = flow;
+
+},{"../internal/createComposer":98}],55:[function(require,module,exports){
+var createComposer = require('../internal/createComposer');
+
+/**
+ * This method is like `_.flow` except that it creates a function that
+ * invokes the provided functions from right to left.
+ *
+ * @static
+ * @memberOf _
+ * @alias backflow, compose
+ * @category Function
+ * @param {...Function} [funcs] Functions to invoke.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * function square(n) {
+ *   return n * n;
+ * }
+ *
+ * var addSquare = _.flowRight(square, _.add);
+ * addSquare(1, 2);
+ * // => 9
+ */
+var flowRight = createComposer(true);
+
+module.exports = flowRight;
+
+},{"../internal/createComposer":98}],56:[function(require,module,exports){
+var MapCache = require('../internal/MapCache');
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a function that memoizes the result of `func`. If `resolver` is
+ * provided it determines the cache key for storing the result based on the
+ * arguments provided to the memoized function. By default, the first argument
+ * provided to the memoized function is coerced to a string and used as the
+ * cache key. The `func` is invoked with the `this` binding of the memoized
+ * function.
+ *
+ * **Note:** The cache is exposed as the `cache` property on the memoized
+ * function. Its creation may be customized by replacing the `_.memoize.Cache`
+ * constructor with one whose instances implement the ES `Map` method interface
+ * of `get`, `has`, and `set`. See the
+ * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-properties-of-the-map-prototype-object)
+ * for more details.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to have its output memoized.
+ * @param {Function} [resolver] The function to resolve the cache key.
+ * @returns {Function} Returns the new memoizing function.
+ * @example
+ *
+ * var upperCase = _.memoize(function(string) {
+ *   return string.toUpperCase();
+ * });
+ *
+ * upperCase('fred');
+ * // => 'FRED'
+ *
+ * // modifying the result cache
+ * upperCase.cache.set('fred', 'BARNEY');
+ * upperCase('fred');
+ * // => 'BARNEY'
+ *
+ * // replacing `_.memoize.Cache`
+ * var object = { 'user': 'fred' };
+ * var other = { 'user': 'barney' };
+ * var identity = _.memoize(_.identity);
+ *
+ * identity(object);
+ * // => { 'user': 'fred' }
+ * identity(other);
+ * // => { 'user': 'fred' }
+ *
+ * _.memoize.Cache = WeakMap;
+ * var identity = _.memoize(_.identity);
+ *
+ * identity(object);
+ * // => { 'user': 'fred' }
+ * identity(other);
+ * // => { 'user': 'barney' }
+ */
+function memoize(func, resolver) {
+  if (typeof func != 'function' || (resolver && typeof resolver != 'function')) {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  var memoized = function() {
+    var args = arguments,
+        cache = memoized.cache,
+        key = resolver ? resolver.apply(this, args) : args[0];
+
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    var result = func.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+  memoized.cache = new memoize.Cache;
+  return memoized;
+}
+
+// Assign cache to `_.memoize`.
+memoize.Cache = MapCache;
+
+module.exports = memoize;
+
+},{"../internal/MapCache":65}],57:[function(require,module,exports){
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a function that negates the result of the predicate `func`. The
+ * `func` predicate is invoked with the `this` binding and arguments of the
+ * created function.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} predicate The predicate to negate.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * function isEven(n) {
+ *   return n % 2 == 0;
+ * }
+ *
+ * _.filter([1, 2, 3, 4, 5, 6], _.negate(isEven));
+ * // => [1, 3, 5]
+ */
+function negate(predicate) {
+  if (typeof predicate != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  return function() {
+    return !predicate.apply(this, arguments);
+  };
+}
+
+module.exports = negate;
+
+},{}],58:[function(require,module,exports){
+var before = require('./before');
+
+/**
+ * Creates a function that is restricted to invoking `func` once. Repeat calls
+ * to the function return the value of the first call. The `func` is invoked
+ * with the `this` binding of the created function.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to restrict.
+ * @returns {Function} Returns the new restricted function.
+ * @example
+ *
+ * var initialize = _.once(createApplication);
+ * initialize();
+ * initialize();
+ * // `initialize` invokes `createApplication` once
+ */
+function once(func) {
+  return before(func, 2);
+}
+
+module.exports = once;
+
+},{"./before":44}],59:[function(require,module,exports){
+var baseSlice = require('../internal/baseSlice'),
+    createWrapper = require('../internal/createWrapper'),
+    replaceHolders = require('../internal/replaceHolders');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var PARTIAL_FLAG = 32;
+
+/**
+ * Creates a function that invokes `func` with `partial` arguments prepended
+ * to those provided to the new function. This method is like `_.bind` except
+ * it does **not** alter the `this` binding.
+ *
+ * The `_.partial.placeholder` value, which defaults to `_` in monolithic
+ * builds, may be used as a placeholder for partially applied arguments.
+ *
+ * **Note:** This method does not set the `length` property of partially
+ * applied functions.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to partially apply arguments to.
+ * @param {...*} [args] The arguments to be partially applied.
+ * @returns {Function} Returns the new partially applied function.
+ * @example
+ *
+ * var greet = function(greeting, name) {
+ *   return greeting + ' ' + name;
+ * };
+ *
+ * var sayHelloTo = _.partial(greet, 'hello');
+ * sayHelloTo('fred');
+ * // => 'hello fred'
+ *
+ * // using placeholders
+ * var greetFred = _.partial(greet, _, 'fred');
+ * greetFred('hi');
+ * // => 'hi fred'
+ */
+function partial(func) {
+  var partials = baseSlice(arguments, 1),
+      holders = replaceHolders(partials, partial.placeholder);
+
+  return createWrapper(func, PARTIAL_FLAG, null, partials, holders);
+}
+
+// Assign default placeholders.
+partial.placeholder = {};
+
+module.exports = partial;
+
+},{"../internal/baseSlice":87,"../internal/createWrapper":102,"../internal/replaceHolders":128}],60:[function(require,module,exports){
+var baseSlice = require('../internal/baseSlice'),
+    createWrapper = require('../internal/createWrapper'),
+    replaceHolders = require('../internal/replaceHolders');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var PARTIAL_RIGHT_FLAG = 64;
+
+/**
+ * This method is like `_.partial` except that partially applied arguments
+ * are appended to those provided to the new function.
+ *
+ * The `_.partialRight.placeholder` value, which defaults to `_` in monolithic
+ * builds, may be used as a placeholder for partially applied arguments.
+ *
+ * **Note:** This method does not set the `length` property of partially
+ * applied functions.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to partially apply arguments to.
+ * @param {...*} [args] The arguments to be partially applied.
+ * @returns {Function} Returns the new partially applied function.
+ * @example
+ *
+ * var greet = function(greeting, name) {
+ *   return greeting + ' ' + name;
+ * };
+ *
+ * var greetFred = _.partialRight(greet, 'fred');
+ * greetFred('hi');
+ * // => 'hi fred'
+ *
+ * // using placeholders
+ * var sayHelloTo = _.partialRight(greet, 'hello', _);
+ * sayHelloTo('fred');
+ * // => 'hello fred'
+ */
+function partialRight(func) {
+  var partials = baseSlice(arguments, 1),
+      holders = replaceHolders(partials, partialRight.placeholder);
+
+  return createWrapper(func, PARTIAL_RIGHT_FLAG, null, partials, holders);
+}
+
+// Assign default placeholders.
+partialRight.placeholder = {};
+
+module.exports = partialRight;
+
+},{"../internal/baseSlice":87,"../internal/createWrapper":102,"../internal/replaceHolders":128}],61:[function(require,module,exports){
+var baseFlatten = require('../internal/baseFlatten'),
+    createWrapper = require('../internal/createWrapper');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var REARG_FLAG = 128;
+
+/**
+ * Creates a function that invokes `func` with arguments arranged according
+ * to the specified indexes where the argument value at the first index is
+ * provided as the first argument, the argument value at the second index is
+ * provided as the second argument, and so on.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to rearrange arguments for.
+ * @param {...(number|number[])} indexes The arranged argument indexes,
+ *  specified as individual indexes or arrays of indexes.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * var rearged = _.rearg(function(a, b, c) {
+ *   return [a, b, c];
+ * }, 2, 0, 1);
+ *
+ * rearged('b', 'c', 'a')
+ * // => ['a', 'b', 'c']
+ *
+ * var map = _.rearg(_.map, [1, 0]);
+ * map(function(n) {
+ *   return n * 3;
+ * }, [1, 2, 3]);
+ * // => [3, 6, 9]
+ */
+function rearg(func) {
+  var indexes = baseFlatten(arguments, false, false, 1);
+  return createWrapper(func, REARG_FLAG, null, null, null, indexes);
+}
+
+module.exports = rearg;
+
+},{"../internal/baseFlatten":76,"../internal/createWrapper":102}],62:[function(require,module,exports){
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a function that invokes `func` with the `this` binding of the
+ * created function and the array of arguments provided to the created
+ * function much like [Function#apply](http://es5.github.io/#x15.3.4.3).
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to spread arguments over.
+ * @returns {*} Returns the new function.
+ * @example
+ *
+ * var spread = _.spread(function(who, what) {
+ *   return who + ' says ' + what;
+ * });
+ *
+ * spread(['Fred', 'hello']);
+ * // => 'Fred says hello'
+ *
+ * // with a Promise
+ * var numbers = Promise.all([
+ *   Promise.resolve(40),
+ *   Promise.resolve(36)
+ * ]);
+ *
+ * numbers.then(_.spread(function(x, y) {
+ *   return x + y;
+ * }));
+ * // => a Promise of 76
+ */
+function spread(func) {
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  return function(array) {
+    return func.apply(this, array);
+  };
+}
+
+module.exports = spread;
+
+},{}],63:[function(require,module,exports){
+var debounce = require('./debounce'),
+    isObject = require('../lang/isObject');
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/** Used as an internal `_.debounce` options object by `_.throttle`. */
+var debounceOptions = {
+  'leading': false,
+  'maxWait': 0,
+  'trailing': false
+};
+
+/**
+ * Creates a function that only invokes `func` at most once per every `wait`
+ * milliseconds. The created function comes with a `cancel` method to cancel
+ * delayed invocations. Provide an options object to indicate that `func`
+ * should be invoked on the leading and/or trailing edge of the `wait` timeout.
+ * Subsequent calls to the throttled function return the result of the last
+ * `func` call.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is invoked
+ * on the trailing edge of the timeout only if the the throttled function is
+ * invoked more than once during the `wait` timeout.
+ *
+ * See [David Corbacho's article](http://drupalmotion.com/article/debounce-and-throttle-visual-explanation)
+ * for details over the differences between `_.throttle` and `_.debounce`.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {Function} func The function to throttle.
+ * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
+ * @param {Object} [options] The options object.
+ * @param {boolean} [options.leading=true] Specify invoking on the leading
+ *  edge of the timeout.
+ * @param {boolean} [options.trailing=true] Specify invoking on the trailing
+ *  edge of the timeout.
+ * @returns {Function} Returns the new throttled function.
+ * @example
+ *
+ * // avoid excessively updating the position while scrolling
+ * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
+ *
+ * // invoke `renewToken` when the click event is fired, but not more than once every 5 minutes
+ * jQuery('.interactive').on('click', _.throttle(renewToken, 300000, {
+ *   'trailing': false
+ * }));
+ *
+ * // cancel a trailing throttled call
+ * jQuery(window).on('popstate', throttled.cancel);
+ */
+function throttle(func, wait, options) {
+  var leading = true,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  if (options === false) {
+    leading = false;
+  } else if (isObject(options)) {
+    leading = 'leading' in options ? !!options.leading : leading;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+  debounceOptions.leading = leading;
+  debounceOptions.maxWait = +wait;
+  debounceOptions.trailing = trailing;
+  return debounce(func, wait, debounceOptions);
+}
+
+module.exports = throttle;
+
+},{"../lang/isObject":151,"./debounce":51}],64:[function(require,module,exports){
+var createWrapper = require('../internal/createWrapper'),
+    identity = require('../utility/identity');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var PARTIAL_FLAG = 32;
+
+/**
+ * Creates a function that provides `value` to the wrapper function as its
+ * first argument. Any additional arguments provided to the function are
+ * appended to those provided to the wrapper function. The wrapper is invoked
+ * with the `this` binding of the created function.
+ *
+ * @static
+ * @memberOf _
+ * @category Function
+ * @param {*} value The value to wrap.
+ * @param {Function} wrapper The wrapper function.
+ * @returns {Function} Returns the new function.
+ * @example
+ *
+ * var p = _.wrap(_.escape, function(func, text) {
+ *   return '<p>' + func(text) + '</p>';
+ * });
+ *
+ * p('fred, barney, & pebbles');
+ * // => '<p>fred, barney, &amp; pebbles</p>'
+ */
+function wrap(value, wrapper) {
+  wrapper = wrapper == null ? identity : wrapper;
+  return createWrapper(wrapper, PARTIAL_FLAG, null, [value], []);
+}
+
+module.exports = wrap;
+
+},{"../internal/createWrapper":102,"../utility/identity":171}],65:[function(require,module,exports){
+var mapDelete = require('./mapDelete'),
+    mapGet = require('./mapGet'),
+    mapHas = require('./mapHas'),
+    mapSet = require('./mapSet');
+
+/**
+ * Creates a cache object to store key/value pairs.
+ *
+ * @private
+ * @static
+ * @name Cache
+ * @memberOf _.memoize
+ */
+function MapCache() {
+  this.__data__ = {};
+}
+
+// Add functions to the `Map` cache.
+MapCache.prototype['delete'] = mapDelete;
+MapCache.prototype.get = mapGet;
+MapCache.prototype.has = mapHas;
+MapCache.prototype.set = mapSet;
+
+module.exports = MapCache;
+
+},{"./mapDelete":118,"./mapGet":119,"./mapHas":120,"./mapSet":121}],66:[function(require,module,exports){
 (function (global){
 var cachePush = require('./cachePush'),
     isNative = require('../lang/isNative');
@@ -6574,7 +7945,7 @@ SetCache.prototype.push = cachePush;
 module.exports = SetCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":94,"./cachePush":57}],38:[function(require,module,exports){
+},{"../lang/isNative":148,"./cachePush":93}],67:[function(require,module,exports){
 /**
  * Copies the values of `source` to `array`.
  *
@@ -6596,7 +7967,7 @@ function arrayCopy(source, array) {
 
 module.exports = arrayCopy;
 
-},{}],39:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 /**
  * A specialized version of `_.forEach` for arrays without support for callback
  * shorthands or `this` binding.
@@ -6620,7 +7991,7 @@ function arrayEach(array, iteratee) {
 
 module.exports = arrayEach;
 
-},{}],40:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /** Used for native method references. */
 var objectProto = Object.prototype;
 
@@ -6648,7 +8019,7 @@ function assignOwnDefaults(objectValue, sourceValue, key, object) {
 
 module.exports = assignOwnDefaults;
 
-},{}],41:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 var baseCopy = require('./baseCopy'),
     keys = require('../object/keys');
 
@@ -6685,7 +8056,35 @@ function baseAssign(object, source, customizer) {
 
 module.exports = baseAssign;
 
-},{"../object/keys":105,"./baseCopy":43}],42:[function(require,module,exports){
+},{"../object/keys":160,"./baseCopy":73}],71:[function(require,module,exports){
+var createWrapper = require('./createWrapper');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var BIND_FLAG = 1;
+
+/**
+ * The base implementation of `_.bindAll` without support for individual
+ * method name arguments.
+ *
+ * @private
+ * @param {Object} object The object to bind and assign the bound methods to.
+ * @param {string[]} methodNames The object method names to bind.
+ * @returns {Object} Returns `object`.
+ */
+function baseBindAll(object, methodNames) {
+  var index = -1,
+      length = methodNames.length;
+
+  while (++index < length) {
+    var key = methodNames[index];
+    object[key] = createWrapper(object[key], BIND_FLAG, object);
+  }
+  return object;
+}
+
+module.exports = baseBindAll;
+
+},{"./createWrapper":102}],72:[function(require,module,exports){
 var arrayCopy = require('./arrayCopy'),
     arrayEach = require('./arrayEach'),
     baseCopy = require('./baseCopy'),
@@ -6817,7 +8216,7 @@ function baseClone(value, isDeep, customizer, key, object, stackA, stackB) {
 
 module.exports = baseClone;
 
-},{"../lang/isArray":83,"../lang/isObject":97,"../object/keys":105,"./arrayCopy":38,"./arrayEach":39,"./baseCopy":43,"./baseForOwn":46,"./initCloneArray":65,"./initCloneByTag":66,"./initCloneObject":67}],43:[function(require,module,exports){
+},{"../lang/isArray":137,"../lang/isObject":151,"../object/keys":160,"./arrayCopy":67,"./arrayEach":68,"./baseCopy":73,"./baseForOwn":79,"./initCloneArray":110,"./initCloneByTag":111,"./initCloneObject":112}],73:[function(require,module,exports){
 /**
  * Copies the properties of `source` to `object`.
  *
@@ -6844,7 +8243,106 @@ function baseCopy(source, object, props) {
 
 module.exports = baseCopy;
 
-},{}],44:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
+(function (global){
+var isObject = require('../lang/isObject');
+
+/**
+ * The base implementation of `_.create` without support for assigning
+ * properties to the created object.
+ *
+ * @private
+ * @param {Object} prototype The object to inherit from.
+ * @returns {Object} Returns the new object.
+ */
+var baseCreate = (function() {
+  function Object() {}
+  return function(prototype) {
+    if (isObject(prototype)) {
+      Object.prototype = prototype;
+      var result = new Object;
+      Object.prototype = null;
+    }
+    return result || global.Object();
+  };
+}());
+
+module.exports = baseCreate;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../lang/isObject":151}],75:[function(require,module,exports){
+var baseSlice = require('./baseSlice');
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * The base implementation of `_.delay` and `_.defer` which accepts an index
+ * of where to slice the arguments to provide to `func`.
+ *
+ * @private
+ * @param {Function} func The function to delay.
+ * @param {number} wait The number of milliseconds to delay invocation.
+ * @param {Object} args The `arguments` object to slice and provide to `func`.
+ * @returns {number} Returns the timer id.
+ */
+function baseDelay(func, wait, args, fromIndex) {
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  return setTimeout(function() { func.apply(undefined, baseSlice(args, fromIndex)); }, wait);
+}
+
+module.exports = baseDelay;
+
+},{"./baseSlice":87}],76:[function(require,module,exports){
+var isArguments = require('../lang/isArguments'),
+    isArray = require('../lang/isArray'),
+    isLength = require('./isLength'),
+    isObjectLike = require('./isObjectLike');
+
+/**
+ * The base implementation of `_.flatten` with added support for restricting
+ * flattening and specifying the start index.
+ *
+ * @private
+ * @param {Array} array The array to flatten.
+ * @param {boolean} isDeep Specify a deep flatten.
+ * @param {boolean} isStrict Restrict flattening to arrays and `arguments` objects.
+ * @param {number} fromIndex The index to start from.
+ * @returns {Array} Returns the new flattened array.
+ */
+function baseFlatten(array, isDeep, isStrict, fromIndex) {
+  var index = fromIndex - 1,
+      length = array.length,
+      resIndex = -1,
+      result = [];
+
+  while (++index < length) {
+    var value = array[index];
+
+    if (isObjectLike(value) && isLength(value.length) && (isArray(value) || isArguments(value))) {
+      if (isDeep) {
+        // Recursively flatten arrays (susceptible to call stack limits).
+        value = baseFlatten(value, isDeep, isStrict, 0);
+      }
+      var valIndex = -1,
+          valLength = value.length;
+
+      result.length += valLength;
+      while (++valIndex < valLength) {
+        result[++resIndex] = value[valIndex];
+      }
+    } else if (!isStrict) {
+      result[++resIndex] = value;
+    }
+  }
+  return result;
+}
+
+module.exports = baseFlatten;
+
+},{"../lang/isArguments":136,"../lang/isArray":137,"./isLength":115,"./isObjectLike":116}],77:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -6876,7 +8374,7 @@ function baseFor(object, iteratee, keysFunc) {
 
 module.exports = baseFor;
 
-},{"./toObject":78}],45:[function(require,module,exports){
+},{"./toObject":132}],78:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keysIn = require('../object/keysIn');
 
@@ -6895,7 +8393,7 @@ function baseForIn(object, iteratee) {
 
 module.exports = baseForIn;
 
-},{"../object/keysIn":106,"./baseFor":44}],46:[function(require,module,exports){
+},{"../object/keysIn":161,"./baseFor":77}],79:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keys = require('../object/keys');
 
@@ -6914,7 +8412,36 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"../object/keys":105,"./baseFor":44}],47:[function(require,module,exports){
+},{"../object/keys":160,"./baseFor":77}],80:[function(require,module,exports){
+var isFunction = require('../lang/isFunction');
+
+/**
+ * The base implementation of `_.functions` which creates an array of
+ * `object` function property names filtered from those provided.
+ *
+ * @private
+ * @param {Object} object The object to inspect.
+ * @param {Array} props The property names to filter.
+ * @returns {Array} Returns the new array of filtered property names.
+ */
+function baseFunctions(object, props) {
+  var index = -1,
+      length = props.length,
+      resIndex = -1,
+      result = [];
+
+  while (++index < length) {
+    var key = props[index];
+    if (isFunction(object[key])) {
+      result[++resIndex] = key;
+    }
+  }
+  return result;
+}
+
+module.exports = baseFunctions;
+
+},{"../lang/isFunction":145}],81:[function(require,module,exports){
 var indexOfNaN = require('./indexOfNaN');
 
 /**
@@ -6943,7 +8470,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./indexOfNaN":64}],48:[function(require,module,exports){
+},{"./indexOfNaN":109}],82:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep');
 
 /**
@@ -6979,7 +8506,7 @@ function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"./baseIsEqualDeep":49}],49:[function(require,module,exports){
+},{"./baseIsEqualDeep":83}],83:[function(require,module,exports){
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -7082,7 +8609,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, 
 
 module.exports = baseIsEqualDeep;
 
-},{"../lang/isArray":83,"../lang/isTypedArray":101,"./equalArrays":59,"./equalByTag":60,"./equalObjects":61}],50:[function(require,module,exports){
+},{"../lang/isArray":137,"../lang/isTypedArray":155,"./equalArrays":103,"./equalByTag":104,"./equalObjects":105}],84:[function(require,module,exports){
 /**
  * The base implementation of `_.isFunction` without support for environments
  * with incorrect `typeof` results.
@@ -7099,7 +8626,7 @@ function baseIsFunction(value) {
 
 module.exports = baseIsFunction;
 
-},{}],51:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual');
 
 /** Used for native method references. */
@@ -7159,7 +8686,60 @@ function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./baseIsEqual":48}],52:[function(require,module,exports){
+},{"./baseIsEqual":82}],86:[function(require,module,exports){
+var identity = require('../utility/identity'),
+    metaMap = require('./metaMap');
+
+/**
+ * The base implementation of `setData` without support for hot loop detection.
+ *
+ * @private
+ * @param {Function} func The function to associate metadata with.
+ * @param {*} data The metadata.
+ * @returns {Function} Returns `func`.
+ */
+var baseSetData = !metaMap ? identity : function(func, data) {
+  metaMap.set(func, data);
+  return func;
+};
+
+module.exports = baseSetData;
+
+},{"../utility/identity":171,"./metaMap":123}],87:[function(require,module,exports){
+/**
+ * The base implementation of `_.slice` without an iteratee call guard.
+ *
+ * @private
+ * @param {Array} array The array to slice.
+ * @param {number} [start=0] The start position.
+ * @param {number} [end=array.length] The end position.
+ * @returns {Array} Returns the slice of `array`.
+ */
+function baseSlice(array, start, end) {
+  var index = -1,
+      length = array.length;
+
+  start = start == null ? 0 : (+start || 0);
+  if (start < 0) {
+    start = -start > length ? 0 : (length + start);
+  }
+  end = (typeof end == 'undefined' || end > length) ? length : (+end || 0);
+  if (end < 0) {
+    end += length;
+  }
+  length = start > end ? 0 : ((end - start) >>> 0);
+  start >>>= 0;
+
+  var result = Array(length);
+  while (++index < length) {
+    result[index] = array[index + start];
+  }
+  return result;
+}
+
+module.exports = baseSlice;
+
+},{}],88:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -7177,7 +8757,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],53:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 /**
  * The base implementation of `_.values` and `_.valuesIn` which creates an
  * array of `object` property values corresponding to the property names
@@ -7201,7 +8781,7 @@ function baseValues(object, props) {
 
 module.exports = baseValues;
 
-},{}],54:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 var identity = require('../utility/identity');
 
 /**
@@ -7242,7 +8822,7 @@ function bindCallback(func, thisArg, argCount) {
 
 module.exports = bindCallback;
 
-},{"../utility/identity":116}],55:[function(require,module,exports){
+},{"../utility/identity":171}],91:[function(require,module,exports){
 (function (global){
 var constant = require('../utility/constant'),
     isNative = require('../lang/isNative');
@@ -7301,7 +8881,7 @@ if (!bufferSlice) {
 module.exports = bufferClone;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":94,"../utility/constant":115}],56:[function(require,module,exports){
+},{"../lang/isNative":148,"../utility/constant":170}],92:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -7322,7 +8902,7 @@ function cacheIndexOf(cache, value) {
 
 module.exports = cacheIndexOf;
 
-},{"../lang/isObject":97}],57:[function(require,module,exports){
+},{"../lang/isObject":151}],93:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -7344,7 +8924,107 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"../lang/isObject":97}],58:[function(require,module,exports){
+},{"../lang/isObject":151}],94:[function(require,module,exports){
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * Creates an array that is the composition of partially applied arguments,
+ * placeholders, and provided arguments into a single array of arguments.
+ *
+ * @private
+ * @param {Array|Object} args The provided arguments.
+ * @param {Array} partials The arguments to prepend to those provided.
+ * @param {Array} holders The `partials` placeholder indexes.
+ * @returns {Array} Returns the new array of composed arguments.
+ */
+function composeArgs(args, partials, holders) {
+  var holdersLength = holders.length,
+      argsIndex = -1,
+      argsLength = nativeMax(args.length - holdersLength, 0),
+      leftIndex = -1,
+      leftLength = partials.length,
+      result = Array(argsLength + leftLength);
+
+  while (++leftIndex < leftLength) {
+    result[leftIndex] = partials[leftIndex];
+  }
+  while (++argsIndex < holdersLength) {
+    result[holders[argsIndex]] = args[argsIndex];
+  }
+  while (argsLength--) {
+    result[leftIndex++] = args[argsIndex++];
+  }
+  return result;
+}
+
+module.exports = composeArgs;
+
+},{}],95:[function(require,module,exports){
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * This function is like `composeArgs` except that the arguments composition
+ * is tailored for `_.partialRight`.
+ *
+ * @private
+ * @param {Array|Object} args The provided arguments.
+ * @param {Array} partials The arguments to append to those provided.
+ * @param {Array} holders The `partials` placeholder indexes.
+ * @returns {Array} Returns the new array of composed arguments.
+ */
+function composeArgsRight(args, partials, holders) {
+  var holdersIndex = -1,
+      holdersLength = holders.length,
+      argsIndex = -1,
+      argsLength = nativeMax(args.length - holdersLength, 0),
+      rightIndex = -1,
+      rightLength = partials.length,
+      result = Array(argsLength + rightLength);
+
+  while (++argsIndex < argsLength) {
+    result[argsIndex] = args[argsIndex];
+  }
+  var pad = argsIndex;
+  while (++rightIndex < rightLength) {
+    result[pad + rightIndex] = partials[rightIndex];
+  }
+  while (++holdersIndex < holdersLength) {
+    result[pad + holders[holdersIndex]] = args[argsIndex++];
+  }
+  return result;
+}
+
+module.exports = composeArgsRight;
+
+},{}],96:[function(require,module,exports){
+(function (global){
+var createCtorWrapper = require('./createCtorWrapper');
+
+/**
+ * Creates a function that wraps `func` and invokes it with the `this`
+ * binding of `thisArg`.
+ *
+ * @private
+ * @param {Function} func The function to bind.
+ * @param {*} [thisArg] The `this` binding of `func`.
+ * @returns {Function} Returns the new bound function.
+ */
+function createBindWrapper(func, thisArg) {
+  var Ctor = createCtorWrapper(func);
+
+  function wrapper() {
+    var fn = (this && this !== global && this instanceof wrapper) ? Ctor : func;
+    return fn.apply(thisArg, arguments);
+  }
+  return wrapper;
+}
+
+module.exports = createBindWrapper;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./createCtorWrapper":99}],97:[function(require,module,exports){
 (function (global){
 var SetCache = require('./SetCache'),
     constant = require('../utility/constant'),
@@ -7370,7 +9050,317 @@ var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
 module.exports = createCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":94,"../utility/constant":115,"./SetCache":37}],59:[function(require,module,exports){
+},{"../lang/isNative":148,"../utility/constant":170,"./SetCache":66}],98:[function(require,module,exports){
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a function to compose other functions into a single function.
+ *
+ * @private
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {Function} Returns the new composer function.
+ */
+function createComposer(fromRight) {
+  return function() {
+    var length = arguments.length,
+        index = length,
+        fromIndex = fromRight ? (length - 1) : 0;
+
+    if (!length) {
+      return function() { return arguments[0]; };
+    }
+    var funcs = Array(length);
+    while (index--) {
+      funcs[index] = arguments[index];
+      if (typeof funcs[index] != 'function') {
+        throw new TypeError(FUNC_ERROR_TEXT);
+      }
+    }
+    return function() {
+      var index = fromIndex,
+          result = funcs[index].apply(this, arguments);
+
+      while ((fromRight ? index-- : ++index < length)) {
+        result = funcs[index].call(this, result);
+      }
+      return result;
+    };
+  };
+}
+
+module.exports = createComposer;
+
+},{}],99:[function(require,module,exports){
+var baseCreate = require('./baseCreate'),
+    isObject = require('../lang/isObject');
+
+/**
+ * Creates a function that produces an instance of `Ctor` regardless of
+ * whether it was invoked as part of a `new` expression or by `call` or `apply`.
+ *
+ * @private
+ * @param {Function} Ctor The constructor to wrap.
+ * @returns {Function} Returns the new wrapped function.
+ */
+function createCtorWrapper(Ctor) {
+  return function() {
+    var thisBinding = baseCreate(Ctor.prototype),
+        result = Ctor.apply(thisBinding, arguments);
+
+    // Mimic the constructor's `return` behavior.
+    // See https://es5.github.io/#x13.2.2 for more details.
+    return isObject(result) ? result : thisBinding;
+  };
+}
+
+module.exports = createCtorWrapper;
+
+},{"../lang/isObject":151,"./baseCreate":74}],100:[function(require,module,exports){
+(function (global){
+var arrayCopy = require('./arrayCopy'),
+    composeArgs = require('./composeArgs'),
+    composeArgsRight = require('./composeArgsRight'),
+    createCtorWrapper = require('./createCtorWrapper'),
+    reorder = require('./reorder'),
+    replaceHolders = require('./replaceHolders');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var BIND_FLAG = 1,
+    BIND_KEY_FLAG = 2,
+    CURRY_BOUND_FLAG = 4,
+    CURRY_FLAG = 8,
+    CURRY_RIGHT_FLAG = 16,
+    PARTIAL_FLAG = 32,
+    PARTIAL_RIGHT_FLAG = 64,
+    ARY_FLAG = 256;
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * Creates a function that wraps `func` and invokes it with optional `this`
+ * binding of, partial application, and currying.
+ *
+ * @private
+ * @param {Function|string} func The function or method name to reference.
+ * @param {number} bitmask The bitmask of flags. See `createWrapper` for more details.
+ * @param {*} [thisArg] The `this` binding of `func`.
+ * @param {Array} [partials] The arguments to prepend to those provided to the new function.
+ * @param {Array} [holders] The `partials` placeholder indexes.
+ * @param {Array} [partialsRight] The arguments to append to those provided to the new function.
+ * @param {Array} [holdersRight] The `partialsRight` placeholder indexes.
+ * @param {Array} [argPos] The argument positions of the new function.
+ * @param {number} [ary] The arity cap of `func`.
+ * @param {number} [arity] The arity of `func`.
+ * @returns {Function} Returns the new wrapped function.
+ */
+function createHybridWrapper(func, bitmask, thisArg, partials, holders, partialsRight, holdersRight, argPos, ary, arity) {
+  var isAry = bitmask & ARY_FLAG,
+      isBind = bitmask & BIND_FLAG,
+      isBindKey = bitmask & BIND_KEY_FLAG,
+      isCurry = bitmask & CURRY_FLAG,
+      isCurryBound = bitmask & CURRY_BOUND_FLAG,
+      isCurryRight = bitmask & CURRY_RIGHT_FLAG;
+
+  var Ctor = !isBindKey && createCtorWrapper(func),
+      key = func;
+
+  function wrapper() {
+    // Avoid `arguments` object use disqualifying optimizations by
+    // converting it to an array before providing it to other functions.
+    var length = arguments.length,
+        index = length,
+        args = Array(length);
+
+    while (index--) {
+      args[index] = arguments[index];
+    }
+    if (partials) {
+      args = composeArgs(args, partials, holders);
+    }
+    if (partialsRight) {
+      args = composeArgsRight(args, partialsRight, holdersRight);
+    }
+    if (isCurry || isCurryRight) {
+      var placeholder = wrapper.placeholder,
+          argsHolders = replaceHolders(args, placeholder);
+
+      length -= argsHolders.length;
+      if (length < arity) {
+        var newArgPos = argPos ? arrayCopy(argPos) : null,
+            newArity = nativeMax(arity - length, 0),
+            newsHolders = isCurry ? argsHolders : null,
+            newHoldersRight = isCurry ? null : argsHolders,
+            newPartials = isCurry ? args : null,
+            newPartialsRight = isCurry ? null : args;
+
+        bitmask |= (isCurry ? PARTIAL_FLAG : PARTIAL_RIGHT_FLAG);
+        bitmask &= ~(isCurry ? PARTIAL_RIGHT_FLAG : PARTIAL_FLAG);
+
+        if (!isCurryBound) {
+          bitmask &= ~(BIND_FLAG | BIND_KEY_FLAG);
+        }
+        var result = createHybridWrapper(func, bitmask, thisArg, newPartials, newsHolders, newPartialsRight, newHoldersRight, newArgPos, ary, newArity);
+        result.placeholder = placeholder;
+        return result;
+      }
+    }
+    var thisBinding = isBind ? thisArg : this;
+    if (isBindKey) {
+      func = thisBinding[key];
+    }
+    if (argPos) {
+      args = reorder(args, argPos);
+    }
+    if (isAry && ary < args.length) {
+      args.length = ary;
+    }
+    var fn = (this && this !== global && this instanceof wrapper) ? (Ctor || createCtorWrapper(func)) : func;
+    return fn.apply(thisBinding, args);
+  }
+  return wrapper;
+}
+
+module.exports = createHybridWrapper;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./arrayCopy":67,"./composeArgs":94,"./composeArgsRight":95,"./createCtorWrapper":99,"./reorder":127,"./replaceHolders":128}],101:[function(require,module,exports){
+(function (global){
+var createCtorWrapper = require('./createCtorWrapper');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var BIND_FLAG = 1;
+
+/**
+ * Creates a function that wraps `func` and invokes it with the optional `this`
+ * binding of `thisArg` and the `partials` prepended to those provided to
+ * the wrapper.
+ *
+ * @private
+ * @param {Function} func The function to partially apply arguments to.
+ * @param {number} bitmask The bitmask of flags. See `createWrapper` for more details.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {Array} partials The arguments to prepend to those provided to the new function.
+ * @returns {Function} Returns the new bound function.
+ */
+function createPartialWrapper(func, bitmask, thisArg, partials) {
+  var isBind = bitmask & BIND_FLAG,
+      Ctor = createCtorWrapper(func);
+
+  function wrapper() {
+    // Avoid `arguments` object use disqualifying optimizations by
+    // converting it to an array before providing it `func`.
+    var argsIndex = -1,
+        argsLength = arguments.length,
+        leftIndex = -1,
+        leftLength = partials.length,
+        args = Array(argsLength + leftLength);
+
+    while (++leftIndex < leftLength) {
+      args[leftIndex] = partials[leftIndex];
+    }
+    while (argsLength--) {
+      args[leftIndex++] = arguments[++argsIndex];
+    }
+    var fn = (this && this !== global && this instanceof wrapper) ? Ctor : func;
+    return fn.apply(isBind ? thisArg : this, args);
+  }
+  return wrapper;
+}
+
+module.exports = createPartialWrapper;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./createCtorWrapper":99}],102:[function(require,module,exports){
+var baseSetData = require('./baseSetData'),
+    createBindWrapper = require('./createBindWrapper'),
+    createHybridWrapper = require('./createHybridWrapper'),
+    createPartialWrapper = require('./createPartialWrapper'),
+    getData = require('./getData'),
+    mergeData = require('./mergeData'),
+    setData = require('./setData');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var BIND_FLAG = 1,
+    BIND_KEY_FLAG = 2,
+    PARTIAL_FLAG = 32,
+    PARTIAL_RIGHT_FLAG = 64;
+
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max;
+
+/**
+ * Creates a function that either curries or invokes `func` with optional
+ * `this` binding and partially applied arguments.
+ *
+ * @private
+ * @param {Function|string} func The function or method name to reference.
+ * @param {number} bitmask The bitmask of flags.
+ *  The bitmask may be composed of the following flags:
+ *     1 - `_.bind`
+ *     2 - `_.bindKey`
+ *     4 - `_.curry` or `_.curryRight` of a bound function
+ *     8 - `_.curry`
+ *    16 - `_.curryRight`
+ *    32 - `_.partial`
+ *    64 - `_.partialRight`
+ *   128 - `_.rearg`
+ *   256 - `_.ary`
+ * @param {*} [thisArg] The `this` binding of `func`.
+ * @param {Array} [partials] The arguments to be partially applied.
+ * @param {Array} [holders] The `partials` placeholder indexes.
+ * @param {Array} [argPos] The argument positions of the new function.
+ * @param {number} [ary] The arity cap of `func`.
+ * @param {number} [arity] The arity of `func`.
+ * @returns {Function} Returns the new wrapped function.
+ */
+function createWrapper(func, bitmask, thisArg, partials, holders, argPos, ary, arity) {
+  var isBindKey = bitmask & BIND_KEY_FLAG;
+  if (!isBindKey && typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  var length = partials ? partials.length : 0;
+  if (!length) {
+    bitmask &= ~(PARTIAL_FLAG | PARTIAL_RIGHT_FLAG);
+    partials = holders = null;
+  }
+  length -= (holders ? holders.length : 0);
+  if (bitmask & PARTIAL_RIGHT_FLAG) {
+    var partialsRight = partials,
+        holdersRight = holders;
+
+    partials = holders = null;
+  }
+  var data = !isBindKey && getData(func),
+      newData = [func, bitmask, thisArg, partials, holders, partialsRight, holdersRight, argPos, ary, arity];
+
+  if (data && data !== true) {
+    mergeData(newData, data);
+    bitmask = newData[1];
+    arity = newData[9];
+  }
+  newData[9] = arity == null
+    ? (isBindKey ? 0 : func.length)
+    : (nativeMax(arity - length, 0) || 0);
+
+  if (bitmask == BIND_FLAG) {
+    var result = createBindWrapper(newData[0], newData[2]);
+  } else if ((bitmask == PARTIAL_FLAG || bitmask == (BIND_FLAG | PARTIAL_FLAG)) && !newData[4].length) {
+    result = createPartialWrapper.apply(undefined, newData);
+  } else {
+    result = createHybridWrapper.apply(undefined, newData);
+  }
+  var setter = data ? baseSetData : setData;
+  return setter(result, newData);
+}
+
+module.exports = createWrapper;
+
+},{"./baseSetData":86,"./createBindWrapper":96,"./createHybridWrapper":100,"./createPartialWrapper":101,"./getData":108,"./mergeData":122,"./setData":129}],103:[function(require,module,exports){
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
  * partial deep comparisons.
@@ -7426,7 +9416,7 @@ function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stack
 
 module.exports = equalArrays;
 
-},{}],60:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 /** `Object#toString` result references. */
 var boolTag = '[object Boolean]',
     dateTag = '[object Date]',
@@ -7477,7 +9467,7 @@ function equalByTag(object, other, tag) {
 
 module.exports = equalByTag;
 
-},{}],61:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 var keys = require('../object/keys');
 
 /** Used for native method references. */
@@ -7553,7 +9543,7 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
 
 module.exports = equalObjects;
 
-},{"../object/keys":105}],62:[function(require,module,exports){
+},{"../object/keys":160}],106:[function(require,module,exports){
 /** Used to map characters to HTML entities. */
 var htmlEscapes = {
   '&': '&amp;',
@@ -7577,7 +9567,7 @@ function escapeHtmlChar(chr) {
 
 module.exports = escapeHtmlChar;
 
-},{}],63:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 /** Used to escape characters for inclusion in compiled string literals. */
 var stringEscapes = {
   '\\': '\\',
@@ -7602,7 +9592,24 @@ function escapeStringChar(chr) {
 
 module.exports = escapeStringChar;
 
-},{}],64:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
+var metaMap = require('./metaMap'),
+    noop = require('../utility/noop');
+
+/**
+ * Gets metadata for `func`.
+ *
+ * @private
+ * @param {Function} func The function to query.
+ * @returns {*} Returns the metadata for `func`.
+ */
+var getData = !metaMap ? noop : function(func) {
+  return metaMap.get(func);
+};
+
+module.exports = getData;
+
+},{"../utility/noop":172,"./metaMap":123}],109:[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
  * If `fromRight` is provided elements of `array` are iterated from right to left.
@@ -7628,7 +9635,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = indexOfNaN;
 
-},{}],65:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 /** Used for native method references. */
 var objectProto = Object.prototype;
 
@@ -7656,7 +9663,7 @@ function initCloneArray(array) {
 
 module.exports = initCloneArray;
 
-},{}],66:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 var bufferClone = require('./bufferClone');
 
 /** `Object#toString` result references. */
@@ -7722,7 +9729,7 @@ function initCloneByTag(object, tag, isDeep) {
 
 module.exports = initCloneByTag;
 
-},{"./bufferClone":55}],67:[function(require,module,exports){
+},{"./bufferClone":91}],112:[function(require,module,exports){
 /**
  * Initializes an object clone.
  *
@@ -7740,7 +9747,7 @@ function initCloneObject(object) {
 
 module.exports = initCloneObject;
 
-},{}],68:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -7764,7 +9771,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],69:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -7798,7 +9805,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":97,"./isIndex":68,"./isLength":70}],70:[function(require,module,exports){
+},{"../lang/isObject":151,"./isIndex":113,"./isLength":115}],115:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -7823,7 +9830,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],71:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -7837,7 +9844,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],72:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -7854,25 +9861,317 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"../lang/isObject":97}],73:[function(require,module,exports){
+},{"../lang/isObject":151}],118:[function(require,module,exports){
+/**
+ * Removes `key` and its value from the cache.
+ *
+ * @private
+ * @name delete
+ * @memberOf _.memoize.Cache
+ * @param {string} key The key of the value to remove.
+ * @returns {boolean} Returns `true` if the entry was removed successfully, else `false`.
+ */
+function mapDelete(key) {
+  return this.has(key) && delete this.__data__[key];
+}
+
+module.exports = mapDelete;
+
+},{}],119:[function(require,module,exports){
+/**
+ * Gets the cached value for `key`.
+ *
+ * @private
+ * @name get
+ * @memberOf _.memoize.Cache
+ * @param {string} key The key of the value to get.
+ * @returns {*} Returns the cached value.
+ */
+function mapGet(key) {
+  return key == '__proto__' ? undefined : this.__data__[key];
+}
+
+module.exports = mapGet;
+
+},{}],120:[function(require,module,exports){
+/** Used for native method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Checks if a cached value for `key` exists.
+ *
+ * @private
+ * @name has
+ * @memberOf _.memoize.Cache
+ * @param {string} key The key of the entry to check.
+ * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+ */
+function mapHas(key) {
+  return key != '__proto__' && hasOwnProperty.call(this.__data__, key);
+}
+
+module.exports = mapHas;
+
+},{}],121:[function(require,module,exports){
+/**
+ * Adds `value` to `key` of the cache.
+ *
+ * @private
+ * @name set
+ * @memberOf _.memoize.Cache
+ * @param {string} key The key of the value to cache.
+ * @param {*} value The value to cache.
+ * @returns {Object} Returns the cache object.
+ */
+function mapSet(key, value) {
+  if (key != '__proto__') {
+    this.__data__[key] = value;
+  }
+  return this;
+}
+
+module.exports = mapSet;
+
+},{}],122:[function(require,module,exports){
+var arrayCopy = require('./arrayCopy'),
+    composeArgs = require('./composeArgs'),
+    composeArgsRight = require('./composeArgsRight'),
+    replaceHolders = require('./replaceHolders');
+
+/** Used to compose bitmasks for wrapper metadata. */
+var BIND_FLAG = 1,
+    BIND_KEY_FLAG = 2,
+    CURRY_BOUND_FLAG = 4,
+    CURRY_RIGHT_FLAG = 16,
+    REARG_FLAG = 128,
+    ARY_FLAG = 256;
+
+/** Used as the internal argument placeholder. */
+var PLACEHOLDER = '__lodash_placeholder__';
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMin = Math.min;
+
+/**
+ * Merges the function metadata of `source` into `data`.
+ *
+ * Merging metadata reduces the number of wrappers required to invoke a function.
+ * This is possible because methods like `_.bind`, `_.curry`, and `_.partial`
+ * may be applied regardless of execution order. Methods like `_.ary` and `_.rearg`
+ * augment function arguments, making the order in which they are executed important,
+ * preventing the merging of metadata. However, we make an exception for a safe
+ * common case where curried functions have `_.ary` and or `_.rearg` applied.
+ *
+ * @private
+ * @param {Array} data The destination metadata.
+ * @param {Array} source The source metadata.
+ * @returns {Array} Returns `data`.
+ */
+function mergeData(data, source) {
+  var bitmask = data[1],
+      srcBitmask = source[1],
+      newBitmask = bitmask | srcBitmask;
+
+  var arityFlags = ARY_FLAG | REARG_FLAG,
+      bindFlags = BIND_FLAG | BIND_KEY_FLAG,
+      comboFlags = arityFlags | bindFlags | CURRY_BOUND_FLAG | CURRY_RIGHT_FLAG;
+
+  var isAry = bitmask & ARY_FLAG && !(srcBitmask & ARY_FLAG),
+      isRearg = bitmask & REARG_FLAG && !(srcBitmask & REARG_FLAG),
+      argPos = (isRearg ? data : source)[7],
+      ary = (isAry ? data : source)[8];
+
+  var isCommon = !(bitmask >= REARG_FLAG && srcBitmask > bindFlags) &&
+    !(bitmask > bindFlags && srcBitmask >= REARG_FLAG);
+
+  var isCombo = (newBitmask >= arityFlags && newBitmask <= comboFlags) &&
+    (bitmask < REARG_FLAG || ((isRearg || isAry) && argPos.length <= ary));
+
+  // Exit early if metadata can't be merged.
+  if (!(isCommon || isCombo)) {
+    return data;
+  }
+  // Use source `thisArg` if available.
+  if (srcBitmask & BIND_FLAG) {
+    data[2] = source[2];
+    // Set when currying a bound function.
+    newBitmask |= (bitmask & BIND_FLAG) ? 0 : CURRY_BOUND_FLAG;
+  }
+  // Compose partial arguments.
+  var value = source[3];
+  if (value) {
+    var partials = data[3];
+    data[3] = partials ? composeArgs(partials, value, source[4]) : arrayCopy(value);
+    data[4] = partials ? replaceHolders(data[3], PLACEHOLDER) : arrayCopy(source[4]);
+  }
+  // Compose partial right arguments.
+  value = source[5];
+  if (value) {
+    partials = data[5];
+    data[5] = partials ? composeArgsRight(partials, value, source[6]) : arrayCopy(value);
+    data[6] = partials ? replaceHolders(data[5], PLACEHOLDER) : arrayCopy(source[6]);
+  }
+  // Use source `argPos` if available.
+  value = source[7];
+  if (value) {
+    data[7] = arrayCopy(value);
+  }
+  // Use source `ary` if it's smaller.
+  if (srcBitmask & ARY_FLAG) {
+    data[8] = data[8] == null ? source[8] : nativeMin(data[8], source[8]);
+  }
+  // Use source `arity` if one is not provided.
+  if (data[9] == null) {
+    data[9] = source[9];
+  }
+  // Use source `func` and merge bitmasks.
+  data[0] = source[0];
+  data[1] = newBitmask;
+
+  return data;
+}
+
+module.exports = mergeData;
+
+},{"./arrayCopy":67,"./composeArgs":94,"./composeArgsRight":95,"./replaceHolders":128}],123:[function(require,module,exports){
+(function (global){
+var isNative = require('../lang/isNative');
+
+/** Native method references. */
+var WeakMap = isNative(WeakMap = global.WeakMap) && WeakMap;
+
+/** Used to store function metadata. */
+var metaMap = WeakMap && new WeakMap;
+
+module.exports = metaMap;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../lang/isNative":148}],124:[function(require,module,exports){
 /** Used to match template delimiters. */
 var reEscape = /<%-([\s\S]+?)%>/g;
 
 module.exports = reEscape;
 
-},{}],74:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 /** Used to match template delimiters. */
 var reEvaluate = /<%([\s\S]+?)%>/g;
 
 module.exports = reEvaluate;
 
-},{}],75:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 /** Used to match template delimiters. */
 var reInterpolate = /<%=([\s\S]+?)%>/g;
 
 module.exports = reInterpolate;
 
-},{}],76:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
+var arrayCopy = require('./arrayCopy'),
+    isIndex = require('./isIndex');
+
+/* Native method references for those with the same name as other `lodash` methods. */
+var nativeMin = Math.min;
+
+/**
+ * Reorder `array` according to the specified indexes where the element at
+ * the first index is assigned as the first element, the element at
+ * the second index is assigned as the second element, and so on.
+ *
+ * @private
+ * @param {Array} array The array to reorder.
+ * @param {Array} indexes The arranged array indexes.
+ * @returns {Array} Returns `array`.
+ */
+function reorder(array, indexes) {
+  var arrLength = array.length,
+      length = nativeMin(indexes.length, arrLength),
+      oldArray = arrayCopy(array);
+
+  while (length--) {
+    var index = indexes[length];
+    array[length] = isIndex(index, arrLength) ? oldArray[index] : undefined;
+  }
+  return array;
+}
+
+module.exports = reorder;
+
+},{"./arrayCopy":67,"./isIndex":113}],128:[function(require,module,exports){
+/** Used as the internal argument placeholder. */
+var PLACEHOLDER = '__lodash_placeholder__';
+
+/**
+ * Replaces all `placeholder` elements in `array` with an internal placeholder
+ * and returns an array of their indexes.
+ *
+ * @private
+ * @param {Array} array The array to modify.
+ * @param {*} placeholder The placeholder to replace.
+ * @returns {Array} Returns the new array of placeholder indexes.
+ */
+function replaceHolders(array, placeholder) {
+  var index = -1,
+      length = array.length,
+      resIndex = -1,
+      result = [];
+
+  while (++index < length) {
+    if (array[index] === placeholder) {
+      array[index] = PLACEHOLDER;
+      result[++resIndex] = index;
+    }
+  }
+  return result;
+}
+
+module.exports = replaceHolders;
+
+},{}],129:[function(require,module,exports){
+var baseSetData = require('./baseSetData'),
+    now = require('../date/now');
+
+/** Used to detect when a function becomes hot. */
+var HOT_COUNT = 150,
+    HOT_SPAN = 16;
+
+/**
+ * Sets metadata for `func`.
+ *
+ * **Note:** If this function becomes hot, i.e. is invoked a lot in a short
+ * period of time, it will trip its breaker and transition to an identity function
+ * to avoid garbage collection pauses in V8. See [V8 issue 2070](https://code.google.com/p/v8/issues/detail?id=2070)
+ * for more details.
+ *
+ * @private
+ * @param {Function} func The function to associate metadata with.
+ * @param {*} data The metadata.
+ * @returns {Function} Returns `func`.
+ */
+var setData = (function() {
+  var count = 0,
+      lastCalled = 0;
+
+  return function(key, value) {
+    var stamp = now(),
+        remaining = HOT_SPAN - (stamp - lastCalled);
+
+    lastCalled = stamp;
+    if (remaining > 0) {
+      if (++count >= HOT_COUNT) {
+        return key;
+      }
+    } else {
+      count = 0;
+    }
+    return baseSetData(key, value);
+  };
+}());
+
+module.exports = setData;
+
+},{"../date/now":39,"./baseSetData":86}],130:[function(require,module,exports){
 var baseForIn = require('./baseForIn'),
     isObjectLike = require('./isObjectLike');
 
@@ -7925,7 +10224,7 @@ function shimIsPlainObject(value) {
 
 module.exports = shimIsPlainObject;
 
-},{"./baseForIn":45,"./isObjectLike":71}],77:[function(require,module,exports){
+},{"./baseForIn":78,"./isObjectLike":116}],131:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -7969,7 +10268,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":82,"../lang/isArray":83,"../object/keysIn":106,"../support":113,"./isIndex":68,"./isLength":70}],78:[function(require,module,exports){
+},{"../lang/isArguments":136,"../lang/isArray":137,"../object/keysIn":161,"../support":168,"./isIndex":113,"./isLength":115}],132:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -7985,7 +10284,7 @@ function toObject(value) {
 
 module.exports = toObject;
 
-},{"../lang/isObject":97}],79:[function(require,module,exports){
+},{"../lang/isObject":151}],133:[function(require,module,exports){
 module.exports = {
   'clone': require('./lang/clone'),
   'cloneDeep': require('./lang/cloneDeep'),
@@ -8014,7 +10313,7 @@ module.exports = {
   'toPlainObject': require('./lang/toPlainObject')
 };
 
-},{"./lang/clone":80,"./lang/cloneDeep":81,"./lang/isArguments":82,"./lang/isArray":83,"./lang/isBoolean":84,"./lang/isDate":85,"./lang/isElement":86,"./lang/isEmpty":87,"./lang/isEqual":88,"./lang/isError":89,"./lang/isFinite":90,"./lang/isFunction":91,"./lang/isMatch":92,"./lang/isNaN":93,"./lang/isNative":94,"./lang/isNull":95,"./lang/isNumber":96,"./lang/isObject":97,"./lang/isPlainObject":98,"./lang/isRegExp":99,"./lang/isString":100,"./lang/isTypedArray":101,"./lang/isUndefined":102,"./lang/toArray":103,"./lang/toPlainObject":104}],80:[function(require,module,exports){
+},{"./lang/clone":134,"./lang/cloneDeep":135,"./lang/isArguments":136,"./lang/isArray":137,"./lang/isBoolean":138,"./lang/isDate":139,"./lang/isElement":140,"./lang/isEmpty":141,"./lang/isEqual":142,"./lang/isError":143,"./lang/isFinite":144,"./lang/isFunction":145,"./lang/isMatch":146,"./lang/isNaN":147,"./lang/isNative":148,"./lang/isNull":149,"./lang/isNumber":150,"./lang/isObject":151,"./lang/isPlainObject":152,"./lang/isRegExp":153,"./lang/isString":154,"./lang/isTypedArray":155,"./lang/isUndefined":156,"./lang/toArray":157,"./lang/toPlainObject":158}],134:[function(require,module,exports){
 var baseClone = require('../internal/baseClone'),
     bindCallback = require('../internal/bindCallback'),
     isIterateeCall = require('../internal/isIterateeCall');
@@ -8085,7 +10384,7 @@ function clone(value, isDeep, customizer, thisArg) {
 
 module.exports = clone;
 
-},{"../internal/baseClone":42,"../internal/bindCallback":54,"../internal/isIterateeCall":69}],81:[function(require,module,exports){
+},{"../internal/baseClone":72,"../internal/bindCallback":90,"../internal/isIterateeCall":114}],135:[function(require,module,exports){
 var baseClone = require('../internal/baseClone'),
     bindCallback = require('../internal/bindCallback');
 
@@ -8141,7 +10440,7 @@ function cloneDeep(value, customizer, thisArg) {
 
 module.exports = cloneDeep;
 
-},{"../internal/baseClone":42,"../internal/bindCallback":54}],82:[function(require,module,exports){
+},{"../internal/baseClone":72,"../internal/bindCallback":90}],136:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -8181,7 +10480,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":70,"../internal/isObjectLike":71}],83:[function(require,module,exports){
+},{"../internal/isLength":115,"../internal/isObjectLike":116}],137:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -8224,7 +10523,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":70,"../internal/isObjectLike":71,"./isNative":94}],84:[function(require,module,exports){
+},{"../internal/isLength":115,"../internal/isObjectLike":116,"./isNative":148}],138:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -8262,7 +10561,7 @@ function isBoolean(value) {
 
 module.exports = isBoolean;
 
-},{"../internal/isObjectLike":71}],85:[function(require,module,exports){
+},{"../internal/isObjectLike":116}],139:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -8300,7 +10599,7 @@ function isDate(value) {
 
 module.exports = isDate;
 
-},{"../internal/isObjectLike":71}],86:[function(require,module,exports){
+},{"../internal/isObjectLike":116}],140:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike'),
     isPlainObject = require('./isPlainObject'),
     support = require('../support');
@@ -8344,7 +10643,7 @@ if (!support.dom) {
 
 module.exports = isElement;
 
-},{"../internal/isObjectLike":71,"../support":113,"./isPlainObject":98}],87:[function(require,module,exports){
+},{"../internal/isObjectLike":116,"../support":168,"./isPlainObject":152}],141:[function(require,module,exports){
 var isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isFunction = require('./isFunction'),
@@ -8394,7 +10693,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"../internal/isLength":70,"../internal/isObjectLike":71,"../object/keys":105,"./isArguments":82,"./isArray":83,"./isFunction":91,"./isString":100}],88:[function(require,module,exports){
+},{"../internal/isLength":115,"../internal/isObjectLike":116,"../object/keys":160,"./isArguments":136,"./isArray":137,"./isFunction":145,"./isString":154}],142:[function(require,module,exports){
 var baseIsEqual = require('../internal/baseIsEqual'),
     bindCallback = require('../internal/bindCallback'),
     isStrictComparable = require('../internal/isStrictComparable');
@@ -8453,7 +10752,7 @@ function isEqual(value, other, customizer, thisArg) {
 
 module.exports = isEqual;
 
-},{"../internal/baseIsEqual":48,"../internal/bindCallback":54,"../internal/isStrictComparable":72}],89:[function(require,module,exports){
+},{"../internal/baseIsEqual":82,"../internal/bindCallback":90,"../internal/isStrictComparable":117}],143:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -8492,7 +10791,7 @@ function isError(value) {
 
 module.exports = isError;
 
-},{"../internal/isObjectLike":71}],90:[function(require,module,exports){
+},{"../internal/isObjectLike":116}],144:[function(require,module,exports){
 (function (global){
 var isNative = require('./isNative');
 
@@ -8536,7 +10835,7 @@ var isFinite = nativeNumIsFinite || function(value) {
 module.exports = isFinite;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./isNative":94}],91:[function(require,module,exports){
+},{"./isNative":148}],145:[function(require,module,exports){
 (function (global){
 var baseIsFunction = require('../internal/baseIsFunction'),
     isNative = require('./isNative');
@@ -8583,7 +10882,7 @@ var isFunction = !(baseIsFunction(/x/) || (Uint8Array && !baseIsFunction(Uint8Ar
 module.exports = isFunction;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../internal/baseIsFunction":50,"./isNative":94}],92:[function(require,module,exports){
+},{"../internal/baseIsFunction":84,"./isNative":148}],146:[function(require,module,exports){
 var baseIsMatch = require('../internal/baseIsMatch'),
     bindCallback = require('../internal/bindCallback'),
     isStrictComparable = require('../internal/isStrictComparable'),
@@ -8659,7 +10958,7 @@ function isMatch(object, source, customizer, thisArg) {
 
 module.exports = isMatch;
 
-},{"../internal/baseIsMatch":51,"../internal/bindCallback":54,"../internal/isStrictComparable":72,"../object/keys":105}],93:[function(require,module,exports){
+},{"../internal/baseIsMatch":85,"../internal/bindCallback":90,"../internal/isStrictComparable":117,"../object/keys":160}],147:[function(require,module,exports){
 var isNumber = require('./isNumber');
 
 /**
@@ -8696,7 +10995,7 @@ function isNaN(value) {
 
 module.exports = isNaN;
 
-},{"./isNumber":96}],94:[function(require,module,exports){
+},{"./isNumber":150}],148:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -8753,7 +11052,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":71,"../string/escapeRegExp":110}],95:[function(require,module,exports){
+},{"../internal/isObjectLike":116,"../string/escapeRegExp":165}],149:[function(require,module,exports){
 /**
  * Checks if `value` is `null`.
  *
@@ -8776,7 +11075,7 @@ function isNull(value) {
 
 module.exports = isNull;
 
-},{}],96:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -8820,7 +11119,7 @@ function isNumber(value) {
 
 module.exports = isNumber;
 
-},{"../internal/isObjectLike":71}],97:[function(require,module,exports){
+},{"../internal/isObjectLike":116}],151:[function(require,module,exports){
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -8852,7 +11151,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],98:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 var isNative = require('./isNative'),
     shimIsPlainObject = require('../internal/shimIsPlainObject');
 
@@ -8916,7 +11215,7 @@ var isPlainObject = !getPrototypeOf ? shimIsPlainObject : function(value) {
 
 module.exports = isPlainObject;
 
-},{"../internal/shimIsPlainObject":76,"./isNative":94}],99:[function(require,module,exports){
+},{"../internal/shimIsPlainObject":130,"./isNative":148}],153:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -8954,7 +11253,7 @@ function isRegExp(value) {
 
 module.exports = isRegExp;
 
-},{"../internal/isObjectLike":71}],100:[function(require,module,exports){
+},{"../internal/isObjectLike":116}],154:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -8992,7 +11291,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"../internal/isObjectLike":71}],101:[function(require,module,exports){
+},{"../internal/isObjectLike":116}],155:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -9069,7 +11368,7 @@ function isTypedArray(value) {
 
 module.exports = isTypedArray;
 
-},{"../internal/isLength":70,"../internal/isObjectLike":71}],102:[function(require,module,exports){
+},{"../internal/isLength":115,"../internal/isObjectLike":116}],156:[function(require,module,exports){
 /**
  * Checks if `value` is `undefined`.
  *
@@ -9092,7 +11391,7 @@ function isUndefined(value) {
 
 module.exports = isUndefined;
 
-},{}],103:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 var arrayCopy = require('../internal/arrayCopy'),
     isLength = require('../internal/isLength'),
     values = require('../object/values');
@@ -9125,7 +11424,7 @@ function toArray(value) {
 
 module.exports = toArray;
 
-},{"../internal/arrayCopy":38,"../internal/isLength":70,"../object/values":107}],104:[function(require,module,exports){
+},{"../internal/arrayCopy":67,"../internal/isLength":115,"../object/values":162}],158:[function(require,module,exports){
 var baseCopy = require('../internal/baseCopy'),
     keysIn = require('../object/keysIn');
 
@@ -9158,7 +11457,32 @@ function toPlainObject(value) {
 
 module.exports = toPlainObject;
 
-},{"../internal/baseCopy":43,"../object/keysIn":106}],105:[function(require,module,exports){
+},{"../internal/baseCopy":73,"../object/keysIn":161}],159:[function(require,module,exports){
+var baseFunctions = require('../internal/baseFunctions'),
+    keysIn = require('./keysIn');
+
+/**
+ * Creates an array of function property names from all enumerable properties,
+ * own and inherited, of `object`.
+ *
+ * @static
+ * @memberOf _
+ * @alias methods
+ * @category Object
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns the new array of property names.
+ * @example
+ *
+ * _.functions(_);
+ * // => ['after', 'ary', 'assign', ...]
+ */
+function functions(object) {
+  return baseFunctions(object, keysIn(object));
+}
+
+module.exports = functions;
+
+},{"../internal/baseFunctions":80,"./keysIn":161}],160:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -9208,7 +11532,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":70,"../internal/shimKeys":77,"../lang/isNative":94,"../lang/isObject":97}],106:[function(require,module,exports){
+},{"../internal/isLength":115,"../internal/shimKeys":131,"../lang/isNative":148,"../lang/isObject":151}],161:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -9275,7 +11599,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":68,"../internal/isLength":70,"../lang/isArguments":82,"../lang/isArray":83,"../lang/isObject":97,"../support":113}],107:[function(require,module,exports){
+},{"../internal/isIndex":113,"../internal/isLength":115,"../lang/isArguments":136,"../lang/isArray":137,"../lang/isObject":151,"../support":168}],162:[function(require,module,exports){
 var baseValues = require('../internal/baseValues'),
     keys = require('./keys');
 
@@ -9310,7 +11634,7 @@ function values(object) {
 
 module.exports = values;
 
-},{"../internal/baseValues":53,"./keys":105}],108:[function(require,module,exports){
+},{"../internal/baseValues":89,"./keys":160}],163:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -9333,7 +11657,7 @@ function capitalize(string) {
 
 module.exports = capitalize;
 
-},{"../internal/baseToString":52}],109:[function(require,module,exports){
+},{"../internal/baseToString":88}],164:[function(require,module,exports){
 var baseToString = require('../internal/baseToString'),
     escapeHtmlChar = require('../internal/escapeHtmlChar');
 
@@ -9383,7 +11707,7 @@ function escape(string) {
 
 module.exports = escape;
 
-},{"../internal/baseToString":52,"../internal/escapeHtmlChar":62}],110:[function(require,module,exports){
+},{"../internal/baseToString":88,"../internal/escapeHtmlChar":106}],165:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -9417,7 +11741,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":52}],111:[function(require,module,exports){
+},{"../internal/baseToString":88}],166:[function(require,module,exports){
 var assignOwnDefaults = require('../internal/assignOwnDefaults'),
     attempt = require('../utility/attempt'),
     baseAssign = require('../internal/baseAssign'),
@@ -9648,7 +11972,7 @@ function template(string, options, otherOptions) {
 
 module.exports = template;
 
-},{"../internal/assignOwnDefaults":40,"../internal/baseAssign":41,"../internal/baseToString":52,"../internal/baseValues":53,"../internal/escapeStringChar":63,"../internal/isIterateeCall":69,"../internal/reInterpolate":75,"../lang/isError":89,"../object/keys":105,"../utility/attempt":114,"./templateSettings":112}],112:[function(require,module,exports){
+},{"../internal/assignOwnDefaults":69,"../internal/baseAssign":70,"../internal/baseToString":88,"../internal/baseValues":89,"../internal/escapeStringChar":107,"../internal/isIterateeCall":114,"../internal/reInterpolate":126,"../lang/isError":143,"../object/keys":160,"../utility/attempt":169,"./templateSettings":167}],167:[function(require,module,exports){
 var escape = require('./escape'),
     reEscape = require('../internal/reEscape'),
     reEvaluate = require('../internal/reEvaluate'),
@@ -9717,7 +12041,7 @@ var templateSettings = {
 
 module.exports = templateSettings;
 
-},{"../internal/reEscape":73,"../internal/reEvaluate":74,"../internal/reInterpolate":75,"./escape":109}],113:[function(require,module,exports){
+},{"../internal/reEscape":124,"../internal/reEvaluate":125,"../internal/reInterpolate":126,"./escape":164}],168:[function(require,module,exports){
 (function (global){
 var isNative = require('./lang/isNative');
 
@@ -9796,7 +12120,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":94}],114:[function(require,module,exports){
+},{"./lang/isNative":148}],169:[function(require,module,exports){
 var isError = require('../lang/isError');
 
 /**
@@ -9836,7 +12160,7 @@ function attempt() {
 
 module.exports = attempt;
 
-},{"../lang/isError":89}],115:[function(require,module,exports){
+},{"../lang/isError":143}],170:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -9861,7 +12185,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],116:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 /**
  * This method returns the first argument provided to it.
  *
@@ -9883,7 +12207,28 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],117:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
+/**
+ * A no-operation function which returns `undefined` regardless of the
+ * arguments it receives.
+ *
+ * @static
+ * @memberOf _
+ * @category Utility
+ * @example
+ *
+ * var object = { 'user': 'fred' };
+ *
+ * _.noop(object) === undefined;
+ * // => true
+ */
+function noop() {
+  // No operation performed.
+}
+
+module.exports = noop;
+
+},{}],173:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -9911,7 +12256,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],118:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 (function (global){
 
 var rng;
@@ -9946,7 +12291,7 @@ module.exports = rng;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],119:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 //     uuid.js
 //
 //     Copyright (c) 2010-2012 Robert Kieffer
@@ -10131,10 +12476,10 @@ uuid.unparse = unparse;
 
 module.exports = uuid;
 
-},{"./rng":118}],120:[function(require,module,exports){
+},{"./rng":174}],176:[function(require,module,exports){
 module.exports={
-  "name": "focus",
-  "version": "0.5.2",
+  "name": "focusjs",
+  "version": "0.6.1",
   "description": "Technical stack in order to build single page application.",
   "main": "index.js",
   "directories": {
@@ -10142,15 +12487,17 @@ module.exports={
     "test": "test"
   },
   "dependencies": {
-    "flux": "^2.0.1",
-    "immutable": "^3.6.2",
+    "backbone": "^1.2.0",
+    "flux": "^2.0.3",
+    "immutable": "^3.7.3",
     "keymirror": "^0.1.1",
-    "lodash": "^3.3.1",
+    "lodash": "^3.9.1",
     "object-assign": "^2.0.0",
-    "react": "^0.13.2",
+    "react": "^0.13.3",
     "uuid": "^2.0.1"
   },
   "scripts": {
+    "prepublish": "gulp build",
     "test": "jest"
   },
   "repository": {
@@ -10208,7 +12555,7 @@ module.exports={
   }
 }
 
-},{}],121:[function(require,module,exports){
+},{}],177:[function(require,module,exports){
 /*global Promise,  _*/
 "use strict";
 
@@ -10280,7 +12627,7 @@ module.exports = {
   getAutoCompleteServiceQuery: getAutoCompleteServiceQuery
 };
 
-},{"../network/fetch":27,"../util/string/check":154,"./config":124}],122:[function(require,module,exports){
+},{"../network/fetch":30,"../util/string/check":209,"./config":180}],178:[function(require,module,exports){
 "use strict";
 
 var loadManyReferenceList = require("./builder").loadMany;
@@ -10312,7 +12659,7 @@ function builtInReferenceAction(referenceNames) {
 
 module.exports = builtInReferenceAction;
 
-},{"../dispatcher":16,"./builder":121}],123:[function(require,module,exports){
+},{"../dispatcher":18,"./builder":177}],179:[function(require,module,exports){
 "use strict";
 
 var ReferenceStore = require("../store/reference");
@@ -10328,10 +12675,10 @@ module.exports = function builtInStore() {
   return instanciatedRefStore;
 };
 
-},{"../store/reference":136}],124:[function(require,module,exports){
+},{"../store/reference":192}],180:[function(require,module,exports){
 "use strict";
 
-var Immutable = require("Immutable");
+var Immutable = require("immutable");
 var config = Immutable.Map({});
 var checkIsObject = require("../util/object/check");
 var checkIsString = require("../util/string/check");
@@ -10372,7 +12719,7 @@ module.exports = {
   set: setConfig
 };
 
-},{"../util/object/check":151,"../util/string/check":154,"Immutable":29}],125:[function(require,module,exports){
+},{"../util/object/check":206,"../util/string/check":209,"immutable":36}],181:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -10382,12 +12729,21 @@ module.exports = {
   builtInAction: require("./built-in-action")
 };
 
-},{"./builder":121,"./built-in-action":122,"./built-in-store":123,"./config":124}],126:[function(require,module,exports){
+},{"./builder":177,"./built-in-action":178,"./built-in-store":179,"./config":180}],182:[function(require,module,exports){
 "use strict";
 
-module.exports = {};
+var render = require("../application/render");
+var Backbone = window.Backbone;
+module.exports = Backbone.Router.extend({
+  /**
+   * Render the compoennt into the page content.
+   */
+  _pageContent: function _pageContent(component, options) {
+    return render(component, "[data-focus=\"page-content\"]", options);
+  }
+});
 
-},{}],127:[function(require,module,exports){
+},{"../application/render":7}],183:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -10405,6 +12761,11 @@ var _require = require("lodash/lang");
 var isArray = _require.isArray;
 var isEmpty = _require.isEmpty;
 var isObject = _require.isObject;
+var isFunction = _require.isFunction;
+
+var _require2 = require("lodash/function");
+
+var defer = _require2.defer;
 
 var getEntityInformations = require("../definition/entity/builder").getEntityInformations;
 var capitalize = require("lodash/string/capitalize");
@@ -10430,6 +12791,7 @@ var CoreStore = (function (_EventEmitter) {
     this.data = Immutable.Map({});
     this.status = Immutable.Map({});
     this.error = Immutable.Map({});
+    this.pendingEvents = [];
     this.customHandler = assign({}, config.customHandler);
     //Register all gernerated methods.
     this.buildDefinition();
@@ -10468,6 +12830,41 @@ var CoreStore = (function (_EventEmitter) {
         return undefined;
       }
     },
+    emitPendingEvents: {
+      /**
+       * Emit all events pending in the pendingEvents map.
+       */
+
+      value: function emitPendingEvents() {
+        var _this = this;
+
+        this.pendingEvents.map(function (evtToEmit) {
+          _this.emit(evtToEmit.name, evtToEmit.data);
+        });
+      }
+    },
+    willEmit: {
+
+      /**
+       * Replace the emit function with a willEmit in otder to store the changing event but send it afterwards.
+       * @param eventName {string} - The event name.
+       * @param  data {object} - The event's associated data.
+       */
+
+      value: function willEmit(eventName, data) {
+        this.pendingEvents.push({ name: eventName, data: data });
+      }
+    },
+    clearPendingEvents: {
+
+      /**
+       * Clear all pending events.
+       */
+
+      value: function clearPendingEvents() {
+        this.pendingEvents = [];
+      }
+    },
     buildEachNodeChangeEventListener: {
       /**
       * Build a change listener for each property in the definition. (should be macro entities);
@@ -10491,33 +12888,39 @@ var CoreStore = (function (_EventEmitter) {
             };
           })(definition);
           //Create an update method.
-          currentStore["update" + capitalizeDefinition] = (function (def) {
-            return function (dataNode, status) {
-              var immutableNode = Immutable.fromJS(dataNode);
-              currentStore.data = currentStore.data.set(def, immutableNode);
-              //Update the status on the data.
-              currentStore.status = currentStore.status.set(def, status);
-              currentStore.emit("" + def + ":change", { status: status });
-            };
-          })(definition);
+          if (currentStore["update" + capitalizeDefinition] === undefined) {
+            currentStore["update" + capitalizeDefinition] = (function (def) {
+              return function (dataNode, status) {
+                var immutableNode = isFunction(dataNode) ? dataNode : Immutable.fromJS(dataNode);
+                currentStore.data = currentStore.data.set(def, immutableNode);
+                //Update the status on the data.
+                currentStore.status = currentStore.status.set(def, status);
+                currentStore.willEmit("" + def + ":change", { property: def, status: status });
+              };
+            })(definition);
+          }
+
           //Create a get method.
-          currentStore["get" + capitalizeDefinition] = (function (def) {
-            return function () {
-              var hasData = currentStore.data.has(def);
-              if (hasData) {
-                var rawData = currentStore.data.get(def);
-                if (isObject(rawData)) {
-                  var data = rawData.toJS();
-                  if (!isEmpty(data)) {
-                    return data;
+          if (currentStore["get" + capitalizeDefinition] === undefined) {
+            currentStore["get" + capitalizeDefinition] = (function (def) {
+              return function () {
+                var hasData = currentStore.data.has(def);
+                if (hasData) {
+                  var rawData = currentStore.data.get(def);
+                  //If the store node isn't an object, immutable solution are non sens. 
+                  if (isFunction(rawData) || !isObject(rawData)) {
+                    return rawData;
+                  } else {
+                    var data = rawData.toJS();
+                    if (!isEmpty(data)) {
+                      return data;
+                    }
                   }
-                } else {
-                  return rawData;
                 }
-              }
-              return undefined;
-            };
-          })(definition);
+                return undefined;
+              };
+            })(definition);
+          }
           //Creates the error change listener
           currentStore["add" + capitalizeDefinition + "ErrorListener"] = (function (def) {
             return function (cb) {
@@ -10536,7 +12939,7 @@ var CoreStore = (function (_EventEmitter) {
               //CheckIsObject
               var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
               currentStore.error = currentStore.error.set(def, immutableNode);
-              currentStore.emit("" + def + ":error");
+              currentStore.willEmit("" + def + ":error");
             };
           })(definition);
           //Create a get method.
@@ -10557,14 +12960,18 @@ var CoreStore = (function (_EventEmitter) {
       value: function registerDispatcher() {
         var currentStore = this;
         this.dispatch = AppDispatcher.register(function (transferInfo) {
-          //Complete rewrie by the store.
-          //todo: see if this has meaning instead of an override
+
+          //currentStore.clearPendingEvents();
           if (currentStore.globalCustomHandler) {
             return currentStore.globalCustomHandler.call(currentStore, transferInfo);
           }
+
+          //Read data from the action transfer information.
           var rawData = transferInfo.action.data;
           var status = transferInfo.action.status || {};
           var type = transferInfo.action.type;
+
+          //Call each node handler for the matching definition's node.
           for (var node in rawData) {
             if (currentStore.definition[node]) {
               //Call a custom handler if this exists.
@@ -10576,7 +12983,12 @@ var CoreStore = (function (_EventEmitter) {
               }
             }
           }
-          //console.log('dispatchHandler:action', transferInfo);
+
+          //Delay all the change emit by the store to be sure it is done after the internal store propagation and to go out of the dispatch function.
+          defer(function () {
+            currentStore.emitPendingEvents();
+            currentStore.clearPendingEvents();
+          });
         });
       }
     },
@@ -10598,7 +13010,7 @@ var CoreStore = (function (_EventEmitter) {
 
 module.exports = CoreStore;
 
-},{"../definition/entity/builder":11,"../dispatcher":16,"events":30,"immutable":34,"lodash/lang":79,"lodash/string/capitalize":108,"object-assign":117}],128:[function(require,module,exports){
+},{"../definition/entity/builder":13,"../dispatcher":18,"events":32,"immutable":36,"lodash/function":40,"lodash/lang":133,"lodash/string/capitalize":163,"object-assign":173}],184:[function(require,module,exports){
 /**
  * Build the cartridge store definition.
  * @return {object} - The cartridge component.
@@ -10607,17 +13019,18 @@ module.exports = CoreStore;
 
 module.exports = function () {
   return {
-    barSummaryCartridgeComponent: "barSummaryCartridgeComponent",
-    cartridgeComponent: "cartridgeComponent"
+    summaryComponent: "summaryComponent",
+    cartridgeComponent: "cartridgeComponent",
+    actions: "actions"
   };
 };
 
-},{}],129:[function(require,module,exports){
+},{}],185:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":130}],130:[function(require,module,exports){
+},{"./store":186}],186:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -10650,7 +13063,7 @@ var ApplicationStore = (function (_CoreStore) {
 
 module.exports = ApplicationStore;
 
-},{"../CoreStore":127,"./definition":128}],131:[function(require,module,exports){
+},{"../CoreStore":183,"./definition":184}],187:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -10662,7 +13075,7 @@ module.exports = {
   UserStore: require("./user")
 };
 
-},{"./CoreStore":127,"./application":129,"./message":133,"./reference":136,"./search":139,"./user":142}],132:[function(require,module,exports){
+},{"./CoreStore":183,"./application":185,"./message":189,"./reference":192,"./search":195,"./user":197}],188:[function(require,module,exports){
 /**
  * Build the cartridge store definition.
  * @return {object} - The error store component.
@@ -10675,12 +13088,12 @@ module.exports = function () {
   };
 };
 
-},{}],133:[function(require,module,exports){
+},{}],189:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":134}],134:[function(require,module,exports){
+},{"./store":190}],190:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -10842,7 +13255,7 @@ var MessageStore = (function (_CoreStore) {
 
 module.exports = MessageStore;
 
-},{"../../dispatcher":16,"../CoreStore":127,"./definition":132,"uuid":119}],135:[function(require,module,exports){
+},{"../../dispatcher":18,"../CoreStore":183,"./definition":188,"uuid":175}],191:[function(require,module,exports){
 "use strict";
 
 var refConfigAccessor = require("../../reference/config");
@@ -10866,12 +13279,12 @@ function buildReferenceDefinition() {
 
 module.exports = buildReferenceDefinition;
 
-},{"../../reference/config":124,"keymirror":35,"lodash/lang/isEmpty":87}],136:[function(require,module,exports){
+},{"../../reference/config":180,"keymirror":37,"lodash/lang/isEmpty":141}],192:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":137}],137:[function(require,module,exports){
+},{"./store":193}],193:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -10924,7 +13337,7 @@ var ReferenceStore = (function (_CoreStore) {
 
 module.exports = ReferenceStore;
 
-},{"../CoreStore":127,"./definition":135}],138:[function(require,module,exports){
+},{"../CoreStore":183,"./definition":191}],194:[function(require,module,exports){
 "use strict";
 
 var Immutable = require("immutable");
@@ -10934,24 +13347,13 @@ module.exports = {
    * @type {Object}
    */
   search: {
-    facet: {
-      domain: "DO_TEXT"
-    },
-    list: {
-      domain: "DO_TEXT"
-    },
-    pageInfos: {
-      domain: "DO_TEXT"
-    }
+    facet: "facet",
+    list: "list",
+    pageInfos: "pageInfos"
   }
 };
 
-},{"immutable":34}],139:[function(require,module,exports){
-"use strict";
-
-module.exports = require("./store");
-
-},{"./store":140}],140:[function(require,module,exports){
+},{"immutable":36}],195:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -10976,119 +13378,123 @@ var isArray = require("lodash/lang/isArray");
  * @type {Object}
  */
 /*var defaultSearchConfig = {
-  facet:"facet",
-  list:"list",
-  pageInfos: "pageInfos"
-};*/
+ facet:"facet",
+ list:"list",
+ pageInfos: "pageInfos"
+ };*/
 
 var SearchStore = (function (_CoreStore) {
-  function SearchStore(conf) {
-    _classCallCheck(this, SearchStore);
+    function SearchStore(conf) {
+        _classCallCheck(this, SearchStore);
 
-    var config = assign({}, { definitionPath: "search" }, conf);
-    _get(Object.getPrototypeOf(SearchStore.prototype), "constructor", this).call(this, config);
-  }
-
-  _inherits(SearchStore, _CoreStore);
-
-  _createClass(SearchStore, {
-    get: {
-      value: function get() {
-        return this.data.toJS();
-      }
-    },
-    update: {
-      /**
-       * Update all the data from the search.
-       * @return {}
-      */
-
-      value: function update(newData) {
-        var previousData = this.data.toJS();
-        var processedData = assign({}, previousData, newData);
-
-        if (isArray(newData.list)) {
-          if (this._isSameSearchContext(previousData, newData)) {
-            processedData.list = previousData.list.concat(newData.list);
-          }
-
-          //add calculated fields on data
-          if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
-            processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
-          }
-        }
-        var data = {};
-        for (var key in processedData) {
-          data[key] = Immutable[isArray(processedData[key]) ? "List" : "Map"](processedData[key]);
-        }
-        this.data = Immutable.Map(data);
-        this.emit("search:change");
-      }
-    },
-    _isSameSearchContext: {
-
-      /**
-       * Check if the search need to concat the nexData with the previous data (infinite scrol case).
-       */
-
-      value: function _isSameSearchContext(previousData, newData) {
-        if (newData.pageInfos) {
-          return newData.pageInfos.currentPage != 1;
-        }
-        return false;
-      }
-    },
-    addSearchChangeListener: {
-
-      /**
-       * Add a listener on the global change on the search store.
-       * @param {Function} cb [description]
-       */
-
-      value: function addSearchChangeListener(cb) {
-        this.addListener("search:change", cb);
-      }
-    },
-    removeSearchChangeListener: {
-
-      /**
-       * Remove listener on search change event.
-       * @param cb callback
-       */
-
-      value: function removeSearchChangeListener(cb) {
-        this.removeListener("search:change", cb);
-      }
-    },
-    registerDispatcher: {
-      /**
-       * The store registrer itself on the dispatcher.
-       */
-
-      value: function registerDispatcher() {
-        var currentStore = this;
-        this.dispatch = AppDispatcher.register(function (transferInfo) {
-          var defKeys = keys(currentStore.definition); //TODO: a sub part of the keys may be needed.
-          var dataKeys = keys(transferInfo.action.data);
-          var intersectKeys = intersection(defKeys, dataKeys);
-          if (intersectKeys.length > 0) {
-            if (intersectKeys.length === defKeys.length) {
-              currentStore.update(transferInfo.action.data);
-            } else {
-              console.warn("Incomplete search store update received. Got [" + dataKeys.join(",") + "], expected [" + defKeys.join(",") + "].");
-            }
-          }
-        });
-      }
+        var config = assign({}, { definitionPath: "search" }, conf);
+        _get(Object.getPrototypeOf(SearchStore.prototype), "constructor", this).call(this, config);
     }
-  });
 
-  return SearchStore;
+    _inherits(SearchStore, _CoreStore);
+
+    _createClass(SearchStore, {
+        get: {
+            value: function get() {
+                return this.data.toJS();
+            }
+        },
+        update: {
+            /**
+             * Update all the data from the search.
+             * @return {}
+             */
+
+            value: function update(newData) {
+                var previousData = this.data.toJS();
+                var processedData = assign({}, previousData, newData);
+
+                if (isArray(newData.list)) {
+                    if (this._isSameSearchContext(previousData, newData)) {
+                        processedData.list = previousData.list.concat(newData.list);
+                    }
+
+                    //add calculated fields on data
+                    if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
+                        processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
+                        // Check if the last page has been fetched, if yes, send an info to the console
+                        if (processedData.pageInfos.totalPages === processedData.pageInfos.currentPage) {
+                            console.info("Search store reached last page (page " + processedData.pageInfos.currentPage + ") for a total of " + processedData.pageInfos.totalRecords + " records.");
+                        }
+                    }
+                }
+                var data = {};
+                for (var key in processedData) {
+                    data[key] = Immutable[isArray(processedData[key]) ? "List" : "Map"](processedData[key]);
+                }
+                this.data = Immutable.Map(data);
+                this.emit("search:change");
+            }
+        },
+        _isSameSearchContext: {
+
+            /**
+             * Check if the search need to concat the nexData with the previous data (infinite scrol case).
+             */
+
+            value: function _isSameSearchContext(previousData, newData) {
+                if (newData.pageInfos) {
+                    return newData.pageInfos.currentPage != 1;
+                }
+                return false;
+            }
+        },
+        addSearchChangeListener: {
+
+            /**
+             * Add a listener on the global change on the search store.
+             * @param {Function} cb [description]
+             */
+
+            value: function addSearchChangeListener(cb) {
+                this.addListener("search:change", cb);
+            }
+        },
+        removeSearchChangeListener: {
+
+            /**
+             * Remove listener on search change event.
+             * @param cb callback
+             */
+
+            value: function removeSearchChangeListener(cb) {
+                this.removeListener("search:change", cb);
+            }
+        },
+        registerDispatcher: {
+            /**
+             * The store registrer itself on the dispatcher.
+             */
+
+            value: function registerDispatcher() {
+                var currentStore = this;
+                this.dispatch = AppDispatcher.register(function (transferInfo) {
+                    var defKeys = keys(currentStore.definition); //TODO: a sub part of the keys may be needed.
+                    var dataKeys = keys(transferInfo.action.data);
+                    var intersectKeys = intersection(defKeys, dataKeys);
+                    if (intersectKeys.length > 0) {
+                        if (intersectKeys.length === defKeys.length) {
+                            currentStore.update(transferInfo.action.data);
+                        } else {
+                            console.warn("Incomplete search store update received. Got [" + dataKeys.join(",") + "], expected [" + defKeys.join(",") + "].");
+                        }
+                    }
+                });
+            }
+        }
+    });
+
+    return SearchStore;
 })(CoreStore);
 
 module.exports = SearchStore;
 
-},{"../../dispatcher":16,"../CoreStore":127,"immutable":34,"lodash/array/intersection":36,"lodash/lang/isArray":83,"lodash/object/keys":105,"object-assign":117}],141:[function(require,module,exports){
+},{"../../dispatcher":18,"../CoreStore":183,"immutable":36,"lodash/array/intersection":38,"lodash/lang/isArray":137,"lodash/object/keys":160,"object-assign":173}],196:[function(require,module,exports){
 /**
  * Build the user store definition from the login and profile.
  * @return {[type]} [description]
@@ -11102,12 +13508,12 @@ module.exports = function () {
   };
 };
 
-},{"../../user/login/definition.json":146,"../../user/profile/definition.json":148}],142:[function(require,module,exports){
+},{"../../user/login/definition.json":201,"../../user/profile/definition.json":203}],197:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":143}],143:[function(require,module,exports){
+},{"./store":198}],198:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -11139,7 +13545,7 @@ var UserStore = (function (_CoreStore) {
 
 module.exports = UserStore;
 
-},{"../CoreStore":127,"./definition":141}],144:[function(require,module,exports){
+},{"../CoreStore":183,"./definition":196}],199:[function(require,module,exports){
 "use strict";
 
 var UserStore = require("../store/user");
@@ -11155,7 +13561,7 @@ module.exports = function builtInStore() {
   return instanciatedUserStore;
 };
 
-},{"../store/user":142}],145:[function(require,module,exports){
+},{"../store/user":197}],200:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -11164,20 +13570,20 @@ module.exports = {
   builtInStore: require("./built-in-store")
 };
 
-},{"./built-in-store":144,"./login":147,"./profile":149}],146:[function(require,module,exports){
+},{"./built-in-store":199,"./login":202,"./profile":204}],201:[function(require,module,exports){
 module.exports={
   "userName": "userName",
   "password": "password"
 }
 
-},{}],147:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   definition: require("./definition.json")
 };
 
-},{"./definition.json":146}],148:[function(require,module,exports){
+},{"./definition.json":201}],203:[function(require,module,exports){
 module.exports={
   "id": "id",
   "provider": "provider",
@@ -11189,14 +13595,14 @@ module.exports={
   "lastName": "lastName"
 }
 
-},{}],149:[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   definition: require("./definition.json")
 };
 
-},{"./definition.json":148}],150:[function(require,module,exports){
+},{"./definition.json":203}],205:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -11205,7 +13611,7 @@ module.exports = {
 	url: require("./url")
 };
 
-},{"./object":153,"./string":155,"./url":157}],151:[function(require,module,exports){
+},{"./object":208,"./string":210,"./url":212}],206:[function(require,module,exports){
 "use strict";
 
 var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
@@ -11223,7 +13629,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":17,"lodash/lang/isObject":97}],152:[function(require,module,exports){
+},{"../../exception/ArgumentInvalidException":19,"lodash/lang/isObject":151}],207:[function(require,module,exports){
 "use strict";
 
 var ArgumentNullException = require("../../exception/ArgumentNullException");
@@ -11246,7 +13652,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentNullException":18,"lodash/lang":79}],153:[function(require,module,exports){
+},{"../../exception/ArgumentNullException":20,"lodash/lang":133}],208:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -11254,7 +13660,7 @@ module.exports = {
 	checkIsNotNull: require("./checkIsNotNull")
 };
 
-},{"./check":151,"./checkIsNotNull":152}],154:[function(require,module,exports){
+},{"./check":206,"./checkIsNotNull":207}],209:[function(require,module,exports){
 "use strict";
 
 var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
@@ -11272,14 +13678,14 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":17,"lodash/lang/isString":100}],155:[function(require,module,exports){
+},{"../../exception/ArgumentInvalidException":19,"lodash/lang/isString":154}],210:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	check: require("./check")
 };
 
-},{"./check":154}],156:[function(require,module,exports){
+},{"./check":209}],211:[function(require,module,exports){
 "use strict";
 
 var urlProcessor = require("./processor");
@@ -11307,7 +13713,7 @@ module.exports = function (url, method) {
   };
 };
 
-},{"./processor":158}],157:[function(require,module,exports){
+},{"./processor":213}],212:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -11315,7 +13721,7 @@ module.exports = {
   preprocessor: require("./processor")
 };
 
-},{"./builder":156,"./processor":158}],158:[function(require,module,exports){
+},{"./builder":211,"./processor":213}],213:[function(require,module,exports){
 "use strict";
 
 var compile = require("lodash/string/template");
@@ -11326,5 +13732,5 @@ module.exports = function (url, data) {
   return compile(url)(data);
 };
 
-},{"lodash/string/template":111}]},{},[1])(1)
+},{"lodash/string/template":166}]},{},[1])(1)
 });
