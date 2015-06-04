@@ -1,15 +1,19 @@
-/*global Focus.components, React*/
-var MoviePreview = require('./moviePreview');
-var PeoplePreview = require('./peoplePreview');
-var SearchResult = require('./searchResult');
-//Composant d'une ligne.
-var PeopleLineComponent = require('./peopleLineComponent');
-var MovieLineComponent = require('./movieLineComponent');
+// Components
+
+let MoviePreview = require('./moviePreview');
+let MovieLineComponent = require('./movieLineComponent');
+
+let PeoplePreview = require('./peoplePreview');
+let PeopleLineComponent = require('./peopleLineComponent');
+
+let SearchResult = require('./searchResult');
+
+
 
 //Configuration des props du composant de vue de recherche.
-var config = {
+let config = {
   onLineClick: function onLineClick(data) {
-    var url = '';
+    let url = '';
     if (data.movId !== undefined && data.movId !== null) {
       url = '#movie/' + data.movId;
     } else {
@@ -20,7 +24,7 @@ var config = {
     Backbone.history.navigate(url, true);
     $('.quick-search-popin .popin-close-btn').click();
     //On ferme la popin de preview si elle est affichée.
-    var qsPreview = $('.preview-popin .popin-close-btn');
+    let qsPreview = $('.preview-popin .popin-close-btn');
     if(qsPreview !== undefined && qsPreview !== null && qsPreview.length > 0){
       qsPreview.click();
     }
@@ -28,7 +32,7 @@ var config = {
   operationList: [
     {
       label: '', action: function (data) {
-      var Preview = MoviePreview;
+      let Preview = MoviePreview;
       if(!data.movId){
         Preview = PeoplePreview;
       }
@@ -54,9 +58,9 @@ var config = {
   groupMaxRows: 3
 };
 
-var parentselector = '.quick-search-popin';
+let parentselector = '.quick-search-popin';
 
-var qs = React.createElement(SearchResult, {
+let qs = React.createElement(SearchResult, {
   lineMap: {
     'Movies': MovieLineComponent,
     'People': PeopleLineComponent,
@@ -74,52 +78,28 @@ var qs = React.createElement(SearchResult, {
 
 module.exports = React.createClass({
   mixins: [Focus.components.application.popin.mixin],
-  renderPopinHeader: function (popin) {
+  renderPopinHeader(popin) {
     return React.createElement('div', null,
       React.createElement('div', {
         className: 'quick-search-popin-header'
       }, 'Quick search')
     );
   },
-  renderPopinFooter: function renderPopinFooter(popin) {
+  renderPopinFooter(popin) {
     return React.createElement('div', null, '');
 
   },
-  renderContent: function (popin) {
-   /* var parentselector;
-    if (this.props.style.className !== null && this.props.style.className !== undefined) {
-      parentselector = '.' + this.props.style.className;
-    }
-    return <SearchResult
-      lineMap= {{
-        'Movies': MovieLineComponent,
-        'People': PeopleLineComponent,
-        'MOVIE': MovieLineComponent,
-        'PEOPLE': PeopleLineComponent
-      }}
-      onLineClick = {config.onLineClick}
-      operationList = {config.operationList}
-      scopeList = {config.scopes}
-      scope = {config.scope}
-      idField = {config.idField}
-      groupMaxRows= {config.groupMaxRows}
-      parentSelector = {parentselector}/>;*/
+  renderContent(popin) {
     return qs;
   },
   /** @inheritdoc */
-  componentDidMount: function popinDidMount() {
-    var source = document.querySelector(this.props.displaySelector);
-    var currentView = this;
-    if(source !== undefined && source !== null){
+  componentDidMount() {
+    let source = document.querySelector(this.props.displaySelector);
+    let currentView = this;
+    if (source !== undefined && source !== null) {
       source.onclick = function () {
         currentView._toggleOpen();
       };
     }
-   /*$('#qs-affix').affix({
-      offset: {
-        top: 70
-      },
-     target: '.qs-search-popin'
-    });*/
   }
 });
