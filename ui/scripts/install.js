@@ -18,6 +18,8 @@ var files = [
   //daterangepicker
   'daterangepicker/daterangepicker.js',
   'daterangepicker/daterangepicker-bs3.css',
+  //showdown
+  'showdown/dist/showdown.js',
   //focusjs
   'focusjs/dist/focus.js',
   //focusjs-components
