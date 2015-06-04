@@ -3,16 +3,6 @@
 var Router = Focus.router;
 var render = Focus.application.render;
 
-//var AlertModule = require('../component/alert');
-//render(AlertModule, '#notification-center');
-
-var LeftMenuView = require('../views/menu/leftMenu');
-
-var renderMenu = function(){
-  var PageHeader = require('../views/menu/appHeader');
-  render(PageHeader, '#header');
-  render(LeftMenuView, '#leftMenu');
-};
 
 var AppRouter = Router.extend({
   routes: {

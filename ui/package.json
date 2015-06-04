@@ -21,6 +21,7 @@
     "doc": "docco app/lib/* app/models/* app/views/* README.md"
   },
   "dependencies": {
+    "brunch": "^1.8.3",
     "focusjs": "^0.6.0",
     "focusjs-components": "^0.1.4",
     "immutable": "^3.7.2",
@@ -42,8 +43,7 @@
     "javascript-brunch": "^1.7.1",
     "less-brunch": "^1.8.1",
     "react-brunch": "^1.0.9",
-    "sass-brunch": "^1.8.10",
-    "uglify": "^0.1.1"
+    "sass-brunch": "^1.8.10"
   },
   "private": true
 }
