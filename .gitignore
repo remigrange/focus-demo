@@ -31,6 +31,8 @@ ui/node_modules
 ui/bower_components
 ui/.npmrc
 ui/vendor
+ui/app/assets/fonts/*.svg
+ui/app/assets/fonts/*.eot
 .idea
 *.iml
 *.bak
