@@ -2,7 +2,7 @@ package rodolphe.demo.domain.movies
 
 alter DtDefinition DT_MOVIE {
 	field GENRE_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Genres " notNull: "false"}
-	field COUNTRY_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Contries" notNull: "false"}
+	field COUNTRY_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Countries" notNull: "false"}
 	field LANGUAGE_IDS {persistent: "false" domain: DO_MULTI_VALUES_FIELD label: "Languages" notNull: "false"}	
 }
 
@@ -52,29 +52,15 @@ create DtDefinition DT_MOVIE_INDEX {
 	persistent:"false"
 	field MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
 	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
-	field TITLE_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Title" notNull:"false"}
+	field TITLE_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Title" notNull:"false" persistent:"false"} /* index only */
 	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}
 	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
 	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
 	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
+	field METADAS_JSON {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Meta Data JSON" notNull:"false"} /* result only */
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
 	field GENRE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Genres" notNull:"false"}
-	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Contries" notNull:"false"}
+	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Countries" notNull:"false"}
 	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Languages" notNull:"false"}
-	field RANK {domain: DO_ID label: "rank" notNull:"true" }
-}
-
-create DtDefinition DT_MOVIE_RESULT {
-	persistent:"false"
-	field MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
-	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
-	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}
-	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
-	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
-	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
-	field METADAS_JSON {domain: DO_COMMENTAIRE label: "Meta Data JSON" notNull:"false"}
-	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
-	field GENRE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Genres" notNull:"false"}
-	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Contries" notNull:"false"}
-	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Languages" notNull:"false"}
+	field RANK {domain: DO_ID label: "rank" notNull:"true" persistent:"false"} /* index only */
 }
