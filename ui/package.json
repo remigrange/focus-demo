@@ -21,7 +21,7 @@
     "doc": "docco app/lib/* app/models/* app/views/* README.md"
   },
   "dependencies": {
-    "brunch": "^1.8.3",
+    "backbone": "^1.2.0",
     "focusjs": "^0.6.0",
     "focusjs-components": "^0.1.4",
     "immutable": "^3.7.2",
@@ -35,7 +35,7 @@
   "license": "MIT",
   "devDependencies": {
     "appcache": "0.0.4",
-    "brunch": "^1.8.2",
+    "brunch": "^1.8.3",
     "babel-brunch": "^5.1.2",
     "clean-css-brunch": "^1.7.1",
     "css-brunch": "^1.7.0",
