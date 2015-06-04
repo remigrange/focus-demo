@@ -27,10 +27,11 @@
 
 </head>
 <body>
+	<div id="header"></div>
 	<div id="leftMenu">
 	</div>
 	<div id="pageContent">
-		<div id="header"></div>
+		
 		<div id="page"></div>
 		<div id="modalContainer"></div>
 		<div id="previewModal"></div>

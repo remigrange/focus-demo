@@ -181,17 +181,17 @@ public final class MovieIndex implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'Movie's genres identifiers'. 
+	 * Récupère la valeur de la propriété 'Genres'. 
 	 * @return String genreIds 
 	 */
-	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's genres identifiers")
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Genres")
 	public String getGenreIds() {
 		return genreIds;
 	}
 
 	/**
 	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'Movie's genres identifiers'.
+	 * Définit la valeur de la propriété 'Genres'.
 	 * @param genreIds String 
 	 */
 	public void setGenreIds(final String genreIds) {
@@ -200,17 +200,17 @@ public final class MovieIndex implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'Movie's contries identifiers'. 
+	 * Récupère la valeur de la propriété 'Contries'. 
 	 * @return String countryIds 
 	 */
-	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's contries identifiers")
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Contries")
 	public String getCountryIds() {
 		return countryIds;
 	}
 
 	/**
 	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'Movie's contries identifiers'.
+	 * Définit la valeur de la propriété 'Contries'.
 	 * @param countryIds String 
 	 */
 	public void setCountryIds(final String countryIds) {
@@ -219,17 +219,17 @@ public final class MovieIndex implements DtObject {
 
 	/**
 	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'Movie's languages identifiers'. 
+	 * Récupère la valeur de la propriété 'Languages'. 
 	 * @return String languageIds 
 	 */
-	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Movie's languages identifiers")
+	@Field(domain = "DO_MULTI_VALUES_FIELD", persistent = false, label = "Languages")
 	public String getLanguageIds() {
 		return languageIds;
 	}
 
 	/**
 	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'Movie's languages identifiers'.
+	 * Définit la valeur de la propriété 'Languages'.
 	 * @param languageIds String 
 	 */
 	public void setLanguageIds(final String languageIds) {
