@@ -17,8 +17,7 @@
     "test": "brunch test",
     "watch": "./node_modules/brunch/bin/brunch w",
     "serve": "./node_modules/brunch/bin/brunch w -s",
-    "api": "node ./example/api/server.js",
-    "doc": "docco app/lib/* app/models/* app/views/* README.md"
+    "postinstall": "node scripts/install.js"  
   },
   "dependencies": {
     "backbone": "^1.2.0",
