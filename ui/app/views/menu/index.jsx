@@ -4,7 +4,8 @@ let menuMixin = Focus.components.application.menu.mixin;
 
 // Components
 
-let QuickSearchPopin = require('views/search/quick-search/popin');
+let Popin = Focus.components.application.popin.component;
+let QuickSearch = require('views/search/quick-search');
 
 let Menu = React.createClass({
     mixins: [menuMixin],
@@ -57,7 +58,9 @@ let Wrapper = React.createClass({
                 ref='menu'
                 brand='static/img/brand.png'
             >
-                <QuickSearchPopin ref='quick-search-popin'/>
+                <Popin ref='quick-search-popin' type='from-menu'>
+                    <QuickSearch/>
+                </Popin>
             </Menu>
         );
     }
