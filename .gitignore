@@ -37,4 +37,4 @@ ui/public/*
 api/.classpath
 api/.project
 api/.settings
-api/*.iml
+*.iml
