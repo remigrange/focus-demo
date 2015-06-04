@@ -26,6 +26,7 @@
     "bootstrap-material": "^0.1.5",
     "focusjs": "^0.6.0",
     "focusjs-components": "^0.1.4",
+    "font-awesome": "^4.3.0",
     "immutable": "^3.7.2",
     "jquery": "^2.1.4",
     "lodash": "^3.8.0",
