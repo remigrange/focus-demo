@@ -25,6 +25,7 @@
     "focusjs": "^0.6.0",
     "focusjs-components": "^0.1.4",
     "immutable": "^3.7.2",
+    "jquery": "^2.1.4",
     "lodash": "^3.8.0",
     "react": "^0.13.1"
   },
