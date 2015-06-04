@@ -237,7 +237,7 @@ var contentActionsMixin = {
       "div",
       { className: this._getStyleClassName(), "data-focus": "content-actions" },
       this.state.actions.primary.map(function (primary) {
-        return React.createElement(Button, { shape: "fab", style: { className: primary.className }, handleOnClick: primary.action, label: primary.label, type: "button", icon: primary.icon });
+        return React.createElement(Button, { shape: "fab", style: { className: primary.className }, handleOnClick: primary.action, label: primary.label, type: "button", icon: primary.icon, iconPrefix: "mdi-" });
       }),
       React.createElement(SelectButtons, { operationList: this.state.actions.secondary })
     );
@@ -547,7 +547,8 @@ var type = window.Focus.component.types;
 var popinProperties = require("../mixin/popin-behaviour").mixin;
 var stylabe = require("../../mixin/stylable");
 var Icon = require("../../common/icon").component;
-var Backbone = require;
+var Backbone = window.Backbone;
+var Button = require("../../common/button/action").component;
 var menuMixin = {
   mixins: [stylabe, popinProperties],
 
@@ -585,12 +586,7 @@ var menuMixin = {
       return React.createElement(
         "li",
         null,
-        React.createElement(
-          "button",
-          { onClick: clickHandler },
-          link.icon && React.createElement(Icon, { name: link.icon }),
-          link.name
-        )
+        React.createElement(Button, { handleOnClick: clickHandler, icon: link.icon, label: link.name, option: "link", shape: "flat" })
       );
     });
   },
@@ -613,7 +609,7 @@ var menuMixin = {
 
 module.exports = builder(menuMixin);
 
-},{"../../common/icon":32,"../../mixin/stylable":78,"../mixin/popin-behaviour":13}],12:[function(require,module,exports){
+},{"../../common/button/action":16,"../../common/icon":32,"../../mixin/stylable":78,"../mixin/popin-behaviour":13}],12:[function(require,module,exports){
 "use strict";
 
 var builder = window.Focus.component.builder;
@@ -1007,7 +1003,8 @@ var buttonMixin = {
             isPressed: false,
             label: undefined,
             icon: undefined,
-            imgSrc: undefined //todo to remove
+            imgSrc: undefined,
+            iconPrefix: "fa fa-" //todo to remove
         };
     },
     /**
@@ -1047,7 +1044,7 @@ var buttonMixin = {
     },
     _renderIcon: function renderIcon() {
         if (this.props.icon) {
-            return React.createElement(Icon, { name: this.props.icon, prefix: "mdi-" });
+            return React.createElement(Icon, { name: this.props.icon, prefix: this.props.iconPrefix });
         }
         return "";
     },
@@ -3336,11 +3333,7 @@ var selectActionMixin = {
         var liList = this._getList(this.props.operationList);
         return React.createElement(
             "div",
-<<<<<<< Updated upstream
-            { className: "btn btn-fab btn-default" },
-=======
             { className: "select-action btn btn-fab btn-default" },
->>>>>>> Stashed changes
             React.createElement(Icon, { name: "navigation-more-vert", prefix: "mdi-" }),
             React.createElement(
                 "a",
@@ -3810,7 +3803,7 @@ var stickyNavigationMixin = {
         var className = "bs-docs-sidebar hidden-print affix " + this.props.style.className;
         return React.createElement(
             "nav",
-            { className: className, id: this.props.navBarId, "data-focus": "sticky-navigation" },
+            { className: className, id: this.props.navBarId, "data-focus": "sticky-navigation", "data-spy": "affix", "data-offset-top": "60", "data-offset-bottom": "200" },
             React.createElement(
                 "ul",
                 { className: "nav bs-docs-sidenav", role: "tablist" },
@@ -5510,13 +5503,8 @@ var baseFlatten = require('../internal/baseFlatten'),
     restParam = require('../function/restParam');
 
 /**
-<<<<<<< Updated upstream
  * Creates an array of unique values, in order, from all of the provided arrays
  * using [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
-=======
- * Creates an array of unique values, in order, of the provided arrays using
- * [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
->>>>>>> Stashed changes
  * for equality comparisons.
  *
  * @static
@@ -6594,7 +6582,6 @@ function sample(collection, n, guard) {
 
 module.exports = sample;
 
-<<<<<<< Updated upstream
 },{"../internal/baseRandom":166,"../internal/isIterateeCall":205,"../internal/toIterable":215,"../lang/toArray":249}],113:[function(require,module,exports){
 module.exports = require('./filter');
 
@@ -6603,14 +6590,6 @@ var sample = require('./sample');
 
 /** Used as references for `-Infinity` and `Infinity`. */
 var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
-=======
-},{"../internal/baseRandom":166,"../internal/isIterateeCall":205,"../internal/toIterable":215,"./shuffle":114}],113:[function(require,module,exports){
-module.exports = require('./filter');
-
-},{"./filter":92}],114:[function(require,module,exports){
-var baseRandom = require('../internal/baseRandom'),
-    toIterable = require('../internal/toIterable');
->>>>>>> Stashed changes
 
 /**
  * Creates an array of shuffled values, using a version of the
@@ -6632,11 +6611,7 @@ function shuffle(collection) {
 
 module.exports = shuffle;
 
-<<<<<<< Updated upstream
 },{"./sample":112}],115:[function(require,module,exports){
-=======
-},{"../internal/baseRandom":166,"../internal/toIterable":215}],115:[function(require,module,exports){
->>>>>>> Stashed changes
 var getLength = require('../internal/getLength'),
     isLength = require('../internal/isLength'),
     keys = require('../object/keys');
@@ -7024,11 +6999,7 @@ module.exports = restParam;
 (function (global){
 /**
  * @license
-<<<<<<< Updated upstream
  * lodash 3.9.3 (Custom Build) <https://lodash.com/>
-=======
- * lodash 3.9.1 (Custom Build) <https://lodash.com/>
->>>>>>> Stashed changes
  * Build: `lodash modern -d -o ./index.js`
  * Copyright 2012-2015 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
@@ -7041,11 +7012,7 @@ module.exports = restParam;
   var undefined;
 
   /** Used as the semantic version number. */
-<<<<<<< Updated upstream
   var VERSION = '3.9.3';
-=======
-  var VERSION = '3.9.1';
->>>>>>> Stashed changes
 
   /** Used to compose bitmasks for wrapper metadata. */
   var BIND_FLAG = 1,
@@ -7149,12 +7116,9 @@ module.exports = restParam;
 
   /** Used to detect host constructors (Safari > 5). */
   var reIsHostCtor = /^\[object .+?Constructor\]$/;
-<<<<<<< Updated upstream
 
   /** Used to detect unsigned integer values. */
   var reIsUint = /^\d+$/;
-=======
->>>>>>> Stashed changes
 
   /** Used to match latin-1 supplementary letters (excluding mathematical operators). */
   var reLatin1 = /[\xc0-\xd6\xd8-\xde\xdf-\xf6\xf8-\xff]/g;
@@ -7190,14 +7154,8 @@ module.exports = restParam;
     'Array', 'ArrayBuffer', 'Date', 'Error', 'Float32Array', 'Float64Array',
     'Function', 'Int8Array', 'Int16Array', 'Int32Array', 'Math', 'Number',
     'Object', 'RegExp', 'Set', 'String', '_', 'clearTimeout', 'document',
-<<<<<<< Updated upstream
     'isFinite', 'parseFloat', 'parseInt', 'setTimeout', 'TypeError', 'Uint8Array',
     'Uint8ClampedArray', 'Uint16Array', 'Uint32Array', 'WeakMap', 'window'
-=======
-    'isFinite', 'parseInt', 'setTimeout', 'TypeError', 'Uint8Array',
-    'Uint8ClampedArray', 'Uint16Array', 'Uint32Array', 'WeakMap',
-    'window'
->>>>>>> Stashed changes
   ];
 
   /** Used to make template sourceURLs easier to identify. */
@@ -7322,11 +7280,8 @@ module.exports = restParam;
    * restricted `window` object, otherwise the `window` object is used.
    */
   var root = freeGlobal || ((freeWindow !== (this && this.window)) && freeWindow) || freeSelf || this;
-<<<<<<< Updated upstream
 
   /*--------------------------------------------------------------------------*/
-=======
->>>>>>> Stashed changes
 
   /**
    * The base implementation of `compareAscending` which compares values and
@@ -7696,6 +7651,8 @@ module.exports = restParam;
     return htmlUnescapes[chr];
   }
 
+  /*--------------------------------------------------------------------------*/
+
   /**
    * Create a new pristine `lodash` function using the given `context` object.
    *
@@ -7789,10 +7746,7 @@ module.exports = restParam;
         clearTimeout = context.clearTimeout,
         floor = Math.floor,
         getPrototypeOf = getNative(Object, 'getPrototypeOf'),
-<<<<<<< Updated upstream
         parseFloat = context.parseFloat,
-=======
->>>>>>> Stashed changes
         push = arrayProto.push,
         Set = getNative(context, 'Set'),
         setTimeout = context.setTimeout,
@@ -7825,7 +7779,8 @@ module.exports = restParam;
         nativeRandom = Math.random;
 
     /** Used as references for `-Infinity` and `Infinity`. */
-    var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+    var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY,
+        POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
 
     /** Used as references for the maximum length and index of an array. */
     var MAX_ARRAY_LENGTH = 4294967295,
@@ -7846,11 +7801,8 @@ module.exports = restParam;
 
     /** Used to lookup unminified function names. */
     var realNames = {};
-<<<<<<< Updated upstream
 
     /*------------------------------------------------------------------------*/
-=======
->>>>>>> Stashed changes
 
     /**
      * Creates a `lodash` object which wraps `value` to enable implicit chaining.
@@ -8072,6 +8024,8 @@ module.exports = restParam;
       }
     };
 
+    /*------------------------------------------------------------------------*/
+
     /**
      * Creates a lazy wrapper object which wraps `value` to enable lazy evaluation.
      *
@@ -8200,6 +8154,8 @@ module.exports = restParam;
       return result;
     }
 
+    /*------------------------------------------------------------------------*/
+
     /**
      * Creates a cache object to store key/value pairs.
      *
@@ -8268,6 +8224,8 @@ module.exports = restParam;
       return this;
     }
 
+    /*------------------------------------------------------------------------*/
+
     /**
      *
      * Creates a cache object to store unique values.
@@ -8316,6 +8274,8 @@ module.exports = restParam;
         data.hash[value] = true;
       }
     }
+
+    /*------------------------------------------------------------------------*/
 
     /**
      * Copies the values of `source` to `array`.
@@ -8400,11 +8360,7 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * A specialized version of `baseExtremum` for arrays which invokes `iteratee`
-=======
-     * A specialized version of `baseExtremum` for arrays whichs invokes `iteratee`
->>>>>>> Stashed changes
      * with one argument: (value).
      *
      * @private
@@ -9176,11 +9132,7 @@ module.exports = restParam;
       if (value === other) {
         return true;
       }
-<<<<<<< Updated upstream
       if (value == null || other == null || (!isObject(value) && !isObjectLike(other))) {
-=======
-      if (value == null || other == null || (!isObject(value) && !isObject(other))) {
->>>>>>> Stashed changes
         return value !== value && other !== other;
       }
       return baseIsEqualDeep(value, other, baseIsEqual, customizer, isLoose, stackA, stackB);
@@ -9357,12 +9309,7 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * The base implementation of `_.matchesProperty` which does not clone `srcValue`.
-=======
-     * The base implementation of `_.matchesProperty` which does not which does
-     * not clone `value`.
->>>>>>> Stashed changes
      *
      * @private
      * @param {string} path The path of the property to get.
@@ -9501,7 +9448,6 @@ module.exports = restParam;
 
     /**
      * The base implementation of `_.property` without support for deep paths.
-<<<<<<< Updated upstream
      *
      * @private
      * @param {string} key The key of the property to get.
@@ -9510,23 +9456,6 @@ module.exports = restParam;
     function baseProperty(key) {
       return function(object) {
         return object == null ? undefined : object[key];
-      };
-    }
-
-    /**
-     * A specialized version of `baseProperty` which supports deep paths.
-=======
->>>>>>> Stashed changes
-     *
-     * @private
-     * @param {Array|string} path The path of the property to get.
-     * @returns {Function} Returns the new function.
-     */
-    function basePropertyDeep(path) {
-      var pathKey = (path + '');
-      path = toPath(path);
-      return function(object) {
-        return baseGet(object, path, pathKey);
       };
     }
 
@@ -10399,7 +10328,6 @@ module.exports = restParam;
           var args = arguments;
           if (wrapper && args.length == 1 && isArray(args[0])) {
             return wrapper.plant(args[0]).value();
-<<<<<<< Updated upstream
           }
           var index = 0,
               result = length ? funcs[index].apply(this, args) : args[0];
@@ -10407,15 +10335,6 @@ module.exports = restParam;
           while (++index < length) {
             result = funcs[index].call(this, result);
           }
-=======
-          }
-          var index = 0,
-              result = length ? funcs[index].apply(this, args) : args[0];
-
-          while (++index < length) {
-            result = funcs[index].call(this, result);
-          }
->>>>>>> Stashed changes
           return result;
         };
       };
@@ -10879,20 +10798,6 @@ module.exports = restParam;
       while (index--) {
         var key = objProps[index];
         if (!(isLoose ? key in other : hasOwnProperty.call(other, key))) {
-<<<<<<< Updated upstream
-          return false;
-        }
-      }
-      var skipCtor = isLoose;
-      while (++index < objLength) {
-        key = objProps[index];
-        var objValue = object[key],
-            othValue = other[key],
-            result = customizer ? customizer(isLoose ? othValue : objValue, isLoose? objValue : othValue, key) : undefined;
-
-        // Recursively compare objects (susceptible to call stack limits).
-        if (!(result === undefined ? equalFunc(objValue, othValue, customizer, isLoose, stackA, stackB) : result)) {
-=======
           return false;
         }
       }
@@ -10918,26 +10823,9 @@ module.exports = restParam;
             ('constructor' in object && 'constructor' in other) &&
             !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
               typeof othCtor == 'function' && othCtor instanceof othCtor)) {
->>>>>>> Stashed changes
-          return false;
-        }
-        skipCtor || (skipCtor = key == 'constructor');
-      }
-<<<<<<< Updated upstream
-      if (!skipCtor) {
-        var objCtor = object.constructor,
-            othCtor = other.constructor;
-
-        // Non `Object` object instances with different constructors are not equal.
-        if (objCtor != othCtor &&
-            ('constructor' in object && 'constructor' in other) &&
-            !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
-              typeof othCtor == 'function' && othCtor instanceof othCtor)) {
           return false;
         }
       }
-=======
->>>>>>> Stashed changes
       return true;
     }
 
@@ -11186,11 +11074,7 @@ module.exports = restParam;
      * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
      */
     function isIndex(value, length) {
-<<<<<<< Updated upstream
       value = (typeof value == 'number' || reIsUint.test(value)) ? +value : -1;
-=======
-      value = typeof value == 'number' ? value : parseFloat(value);
->>>>>>> Stashed changes
       length = length == null ? MAX_SAFE_INTEGER : length;
       return value > -1 && value % 1 == 0 && value < length;
     }
@@ -11247,7 +11131,6 @@ module.exports = restParam;
      */
     function isLaziable(func) {
       var funcName = getFuncName(func);
-<<<<<<< Updated upstream
       if (!(funcName in LazyWrapper.prototype)) {
         return false;
       }
@@ -11257,9 +11140,6 @@ module.exports = restParam;
       }
       var data = getData(other);
       return !!data && func === data[0];
-=======
-      return !!funcName && func === lodash[funcName] && funcName in LazyWrapper.prototype;
->>>>>>> Stashed changes
     }
 
     /**
@@ -11575,6 +11455,8 @@ module.exports = restParam;
         : new LodashWrapper(wrapper.__wrapped__, wrapper.__chain__, arrayCopy(wrapper.__actions__));
     }
 
+    /*------------------------------------------------------------------------*/
+
     /**
      * Creates an array of elements split into groups the length of `size`.
      * If `collection` can't be split evenly, the final chunk will be the remaining
@@ -11642,13 +11524,8 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * Creates an array of unique `array` values not included in the other
      * provided arrays using [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
-=======
-     * Creates an array excluding all values of the provided arrays using
-     * [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
->>>>>>> Stashed changes
      * for equality comparisons.
      *
      * @static
@@ -12121,13 +11998,8 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * Creates an array of unique values that are included in all of the provided
      * arrays using [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
-=======
-     * Creates an array of unique values in all provided arrays using
-     * [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
->>>>>>> Stashed changes
      * for equality comparisons.
      *
      * @static
@@ -12680,13 +12552,8 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * Creates an array of unique values, in order, from all of the provided arrays
      * using [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
-=======
-     * Creates an array of unique values, in order, of the provided arrays using
-     * [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
->>>>>>> Stashed changes
      * for equality comparisons.
      *
      * @static
@@ -12765,7 +12632,6 @@ module.exports = restParam;
       var callback = getCallback();
       if (!(iteratee == null && callback === baseCallback)) {
         iteratee = callback(iteratee, thisArg, 3);
-<<<<<<< Updated upstream
       }
       return (isSorted && getIndexOf() == baseIndexOf)
         ? sortedUniq(array, iteratee)
@@ -12806,75 +12672,11 @@ module.exports = restParam;
       var result = Array(length);
       while (++index < length) {
         result[index] = arrayMap(array, baseProperty(index));
-=======
->>>>>>> Stashed changes
       }
       return result;
     }
 
     /**
-<<<<<<< Updated upstream
-     * This method is like `_.unzip` except that it accepts an iteratee to specify
-     * how regrouped values should be combined. The `iteratee` is bound to `thisArg`
-     * and invoked with four arguments: (accumulator, value, index, group).
-=======
-     * This method is like `_.zip` except that it accepts an array of grouped
-     * elements and creates an array regrouping the elements to their pre-zip
-     * configuration.
->>>>>>> Stashed changes
-     *
-     * @static
-     * @memberOf _
-     * @category Array
-     * @param {Array} array The array of grouped elements to process.
-     * @param {Function} [iteratee] The function to combine regrouped values.
-     * @param {*} [thisArg] The `this` binding of `iteratee`.
-     * @returns {Array} Returns the new array of regrouped elements.
-     * @example
-     *
-     * var zipped = _.zip([1, 2], [10, 20], [100, 200]);
-     * // => [[1, 10, 100], [2, 20, 200]]
-     *
-     * _.unzipWith(zipped, _.add);
-     * // => [3, 30, 300]
-     */
-<<<<<<< Updated upstream
-    function unzipWith(array, iteratee, thisArg) {
-      var length = array ? array.length : 0;
-      if (!length) {
-        return [];
-=======
-    function unzip(array) {
-      if (!(array && array.length)) {
-        return [];
-      }
-      var index = -1,
-          length = 0;
-
-      array = arrayFilter(array, function(group) {
-        if (isArrayLike(group)) {
-          length = nativeMax(group.length, length);
-          return true;
-        }
-      });
-      var result = Array(length);
-      while (++index < length) {
-        result[index] = arrayMap(array, baseProperty(index));
->>>>>>> Stashed changes
-      }
-      var result = unzip(array);
-      if (iteratee == null) {
-        return result;
-      }
-      iteratee = bindCallback(iteratee, thisArg, 4);
-      return arrayMap(result, function(group) {
-        return arrayReduce(group, iteratee, undefined, true);
-      });
-    }
-
-    /**
-<<<<<<< Updated upstream
-=======
      * This method is like `_.unzip` except that it accepts an iteratee to specify
      * how regrouped values should be combined. The `iteratee` is bound to `thisArg`
      * and invoked with four arguments: (accumulator, value, index, group).
@@ -12910,7 +12712,6 @@ module.exports = restParam;
     }
 
     /**
->>>>>>> Stashed changes
      * Creates an array excluding all provided values using
      * [`SameValueZero`](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
      * for equality comparisons.
@@ -12933,11 +12734,7 @@ module.exports = restParam;
     });
 
     /**
-<<<<<<< Updated upstream
      * Creates an array of unique values that is the [symmetric difference](https://en.wikipedia.org/wiki/Symmetric_difference)
-=======
-     * Creates an array that is the [symmetric difference](https://en.wikipedia.org/wiki/Symmetric_difference)
->>>>>>> Stashed changes
      * of the provided arrays.
      *
      * @static
@@ -13053,11 +12850,8 @@ module.exports = restParam;
       arrays.length = length;
       return unzipWith(arrays, iteratee, thisArg);
     });
-<<<<<<< Updated upstream
 
     /*------------------------------------------------------------------------*/
-=======
->>>>>>> Stashed changes
 
     /**
      * Creates a `lodash` object that wraps `value` with explicit method
@@ -13308,6 +13102,8 @@ module.exports = restParam;
     function wrapperValue() {
       return baseWrapperValue(this.__wrapped__, this.__actions__);
     }
+
+    /*------------------------------------------------------------------------*/
 
     /**
      * Creates an array of elements corresponding to the given keys, or indexes,
@@ -14429,6 +14225,8 @@ module.exports = restParam;
       return filter(collection, baseMatches(source));
     }
 
+    /*------------------------------------------------------------------------*/
+
     /**
      * Gets the number of milliseconds that have elapsed since the Unix epoch
      * (1 January 1970 00:00:00 UTC).
@@ -14446,6 +14244,8 @@ module.exports = restParam;
     var now = nativeNow || function() {
       return new Date().getTime();
     };
+
+    /*------------------------------------------------------------------------*/
 
     /**
      * The opposite of `_.before`; this method creates a function that invokes
@@ -15427,6 +15227,8 @@ module.exports = restParam;
       return createWrapper(wrapper, PARTIAL_FLAG, null, [value], []);
     }
 
+    /*------------------------------------------------------------------------*/
+
     /**
      * Creates a clone of `value`. If `isDeep` is `true` nested objects are cloned,
      * otherwise they are assigned by reference. If `customizer` is provided it is
@@ -16257,6 +16059,8 @@ module.exports = restParam;
     function toPlainObject(value) {
       return baseCopy(value, keysIn(value));
     }
+
+    /*------------------------------------------------------------------------*/
 
     /**
      * Assigns own enumerable properties of source object(s) to the destination
@@ -17091,21 +16895,13 @@ module.exports = restParam;
 
       var index = -1,
           length = path.length,
-<<<<<<< Updated upstream
           lastIndex = length - 1,
-=======
-          endIndex = length - 1,
->>>>>>> Stashed changes
           nested = object;
 
       while (nested != null && ++index < length) {
         var key = path[index];
         if (isObject(nested)) {
-<<<<<<< Updated upstream
           if (index == lastIndex) {
-=======
-          if (index == endIndex) {
->>>>>>> Stashed changes
             nested[key] = value;
           } else if (nested[key] == null) {
             nested[key] = isIndex(path[index + 1]) ? [] : {};
@@ -17223,6 +17019,8 @@ module.exports = restParam;
       return baseValues(object, keysIn(object));
     }
 
+    /*------------------------------------------------------------------------*/
+
     /**
      * Checks if `n` is between `start` and up to but not including, `end`. If
      * `end` is not specified it is set to `start` with `start` then set to `0`.
@@ -17326,6 +17124,8 @@ module.exports = restParam;
       }
       return baseRandom(min, max);
     }
+
+    /*------------------------------------------------------------------------*/
 
     /**
      * Converts `string` to [camel case](https://en.wikipedia.org/wiki/CamelCase).
@@ -18192,6 +17992,8 @@ module.exports = restParam;
       return string.match(pattern || reWords) || [];
     }
 
+    /*------------------------------------------------------------------------*/
+
     /**
      * Attempts to invoke `func`, returning either the result or the caught error
      * object. Any additional arguments are provided to `func` when it is invoked.
@@ -18338,11 +18140,7 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * Creates a function that compares the property value of `path` on a given
-=======
-     * Creates a function which compares the property value of `path` on a given
->>>>>>> Stashed changes
      * object to `value`.
      *
      * **Note:** This method supports comparing arrays, booleans, `Date` objects,
@@ -18370,21 +18168,14 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * Creates a function that invokes the method at `path` on a given object.
      * Any additional arguments are provided to the invoked method.
-=======
-     * Creates a function which invokes the method at `path` on a given object.
->>>>>>> Stashed changes
      *
      * @static
      * @memberOf _
      * @category Utility
      * @param {Array|string} path The path of the method to invoke.
-<<<<<<< Updated upstream
      * @param {...*} [args] The arguments to invoke the method with.
-=======
->>>>>>> Stashed changes
      * @returns {Function} Returns the new function.
      * @example
      *
@@ -18406,23 +18197,15 @@ module.exports = restParam;
     });
 
     /**
-<<<<<<< Updated upstream
      * The opposite of `_.method`; this method creates a function that invokes
      * the method at a given path on `object`. Any additional arguments are
      * provided to the invoked method.
-=======
-     * The opposite of `_.method`; this method creates a function which invokes
-     * the method at a given path on `object`.
->>>>>>> Stashed changes
      *
      * @static
      * @memberOf _
      * @category Utility
      * @param {Object} object The object to query.
-<<<<<<< Updated upstream
      * @param {...*} [args] The arguments to invoke the method with.
-=======
->>>>>>> Stashed changes
      * @returns {Function} Returns the new function.
      * @example
      *
@@ -18566,11 +18349,7 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * Creates a function that returns the property value at `path` on a
-=======
-     * Creates a function which returns the property value at `path` on a
->>>>>>> Stashed changes
      * given object.
      *
      * @static
@@ -18596,11 +18375,7 @@ module.exports = restParam;
     }
 
     /**
-<<<<<<< Updated upstream
      * The opposite of `_.property`; this method creates a function that returns
-=======
-     * The opposite of `_.property`; this method creates a function which returns
->>>>>>> Stashed changes
      * the property value at a given path on `object`.
      *
      * @static
@@ -18754,146 +18529,6 @@ module.exports = restParam;
       return baseToString(prefix) + id;
     }
 
-    /**
-     * Adds two numbers.
-     *
-     * @static
-     * @memberOf _
-     * @category Math
-     * @param {number} augend The first number to add.
-     * @param {number} addend The second number to add.
-     * @returns {number} Returns the sum.
-     * @example
-     *
-     * _.add(6, 4);
-     * // => 10
-     */
-    function add(augend, addend) {
-      return (+augend || 0) + (+addend || 0);
-    }
-
-    /**
-     * Gets the maximum value of `collection`. If `collection` is empty or falsey
-     * `-Infinity` is returned. If an iteratee function is provided it is invoked
-     * for each value in `collection` to generate the criterion by which the value
-     * is ranked. The `iteratee` is bound to `thisArg` and invoked with three
-     * arguments: (value, index, collection).
-     *
-     * If a property name is provided for `iteratee` the created `_.property`
-     * style callback returns the property value of the given element.
-     *
-     * If a value is also provided for `thisArg` the created `_.matchesProperty`
-     * style callback returns `true` for elements that have a matching property
-     * value, else `false`.
-     *
-     * If an object is provided for `iteratee` the created `_.matches` style
-     * callback returns `true` for elements that have the properties of the given
-     * object, else `false`.
-     *
-     * @static
-     * @memberOf _
-     * @category Math
-     * @param {Array|Object|string} collection The collection to iterate over.
-     * @param {Function|Object|string} [iteratee] The function invoked per iteration.
-     * @param {*} [thisArg] The `this` binding of `iteratee`.
-     * @returns {*} Returns the maximum value.
-     * @example
-     *
-     * _.max([4, 2, 8, 6]);
-     * // => 8
-     *
-     * _.max([]);
-     * // => -Infinity
-     *
-     * var users = [
-     *   { 'user': 'barney', 'age': 36 },
-     *   { 'user': 'fred',   'age': 40 }
-     * ];
-     *
-     * _.max(users, function(chr) {
-     *   return chr.age;
-     * });
-     * // => { 'user': 'fred', 'age': 40 }
-     *
-     * // using the `_.property` callback shorthand
-     * _.max(users, 'age');
-     * // => { 'user': 'fred', 'age': 40 }
-     */
-    var max = createExtremum(gt, -Infinity);
-
-    /**
-     * Gets the minimum value of `collection`. If `collection` is empty or falsey
-     * `Infinity` is returned. If an iteratee function is provided it is invoked
-     * for each value in `collection` to generate the criterion by which the value
-     * is ranked. The `iteratee` is bound to `thisArg` and invoked with three
-     * arguments: (value, index, collection).
-     *
-     * If a property name is provided for `iteratee` the created `_.property`
-     * style callback returns the property value of the given element.
-     *
-     * If a value is also provided for `thisArg` the created `_.matchesProperty`
-     * style callback returns `true` for elements that have a matching property
-     * value, else `false`.
-     *
-     * If an object is provided for `iteratee` the created `_.matches` style
-     * callback returns `true` for elements that have the properties of the given
-     * object, else `false`.
-     *
-     * @static
-     * @memberOf _
-     * @category Math
-     * @param {Array|Object|string} collection The collection to iterate over.
-     * @param {Function|Object|string} [iteratee] The function invoked per iteration.
-     * @param {*} [thisArg] The `this` binding of `iteratee`.
-     * @returns {*} Returns the minimum value.
-     * @example
-     *
-     * _.min([4, 2, 8, 6]);
-     * // => 2
-     *
-     * _.min([]);
-     * // => Infinity
-     *
-     * var users = [
-     *   { 'user': 'barney', 'age': 36 },
-     *   { 'user': 'fred',   'age': 40 }
-     * ];
-     *
-     * _.min(users, function(chr) {
-     *   return chr.age;
-     * });
-     * // => { 'user': 'barney', 'age': 36 }
-     *
-     * // using the `_.property` callback shorthand
-     * _.min(users, 'age');
-     * // => { 'user': 'barney', 'age': 36 }
-     */
-    var min = createExtremum(lt, Infinity);
-
-    /**
-     * Gets the sum of the values in `collection`.
-     *
-     * @static
-     * @memberOf _
-     * @category Math
-     * @param {Array|Object|string} collection The collection to iterate over.
-     * @param {Function|Object|string} [iteratee] The function invoked per iteration.
-     * @param {*} [thisArg] The `this` binding of `iteratee`.
-     * @returns {number} Returns the sum.
-     * @example
-     *
-<<<<<<< Updated upstream
-     * _.uniqueId('contact_');
-     * // => 'contact_104'
-     *
-     * _.uniqueId();
-     * // => '105'
-     */
-    function uniqueId(prefix) {
-      var id = ++idCounter;
-      return baseToString(prefix) + id;
-    }
-
     /*------------------------------------------------------------------------*/
 
     /**
@@ -19024,8 +18659,6 @@ module.exports = restParam;
      * @returns {number} Returns the sum.
      * @example
      *
-=======
->>>>>>> Stashed changes
      * _.sum([4, 6]);
      * // => 10
      *
@@ -19052,7 +18685,6 @@ module.exports = restParam;
       }
       var callback = getCallback(),
           noIteratee = iteratee == null;
-<<<<<<< Updated upstream
 
       if (!(noIteratee && callback === baseCallback)) {
         noIteratee = false;
@@ -19062,17 +18694,8 @@ module.exports = restParam;
         ? arraySum(isArray(collection) ? collection : toIterable(collection))
         : baseSum(collection, iteratee);
     }
-=======
->>>>>>> Stashed changes
 
-      if (!(noIteratee && callback === baseCallback)) {
-        noIteratee = false;
-        iteratee = callback(iteratee, thisArg, 3);
-      }
-      return noIteratee
-        ? arraySum(isArray(collection) ? collection : toIterable(collection))
-        : baseSum(collection, iteratee);
-    }
+    /*------------------------------------------------------------------------*/
 
     // Ensure wrappers are instances of `baseLodash`.
     lodash.prototype = baseLodash.prototype;
@@ -19221,6 +18844,8 @@ module.exports = restParam;
     // Add functions to `lodash.prototype`.
     mixin(lodash, lodash);
 
+    /*------------------------------------------------------------------------*/
+
     // Add functions that return unwrapped values when chaining.
     lodash.add = add;
     lodash.attempt = attempt;
@@ -19329,6 +18954,8 @@ module.exports = restParam;
       return source;
     }()), false);
 
+    /*------------------------------------------------------------------------*/
+
     // Add functions capable of returning wrapped and unwrapped values when chaining.
     lodash.sample = sample;
 
@@ -19340,6 +18967,8 @@ module.exports = restParam;
         return sample(value, n);
       });
     };
+
+    /*------------------------------------------------------------------------*/
 
     /**
      * The semantic version number.
@@ -19568,6 +19197,8 @@ module.exports = restParam;
     return lodash;
   }
 
+  /*--------------------------------------------------------------------------*/
+
   // Export lodash.
   var _ = runInContext();
 
@@ -19732,11 +19363,7 @@ module.exports = arrayEvery;
 
 },{}],128:[function(require,module,exports){
 /**
-<<<<<<< Updated upstream
  * A specialized version of `baseExtremum` for arrays which invokes `iteratee`
-=======
- * A specialized version of `baseExtremum` for arrays whichs invokes `iteratee`
->>>>>>> Stashed changes
  * with one argument: (value).
  *
  * @private
@@ -20617,12 +20244,8 @@ module.exports = baseIndexOf;
 
 },{"./indexOfNaN":198}],157:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep'),
-<<<<<<< Updated upstream
     isObject = require('../lang/isObject'),
     isObjectLike = require('./isObjectLike');
-=======
-    isObject = require('../lang/isObject');
->>>>>>> Stashed changes
 
 /**
  * The base implementation of `_.isEqual` without support for `this` binding
@@ -20641,11 +20264,7 @@ function baseIsEqual(value, other, customizer, isLoose, stackA, stackB) {
   if (value === other) {
     return true;
   }
-<<<<<<< Updated upstream
   if (value == null || other == null || (!isObject(value) && !isObjectLike(other))) {
-=======
-  if (value == null || other == null || (!isObject(value) && !isObject(other))) {
->>>>>>> Stashed changes
     return value !== value && other !== other;
   }
   return baseIsEqualDeep(value, other, baseIsEqual, customizer, isLoose, stackA, stackB);
@@ -20653,11 +20272,7 @@ function baseIsEqual(value, other, customizer, isLoose, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-<<<<<<< Updated upstream
 },{"../lang/isObject":241,"./baseIsEqualDeep":158,"./isObjectLike":208}],158:[function(require,module,exports){
-=======
-},{"../lang/isObject":241,"./baseIsEqualDeep":158}],158:[function(require,module,exports){
->>>>>>> Stashed changes
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -20901,12 +20516,7 @@ var baseGet = require('./baseGet'),
     toPath = require('./toPath');
 
 /**
-<<<<<<< Updated upstream
  * The base implementation of `_.matchesProperty` which does not clone `srcValue`.
-=======
- * The base implementation of `_.matchesProperty` which does not which does
- * not clone `value`.
->>>>>>> Stashed changes
  *
  * @private
  * @param {string} path The path of the property to get.
@@ -21920,7 +21530,6 @@ module.exports = equalObjects;
 
 },{"../object/keys":254}],195:[function(require,module,exports){
 var baseProperty = require('./baseProperty');
-<<<<<<< Updated upstream
 
 /**
  * Gets the "length" property value of `object`.
@@ -21936,23 +21545,6 @@ var getLength = baseProperty('length');
 
 module.exports = getLength;
 
-=======
-
-/**
- * Gets the "length" property value of `object`.
- *
- * **Note:** This function is used to avoid a [JIT bug](https://bugs.webkit.org/show_bug.cgi?id=142792)
- * that affects Safari on at least iOS 8.1-8.3 ARM64.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {*} Returns the "length" value.
- */
-var getLength = baseProperty('length');
-
-module.exports = getLength;
-
->>>>>>> Stashed changes
 },{"./baseProperty":164}],196:[function(require,module,exports){
 var isStrictComparable = require('./isStrictComparable'),
     pairs = require('../object/pairs');
@@ -21975,7 +21567,6 @@ function getMatchData(object) {
 }
 
 module.exports = getMatchData;
-<<<<<<< Updated upstream
 
 },{"../object/pairs":257,"./isStrictComparable":210}],197:[function(require,module,exports){
 var isNative = require('../lang/isNative');
@@ -21995,27 +21586,6 @@ function getNative(object, key) {
 
 module.exports = getNative;
 
-=======
-
-},{"../object/pairs":257,"./isStrictComparable":210}],197:[function(require,module,exports){
-var isNative = require('../lang/isNative');
-
-/**
- * Gets the native function at `key` of `object`.
- *
- * @private
- * @param {Object} object The object to query.
- * @param {string} key The key of the method to get.
- * @returns {*} Returns the function if it's native, else `undefined`.
- */
-function getNative(object, key) {
-  var value = object == null ? undefined : object[key];
-  return isNative(value) ? value : undefined;
-}
-
-module.exports = getNative;
-
->>>>>>> Stashed changes
 },{"../lang/isNative":238}],198:[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
@@ -22196,16 +21766,11 @@ function isArrayLike(value) {
 }
 
 module.exports = isArrayLike;
-<<<<<<< Updated upstream
 
 },{"./getLength":195,"./isLength":207}],204:[function(require,module,exports){
 /** Used to detect unsigned integer values. */
 var reIsUint = /^\d+$/;
 
-=======
-
-},{"./getLength":195,"./isLength":207}],204:[function(require,module,exports){
->>>>>>> Stashed changes
 /**
  * Used as the [maximum length](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
  * of an array-like value.
@@ -22221,11 +21786,7 @@ var MAX_SAFE_INTEGER = 9007199254740991;
  * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
  */
 function isIndex(value, length) {
-<<<<<<< Updated upstream
   value = (typeof value == 'number' || reIsUint.test(value)) ? +value : -1;
-=======
-  value = typeof value == 'number' ? value : parseFloat(value);
->>>>>>> Stashed changes
   length = length == null ? MAX_SAFE_INTEGER : length;
   return value > -1 && value % 1 == 0 && value < length;
 }
@@ -23759,56 +23320,6 @@ module.exports = isUndefined;
  * @returns {boolean} Returns `true` if `value` is less than `other`, else `false`.
  * @example
  *
-<<<<<<< Updated upstream
- * _.isTypedArray(new Uint8Array);
- * // => true
- *
- * _.isTypedArray([]);
- * // => false
- */
-function isTypedArray(value) {
-  return isObjectLike(value) && isLength(value.length) && !!typedArrayTags[objToString.call(value)];
-}
-
-module.exports = isTypedArray;
-
-},{"../internal/isLength":207,"../internal/isObjectLike":208}],246:[function(require,module,exports){
-/**
- * Checks if `value` is `undefined`.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is `undefined`, else `false`.
- * @example
- *
- * _.isUndefined(void 0);
- * // => true
- *
- * _.isUndefined(null);
- * // => false
- */
-function isUndefined(value) {
-  return value === undefined;
-}
-
-module.exports = isUndefined;
-
-},{}],247:[function(require,module,exports){
-/**
- * Checks if `value` is less than `other`.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to compare.
- * @param {*} other The other value to compare.
- * @returns {boolean} Returns `true` if `value` is less than `other`, else `false`.
- * @example
- *
-=======
->>>>>>> Stashed changes
  * _.lt(1, 3);
  * // => true
  *
@@ -23922,12 +23433,9 @@ module.exports = toPlainObject;
 var createExtremum = require('../internal/createExtremum'),
     gt = require('../lang/gt');
 
-<<<<<<< Updated upstream
 /** Used as references for `-Infinity` and `Infinity`. */
 var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
 
-=======
->>>>>>> Stashed changes
 /**
  * Gets the maximum value of `collection`. If `collection` is empty or falsey
  * `-Infinity` is returned. If an iteratee function is provided it is invoked
@@ -23975,11 +23483,7 @@ var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
  * _.max(users, 'age');
  * // => { 'user': 'fred', 'age': 40 }
  */
-<<<<<<< Updated upstream
 var max = createExtremum(gt, NEGATIVE_INFINITY);
-=======
-var max = createExtremum(gt, -Infinity);
->>>>>>> Stashed changes
 
 module.exports = max;
 
@@ -23987,12 +23491,9 @@ module.exports = max;
 var createExtremum = require('../internal/createExtremum'),
     lt = require('../lang/lt');
 
-<<<<<<< Updated upstream
 /** Used as references for `-Infinity` and `Infinity`. */
 var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
 
-=======
->>>>>>> Stashed changes
 /**
  * Gets the minimum value of `collection`. If `collection` is empty or falsey
  * `Infinity` is returned. If an iteratee function is provided it is invoked
@@ -24040,11 +23541,7 @@ var POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
  * _.min(users, 'age');
  * // => { 'user': 'barney', 'age': 36 }
  */
-<<<<<<< Updated upstream
 var min = createExtremum(lt, POSITIVE_INFINITY);
-=======
-var min = createExtremum(lt, Infinity);
->>>>>>> Stashed changes
 
 module.exports = min;
 
@@ -24566,11 +24063,7 @@ var baseProperty = require('../internal/baseProperty'),
     isKey = require('../internal/isKey');
 
 /**
-<<<<<<< Updated upstream
  * Creates a function that returns the property value at `path` on a
-=======
- * Creates a function which returns the property value at `path` on a
->>>>>>> Stashed changes
  * given object.
  *
  * @static

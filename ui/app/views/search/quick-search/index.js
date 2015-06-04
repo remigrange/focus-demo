@@ -23,27 +23,6 @@ let searchAction = require('action/search');
 let searchStore = require('stores/search');
 
 let QuickSearch = React.createClass({
-    getDefaultProps() {
-        let operationList = [
-            {
-                action() {
-
-                },
-                style: {className: 'preview fa fa-eye'},
-                priority: 1
-            }
-        ];
-        let scopeList = [];
-        return ({
-            lineMap: {
-                'Movie': MovieLineComponent,
-                'People': PeopleLineComponent
-            },
-            onLineClick: this._onLineClick,
-            operationList,
-            scopeList
-        });
-    },
     mixins: [QuickSearchMixin],
     actions: searchAction,
     store: searchStore,
@@ -70,13 +49,9 @@ let QuickSearch = React.createClass({
             </div>
         );
     },
-    _onLineClick(line) {
-        let route = line.movId ? `movies/${line.id}` : `people/${line.id}`;
-        navigationAction.navigate(route);
-    },
     _getListType(list) {
         list = list || this.store.getList() || [{movId:0}];
-        return this.isSimpleList() && list[0].movId ? 'Movie' : 'People';
+        return list[0].movId ? 'Movie' : 'People';
     },
     _advancedSearchClickHandler(scope) {
         return () => {
@@ -87,7 +62,44 @@ let QuickSearch = React.createClass({
     }
 });
 
-module.exports = QuickSearch;
+let QuickSearchWrapper = React.createClass({
+    _getOperationList() {
+        return [
+            {
+                action() {
+
+                },
+                style: {className: 'preview fa fa-eye'},
+                priority: 1
+            }
+        ];
+    },
+    _getScopeList() {
+        return [];
+    },
+    _getLineMap() {
+        return {
+            'Movie': MovieLineComponent,
+            'People': PeopleLineComponent
+        };
+    },
+    _onLineClick(line) {
+        let route = line.movId ? `movies/${line.id}` : `people/${line.id}`;
+        navigationAction.navigate(route);
+    },
+    render() {
+        return (
+            <QuickSearch
+                lineMap={this._getLineMap()}
+                scopeList={this._getScopeList()}
+                operationList={this._getOperationList()}
+                onLineClick={this._onLineClick}
+                />
+        );
+    }
+});
+
+module.exports = QuickSearchWrapper;
 
 //
 //

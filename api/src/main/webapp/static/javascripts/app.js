@@ -178,7 +178,7 @@ require.register("action/navigation/index", function(exports, require, module) {
 
 module.exports = {
     navigate: function navigate(route) {
-        Backbone.hsitory.navigate("#" + route);
+        window.location.hash = "#" + route;
     }
 };
 
@@ -2328,7 +2328,6 @@ module.exports = React.createClass({
 
 require.register("views/menu/index", function(exports, require, module) {
 // Mixins
-
 'use strict';
 
 var menuMixin = Focus.components.application.menu.mixin;
@@ -2371,9 +2370,11 @@ var Wrapper = React.createClass({
         return [{
             icon: 'home',
             route: 'home',
+            name: 'Home',
             onClick: this._closeQuickSearchPopin
         }, {
             icon: 'search',
+            name: 'Search',
             onClick: this._toggleQuickSearchPopin
         }, {
             icon: 'video-camera',
@@ -3000,28 +3001,6 @@ module.exports = React.createClass({
         );
     }
 });
-});
-
-require.register("views/popin/quick-search", function(exports, require, module) {
-'use strict';
-
-var Popin = Focus.components.application.popin.component;
-var QuickSearch = require('views/search/quick-search');
-
-var QuickSearchPopin = React.createClass({
-    displayName: 'QuickSearchPopin',
-
-    render: function render() {
-        return React.createElement(
-            Popin,
-            { 'data-focus': 'quick-search-popin', ref: 'quick-search-popin', type: 'from-menu' },
-            React.createElement(QuickSearch, { togglePopin: this.refs['quick-search-popin'].toggleOpen })
-        );
-    }
-});
-
-module.exports = QuickSearchPopin;
-
 });
 
 require.register("views/search-result/index", function(exports, require, module) {
@@ -3844,23 +3823,6 @@ var searchStore = require('stores/search');
 var QuickSearch = React.createClass({
     displayName: 'QuickSearch',
 
-    getDefaultProps: function getDefaultProps() {
-        var operationList = [{
-            action: function action() {},
-            style: { className: 'preview fa fa-eye' },
-            priority: 1
-        }];
-        var scopeList = [];
-        return {
-            lineMap: {
-                'Movie': MovieLineComponent,
-                'People': PeopleLineComponent
-            },
-            onLineClick: this._onLineClick,
-            operationList: operationList,
-            scopeList: scopeList
-        };
-    },
     mixins: [QuickSearchMixin],
     actions: searchAction,
     store: searchStore,
@@ -3891,13 +3853,9 @@ var QuickSearch = React.createClass({
             React.createElement(Button, { handleOnClick: this.changeGroupByMaxRows(groupKey, 5), label: 'Show more' })
         );
     },
-    _onLineClick: function _onLineClick(line) {
-        var route = line.movId ? 'movies/' + line.id : 'people/' + line.id;
-        navigationAction.navigate(route);
-    },
     _getListType: function _getListType(list) {
         list = list || this.store.getList() || [{ movId: 0 }];
-        return this.isSimpleList() && list[0].movId ? 'Movie' : 'People';
+        return list[0].movId ? 'Movie' : 'People';
     },
     _advancedSearchClickHandler: function _advancedSearchClickHandler(scope) {
         var _this = this;
@@ -3910,7 +3868,40 @@ var QuickSearch = React.createClass({
     }
 });
 
-module.exports = QuickSearch;
+var QuickSearchWrapper = React.createClass({
+    displayName: 'QuickSearchWrapper',
+
+    _getOperationList: function _getOperationList() {
+        return [{
+            action: function action() {},
+            style: { className: 'preview fa fa-eye' },
+            priority: 1
+        }];
+    },
+    _getScopeList: function _getScopeList() {
+        return [];
+    },
+    _getLineMap: function _getLineMap() {
+        return {
+            'Movie': MovieLineComponent,
+            'People': PeopleLineComponent
+        };
+    },
+    _onLineClick: function _onLineClick(line) {
+        var route = line.movId ? 'movies/' + line.id : 'people/' + line.id;
+        navigationAction.navigate(route);
+    },
+    render: function render() {
+        return React.createElement(QuickSearch, {
+            lineMap: this._getLineMap(),
+            scopeList: this._getScopeList(),
+            operationList: this._getOperationList(),
+            onLineClick: this._onLineClick
+        });
+    }
+});
+
+module.exports = QuickSearchWrapper;
 
 //
 //

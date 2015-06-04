@@ -37,7 +37,7 @@ let Wrapper = React.createClass({
                 name: 'Search',
                 onClick: this._toggleQuickSearchPopin
             },
-            /*{
+            {
                 icon: 'video-camera',
                 route: '',
                 onClick: this._closeQuickSearchPopin
@@ -56,7 +56,7 @@ let Wrapper = React.createClass({
                 icon: 'info-circle',
                 route: '',
                 onClick: this._closeQuickSearchPopin
-            }*/
+            }
         ]);
     },
     _toggleQuickSearchPopin() {
