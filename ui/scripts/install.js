@@ -9,7 +9,9 @@ var files = [
   'bootstrap/dist/css/bootstrap.css',
   'bootstrap/dist/js/bootstrap.js',
   //bootstrap-material
-  
+
+//moment
+  'moment/min/moment.min.js',
   //focusjs
   'focusjs/dist/focus.js',
   //focusjs-components
