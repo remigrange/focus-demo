@@ -24,6 +24,7 @@
     "backbone": "^1.2.0",
     "bootstrap": "^3.3.4",
     "bootstrap-material": "^0.1.5",
+    "daterangepicker": "0.0.3",
     "focusjs": "^0.6.0",
     "focusjs-components": "^0.1.4",
     "font-awesome": "^4.3.0",
