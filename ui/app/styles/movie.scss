@@ -1,0 +1,32 @@
+
+
+[data-focus='header']{
+  .cartridge-movie {
+    display: flex;
+    flex-direction: row;
+
+    .poster {
+      border:1px solid red;
+      width: 250px;
+      height: 300px;
+      border: 1px solid #B2B2B2;
+      background-color: #F8F8F8;
+      text-align: center;
+      color: #B2B2B2;
+    }
+    .summary {
+      padding: 0 30px;
+
+      h1 {
+        margin: 0 0 10px 0;
+        color:rgb(54, 183, 185);
+      }
+      h2 {
+        margin: 0 0 10px 0;
+      }
+      h3 {
+        margin: 0 0 10px 0;
+      }
+    }
+  }
+}

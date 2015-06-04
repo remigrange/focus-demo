@@ -29,11 +29,15 @@ module.exports = React.createClass({
     action: movieActions,
     renderContent: function renderMovieCartridge() {
         return (
-            <div className="movie-cartridge">
-              <div className='picture'><img src="./static/img/logoMovie.png" /></div>
-              <div className='title'>{this.state.title}</div>
-              <div className='year'>{this.state.year}</div>
-              <div className='country'>{this.state.countryIds}</div>
+            <div className="cartridge-movie">
+                <div className="poster">
+                    Movie Poster
+                </div>
+                <div className="summary">
+                    <h1 className='title'>{this.state.title}</h1>
+                    <h2 className='year'>{this.state.year}</h2>
+                    <h3 className='country'>{this.state.countryIds}</h3>
+                </div>
             </div>
         );
     }
