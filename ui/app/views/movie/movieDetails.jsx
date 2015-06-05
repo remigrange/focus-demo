@@ -23,8 +23,3 @@ module.exports = React.createClass({
       );
   }
 });
-/**
- *       <Block title='movie.detail.storyLine'>
-         {this.state.description}
-       </Block>
- */

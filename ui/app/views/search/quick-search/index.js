@@ -1,10 +1,14 @@
 // Components
 
-let MoviePreview = require('../previews/moviePreview');
+let MoviePreview = require('../previews/movie-preview');
 let MovieLineComponent = require('../lines/movieLineComponent');
 
-let PeoplePreview = require('../previews/peoplePreview');
+let PeoplePreview = require('../previews/people-preview');
 let PeopleLineComponent = require('../lines/peopleLineComponent');
+
+let Title = FocusComponents.common.title.component;
+let Button = FocusComponents.common.button.action.component;
+let Popin = FocusComponents.application.popin.component;
 
 // Mixins
 
@@ -13,95 +17,122 @@ let QuickSearchMixin = Focus.components.page.search.quickSearch.mixin;
 // Actions
 
 let navigationAction = require('action/navigation');
+let searchAction = require('action/search');
 
+// Stores
 
-let resultLineActionsList = [{
-    label: '',
-    action(data) {
-        let PreviewComponent = data.movId ? MoviePreview : PeoplePreview;
-
-    }
-}];
-
+let searchStore = require('stores/search');
 
 let QuickSearch = React.createClass({
     mixins: [QuickSearchMixin],
+    actions: searchAction,
+    store: searchStore,
     render() {
+        let list = this.isSimpleList() ? this.getSimpleListComponent({type: this._getListType()}) : this.getGroupByListComponent();
         return (
             <div data-focus='quick-search'>
-
+                {this.getSearchBarComponent()}
+                {list}
             </div>
+        );
+    },
+    renderGroupByBlock(groupKey, list, maxRows) {
+        return (
+            <div data-focus='group-result-container'>
+                <Title title={groupKey}/>
+                <a onClick={this._advancedSearchClickHandler(groupKey)}>Advanced search</a>
+                {this.getSimpleListComponent({
+                    type: this._getListType(list),
+                    list,
+                    maxRows
+                })}
+                <Button handleOnClick={this.changeGroupByMaxRows(groupKey, 5)} label='Show more'></Button>
+            </div>
+        );
+    },
+    _getListType(list) {
+        list = list || this.store.getList() || [{movId:0}];
+        return list[0].movId ? 'Movie' : 'People';
+    },
+    _advancedSearchClickHandler(scope) {
+        return () => {
+            let route = `search/advanced/scope/${scope}/query/${this.getCriteria().query}`;
+            this.props.closePopin();
+            navigationAction.navigate(route);
+        }
+    }
+});
+
+let QuickSearchWrapper = React.createClass({
+    _getOperationList() {
+        let self = this;
+        return [
+            {
+                label: '',
+                action(data) {
+                    if (self.state && _.isEqual(self.state.previewData, data)) {
+                        self.refs['preview-popin'].toggleOpen();
+                        self._previewOpened = !self._previewOpened;
+                    } else {
+                        let timeout = 0;
+                        if (self._previewOpened) {
+                            self.refs['preview-popin'].toggleOpen();
+                            timeout = 200;
+                        }
+                        setTimeout(() => {
+                            let Preview = self._getPreviewType(data);
+                            self.setState({
+                                previewComponent: <Preview data={data}/>,
+                                previewData: data
+                            });
+                            self.refs['preview-popin'].toggleOpen();
+                            self._previewOpened = true;
+                        }, timeout);
+                    }
+                },
+                style: {className: 'fa fa-eye', 'data-focus': 'line-preview'},
+                priority: 1
+            }
+        ];
+    },
+    _getScopeList() {
+        return [];
+    },
+    _getLineMap() {
+        return {
+            'Movie': MovieLineComponent,
+            'People': PeopleLineComponent
+        };
+    },
+    _onLineClick(data) {
+        let route = data.movId ? `movie/${data.movId}` : `people/${data.peoId}`;
+        this.props.closePopin();
+        navigationAction.navigate(route);
+    },
+    _getPreviewType(data) {
+        return data.movId ? MoviePreview : PeoplePreview;
+    },
+    render() {
+        return (
+            <div>
+                <QuickSearch
+                    lineMap={this._getLineMap()}
+                    scopeList={this._getScopeList()}
+                    lineOperationList={this._getOperationList()}
+                    onLineClick={this._onLineClick}
+                    />
+                <Popin
+                    overlay={false}
+                    type='from-right'
+                    open={this.state && this.state.previewComponent != undefined}
+                    ref='preview-popin'
+                    >
+                    {this.state && this.state.previewComponent}
+                </Popin>
+            </div>
+
         );
     }
 });
 
-module.exports = QuickSearch;
-
-//
-//
-//
-//
-//
-////Configuration des props du composant de vue de recherche.
-//let config = {
-//    onLineClick: function onLineClick(data) {
-//        let url = '';
-//        if (data.movId !== undefined && data.movId !== null) {
-//            url = '#movie/' + data.movId;
-//        } else {
-//            if (data.peoId !== undefined && data.peoId !== null) {
-//                url = '#people/' + data.peoId;
-//            }
-//        }
-//        Backbone.history.navigate(url, true);
-//        $('.quick-search-popin .popin-close-btn').click();
-//        //On ferme la popin de preview si elle est affichée.
-//        let qsPreview = $('.preview-popin .popin-close-btn');
-//        if(qsPreview !== undefined && qsPreview !== null && qsPreview.length > 0){
-//            qsPreview.click();
-//        }
-//    },
-//    operationList: [
-//        {
-//            label: '', action: function (data) {
-//            let Preview = MoviePreview;
-//            if(!data.movId){
-//                Preview = PeoplePreview;
-//            }
-//            Focus.application.render(Preview, '#previewModal',
-//                {
-//                    props: {
-//                        data: data,
-//                        position: 'right',
-//                        open: true,
-//                        style: {className: 'preview-popin'}
-//                    }
-//                });
-//        }, style: {className: 'preview fa fa-eye'}, priority: 1
-//        }
-//    ],
-//    scopes: [
-//        {code: 'ALL', label: 'ALL'},
-//        {code: 'MOVIE', label: 'MOVIE'},
-//        {code: 'PEOPLE', label: 'PEOPLE'}
-//    ],
-//    scope: 'ALL',
-//    idField: 'movId',
-//    groupMaxRows: 3
-//};
-//
-//let qs = React.createElement(SearchResult, {
-//    lineMap: {
-//        'Movies': MovieLineComponent,
-//        'People': PeopleLineComponent,
-//        'MOVIE': MovieLineComponent,
-//        'PEOPLE': PeopleLineComponent
-//    },
-//    onLineClick: config.onLineClick,
-//    operationList: config.operationList,
-//    scopeList: config.scopes,
-//    scope: config.scope,
-//    idField: config.idField,
-//    groupMaxRows: config.groupMaxRows,
-//    parentSelector: parentselector
-//});
+module.exports = QuickSearchWrapper;

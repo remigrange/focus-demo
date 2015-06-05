@@ -1,5 +1,5 @@
 module.exports = {
     navigate(route) {
-        Backbone.hsitory.navigate(`#${route}`);
+        window.location.hash = `#${route}`;
     }
 };
