@@ -3,8 +3,8 @@ let MovieLineComponent = require('../lines/movieLineComponent');
 let PeopleLineComponent = require('../lines/peopleLineComponent');
 module.exports = {
   lineMap: {
-    'movie': MovieLineComponent,
-    'people': PeopleLineComponent
+    'Movie': MovieLineComponent,
+    'People': PeopleLineComponent
   },
   onLineClick(data){
       //Should be on the line and not in the config

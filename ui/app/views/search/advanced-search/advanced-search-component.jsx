@@ -1,5 +1,5 @@
 //Dependencies
-let advancedSearchPageMixin = FocusComponents.page.search.advancedSearch.mixin;
+let advancedSearchPageMixin = Focus.components.page.search.advancedSearch.mixin;
 let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
 
@@ -12,9 +12,11 @@ let searchStore = new Focus.store.SearchStore();
  */
 let WrappedAdvancedSearch = React.createClass({
 		mixins: [advancedSearchPageMixin],
+    store: searchStore,
+    actions: require('action/search'),
     _getListType(list){
-      ist = list || this.store.getList() || [{movId:0}];
-      return list[0].movId ? 'Movie' : 'People';
+      list = list || this.store.getList() || [{movId:0}];
+      return {type: list[0].movId ? 'Movie' : 'People'};
     },
     renderList(){
       if(this.isSimpleList()){
@@ -51,3 +53,4 @@ let WrappedAdvancedSearch = React.createClass({
   }
 
 });
+module.exports = WrappedAdvancedSearch;

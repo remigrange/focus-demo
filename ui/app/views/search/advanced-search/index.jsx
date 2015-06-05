@@ -1,5 +1,5 @@
 /*global React*/
-let assign = Object.assign;
+let assign = _.assign;
 //Get the component
 let AdvancedSearch = require('./advanced-search-component');
 
