@@ -3875,7 +3875,7 @@ var QuickSearchWrapper = React.createClass({
         return [{
             label: '',
             action: function action() {},
-            style: { className: 'preview fa fa-eye' },
+            style: { className: 'fa fa-eye', 'data-focus': 'line-preview' },
             priority: 1
         }];
     },
@@ -3897,7 +3897,7 @@ var QuickSearchWrapper = React.createClass({
         return React.createElement(QuickSearch, {
             lineMap: this._getLineMap(),
             scopeList: this._getScopeList(),
-            operationList: this._getOperationList(),
+            lineOperationList: this._getOperationList(),
             onLineClick: this._onLineClick
         });
     }

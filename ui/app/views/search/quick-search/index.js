@@ -70,7 +70,7 @@ let QuickSearchWrapper = React.createClass({
                 action() {
 
                 },
-                style: {className: 'preview fa fa-eye'},
+                style: {className: 'fa fa-eye', 'data-focus': 'line-preview'},
                 priority: 1
             }
         ];
@@ -94,7 +94,7 @@ let QuickSearchWrapper = React.createClass({
             <QuickSearch
                 lineMap={this._getLineMap()}
                 scopeList={this._getScopeList()}
-                operationList={this._getOperationList()}
+                lineOperationList={this._getOperationList()}
                 onLineClick={this._onLineClick}
                 />
         );
