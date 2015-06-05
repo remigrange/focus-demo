@@ -8,7 +8,7 @@ var AppRouter = Router.extend({
   routes: {
     '': 'home',
     'home': 'home',
-    'search/advanced/scope/:scope/query/:query': 'filterResult',
+    'search/advanced/scope/:scope/query/:query': 'advancedSearch',
     'search/quick': 'searchResult',
     'movie/:id': 'movie',
     'people/:id': 'people'
@@ -28,6 +28,13 @@ var AppRouter = Router.extend({
     var PeopleDetailView = require('../views/people');
    // renderMenu();
     this._pageContent(PeopleDetailView, {props: {id: id}});
+  },
+  advancedSearch(scope, query){
+      console.log('Route: advanced search')
+      scope = scope || 'MOVIE';
+      query = query || '';
+      var AdvancedSearchView = require('../views/search/advanced-search');
+      this._pageContent(AdvancedSearchView, {props: {scope: scope, query: query}})
   },
   filterResult: function handleFilterResult(scope, query) {
     console.log('ROUTE: FILTER RESULT');
