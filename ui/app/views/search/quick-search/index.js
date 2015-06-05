@@ -70,11 +70,25 @@ let QuickSearchWrapper = React.createClass({
             {
                 label: '',
                 action(data) {
-                    let Preview = self._getPreviewType(data);
-                    self.setState({
-                        previewComponent: <Preview data={data}/>
-                    });
-                    self.refs['preview-popin'].toggleOpen();
+                    if (self.state && _.isEqual(self.state.previewData, data)) {
+                        self.refs['preview-popin'].toggleOpen();
+                        self._previewOpened = !self._previewOpened;
+                    } else {
+                        let timeout = 0;
+                        if (self._previewOpened) {
+                            self.refs['preview-popin'].toggleOpen();
+                            timeout = 200;
+                        }
+                        setTimeout(() => {
+                            let Preview = self._getPreviewType(data);
+                            self.setState({
+                                previewComponent: <Preview data={data}/>,
+                                previewData: data
+                            });
+                            self.refs['preview-popin'].toggleOpen();
+                            self._previewOpened = true;
+                        }, timeout);
+                    }
                 },
                 style: {className: 'fa fa-eye', 'data-focus': 'line-preview'},
                 priority: 1
@@ -91,7 +105,7 @@ let QuickSearchWrapper = React.createClass({
         };
     },
     _onLineClick(data) {
-        let route = data.movId ? `movies/${data.movId}` : `people/${data.peoId}`;
+        let route = data.movId ? `movie/${data.movId}` : `people/${data.peoId}`;
         this.props.closePopin();
         navigationAction.navigate(route);
     },
