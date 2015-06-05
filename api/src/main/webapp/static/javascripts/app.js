@@ -2396,11 +2396,11 @@ var Wrapper = React.createClass({
     },
     _toggleQuickSearchPopin: function _toggleQuickSearchPopin() {
         this.refs['quick-search-popin'].toggleOpen();
+        this._quickSearchPopinOpened = !this._quickSearchPopinOpened;
     },
     _closeQuickSearchPopin: function _closeQuickSearchPopin() {
         // for now the popin is controlled this way, maybe a future improvement would be to use the "opened" prop of the popin
         if (this._quickSearchPopinOpened) {
-            this._quickSearchPopinOpened = false;
             this._toggleQuickSearchPopin();
         }
     },
@@ -3873,6 +3873,7 @@ var QuickSearchWrapper = React.createClass({
 
     _getOperationList: function _getOperationList() {
         return [{
+            label: '',
             action: function action() {},
             style: { className: 'preview fa fa-eye' },
             priority: 1
@@ -3889,6 +3890,7 @@ var QuickSearchWrapper = React.createClass({
     },
     _onLineClick: function _onLineClick(line) {
         var route = line.movId ? 'movies/' + line.id : 'people/' + line.id;
+        this.props.closePopin();
         navigationAction.navigate(route);
     },
     render: function render() {

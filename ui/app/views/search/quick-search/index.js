@@ -66,6 +66,7 @@ let QuickSearchWrapper = React.createClass({
     _getOperationList() {
         return [
             {
+                label: '',
                 action() {
 
                 },
@@ -85,6 +86,7 @@ let QuickSearchWrapper = React.createClass({
     },
     _onLineClick(line) {
         let route = line.movId ? `movies/${line.id}` : `people/${line.id}`;
+        this.props.closePopin();
         navigationAction.navigate(route);
     },
     render() {
