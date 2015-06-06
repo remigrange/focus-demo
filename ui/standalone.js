@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var childProcess = require('child_process')
 
 console.log('###########################################');
@@ -11,7 +13,7 @@ console.log();
 
 var brunch = childProcess.exec('brunch watch');
 
-var server = childProcess.exec('node server/server.js');
+var server = childProcess.exec('node server/server.js server/');
 
 brunch.stdout.pipe(process.stdout);
 brunch.stderr.pipe(process.stderr);
