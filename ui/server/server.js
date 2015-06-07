@@ -30,10 +30,18 @@ app.use(function(req, res, next) {
 // Common
 app.post('/searchByScope', function(req, res) {
     var criteria = req.body.criteria;
+    var pageInfos = req.body.pageInfos;
     var facets = req.body.facets;
-    var clusteringFaacetName = req.body.group;
-    console.log(criteria);
-    req.json([]);
+    var clusteringFacetName = req.body.group;
+
+    var movies = _.filter(database.movies, function(movie) {
+        return movie.title.search(new RegExp('.*' + criteria.query + '.*')) !== -1;
+    });
+    res.json({
+        list: movies,
+        facets: [],
+        totalRecords: movies.length
+    });
 });
 
 // Masterdata
@@ -42,6 +50,12 @@ app.get('/scopes', function(req, res) {
 });
 
 // Movie
+
+app.get('/movies/:movId/details', function(req, res) {
+    res.json(_.find(database.movieDetails, function(details) {
+        return details.movId == req.param('movId');
+    }));
+});
 
 // People
 
