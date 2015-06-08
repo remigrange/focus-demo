@@ -8,7 +8,7 @@ let formMixin = Focus.components.common.form.mixin;
 
 // Actions
 
-let peopleActions = require('../../action/people');
+let peopleActions = require('../../action/people').people;
 
 
 module.exports = React.createClass({
@@ -18,22 +18,13 @@ module.exports = React.createClass({
     stores: [{store: peopleStore, properties: ['people']}],
     action: peopleActions,
     renderContent() {
-        console.log('RENDERING PEOPLE CARTRIDGE');
         return (
-            <div className='cartridge'>
-                <div className='header'>
-                    <div className='picture'>
-                        <i className='fa fa-user'></i>
-                    </div>
-                    <div className='link'><a href=''>IMDB</a></div>
-                    <div className='title'>{this.state.peoName}</div>
-                    <div className='professions'>{this.state.professions}</div>
-                </div>
-                <div className='field'>
-                    <div className='title'>{'PROFESSIONS'}</div>
-                    <div className='content'>
-                        {this.state.professions}
-                    </div>
+            <div className='cartridge-people'>
+                <i className='fa fa-user fa-5x'></i>
+                <div className='summary'>
+                    <h1 className='title'>{this.state.peoName}</h1>
+
+                    <h2 className='professions'>{this.state.professions}</h2>
                 </div>
             </div>
         );

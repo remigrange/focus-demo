@@ -4,7 +4,7 @@ let formMixin = Focus.components.common.form.mixin;
 
 // Actions
 
-let peopleActions = require('../../action/people');
+let peopleActions = require('../../action/people').people;
 
 // Stores
 
@@ -12,7 +12,7 @@ let peopleStore = require('../../stores/people');
 
 // Components
 
-let Title = Focus.components.common.title.component;
+let Block = Focus.components.common.block.component;
 
 module.exports = React.createClass({
     definitionPath: 'people',

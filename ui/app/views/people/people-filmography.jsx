@@ -10,12 +10,12 @@ let peopleStore = require('../../stores/people');
 
 // Actions
 
-let peopleActions = require('../../action/people');
+let peopleActions = require('../../action/people').filmography;
 
 // Components
 
 let Title = Focus.components.common.title.component;
-let MovieCard = require('./movieCard');
+let MovieCard = require('../movie/movie-card');
 let FormList = Focus.components.common.list;
 
 let Line = React.createClass({

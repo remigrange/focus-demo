@@ -6,7 +6,7 @@ let PeopleFilmography = require('./people-filmography');
 let PeoplePictures = require('./people-pictures');
 let PeopleCartrige = require('./people-cartridge');
 
-let PeopeSummary = React.createClass({
+let PeopleSummary = React.createClass({
     render() {
         return (
             <div>
@@ -16,24 +16,12 @@ let PeopeSummary = React.createClass({
     }
 });
 
-module.exports = React.createClass({
-    render: function renderPeopleView() {
-        return (
-            <div className="peopleView">
-                <StickyNavigation contentSelector="body"/>
-                <SlidingContent id={this.props.id}/>
-            </div>
-        );
-    }
-});
-
-
 module.exports = createDetail({
     displayName: 'PeopleView',
     cartridgeConfiguration() {
         let props = {id: this.props.id, hasForm: false};
         return {
-            summary: {component: PeopeSummary, props},
+            summary: {component: PeopleSummary, props},
             cartridge: {component: PeopleCartrige, props},
             actions: {
                 primary: [
