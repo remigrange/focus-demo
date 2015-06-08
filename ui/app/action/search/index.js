@@ -28,7 +28,7 @@ module.exports = {
             function success(data) {
 
                 var dataRet = {
-                    facet: data.facet,
+                    facet: data.facets,
                     list: data.list,
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,
