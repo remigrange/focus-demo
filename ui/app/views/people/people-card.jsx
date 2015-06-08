@@ -1,5 +1,5 @@
 module.exports = React.createClass({
-    render: function renderPeopleCard() {
+    render() {
         return (
             <div className='people-line'>
                 <div className='icon'><i className="fa fa-user fa-3x"></i></div>

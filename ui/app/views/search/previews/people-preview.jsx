@@ -1,5 +1,5 @@
-let PeopleCartridge = require('views/people/cartridge');
-let PeopleDetails = require('views/people/peopleDetails');
+let PeopleCartridge = require('views/people/people-cartridge');
+let PeopleDetails = require('views/people/people-details');
 
 let PeoplePreview = React.createClass({
   render() {

@@ -27,5 +27,12 @@ module.exports = {
                 'title': 'Pictures'
             }
         }
+    },
+    people: {
+        detail: {
+            identity: {
+                title: 'Identity'
+            }
+        }
     }
 };

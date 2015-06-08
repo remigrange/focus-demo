@@ -1,25 +1,19 @@
-var AppDispatcher = Focus.dispatcher;
 var peopleServices = require('../../services').people;
-module.exports = {
-    load: function(id){
-        peopleServices.getPeopleViewById(id).then(
-            function(data){
-              AppDispatcher.handleServerAction({
-                    data: {people: data},
-                    type: 'update'
-                });
-            }
-        );
-    },
+var actionBuilder = Focus.application.actionBuilder;
 
-    loadFilmography: function(id){
-        peopleServices.getPeopleFilmographyById(id).then(
-            function(data){
-              AppDispatcher.handleServerAction({
-                    data: {filmography: {filmography: data}},
-                    type: 'update'
-                });
-            }
-        );
+module.exports = {
+    people: {
+        load: actionBuilder({
+            service: peopleServices.getPeopleViewById,
+            node: 'people',
+            status: 'loaded'
+        })
+    },
+    filmography: {
+        load: actionBuilder({
+            service: peopleServices.getPeopleFilmographyById,
+            node: 'filmography',
+            status: 'loaded'
+        })
     }
 };
