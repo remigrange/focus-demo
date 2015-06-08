@@ -18,6 +18,9 @@ let WrappedAdvancedSearch = React.createClass({
       list = list || this.store.getList() || [{movId:0}];
       return {type: list[0].movId ? 'Movie' : 'People'};
     },
+		componentWillMount(){
+			console.log('WrappedAdvancedSearch call', this.props, 'state', this.state);
+		},
     renderList(){
       if(this.isSimpleList()){
         return this.getSimpleListComponent(this._getListType());

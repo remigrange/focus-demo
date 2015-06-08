@@ -16,6 +16,8 @@ let props = assign(
 //Instanciate the component with the props.
 module.exports = React.createClass({
   render(){
-    return (<AdvancedSearch {...props} />);
+    //Merge the component props and the congfiguration of the advanced-search.
+    let mergedProps = assign({},props, this.props);
+    return (<AdvancedSearch {...mergedProps} />);
   }
 });
