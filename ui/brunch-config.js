@@ -4,7 +4,10 @@ exports.config = {
     enabled: true
   },*/
   paths: {
-    "public": '../api/src/main/webapp/static/'
+  //  "public": '../api/src/main/webapp/static/'
+  },
+  server:{
+    path: './server/server.js'
   },
   files: {
     javascripts: {
