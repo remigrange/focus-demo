@@ -1,3 +1,7 @@
+// Dependencies
+
+let isEmpty = _.isEmpty;
+
 // Components
 
 let MoviePreview = require('../previews/movie-preview');
@@ -53,8 +57,11 @@ let QuickSearch = React.createClass({
         );
     },
     _getListType(list) {
-        list = list || this.store.getList() || [{movId:0}];
-        return list[0].movId ? 'Movie' : 'People';
+        if (isEmpty(list)) {
+            return 'Movie';
+        } else {
+            return list[0].movId ? 'Movie' : 'People';
+        }
     },
     _advancedSearchClickHandler(scope) {
         return () => {

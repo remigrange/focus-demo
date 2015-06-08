@@ -4,14 +4,14 @@
 package rodolphe.demo.services.common;
 
 import io.vertigo.dynamo.collections.ListFilter;
+import io.vertigo.dynamo.collections.model.Facet;
+import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.transaction.Transactional;
+import io.vertigo.util.MapBuilder;
 import io.vertigo.vega.rest.engine.UiContext;
 import io.vertigo.vega.rest.model.UiListState;
-
-import javax.inject.Inject;
-
 import rodolphe.demo.domain.common.SearchCriteria;
 import rodolphe.demo.domain.common.SelectedFacet;
 import rodolphe.demo.domain.masterdata.CodeScope;
@@ -24,6 +24,10 @@ import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.people.PeopleServices;
 import rodolphe.demo.services.search.FacetSelection;
 import rodolphe.demo.services.search.SearchCriterium;
+
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implementation of common ws.
@@ -61,10 +65,40 @@ public class CommonServicesImpl implements CommonServices {
                     .getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel);
             final FacetedQueryResult<PeopleResult, SearchCriterium<PeopleCriteria>> people = peopleServices
                     .getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel);
+
             final UiContext result = new UiContext();
             result.put("Movies", movies.getDtList());
             result.put("People", people.getDtList());
+
+            final UiContext facets = new UiContext();
+            final MapBuilder<String, Map<String, Long>> movieFacetsMapBuilder = new MapBuilder<>();
+            for (final Object obj : movies.getFacets()) {
+                final Facet facet = (Facet) obj;
+                final MapBuilder<String, Long> facetValuesBuilder = new MapBuilder<>();
+                for (final Map.Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+                    facetValuesBuilder.put(entry.getKey().getLabel().getDisplay(), entry.getValue());
+                }
+                movieFacetsMapBuilder.put(facet.getDefinition().getName(), facetValuesBuilder.build());
+            }
+            final MapBuilder<String, Map<String, Long>> peopleFacetsMapBuilder = new MapBuilder<>();
+            for (final Object obj : people.getFacets()) {
+                final Facet facet = (Facet) obj;
+                final MapBuilder<String, Long> facetValuesBuilder = new MapBuilder<>();
+                for (final Map.Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+                    facetValuesBuilder.put(entry.getKey().getLabel().getDisplay(), entry.getValue());
+                }
+                peopleFacetsMapBuilder.put(facet.getDefinition().getName(), facetValuesBuilder.build());
+            }
+            facets.put("Movies", new HashMap(movieFacetsMapBuilder.build()));
+            facets.put("People", new HashMap(peopleFacetsMapBuilder.build()));
+
+            final UiContext records = new UiContext();
+            records.put("Movies", movies.getCount());
+            records.put("People", people.getCount());
+
             uiContext.put("list", result);
+            uiContext.put("facets", facets);
+            uiContext.put("records", records);
             uiContext.put("totalRecords", movies.getCount() + people.getCount());
             return uiContext;
         }
