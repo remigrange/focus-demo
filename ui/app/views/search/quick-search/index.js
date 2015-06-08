@@ -43,15 +43,16 @@ let QuickSearch = React.createClass({
     renderGroupByBlock(groupKey, list, maxRows) {
         return (
             <div data-focus='group-result-container'>
-                <Title title={groupKey}/>
-                <span>Les 3 plus pertinents</span>
-                <a onClick={this._advancedSearchClickHandler(groupKey)}>Voir plus de résultats</a>
+                <div className="title-navigation">
+                    <Button label='button.advancedSearch' shape="ghost"></Button>
+                    <Title title={groupKey}/>
+                </div>
+                <a onClick={this._advancedSearchClickHandler(groupKey)}></a>
                 {this.getSimpleListComponent({
                     type: this._getListType(list),
                     list,
                     maxRows
                 })}
-                <Button handleOnClick={this.changeGroupByMaxRows(groupKey, 5)} label='Show more'></Button>
             </div>
         );
     },
@@ -72,6 +73,7 @@ let QuickSearch = React.createClass({
 });
 
 let QuickSearchWrapper = React.createClass({
+    mixins:[Focus.components.common.i18n.mixin],
     _getOperationList() {
         let self = this;
         return [
@@ -123,6 +125,7 @@ let QuickSearchWrapper = React.createClass({
     render() {
         return (
             <div>
+                <h1>this.i18n('quick-search.title')</h1>
                 <QuickSearch
                     lineMap={this._getLineMap()}
                     scopeList={this._getScopeList()}
