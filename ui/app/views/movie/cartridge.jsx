@@ -31,7 +31,7 @@ module.exports = React.createClass({
         return (
             <div className="cartridge-movie">
                 <div className="poster">
-                    Movie Poster
+                    <img src={this.state.poster}/>
                 </div>
                 <div className="summary">
                     <h1 className='title'>{this.state.title}</h1>
