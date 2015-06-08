@@ -22,6 +22,7 @@ let QuickSearchMixin = Focus.components.page.search.quickSearch.mixin;
 
 let navigationAction = require('action/navigation');
 let searchAction = require('action/search');
+let scopeAction = require('action/scope');
 
 // Stores
 
@@ -122,13 +123,19 @@ let QuickSearchWrapper = React.createClass({
     _getPreviewType(data) {
         return data.movId ? MoviePreview : PeoplePreview;
     },
+    componentDidMount() {
+        scopeAction.getAll((scopes) => {
+            this.setState({scopes});
+        });
+    },
     render() {
+        let scopes = this.state && this.state.scopes || [];
         return (
             <div>
                 <h1>this.i18n('quick-search.title')</h1>
                 <QuickSearch
                     lineMap={this._getLineMap()}
-                    scopeList={this._getScopeList()}
+                    scopeList={scopes}
                     lineOperationList={this._getOperationList()}
                     onLineClick={this._onLineClick}
                     />
