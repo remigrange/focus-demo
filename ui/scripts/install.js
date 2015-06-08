@@ -9,10 +9,10 @@ var files = [
   'bootstrap/dist/css/bootstrap.css',
   'bootstrap/dist/js/bootstrap.js',
   //bootstrap-material
-  'bootstrap-material/dist/css/material.min.css',
-  'bootstrap-material/dist/js/material.min.js',
-  'bootstrap-material/dist/css/ripples.min.css',
-  'bootstrap-material/dist/js/ripples.min.js',
+  'bootstrap-material/dist/css/material.css',
+  'bootstrap-material/dist/js/material.js',
+  'bootstrap-material/dist/css/ripples.css',
+  'bootstrap-material/dist/js/ripples.js',
   //moment
   'moment/min/moment.min.js',
   //daterangepicker
@@ -38,7 +38,10 @@ var fonts = [
   'bootstrap-material/dist/fonts/Material-Design-Icons.woff',
   'bootstrap-material/dist/fonts/Material-Design-Icons.ttf',
   'font-awesome/fonts/fontawesome-webfont.eot',
-  'font-awesome/fonts/fontawesome-webfont.svg'
+  'font-awesome/fonts/fontawesome-webfont.svg',
+  'font-awesome/fonts/fontawesome-webfont.ttf',
+  'font-awesome/fonts/fontawesome-webfont.woff',
+  'font-awesome/fonts/fontawesome-webfont.woff2'
 ];
 
 

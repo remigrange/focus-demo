@@ -1,11 +1,11 @@
 
-[data-focus='header']{
+[data-focus='header'] {
   .cartridge-movie {
     display: flex;
     flex-direction: row;
 
     .poster {
-      border:1px solid red;
+      border: 1px solid red;
       width: 250px;
       height: 300px;
       border: 1px solid #B2B2B2;
@@ -18,7 +18,7 @@
 
       h1 {
         margin: 0 0 10px 0;
-        color:rgb(54, 183, 185);
+        color: rgb(54, 183, 185);
       }
       h2 {
         margin: 0 0 10px 0;
@@ -26,6 +26,17 @@
       h3 {
         margin: 0 0 10px 0;
       }
+    }
+  }
+}
+
+[data-focus="selection-list"] {
+  li[data-focus="sl-line"] {
+    [data-focus="sl-icon"] {
+      line-height: 75px;
+    }
+    .movie-line {
+      min-height: 75px;
     }
   }
 }

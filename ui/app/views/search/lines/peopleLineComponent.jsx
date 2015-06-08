@@ -3,11 +3,12 @@ module.exports = React.createClass({
   mixins: [Focus.components.list.selection.line.mixin],
   definitionPath: 'people',
   renderLineContent: function (data) {
-    var id = React.createElement('div', null, data.id);
-    var logo = <div className="movie-background fa fa-user" ></div>;
-    var userName = this.displayFor('peoName', {style: {className: 'title-level-1'}});
-    var item = <div className='item'>{userName}</div>
-    var root = React.createElement('div', null, id, logo, item);
-    return root;
+    return (
+        <div className="people-line">
+          <div data-focus="sl-icon" className="fa fa-user" ></div>
+          <div className="level1">{this.textFor('peoName')}</div>
+          <div className="level2">{this.textFor('userName')}</div>
+        </div>
+    );
   }
 });
