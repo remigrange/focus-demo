@@ -18,26 +18,26 @@ let Block = Focus.components.common.block.component;
 let PeopleCard = require('../people/people-card');
 
 let Line = React.createClass({
-  definitionPath: 'people',
-  mixins: [Focus.components.list.selection.line.mixin],
-  renderLineContent(data){
-    return (
-      <PeopleCard picture='' name={data.peoName} subName=''/>
-    );
-  }
+    definitionPath: 'people',
+    mixins: [Focus.components.list.selection.line.mixin],
+    renderLineContent(data) {
+        return (
+            <PeopleCard picture='' name={data.peoName} subName=''/>
+        );
+    }
 });
 
 module.exports = React.createClass({
-  definitionPath: 'people',
-  displayName: 'movieDirectors',
-  mixins: [formMixin],
-  stores: [{store: movieStore, properties: ['directors']}],
-  action: movieDirectorsActions,
-  renderContent() {
-    return (
-        <Block title='movie.detail.directors.title'>
-          {this.listFor('directors', {LineComponent: Line})}
-        </Block>
-    );
-  }
+    definitionPath: 'people',
+    displayName: 'movieDirectors',
+    mixins: [formMixin],
+    stores: [{store: movieStore, properties: ['directors']}],
+    action: movieDirectorsActions,
+    renderContent() {
+        return (
+            <Block title='movie.detail.directors.title'>
+                {this.listFor('directors', {LineComponent: Line})}
+            </Block>
+        );
+    }
 });
