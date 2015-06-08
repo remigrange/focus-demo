@@ -40,7 +40,8 @@ let QuickSearch = React.createClass({
         return (
             <div data-focus='group-result-container'>
                 <Title title={groupKey}/>
-                <a onClick={this._advancedSearchClickHandler(groupKey)}>Advanced search</a>
+                <span>Les 3 plus pertinents</span>
+                <a onClick={this._advancedSearchClickHandler(groupKey)}>Voir plus de résultats</a>
                 {this.getSimpleListComponent({
                     type: this._getListType(list),
                     list,
