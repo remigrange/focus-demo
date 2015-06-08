@@ -1,28 +1,42 @@
-//TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
-var formMixin = Focus.components.common.form.mixin;
-var movieDirectorsActions = require('../../action/movie').directors;
-var movieStore = require('../../stores/movie');
-var Block = Focus.components.common.block.component;
-var PeopleCard = require('./component/peopleCard');
-var line = React.createClass({
+// TODO Trouver un moyen de loader les data pour la FormList sans passer par le formMixin car il n'a pas lieu d'être
+
+// Mixins
+
+let formMixin = Focus.components.common.form.mixin;
+
+// Stores
+
+let movieStore = require('../../stores/movie');
+
+// Actions
+
+let movieDirectorsActions = require('../../action/movie').directors;
+
+// Components
+
+let Block = Focus.components.common.block.component;
+let PeopleCard = require('../people/people-card');
+
+let Line = React.createClass({
   definitionPath: 'people',
   mixins: [Focus.components.list.selection.line.mixin],
-  renderLineContent: function(data){
+  renderLineContent(data){
     return (
-      <PeopleCard picture="" name={data.peoName} subName=""/>
+      <PeopleCard picture='' name={data.peoName} subName=''/>
     );
   }
 });
+
 module.exports = React.createClass({
-  definitionPath: "people",
-  displayName: "movieDirectors",
+  definitionPath: 'people',
+  displayName: 'movieDirectors',
   mixins: [formMixin],
-  stores: [{store: movieStore, properties: ["directors"]}],
+  stores: [{store: movieStore, properties: ['directors']}],
   action: movieDirectorsActions,
-  renderContent: function render() {
+  renderContent() {
     return (
         <Block title='movie.detail.directors.title'>
-          {this.listFor("directors", {LineComponent: line})}
+          {this.listFor('directors', {LineComponent: Line})}
         </Block>
     );
   }
