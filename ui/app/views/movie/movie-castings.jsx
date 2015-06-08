@@ -37,7 +37,7 @@ module.exports = React.createClass({
     renderContent() {
         return (
             <Block title='movie.detail.cast.title'>
-                {this.listFor('castings', {LineComponent: Line})}
+                {this.listFor('castings', {lineComponent: Line})}
             </Block>
         );
     }
