@@ -1,11 +1,10 @@
-var Block = Focus.components.common.block.component;
+let Block = Focus.components.common.block.component;
+
 module.exports = React.createClass({
   displayName: "moviePictures",
-  render: function render() {
+  render() {
     return (
-      <Block title='movie.detail.pictures.title'>
-      </Block>
-
+      <Block title='movie.detail.pictures.title'/>
     );
   }
 });
