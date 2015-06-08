@@ -15,7 +15,7 @@ let movieStore = require('../../stores/movie');
 // Components
 
 let Title = Focus.components.common.title.component;
-let PeopleCard = require('./component/peopleCard');
+let PeopleCard = require('../people/people-card');
 let Block = Focus.components.common.block.component;
 
 let Line = React.createClass({
