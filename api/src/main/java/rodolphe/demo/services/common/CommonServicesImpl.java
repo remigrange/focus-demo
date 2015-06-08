@@ -56,9 +56,9 @@ public class CommonServicesImpl implements CommonServices {
         peopleCriteria.setLastName(searchText);
         final FacetSelection[] facetSel = getFacetSelectionList(selection);
         if (CodeScope.MOVIE.name().equals(scope)) {
-            return movieServices.getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel);
+            return constructSearchResponse(movieServices.getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel));
         } else if (CodeScope.PEOPLE.name().equals(scope)) {
-            return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel);
+            return constructSearchResponse(peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel));
         } else {
             final UiContext uiContext = new UiContext();
             final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices
@@ -70,34 +70,11 @@ public class CommonServicesImpl implements CommonServices {
             result.put("Movies", movies.getDtList());
             result.put("People", people.getDtList());
 
-            final UiContext facets = new UiContext();
-            final MapBuilder<String, Map<String, Long>> movieFacetsMapBuilder = new MapBuilder<>();
-            for (final Object obj : movies.getFacets()) {
-                final Facet facet = (Facet) obj;
-                final MapBuilder<String, Long> facetValuesBuilder = new MapBuilder<>();
-                for (final Map.Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
-                    facetValuesBuilder.put(entry.getKey().getLabel().getDisplay(), entry.getValue());
-                }
-                movieFacetsMapBuilder.put(facet.getDefinition().getName(), facetValuesBuilder.build());
-            }
-            final MapBuilder<String, Map<String, Long>> peopleFacetsMapBuilder = new MapBuilder<>();
-            for (final Object obj : people.getFacets()) {
-                final Facet facet = (Facet) obj;
-                final MapBuilder<String, Long> facetValuesBuilder = new MapBuilder<>();
-                for (final Map.Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
-                    facetValuesBuilder.put(entry.getKey().getLabel().getDisplay(), entry.getValue());
-                }
-                peopleFacetsMapBuilder.put(facet.getDefinition().getName(), facetValuesBuilder.build());
-            }
-            facets.put("Movies", new HashMap(movieFacetsMapBuilder.build()));
-            facets.put("People", new HashMap(peopleFacetsMapBuilder.build()));
-
             final UiContext records = new UiContext();
             records.put("Movies", movies.getCount());
             records.put("People", people.getCount());
 
             uiContext.put("list", result);
-            uiContext.put("facets", facets);
             uiContext.put("records", records);
             uiContext.put("totalRecords", movies.getCount() + people.getCount());
             return uiContext;
@@ -126,5 +103,26 @@ public class CommonServicesImpl implements CommonServices {
             }
         }
         return facetSelections;
+    }
+
+    private UiContext constructSearchResponse(final FacetedQueryResult facetedQueryResult) {
+        final UiContext uiContext = new UiContext();
+        uiContext.put("list", facetedQueryResult.getDtList());
+        uiContext.put("facets", new HashMap(getExplicitFacets(facetedQueryResult)));
+        uiContext.put("totalRecords", facetedQueryResult.getCount());
+        return uiContext;
+    }
+
+    private Map<String, Map<String, Long>> getExplicitFacets(final FacetedQueryResult facetedQueryResult) {
+        final MapBuilder<String, Map<String, Long>> facetsMapBuilder = new MapBuilder<>();
+        for (final Object obj : facetedQueryResult.getFacets()) {
+            final Facet facet = (Facet) obj;
+            final MapBuilder<String, Long> facetValuesBuilder = new MapBuilder<>();
+            for (final Map.Entry<FacetValue, Long> entry : facet.getFacetValues().entrySet()) {
+                facetValuesBuilder.put(entry.getKey().getLabel().getDisplay(), entry.getValue());
+            }
+            facetsMapBuilder.put(facet.getDefinition().getName(), facetValuesBuilder.build());
+        }
+        return facetsMapBuilder.build();
     }
 }
