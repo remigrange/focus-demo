@@ -1,32 +1,32 @@
-var formMixin = Focus.components.common.form.mixin;
-var peopleActions = require('../../action/people');
-var peopleStore = require('../../stores/people');
-var Title = Focus.components.common.title.component;
+// Mixins
+
+let formMixin = Focus.components.common.form.mixin;
+
+// Actions
+
+let peopleActions = require('../../action/people');
+
+// Stores
+
+let peopleStore = require('../../stores/people');
+
+// Components
+
+let Title = Focus.components.common.title.component;
+
 module.exports = React.createClass({
-  definitionPath: 'people',
-  displayName: 'peopleIdentification',
-  mixins: [formMixin],
-  stores: [{store: peopleStore, properties: ['people']}],
-  action: peopleActions,
-  renderActions: function renderActions(){},
-  renderContent: function render() {
-    if(this.state.isEdit) {
-      return (
-        <div className='slidingBloc'>
-          <Title id="identification" title="IDENTIFICATION"/>
-          {this.fieldFor('lastName')}
-          {this.fieldFor('firstName')}
-          {this.fieldFor('imdbid')}
-        </div>
-      );
+    definitionPath: 'people',
+    displayName: 'peopleDetails',
+    mixins: [formMixin],
+    stores: [{store: peopleStore, properties: ['people']}],
+    action: peopleActions,
+    renderContent() {
+        return (
+            <Block title='people.detail.identity.title' actions={this._renderActions}>
+                {this.fieldFor('lastname')}
+                {this.fieldFor('firstName')}
+                {this.fieldFor('imdbid')}
+            </Block>
+        );
     }
-    return (
-      <div className='slidingBloc'>
-        <Title id="identification" title="IDENTIFICATION"/>
-          {this.displayFor('lastName')}
-          {this.displayFor('firstName')}
-          {this.displayFor('imdbid')}
-      </div>
-    );
-  }
 });
