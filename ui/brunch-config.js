@@ -7,7 +7,7 @@ exports.config = {
     "public": '../api/src/main/webapp/static/'
   },
   server:{
-    path: './server/server.js'
+  //  path: './server/server.js'
   },
   files: {
         javascripts: {
