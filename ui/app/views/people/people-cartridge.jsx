@@ -13,7 +13,7 @@ module.exports = React.createClass({
       <div className="cartridge">
         <div className="header">
           <div className="picture">
-            <img src="./static/img/peopleLogo.png" width="100%" height="100%"/>
+            <i className='fa fa-user'></i>
           </div>
           <div className="link"><a href="">IMDB</a></div>
           <div className="title">{this.state.peoName}</div>
