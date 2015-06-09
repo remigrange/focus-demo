@@ -19,6 +19,7 @@ $(document).on("click", "a:not([data-bypass])", function(evt) {
   }
 });
 
+
 //Initialisation des congfigurations
 require('./domain-initializer');
 require('./definition-initializer');
@@ -28,3 +29,7 @@ require('./i18n-initializer');
 //Initialisation du layout
 //
 require('./layout-initializer');
+
+$(function() {
+  $.material.init();
+});

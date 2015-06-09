@@ -105,10 +105,9 @@ let QuickSearchWrapper = React.createClass({
     },
     render() {
         let scopes = this.state && this.state.scopes || [];
-        console.log('CA MARCHE MA COUILLE');
         return (
             <div>
-                <h1>{this.i18n('quick-search.title')}</h1>
+                <h1>{this.i18n('quickSearch.title')}</h1>
                 <QuickSearch
                     scopeList={scopes}
                     lineOperationList={this._getOperationList()}

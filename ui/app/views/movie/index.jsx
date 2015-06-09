@@ -4,7 +4,7 @@ let Detail = Focus.components.common.detail.component;
 
 // Components
 
-let MovieDetails = require('./movie-details');
+let MovieDetails = require('./movie-identity');
 let MovieCastings = require('./movie-castings');
 let MovieProducers = require('./movie-producers');
 let MovieDirectors = require('./movie-directors');

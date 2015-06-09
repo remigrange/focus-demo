@@ -13,7 +13,14 @@ module.exports = {
     'result': {
         'for': 'results for'
     },
-
+    search: {
+        bar: {
+            help: "Choose a scope here."
+        }
+    },
+    quickSearch: {
+        title: 'Quick search'
+    },
     'movie': {
         'title': 'Movie',
         'detail': {

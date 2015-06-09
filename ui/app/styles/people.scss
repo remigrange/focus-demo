@@ -1,0 +1,11 @@
+
+[data-focus="selection-list"] {
+  li[data-focus="sl-line"] {
+    [data-focus="sl-icon"] {
+      line-height: 75px;
+    }
+    .people-line {
+      min-height: 60px;
+    }
+  }
+}
