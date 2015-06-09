@@ -1,5 +1,7 @@
 
 [data-focus='search-bar'] {
+  position: relative;
+  
   [data-focus="scope"] {
     .sb-scope {
       &:before {
@@ -26,4 +28,5 @@
   div.sb-help {
     background: url('../img/help-arrow.png') no-repeat top 3px left 10px;
   }
+
 }

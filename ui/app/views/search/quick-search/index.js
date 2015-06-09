@@ -53,7 +53,7 @@ let QuickSearchWrapper = React.createClass({
         let self = this;
         return [
             {
-                label: '',
+                label: 'Preview',
                 action(data) {
                     if (self.state && _.isEqual(self.state.previewData, data)) {
                         self.refs['preview-popin'].toggleOpen();
@@ -75,7 +75,7 @@ let QuickSearchWrapper = React.createClass({
                         }, timeout);
                     }
                 },
-                style: {className: 'fa fa-eye', 'data-focus': 'line-preview'},
+                style: {className: 'fa fa-eye', shape: 'fab', 'data-focus': 'line-preview'},
                 priority: 1
             }
         ];
