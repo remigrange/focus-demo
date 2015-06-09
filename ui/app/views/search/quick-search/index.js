@@ -45,10 +45,9 @@ let QuickSearch = React.createClass({
         return (
             <div data-focus='group-result-container'>
                 <div className="title-navigation">
-                    <Button label='button.advancedSearch' shape="ghost"></Button>
+                    <Button handleOnClick={this._advancedSearchClickHandler(groupKey)} label='button.advancedSearch' shape="ghost"></Button>
                     <Title title={groupKey}/>
                 </div>
-                <a onClick={this._advancedSearchClickHandler(groupKey)}></a>
                 {this.getSimpleListComponent({
                     type: this._getListType(list),
                     list,
@@ -132,12 +131,13 @@ let QuickSearchWrapper = React.createClass({
         let scopes = this.state && this.state.scopes || [];
         return (
             <div>
-                <h1>this.i18n('quick-search.title')</h1>
+                <h1>{this.i18n('quick-search.title')}</h1>
                 <QuickSearch
                     lineMap={this._getLineMap()}
                     scopeList={scopes}
                     lineOperationList={this._getOperationList()}
                     onLineClick={this._onLineClick}
+                    closePopin={this.props.closePopin}
                     />
                 <Popin
                     overlay={false}

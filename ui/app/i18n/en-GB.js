@@ -40,5 +40,8 @@ module.exports = {
                 title: 'Identity'
             }
         }
+    },
+    'quick-search': {
+        title: 'Quick search'
     }
 };
