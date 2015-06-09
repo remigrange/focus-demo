@@ -28,8 +28,8 @@ let searchStore = require('stores/search');
 let Group = React.createClass({
     _advancedSearchClickHandler(scope) {
         return () => {
-            let route = `search/advanced/scope/${scope}/query/${this.getCriteria().query}`;
-            this.props.closePopin();
+            let route = `search/advanced/scope/${scope}/query/${this.props.query}`;
+            //this.props.closePopin();
             navigationAction.navigate(route);
         }
     },
