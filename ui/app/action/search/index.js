@@ -26,7 +26,7 @@ module.exports = {
 
                 var dataRet = {
                     facet: data.facets,
-                    list: data.list,
+                    map: data.map,
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,
                         perPage: 50,
