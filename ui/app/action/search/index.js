@@ -2,11 +2,8 @@ var services = require('../../services');
 
 module.exports = {
     search: function (criteria) {
-        var page = criteria.pageInfos.page;
-        if (page === undefined || page === null) {
-            page = 0;
-        }
-        criteria.pageInfos.skip = page;
+        criteria.pageInfos.page = criteria.pageInfos.page || 0;
+        criteria.pageInfos.skip = criteria.pageInfos.skip || 0;
         criteria.group = criteria.pageInfos.group;
         if (criteria.group === undefined || criteria.group === null) {
             criteria.group = '';
@@ -28,7 +25,7 @@ module.exports = {
             function success(data) {
 
                 var dataRet = {
-                    facet: data.facet,
+                    facet: data.facets,
                     list: data.list,
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,

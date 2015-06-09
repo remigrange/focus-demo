@@ -1,9 +1,17 @@
 /*global Backbone*/
 
-console.log('Application demo rodoplphe');
+console.log('Application Focus-démo');
 
 //Write focusComponents into Focus.components
 Focus.components = FocusComponents;
+
+(function() {
+    $.material.init();
+    $.material.ripples();
+    //$.material.input();
+    //$.material.checkbox();
+    //$.material.radio();
+})();
 
 //Initialisation des configurations et du layout.
 require('./initializer');

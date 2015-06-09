@@ -1,3 +1,7 @@
+// Dependencies
+
+let isEmpty = _.isEmpty;
+
 // Components
 
 let MoviePreview = require('../previews/movie-preview');
@@ -18,6 +22,7 @@ let QuickSearchMixin = Focus.components.page.search.quickSearch.mixin;
 
 let navigationAction = require('action/navigation');
 let searchAction = require('action/search');
+let scopeAction = require('action/scope');
 
 // Stores
 
@@ -39,20 +44,25 @@ let QuickSearch = React.createClass({
     renderGroupByBlock(groupKey, list, maxRows) {
         return (
             <div data-focus='group-result-container'>
-                <Title title={groupKey}/>
-                <a onClick={this._advancedSearchClickHandler(groupKey)}>Advanced search</a>
+                <div className="title-navigation">
+                    <Button label='button.advancedSearch' shape="ghost"></Button>
+                    <Title title={groupKey}/>
+                </div>
+                <a onClick={this._advancedSearchClickHandler(groupKey)}></a>
                 {this.getSimpleListComponent({
                     type: this._getListType(list),
                     list,
                     maxRows
                 })}
-                <Button handleOnClick={this.changeGroupByMaxRows(groupKey, 5)} label='Show more'></Button>
             </div>
         );
     },
     _getListType(list) {
-        list = list || this.store.getList() || [{movId:0}];
-        return list[0].movId ? 'Movie' : 'People';
+        if (isEmpty(list)) {
+            return 'Movie';
+        } else {
+            return list[0].movId ? 'Movie' : 'People';
+        }
     },
     _advancedSearchClickHandler(scope) {
         return () => {
@@ -64,6 +74,7 @@ let QuickSearch = React.createClass({
 });
 
 let QuickSearchWrapper = React.createClass({
+    mixins:[Focus.components.common.i18n.mixin],
     _getOperationList() {
         let self = this;
         return [
@@ -112,12 +123,19 @@ let QuickSearchWrapper = React.createClass({
     _getPreviewType(data) {
         return data.movId ? MoviePreview : PeoplePreview;
     },
+    componentDidMount() {
+        scopeAction.getAll((scopes) => {
+            this.setState({scopes});
+        });
+    },
     render() {
+        let scopes = this.state && this.state.scopes || [];
         return (
             <div>
+                <h1>this.i18n('quick-search.title')</h1>
                 <QuickSearch
                     lineMap={this._getLineMap()}
-                    scopeList={this._getScopeList()}
+                    scopeList={scopes}
                     lineOperationList={this._getOperationList()}
                     onLineClick={this._onLineClick}
                     />

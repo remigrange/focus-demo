@@ -1,10 +1,11 @@
-var URL = require('../../config/server');
-var fetch = Focus.network.fetch;
+let URL = require('../../config/server');
+let fetch = Focus.network.fetch;
+
 module.exports = {
-    getPeopleViewById: function getPeopleViewById(id){
-        return fetch(URL.people.peopleView({urlData: {id: id}}));
+    getPeopleViewById(id){
+        return fetch(URL.people.peopleView({urlData: {id}}));
     },
-    getPeopleFilmographyById: function getPeopleFilmographyById(id){
-        return fetch(URL.people.filmography({urlData: {id: id}}));
+    getPeopleFilmographyById(id){
+        return fetch(URL.people.filmography({urlData: {id}}));
     }
 };

@@ -1,4 +1,10 @@
 module.exports = {
+    button: {
+        edit: "Edit",
+        cancel: "Cancel",
+        save: "Save",
+        advancedSearch: "Advanced search"
+    },
     'live': {
         'filter': {
             'title': 'Filter results'
@@ -25,6 +31,13 @@ module.exports = {
             },
             'pictures': {
                 'title': 'Pictures'
+            }
+        }
+    },
+    people: {
+        detail: {
+            identity: {
+                title: 'Identity'
             }
         }
     }
