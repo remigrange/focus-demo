@@ -8,7 +8,7 @@ let AppRouter = Router.extend({
     routes: {
         '': 'home',
         'home': 'home',
-        'search/advanced/scope/:scope/query/:query': 'advancedSearh',
+        'search/advanced/scope/:scope/query/:query': 'advancedSearch',
         'movie/:id': 'movie',
         'people/:id': 'people'
     },
