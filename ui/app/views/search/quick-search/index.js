@@ -13,10 +13,7 @@ let PeopleLineComponent = require('../lines/peopleLineComponent');
 let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
 let Popin = FocusComponents.application.popin.component;
-
-// Mixins
-
-let QuickSearchMixin = Focus.components.page.search.quickSearch.mixin;
+let QuickSearch = Focus.components.page.search.quickSearch.component;
 
 // Actions
 
@@ -28,53 +25,30 @@ let scopeAction = require('action/scope');
 
 let searchStore = require('stores/search');
 
-let QuickSearch = React.createClass({
-    mixins: [QuickSearchMixin],
-    actions: searchAction,
-    store: searchStore,
-    render() {
-        let list = this.isSimpleList() ? this.getSimpleListComponent({type: this._getListType()}) : this.getGroupByListComponent();
-        return (
-            <div data-focus='quick-search'>
-                {this.getSearchBarComponent()}
-                {list}
-            </div>
-        );
-    },
-    renderGroupByBlock(groupKey, list, maxRows) {
-        return (
-            <div data-focus='group-result-container'>
-                <div className="title-navigation">
-                    <Button label='button.advancedSearch' shape="ghost"></Button>
-                    <Title title={groupKey}/>
-                </div>
-                <a onClick={this._advancedSearchClickHandler(groupKey)}></a>
-                {this.getSimpleListComponent({
-                    type: this._getListType(list),
-                    list,
-                    maxRows
-                })}
-            </div>
-        );
-    },
-    _getListType(list) {
-        if (isEmpty(list)) {
-            return 'Movie';
-        } else {
-            return list[0].movId ? 'Movie' : 'People';
-        }
-    },
+let Group = React.createClass({
     _advancedSearchClickHandler(scope) {
         return () => {
             let route = `search/advanced/scope/${scope}/query/${this.getCriteria().query}`;
             this.props.closePopin();
             navigationAction.navigate(route);
         }
+    },
+    render() {
+        return (
+            <div data-focus='group-result-container'>
+                <div className="title-navigation">
+                    <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)} label='button.advancedSearch'
+                            shape="ghost"></Button>
+                    <Title title={this.props.groupKey}/>
+                </div>
+                {this.props.children}
+            </div>
+        );
     }
 });
 
 let QuickSearchWrapper = React.createClass({
-    mixins:[Focus.components.common.i18n.mixin],
+    mixins: [Focus.components.common.i18n.mixin],
     _getOperationList() {
         let self = this;
         return [
@@ -109,11 +83,12 @@ let QuickSearchWrapper = React.createClass({
     _getScopeList() {
         return [];
     },
-    _getLineMap() {
-        return {
-            'Movie': MovieLineComponent,
-            'People': PeopleLineComponent
-        };
+    _lineComponentMapper(list) {
+        if (list.length > 0) {
+            return list[0].movId ? MovieLineComponent : PeopleLineComponent;
+        } else {
+            return MovieLineComponent;
+        }
     },
     _onLineClick(data) {
         let route = data.movId ? `movie/${data.movId}` : `people/${data.peoId}`;
@@ -130,14 +105,18 @@ let QuickSearchWrapper = React.createClass({
     },
     render() {
         let scopes = this.state && this.state.scopes || [];
+        console.log('CA MARCHE MA COUILLE');
         return (
             <div>
-                <h1>this.i18n('quick-search.title')</h1>
+                <h1>{this.i18n('quick-search.title')}</h1>
                 <QuickSearch
-                    lineMap={this._getLineMap()}
                     scopeList={scopes}
                     lineOperationList={this._getOperationList()}
                     onLineClick={this._onLineClick}
+                    closePopin={this.props.closePopin}
+                    searchAction={searchAction.search}
+                    groupComponent={Group}
+                    lineComponentMapper={this._lineComponentMapper}
                     />
                 <Popin
                     overlay={false}
