@@ -1,59 +1,69 @@
-//Dependencies
-let advancedSearchPageMixin = Focus.components.page.search.advancedSearch.mixin;
+// Actions
+
+let searchAction = require('action/search').search;
+
+// Mixins
+
+let AdvancedSearch = Focus.components.page.search.advancedSearch.component;
+
+// Components
+
 let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
+let MovieLineComponent = require('../lines/movieLineComponent');
+let PeopleLineComponent = require('../lines/peopleLineComponent');
 
-//The store should be an application singleton.
-let searchStore = new Focus.store.SearchStore();
+
+let Group = React.createClass({
+    render() {
+        let Title = FocusComponents.common.title.component;
+        let Button = FocusComponents.common.button.action.component;
+        return (
+            <div className="listResultContainer panel" data-focus="group-result-container">
+                <Title title={this.props.groupKey}/>
+
+                <div className="resultContainer">
+                    {this.props.children}
+                </div>
+                <Button handleClickAction={this.props.showAll(this.props.groupKey)} label="Show all"/>
+            </div>
+        );
+    }
+});
 
 /**
  * Page de recherche avancée.
  * @type {Object}
  */
 let WrappedAdvancedSearch = React.createClass({
-		mixins: [advancedSearchPageMixin],
-    store: searchStore,
-    actions: require('action/search'),
-    _getListType(list){
-      list = list || this.store.getList() || [{movId:0}];
-      return {type: list[0].movId ? 'Movie' : 'People'};
+    _lineComponentMapper(list) {
+        if (list.length < 1) {
+            return MovieLineComponent;
+        } else {
+            return list[0].movId ? MovieLineComponent : PeopleLineComponent;
+        }
     },
-		componentWillMount(){
-			console.log('WrappedAdvancedSearch call', this.props, 'state', this.state);
-		},
-    renderList(){
-      if(this.isSimpleList()){
-        return this.getSimpleListComponent(this._getListType());
-      }
-      return this.getGroupByListComponent();
+    _getListType(list) {
+        list = list || this.store.getList() || [{movId: 0}];
+        return {type: list[0].movId ? 'Movie' : 'People'};
     },
-    // rneder each line depending on its type
-    renderGroupByBlock(groupKey, list, maxRows){
-      let List = this.getSimpleListComponent(this._getListType(list));
-      return (
-        <div data-focus='grouped-list'>
-          <Title  title={groupKey} />
-          {List}
-          <Button handleOnClick={this.changeGroupByMaxRows(groupKey, 5)} label="Show more"/>
-          <Button handleOnClick={this.showAllGroupListHandler(groupKey)} label="Show all"/>
-        </div>
-      );
+    componentWillMount() {
+        console.log('WrappedAdvancedSearch call', this.props, 'state', this.state);
     },
-    render(){
-      let FacetBox = this.getFacetBoxComponent();
-      let SummaryList = this.getListSummaryComponent();
-      let ActionBar = this.getActionBarComponent();
-      return (
-        <div data-focus='advanced-search'>
-          {FacetBox}
-          <div data-focus='results'>
-            {SummaryList}
-            {ActionBar}
-            {this.renderList()}
-          </div>
-        </div>
-      );
-  }
+    render() {
+        return (
+            <AdvancedSearch
+                data-focus='advanced-search'
+                searchAction={searchAction}
+                groupComponent={Group}
+                isSelection={true}
+                lineComponentMapper={this._lineComponentMapper}
+                groupMaxRows={3}
+                {...this.props}
+                />
+        );
+    }
 
 });
+
 module.exports = WrappedAdvancedSearch;
