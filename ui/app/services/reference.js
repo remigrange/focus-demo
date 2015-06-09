@@ -1,7 +1,8 @@
-var URL = require('../../config/server');
-var fetch = Focus.network.fetch;
+let URL = require('../../config/server');
+let fetch = Focus.network.fetch;
+
 module.exports = {
-    getScopes: function getScopes(id){
+    getScopes(id) {
         return fetch(URL.reference.getScopes({}));
     }
 };

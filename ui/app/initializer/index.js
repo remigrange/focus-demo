@@ -23,7 +23,7 @@ $(document).on("click", "a:not([data-bypass])", function(evt) {
 //Initialisation des congfigurations
 require('./domain-initializer');
 require('./definition-initializer');
-require('./reference_list_initializer').initialize();
+require('./reference-list-initializer').initialize();
 require('./i18n-initializer');
 
 //Initialisation du layout
