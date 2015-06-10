@@ -8,9 +8,9 @@ module.exports = {
     show: {
         all: "Show all"
     },
-    'live': {
-        'filter': {
-            'title': 'Filter results',
+    live: {
+        filter: {
+            title: 'Filter results',
             facets: {
                 FCT_MOVIE_COUNTRY: 'Country',
                 FCT_MOVIE_LANGUAGE: 'Language',
@@ -20,8 +20,9 @@ module.exports = {
             }
         }
     },
-    'result': {
-        'for': 'results for'
+    result: {
+        for: 'results for',
+        export: 'Export'
     },
     search: {
         bar: {
