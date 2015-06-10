@@ -12,7 +12,7 @@ let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
 let MovieLineComponent = require('../lines/movieLineComponent');
 let PeopleLineComponent = require('../lines/peopleLineComponent');
-
+let CartridgeSearch = require('../../common/cartridge-search')
 
 let Group = React.createClass({
     render() {
@@ -30,6 +30,26 @@ let Group = React.createClass({
         );
     }
 });
+
+let cartridgeConfiguration =  function() {
+        return {
+            summary: {component: React.DOM.div},
+            cartridge: {component: CartridgeSearch},
+            actions: {
+                primary: [
+                    {
+                        label: 'search',
+                        action: () => {
+                            console.log('call the search action');
+                        },
+                        icon: 'search'
+                    }                ],
+                secondary: [
+                ]
+            }
+        };
+}
+
 
 /**
  * Page de recherche avancée.
@@ -59,6 +79,7 @@ let WrappedAdvancedSearch = React.createClass({
                 isSelection={true}
                 lineComponentMapper={this._lineComponentMapper}
                 groupMaxRows={3}
+                cartridgeConfiguration={cartridgeConfiguration}
                 {...this.props}
                 />
         );
