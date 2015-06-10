@@ -1,3 +1,9 @@
+// Dependencies
+
+let keys = _.keys;
+let isArray = _.isArray;
+let filter = _.filter;
+
 // Actions
 
 let searchAction = require('action/search').search;
@@ -21,7 +27,6 @@ let Group = React.createClass({
         return (
             <div className="listResultContainer panel" data-focus="group-result-container">
                 <Title title={this.props.groupKey}/>
-
                 <div className="resultContainer">
                     {this.props.children}
                 </div>
@@ -31,24 +36,23 @@ let Group = React.createClass({
     }
 });
 
-let cartridgeConfiguration =  function() {
-        return {
-            summary: {component: React.DOM.div},
-            cartridge: {component: CartridgeSearch},
-            actions: {
-                primary: [
-                    {
-                        label: 'search',
-                        action: () => {
-                            console.log('call the search action');
-                        },
-                        icon: 'search'
-                    }                ],
-                secondary: [
-                ]
-            }
-        };
-}
+let cartridgeConfiguration = function () {
+    return {
+        summary: {component: React.DOM.div},
+        cartridge: {component: CartridgeSearch},
+        actions: {
+            primary: [
+                {
+                    label: 'search',
+                    action: () => {
+                        console.log('call the search action');
+                    },
+                    icon: 'search'
+                }],
+            secondary: []
+        }
+    };
+};
 
 
 /**
@@ -56,6 +60,12 @@ let cartridgeConfiguration =  function() {
  * @type {Object}
  */
 let WrappedAdvancedSearch = React.createClass({
+    getInitialState() {
+        return {
+            scope: this.props.scope,
+            query: this.props.query
+        }
+    },
     _lineComponentMapper(list) {
         if (list.length < 1) {
             return MovieLineComponent;
@@ -67,20 +77,36 @@ let WrappedAdvancedSearch = React.createClass({
         list = list || this.store.getList() || [{movId: 0}];
         return {type: list[0].movId ? 'Movie' : 'People'};
     },
-    componentWillMount() {
-        console.log('WrappedAdvancedSearch call', this.props, 'state', this.state);
+    _searchHandler(criteria) {
+        let facets = criteria.facets;
+        let newState = {
+            query: criteria.criteria.query
+        };
+        if (isArray(facets) && facets.length === 1 && facets[0].key === 'Scope') {
+            let scopeFacet = facets[0];
+            criteria.pageInfos.group = scopeFacet.value;
+            criteria.facets = [];
+            newState.scope = scopeFacet.value;
+        }
+        this.setState(newState);
+        searchAction(criteria);
     },
     render() {
+        let props = filter(this.props, (value, key) => {
+            return key !== 'scope' && key !== 'query';
+        });
+        props.scope = this.state.scope;
+        props.query = this.state.query;
         return (
             <AdvancedSearch
                 data-focus='advanced-search'
-                searchAction={searchAction}
+                searchAction={this._searchHandler}
                 groupComponent={Group}
                 isSelection={true}
                 lineComponentMapper={this._lineComponentMapper}
                 groupMaxRows={3}
                 cartridgeConfiguration={cartridgeConfiguration}
-                {...this.props}
+                {...props}
                 />
         );
     }
