@@ -1,0 +1,23 @@
+@mixin header-search-bg {
+  background: url('../img/header-bg.png') no-repeat bottom center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+[data-focus="header"] {
+  &[data-route="search"] {
+    [data-focus="bar"] {
+      background-color: transparent;
+    }
+    &.header-small{
+      [data-focus="bar"] {
+        @include header-search-bg();
+      }
+    }
+    [data-focus="content-bar"] {
+      @include header-search-bg();
+    }
+  }
+}
+
