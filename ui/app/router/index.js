@@ -29,6 +29,7 @@ let AppRouter = Router.extend({
         this._pageContent(PeopleDetailView, {props: {id: id}});
     },
     advancedSearch(scope, query) {
+        Focus.application.changeRoute('search')
         console.log('ROUTE: FILTER RESULT');
         scope = scope || 'MOVIE';
         query = query || '';
