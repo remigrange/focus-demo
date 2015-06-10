@@ -56,9 +56,9 @@ public class CommonServicesImpl implements CommonServices {
         peopleCriteria.setLastName(searchText);
         final FacetSelection[] facetSel = getFacetSelectionList(selection);
         if (CodeScope.MOVIE.name().equals(scope)) {
-            return constructSearchResponse(movieServices.getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel), "Movies");
+            return constructSearchResponse(movieServices.getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel), CodeScope.MOVIE.name());
         } else if (CodeScope.PEOPLE.name().equals(scope)) {
-            return constructSearchResponse(peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel), "People");
+            return constructSearchResponse(peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel), CodeScope.PEOPLE.name());
         } else {
             final UiContext uiContext = new UiContext();
             final FacetedQueryResult<MovieResult, SearchCriterium<MovieCriteria>> movies = movieServices
@@ -67,12 +67,12 @@ public class CommonServicesImpl implements CommonServices {
                     .getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel);
 
             final UiContext result = new UiContext();
-            result.put("Movies", movies.getDtList());
-            result.put("People", people.getDtList());
+            result.put(CodeScope.MOVIE.name(), movies.getDtList());
+            result.put(CodeScope.PEOPLE.name(), people.getDtList());
 
             final UiContext records = new UiContext();
-            records.put("Movies", movies.getCount());
-            records.put("People", people.getCount());
+            records.put(CodeScope.MOVIE.name(), movies.getCount());
+            records.put(CodeScope.PEOPLE.name(), people.getCount());
 
             uiContext.put("map", result);
             uiContext.put("records", records);

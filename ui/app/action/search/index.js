@@ -1,4 +1,6 @@
 var services = require('../../services');
+var keys = _.keys;
+
 
 module.exports = {
     search: function (criteria) {
@@ -23,7 +25,20 @@ module.exports = {
         }
         services.search.searchByScope(criteria).then(
             function success(data) {
-
+                if (data.facets) {
+                    data.facets = keys(data.facets).reduce((liveFilterFacets, serverFacetKey) => {
+                        let serverFacetData = data.facets[serverFacetKey];
+                        liveFilterFacets[serverFacetKey] = keys(serverFacetData).reduce((facetData, serverFacetItemKey) => {
+                            let serverFacetItemValue = serverFacetData[serverFacetItemKey];
+                            facetData[serverFacetItemKey] = {
+                                label: serverFacetItemKey,
+                                count: serverFacetItemValue
+                            };
+                            return facetData;
+                        }, {});
+                        return liveFilterFacets;
+                    }, {});
+                }
                 var dataRet = {
                     facet: data.facets,
                     map: data.map,

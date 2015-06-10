@@ -1,8 +1,8 @@
 module.exports = {
   facetConfig: {
-      Country: 'text',
-      Genre: 'text',
-      Language: 'text'
+      FCT_MOVIE_COUNTRY: 'text',
+      FCT_MOVIE_LANGUAGE: 'text',
+      FCT_MOVIE_GENRE: 'text'
   },
-  openedFacetList: {Genre: true}
+  openedFacetList: {FCT_MOVIE_GENRE: true}
 };
