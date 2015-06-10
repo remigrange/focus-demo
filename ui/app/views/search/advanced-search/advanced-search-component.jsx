@@ -2,7 +2,7 @@
 
 let keys = _.keys;
 let isArray = _.isArray;
-let filter = _.filter;
+let omit = _.omit;
 
 // Actions
 
@@ -92,9 +92,7 @@ let WrappedAdvancedSearch = React.createClass({
         searchAction(criteria);
     },
     render() {
-        let props = filter(this.props, (value, key) => {
-            return key !== 'scope' && key !== 'query';
-        });
+        let props = omit(this.props, ['scope', 'query']);
         props.scope = this.state.scope;
         props.query = this.state.query;
         return (
