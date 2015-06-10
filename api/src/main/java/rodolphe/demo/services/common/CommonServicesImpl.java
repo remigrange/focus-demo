@@ -91,7 +91,7 @@ public class CommonServicesImpl implements CommonServices {
             FacetConst selectedFacetConst = null;
             final FacetConst[] facets = FacetConst.values();
             for (final FacetConst facetConst : facets) {
-                if (facetConst.getFacetName().equalsIgnoreCase(selectedFacet.getKey())) {
+                if (facetConst.toString().equalsIgnoreCase(selectedFacet.getKey())) {
                     selectedFacetConst = facetConst;
                     break;
                 }
