@@ -14,16 +14,19 @@ let AppRouter = Router.extend({
         'people/:id': 'people'
     },
     home() {
+        Focus.application.changeRoute('home');
         console.log('ROUTE: HOME');
         let HomeView = require('../views/home');
         this._pageContent(HomeView, {props: {position: 'left', open: true, style: {className: 'home-popin'}}});
     },
     movie(id) {
+        Focus.application.changeRoute('detail');
         console.log('ROUTE: MOVIE');
         let MovieDetailView = require('../views/movie');
         this._pageContent(MovieDetailView, {props: {id: id}});
     },
     people(id) {
+        Focus.application.changeRoute('detail');
         console.log('ROUTE: PEOPLE');
         let PeopleDetailView = require('../views/people');
         this._pageContent(PeopleDetailView, {props: {id: id}});
