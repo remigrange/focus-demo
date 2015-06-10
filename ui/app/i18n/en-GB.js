@@ -5,9 +5,19 @@ module.exports = {
         save: "Save",
         advancedSearch: "Advanced search"
     },
+    show: {
+        all: "Show all"
+    },
     'live': {
         'filter': {
-            'title': 'Filter results'
+            'title': 'Filter results',
+            facets: {
+                FCT_MOVIE_COUNTRY: 'Country',
+                FCT_MOVIE_LANGUAGE: 'Language',
+                FCT_MOVIE_GENRE: 'Genre',
+                FCT_PEOPLE_TITLE: 'Title',
+                FCT_PEOPLE_PROFESSION: 'Profession'
+            }
         }
     },
     'result': {
