@@ -1,13 +1,16 @@
+$movie-poster-witdh:300px;
 
 [data-focus='header'] {
   .cartridge-movie {
-    display: flex;
-    flex-direction: row;
+    //display: flex;
+    //flex-direction: row; //(flex ne fonctionne pas sous safari pour le moment)
+    min-height: $movie-poster-witdh;
 
     .poster {
       border: 1px solid red;
       width: 250px;
-      height: 300px;
+      height: $movie-poster-witdh;
+      float:left;
       border: 1px solid #B2B2B2;
       background-color: #F8F8F8;
       text-align: center;
@@ -15,6 +18,7 @@
     }
     .summary {
       padding: 0 30px;
+      margin-left: 270px;
 
       h1 {
         margin: 0 0 10px 0;
