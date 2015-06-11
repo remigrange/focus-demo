@@ -38,7 +38,7 @@ let Group = React.createClass({
 
 let cartridgeConfiguration = function () {
     return {
-        summary: {component: React.DOM.div},
+        summary: {component: Focus.components.common.empty.component},
         cartridge: {component: CartridgeSearch},
         actions: {
             primary: [
