@@ -17,35 +17,12 @@ let QuickSearch = Focus.components.page.search.quickSearch.component;
 
 // Actions
 
-let navigationAction = require('action/navigation');
 let searchAction = require('action/search');
 let scopeAction = require('action/scope');
 
 // Stores
 
 let searchStore = require('stores/search');
-
-let Group = React.createClass({
-    _advancedSearchClickHandler(scope) {
-        return () => {
-            let route = `search/advanced/scope/${scope}/query/${this.props.query}`;
-            //this.props.closePopin();
-            navigationAction.navigate(route);
-        }
-    },
-    render() {
-        return (
-            <div data-focus='group-result-container'>
-                <div className="title-navigation">
-                    <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)} label='button.advancedSearch'
-                            shape="ghost"></Button>
-                    <Title title={this.props.groupKey}/>
-                </div>
-                {this.props.children}
-            </div>
-        );
-    }
-});
 
 let QuickSearchWrapper = React.createClass({
     mixins: [Focus.components.common.i18n.mixin],
@@ -83,6 +60,30 @@ let QuickSearchWrapper = React.createClass({
     _getScopeList() {
         return [];
     },
+    _getGroupComponent() {
+        let popinCloser = this.props.closePopin;
+        return React.createClass({
+            _advancedSearchClickHandler(scope) {
+                return () => {
+                    let route = `#search/advanced/scope/${scope}/query/${this.props.query}`;
+                    popinCloser();
+                    Backbone.history.navigate(route);
+                }
+            },
+            render() {
+                return (
+                    <div data-focus='group-result-container'>
+                        <div className="title-navigation">
+                            <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)} label='button.advancedSearch'
+                                    shape="ghost"></Button>
+                            <Title title={this.props.groupKey}/>
+                        </div>
+                        {this.props.children}
+                    </div>
+                );
+            }
+        });
+    },
     _lineComponentMapper(list) {
         if (list.length > 0) {
             return list[0].movId ? MovieLineComponent : PeopleLineComponent;
@@ -114,7 +115,7 @@ let QuickSearchWrapper = React.createClass({
                     onLineClick={this._onLineClick}
                     closePopin={this.props.closePopin}
                     searchAction={searchAction.search}
-                    groupComponent={Group}
+                    groupComponent={this._getGroupComponent()}
                     lineComponentMapper={this._lineComponentMapper}
                     />
                 <Popin
