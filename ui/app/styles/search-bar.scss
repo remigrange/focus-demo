@@ -1,8 +1,6 @@
 
 [data-focus='search-bar'] {
-  position: relative;
-  
-  [data-focus="scope"] {
+    [data-focus="scope"] {
     .sb-scope {
       &:before {
         font-family: FontAwesome;

@@ -26,7 +26,8 @@ exports.config = {
                     'vendor/ripples.js',
                     'vendor/focus.js',
                     'vendor/focus-components.js',
-
+                    'vendor/moment.min.js',
+                    'vendor/daterangepicker.js'
                 ],
                 after: ['vendor/picker.js']
             }
