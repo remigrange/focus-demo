@@ -13,14 +13,14 @@ let ConceptRouter = Router.extend({
       'people/:id(/:anchor)': 'people'
     },
     movie(id, anchor) {
-      let MovieDetailView = require('../views/movie');
+      let MovieDetailView = require('views/concept/movie');
       this._pageContent(MovieDetailView, {
         props: {id: id, anchor: anchor}
       });
     },
-    people(id) {
-      let PeopleDetailView = require('../views/people');
-      this._pageContent(PeopleDetailView, {props: {id: id}});
+    people(id, anchor) {
+      let PeopleDetailView = require('views/concept/people');
+      this._pageContent(PeopleDetailView, {props: {id: id, anchor: anchor}});
     }
 });
 

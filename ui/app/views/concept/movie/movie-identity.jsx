@@ -4,11 +4,11 @@ let formMixin = Focus.components.common.form.mixin;
 
 // Stores
 
-let movieStore = require('../../stores/movie');
+let movieStore = require('stores/movie');
 
 // Actions
 
-let movieActions = require('../../action/movie').movie;
+let movieActions = require('action/movie').movie;
 
 // Components
 
