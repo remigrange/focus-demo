@@ -15,17 +15,7 @@ module.exports = {
     /*DO_BOOLEEN: {
         "type": "boolean"
     },*/
-    DO_DATE: {
-        "type": "text",
-        "style": "date right",
-        format: {
-            "value": function dateFormat(data){return data;}
-        },
-        'InputComponent': Focus.components.common.input.date.component,
-        formatter: function dateFormatter(date){
-            return moment(date).format('L')
-        }
-    },
+    DO_DATE: require('./do-date'),
     /*"DO_MONTANT": {
         "type": "number",
         "validator": [{
