@@ -18,12 +18,12 @@ module.exports = {
     DO_DATE: {
         "type": "text",
         "style": "date right",
-        format: {
-            "value": function dateFormat(data){return data;}
-        },
         'InputComponent': Focus.components.common.input.date.component,
         formatter: function dateFormatter(date){
-            return moment(date).format('L')
+            return moment(date).format('L');
+        },
+        unformatter: function dateUnformatter(data){
+            return moment(data).toDate();
         }
     },
     /*"DO_MONTANT": {
