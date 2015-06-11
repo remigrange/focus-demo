@@ -1,3 +1,4 @@
+/*global Focus, _*/
 Focus.definition.entity.container.setEntityConfiguration(require('../config/entityDefinition'));
 
 //Display domaines utilisés
@@ -14,5 +15,6 @@ let domains = Object.keys(require('../config/domain'));
 console.info('########################## DOMAINS ##############################');
 console.info('Entity definitions domains: ', appDomains);
 console.info('Domains with a definition',domains);
-console.warn('Missing domain\'s definition', _.difference(appDomains, domains));
+console.warn('Missing domain\'s definition', _.difference(appDomains, _.intersection(appDomains,domains)));
+console.warn('Useless domain\'s definition', _.difference(domains, _.intersection(appDomains,domains)));
 console.info('####################################################################');
