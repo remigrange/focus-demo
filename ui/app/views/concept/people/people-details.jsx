@@ -4,11 +4,11 @@ let formMixin = Focus.components.common.form.mixin;
 
 // Actions
 
-let peopleActions = require('../../action/people').people;
+let peopleActions = require('action/people').people;
 
 // Stores
 
-let peopleStore = require('../../stores/people');
+let peopleStore = require('stores/people');
 
 // Components
 

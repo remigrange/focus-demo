@@ -4,40 +4,40 @@
 
 let formMixin = Focus.components.common.form.mixin;
 
-// Store
-
-let movieStore = require('../../stores/movie');
-
 // Actions
 
-let movieCastingActions = require('action/movie').castings;
+let movieProducersActions = require('action/movie').producers;
+
+// Stores
+
+let movieStore = require('stores/movie');
 
 // Components
 
-let Block = Focus.components.common.block.component;
+let Title = Focus.components.common.title.component;
 let PeopleCard = require('../people/people-card');
+let Block = Focus.components.common.block.component;
 
 let Line = React.createClass({
     definitionPath: 'people',
     mixins: [Focus.components.list.selection.line.mixin],
     renderLineContent(data) {
         return (
-            <PeopleCard picture='' name={data.peoName}
-                        subName={'As (' + data.role + ') ' + (data.characterName!==undefined?data.characterName:'')}/>
+            <PeopleCard picture='' name={data.peoName} subName=''/>
         );
     }
 });
 
 module.exports = React.createClass({
     definitionPath: 'people',
-    displayName: 'movieCastings',
+    displayName: 'movieProducers',
     mixins: [formMixin],
-    stores: [{store: movieStore, properties: ['castings']}],
-    action: movieCastingActions,
+    stores: [{store: movieStore, properties: ['producers']}],
+    action: movieProducersActions,
     renderContent() {
         return (
-            <Block title='movie.detail.cast.title'>
-                {this.listFor('castings', {lineComponent: Line})}
+            <Block title='movie.detail.producers.title'>
+                {this.listFor('producers', {lineComponent: Line})}
             </Block>
         );
     }

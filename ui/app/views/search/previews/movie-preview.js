@@ -1,5 +1,5 @@
-let MovieCartridge = require('views/movie/movie-cartridge');
-let MovieIdentity = require('views/movie/movie-identity');
+let MovieCartridge = require('views/concept/movie/movie-cartridge');
+let MovieIdentity = require('views/concept/movie/movie-identity');
 
 let MoviePreview = React.createClass({
     render() {
