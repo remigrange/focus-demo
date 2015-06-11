@@ -1,5 +1,9 @@
 module.exports = {
-    "DO_BOOLEEN": {
+    DO_LIBELLE_50: require('./do-libelle-50'),
+    DO_LIBELLE_250: require('./do-libelle-250'),
+    DO_LIBELLE_100: require('./do-libelle-100'),
+    DO_TEXTE: require('./do-texte'),
+    DO_BOOLEEN: {
         "type": "boolean"
     },
     "DO_DATE": {
@@ -16,7 +20,7 @@ module.exports = {
     },
     "DO_MONTANT": {
         "type": "number",
-        "validation": [{
+        "validator": [{
             "type": "number",
             "options": {"min": 0}
         }],
@@ -28,7 +32,7 @@ module.exports = {
     "DO_EMAIL": {
         "type": "email",
         "inputMaxLength": 150,
-        "validation": [{
+        "validator": [{
             "type": "email"
         }, {
             "type": "string",
@@ -39,7 +43,7 @@ module.exports = {
     },
     "DO_ENTIER": {
 		"type": "number",
-		"validation": [{
+		"validator": [{
 			"type": "number",
             "options": {"min": 0}
 		}]
@@ -60,7 +64,7 @@ module.exports = {
     "DO_CHAMP_ADRESSE": {
         "type": "text",
         "inputMaxLength": 50,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 50
@@ -70,7 +74,7 @@ module.exports = {
     "DO_CHEMIN_ACCES": {
         "type": "text",
         "inputMaxLength": 250,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 250
@@ -80,7 +84,7 @@ module.exports = {
     "DO_CODE_1": {
         "type": "text",
         "inputMaxLength": 1,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 1
@@ -90,7 +94,7 @@ module.exports = {
     "DO_CODE_3": {
         "type": "text",
         "inputMaxLength": 3,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 3
@@ -100,7 +104,7 @@ module.exports = {
     "DO_CODE_4": {
         "type": "text",
         "inputMaxLength": 4,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 4
@@ -110,7 +114,7 @@ module.exports = {
     "DO_CODE_10": {
         "type": "text",
         "inputMaxLength": 10,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 10
@@ -120,7 +124,7 @@ module.exports = {
     "DO_CODE_20": {
         "type": "text",
         "inputMaxLength": 20,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 20
@@ -130,7 +134,7 @@ module.exports = {
     "DO_CODE_POSTAL": {
         "type": "text",
         "inputMaxLength": 9,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 9
@@ -139,7 +143,7 @@ module.exports = {
     },
     "DO_COMMENTAIRE": {
         "type": "textarea",
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 3000
@@ -148,7 +152,7 @@ module.exports = {
     },
     "DO_DATE_INC": {
         "type": "text",
-        "validation": [{
+        "validator": [{
             "type": "regex",
             "value": /^((0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/(19[0-9][0-9]|20[0-9][0-9]))|((0[1-9]|1[012])\/(19[0-9][0-9]|20[0-9][0-9]))|(19[0-9][0-9]|20[0-9][0-9])$/,
             "options": {
@@ -175,7 +179,7 @@ module.exports = {
     },
     "DO_CD": {
         "type": "text",
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 18
@@ -184,7 +188,7 @@ module.exports = {
     },
     "DO_ID_BADGE": {
         "type": "text",
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 13
@@ -193,7 +197,7 @@ module.exports = {
     },
     "DO_MDP": {
         "type": "password",
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 15
@@ -203,7 +207,7 @@ module.exports = {
     "DO_LIBELLE_COURT": {
         "type": "text",
         "inputMaxLength": 50,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 50
@@ -214,7 +218,7 @@ module.exports = {
     "DO_LIBELLE": {
         "type": "text",
         "inputMaxLength": 100,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 100
@@ -225,7 +229,7 @@ module.exports = {
     "DO_LIBELLE_LONG": {
         "type": "text",
         "inputMaxLength": 250,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 250
@@ -236,7 +240,7 @@ module.exports = {
     "DO_LIBELLE_FACIAL": {
         "type": "text",
         "inputMaxLength": 40,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 40
@@ -247,7 +251,7 @@ module.exports = {
     "DO_MATRICULE": {
         "type": "text",
         "inputMaxLength": 10,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 10
@@ -257,7 +261,7 @@ module.exports = {
     "DO_TEL": {
         "type": "text",
         "inputMaxLength": 13,
-        "validation": [{
+        "validator": [{
             "type": "regex",
             "options": {
                 "maxLength": 13
@@ -271,7 +275,7 @@ module.exports = {
     "DO_VILLE": {
         "type": "text",
         "inputMaxLength": 50,
-        "validation": [{
+        "validator": [{
             "type": "string",
             "options": {
                 "maxLength": 50
