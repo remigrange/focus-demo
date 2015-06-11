@@ -96,4 +96,9 @@ public interface MovieServices extends Component {
      * @return list of castings.
      */
     DtList<MovieCasting> getMovieCastings(long movId);
+
+    /**
+     * Update movie table data.
+     */
+    void updateMovieTableData();
 }

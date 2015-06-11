@@ -9,7 +9,16 @@ import io.vertigo.dynamo.transaction.Transactional;
 import io.vertigo.util.StringUtil;
 import io.vertigo.vega.rest.model.UiListState;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Date;
+
 import javax.inject.Inject;
+
+import org.apache.log4j.Logger;
+
+import com.sleepycat.je.DatabaseConfig;
 
 import rodolphe.demo.dao.movies.MovieDAO;
 import rodolphe.demo.dao.movies.MoviesPAO;
@@ -50,6 +59,7 @@ public class MovieServicesImpl implements MovieServices {
     private RolePeopleDAO rolePeopleDAO;
     @Inject
     private MoviesPAO moviePao;
+    private final Logger logger = Logger.getLogger("*****************updateMovieTableData***************");
 
     /** {@inheritDoc} */
     @Override
@@ -188,5 +198,73 @@ public class MovieServicesImpl implements MovieServices {
         }
         moviePao.updateMoviesTitles(movies);
         return maxRank.intValue();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Transactional
+    public void updateMovieTableData() {
+        try (final BufferedReader br = new BufferedReader(new FileReader("D:\\omdbData\\dump.txt"))) {
+            String line = null;
+            final String typeText = "\"Type\":";
+            final String titleText = "\"Title\":";
+            final String ratedText = "\"Rated\":";
+            final String plotText = "\"Plot\":";
+            final String imdbIDText = "\"imdbID\"";
+            final String releasedText = "\"Released\"";
+            final String yearText = "\"Year\"";
+            final String posterText = "\"Poster\"";
+            int lineNum = 0;
+            while ((line = br.readLine()) != null) {
+                ++lineNum;
+                if (!StringUtil.isEmpty(line)) {
+                    final String title = getAttributeFromString(line, titleText);
+                    final String type = getAttributeFromString(line, typeText);
+                    final String rated = getAttributeFromString(line, ratedText);
+                    final String plot = getAttributeFromString(line, plotText);
+                    final String imdbID = getAttributeFromString(line, imdbIDText);
+                    final String released = getAttributeFromString(line, releasedText);
+                    final String year = getAttributeFromString(line, yearText);
+                    final String poster = getAttributeFromString(line, posterText);
+                    final final dateReleasead = new Date(released);
+                    logger.debug("line number = " + lineNum + " splliit line :  Title=" + title + "--------imdbID="
+                            + imdbID + "--------Type=" + type + "-------Rated=" + rated + "------released=" + released
+                            + "-------year=" + year + "-------poster=" + poster + "------plot=" + plot);
+                }
+            }
+        } catch (final IOException e) {
+            logger.debug(e.getMessage());
+        }
+    }
+
+    /**
+     * Get attribute from String.
+     *
+     * @param line
+     */
+    private static String getAttributeFromString(final String line, final String valueToSearch) {
+        if (!StringUtil.isEmpty(line)) {
+            final int index = line.indexOf(valueToSearch);
+            if (index < 0) {
+                return null;
+            }
+            String temp = line.substring(index);
+            final int firstCommaIndex = temp.indexOf(",");
+            if (firstCommaIndex < 0) {
+                return null;
+            }
+            final int indexSeparator = temp.indexOf(":");
+            if (indexSeparator < 0) {
+                return null;
+            }
+            temp = temp.substring(0, firstCommaIndex);
+            String ret = temp.substring(indexSeparator + 1);
+            ret.replaceAll("\"", "");
+            if (ret.equalsIgnoreCase("N/A")) {
+                ret = null;
+            }
+            return ret;
+        }
+        return null;
     }
 }

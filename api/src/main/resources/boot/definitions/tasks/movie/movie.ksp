@@ -127,3 +127,23 @@ create Task TK_UPDATE_MOVIES_TITLES {
 			"
 	attribute DTC_MOVIES	 	{domain : DO_DT_MOVIE_DTC 		notNull:"true" 	inOut :"in"}
 }
+
+create Task TK_GET_MOVIE_TO_CLEAN{
+	className : "io.vertigo.dynamox.task.TaskEngineSelect"
+    request : " 
+    			select * 
+    			from movie mov
+    			where 
+    				lower(mov.title) like '%%'||lower(#TITLE#)||'%%'
+    				<% if (released != null) { %>
+						and mov.released = #RELEASED#
+					<% } %>	
+				    <% if (year != null) { %>
+						and mov.year = #YEAR#
+					<% } %>	
+	"
+    attribute TITLE 		{domain : DO_ID 			notNull:"true" 			inOut :"in"}
+    attribute RELEASED 		{domain : DO_DATE 			notNull:"false" 		inOut :"in"}
+    attribute YEAR	 		{domain : DO_ENTIER 		notNull:"false" 		inOut :"in"}
+    attribute DTC_MOVIE 	{domain : DO_DT_MOVIE_DTC 	notNull:"true" 			inOut :"out"}
+}

@@ -112,4 +112,12 @@ public class MovieTest extends AbstractRodolpheTestCase {
         peopleServices.savePeople(peo);
         return peo;
     }
+
+    /**
+     * Get a specific movie.
+     */
+    @Test
+    public void testUpdateMovieTable() {
+        movieServices.updateMovieTableData();
+    }
 }
