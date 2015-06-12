@@ -8,7 +8,7 @@ let SearchRouter = Router.extend({
       Focus.application.changeRoute('search');
     },
     routes: {
-        'search/advanced/scope/:scope/query/:query': 'advancedSearch'
+        'search/advanced/scope/:scope(/query/:query)': 'advancedSearch'
     },
     advancedSearch(scope, query) {
         scope = scope || 'MOVIE';
