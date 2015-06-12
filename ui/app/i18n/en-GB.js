@@ -27,7 +27,8 @@ module.exports = {
     search: {
         bar: {
             help: "Choose a scope here."
-        }
+        },
+        mostRelevant: "The 3 most relevant"
     },
     quickSearch: {
         title: 'Quick search'
