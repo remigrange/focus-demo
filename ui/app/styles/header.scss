@@ -4,11 +4,7 @@ $header-search-color: #000;
   background: url('../img/header-bg.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-attachment:fixed;
-  /*background-position:center bottom;*/
-  background-position: 0% 100%;
-  /*background-position-x: 0%;
-  background-position-y: 100%;*/
+  background-position: 0% 50%;
 }
 
 [data-focus="header"] {
@@ -85,5 +81,3 @@ $header-search-color: #000;
     }
   }
 }
-
-
