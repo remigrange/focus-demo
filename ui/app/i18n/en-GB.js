@@ -3,7 +3,8 @@ module.exports = {
         edit: "Edit",
         cancel: "Cancel",
         save: "Save",
-        advancedSearch: "Advanced search"
+        advancedSearch: "Advanced search",
+        back: "Back"
     },
     show: {
         all: "Show all"
@@ -25,8 +26,16 @@ module.exports = {
         export: 'Export'
     },
     search: {
+        advanced: {
+            page: {
+                title: "Search"
+            }
+        },
         bar: {
             help: "Choose a scope here."
+        },
+        cartridge: {
+            title: "What are you looking for ?"
         },
         mostRelevant: "The 3 most relevant"
     },
