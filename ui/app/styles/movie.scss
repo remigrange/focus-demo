@@ -38,11 +38,9 @@ $movie-poster-witdh:300px;
   }
 }
 
+
 [data-focus="selection-list"] {
   li[data-focus="sl-line"] {
-    [data-focus="sl-icon"] {
-      line-height: 75px;
-    }
     .movie-line {
       min-height: 75px;
     }
