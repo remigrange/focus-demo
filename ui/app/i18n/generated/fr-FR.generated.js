@@ -21,6 +21,16 @@ module.exports = {
         "facetQuery" : "Facet query",
         "value" : "Facet key value"
     },
+    "tempMovieData": {
+        "cleanId" : "primary key",
+        "title" : "Title",
+        "released" : "Released",
+        "year" : "Year",
+        "plot" : "Description",
+        "imdbid" : "Id imdb",
+        "rated" : "Rated",
+        "movId" : "primary key"
+    },
     "fileInfo": {
         "filId" : "FIL_ID",
         "fileName" : "FILE_NAME",

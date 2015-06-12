@@ -81,24 +81,10 @@ public interface MovieServices extends Component {
     MovieView getMovieDetails(Long movId);
 
     /**
-     * Clean movie data.
-     *
-     * @param minRow min row
-     * @param maxRows max row
-     * @return rows
-     */
-    int cleanMovieTitle(int minRow, int maxRows);
-
-    /**
      * Get movie castings by movie id.
      *
      * @param movId movie id.
      * @return list of castings.
      */
     DtList<MovieCasting> getMovieCastings(long movId);
-
-    /**
-     * Update movie table data.
-     */
-    void updateMovieTableData();
 }

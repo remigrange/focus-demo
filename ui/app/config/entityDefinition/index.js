@@ -53,6 +53,40 @@ module.exports = {
 				"required": false
 			}		
 	},
+	"tempMovieData": {
+			"cleanId": {
+				"domain": "DO_ID",
+				"required": true
+			},		
+			"title": {
+				"domain": "DO_COMMENTAIRE",
+				"required": false
+			},		
+			"released": {
+				"domain": "DO_DATE",
+				"required": false
+			},		
+			"year": {
+				"domain": "DO_ENTIER",
+				"required": false
+			},		
+			"plot": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"imdbid": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"rated": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
+			},		
+			"movId": {
+				"domain": "DO_ID",
+				"required": false
+			}		
+	},
 	"fileInfo": {
 			"filId": {
 				"domain": "DO_ID",

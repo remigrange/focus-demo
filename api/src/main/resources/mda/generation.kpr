@@ -1,4 +1,5 @@
 model/movie.ksp
 model/people.ksp
 model/common.ksp
+model/exploitation.ksp
 ../boot/definitions/application.kpr

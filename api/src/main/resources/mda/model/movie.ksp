@@ -78,3 +78,6 @@ create DtDefinition DT_MOVIE_RESULT {
 	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Contries" notNull:"false"}
 	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Languages" notNull:"false"}
 }
+
+
+

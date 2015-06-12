@@ -19,6 +19,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			SearchRet(rodolphe.demo.domain.common.SearchRet.class),
 			/** Objet de données SelectedFacet. */
 			SelectedFacet(rodolphe.demo.domain.common.SelectedFacet.class),
+			/** Objet de données TempMovieData. */
+			TempMovieData(rodolphe.demo.domain.exploitation.TempMovieData.class),
 			/** Objet de données FileInfo. */
 			FileInfo(rodolphe.demo.domain.files.FileInfo.class),
 			/** Objet de données Country. */
@@ -121,6 +123,28 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		FACET_QUERY,
 		/** Propriété 'Facet key value'. */
 		VALUE,
+	}
+
+	/**
+	 * Enumération des champs de TempMovieData.
+	 */
+	public enum TempMovieDataFields implements DtFieldName {
+		/** Propriété 'primary key'. */
+		CLEAN_ID,
+		/** Propriété 'Title'. */
+		TITLE,
+		/** Propriété 'Released'. */
+		RELEASED,
+		/** Propriété 'Year'. */
+		YEAR,
+		/** Propriété 'Description'. */
+		PLOT,
+		/** Propriété 'Id imdb'. */
+		IMDBID,
+		/** Propriété 'Rated'. */
+		RATED,
+		/** Propriété 'primary key'. */
+		MOV_ID,
 	}
 
 	/**

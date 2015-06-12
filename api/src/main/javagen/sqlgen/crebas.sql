@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  4 juin 2015  09:02:55                     
+--   Date de création :  12 juin 2015  15:34:44                     
 -- ============================================================
 
 
@@ -45,6 +45,9 @@ create sequence SEQ_ROLE_PEOPLE
 	start with 1000 cache 20; 
 
 create sequence SEQ_SECURITY_ROLE
+	start with 1000 cache 20; 
+
+create sequence SEQ_TEMP_MOVIE_DATA
 	start with 1000 cache 20; 
 
 create sequence SEQ_TITLE
@@ -365,6 +368,46 @@ comment on column SECURITY_ROLE.SRO_CD is
 
 comment on column SECURITY_ROLE.LABEL is
 'Label';
+
+-- ============================================================
+--   Table : TEMP_MOVIE_DATA                                        
+-- ============================================================
+create table TEMP_MOVIE_DATA
+(
+    CLEAN_ID    	 NUMERIC     	not null,
+    TITLE       	 VARCHAR(3000)	,
+    RELEASED    	 DATE        	,
+    YEAR        	 NUMERIC     	,
+    PLOT        	 TEXT        	,
+    IMDBID      	 VARCHAR(100)	,
+    RATED       	 VARCHAR(100)	,
+    MOV_ID      	 NUMERIC     	,
+    constraint PK_TEMP_MOVIE_DATA primary key (CLEAN_ID)
+);
+
+comment on column TEMP_MOVIE_DATA.CLEAN_ID is
+'primary key';
+
+comment on column TEMP_MOVIE_DATA.TITLE is
+'Title';
+
+comment on column TEMP_MOVIE_DATA.RELEASED is
+'Released';
+
+comment on column TEMP_MOVIE_DATA.YEAR is
+'Year';
+
+comment on column TEMP_MOVIE_DATA.PLOT is
+'Description';
+
+comment on column TEMP_MOVIE_DATA.IMDBID is
+'Id imdb';
+
+comment on column TEMP_MOVIE_DATA.RATED is
+'Rated';
+
+comment on column TEMP_MOVIE_DATA.MOV_ID is
+'primary key';
 
 -- ============================================================
 --   Table : TITLE                                        

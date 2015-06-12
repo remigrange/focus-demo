@@ -118,6 +118,6 @@ public class MovieTest extends AbstractRodolpheTestCase {
      */
     @Test
     public void testUpdateMovieTable() {
-        movieServices.updateMovieTableData();
+        // movieServices.updateMovieTableData();
     }
 }
