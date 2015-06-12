@@ -92,9 +92,9 @@ let QuickSearchWrapper = React.createClass({
         }
     },
     _onLineClick(data) {
-        let route = data.movId ? `movie/${data.movId}` : `people/${data.peoId}`;
+        let route = data.movId ? `#movie/${data.movId}` : `#people/${data.peoId}`;
         this.props.closePopin();
-        navigationAction.navigate(route);
+        Backbone.history.navigate(route);
     },
     _getPreviewType(data) {
         return data.movId ? MoviePreview : PeoplePreview;
