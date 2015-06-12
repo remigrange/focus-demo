@@ -15,6 +15,11 @@ $movie-poster-witdh:300px;
       background-color: #F8F8F8;
       text-align: center;
       color: #B2B2B2;
+
+      img {
+        width: 250px;
+        height: 300px;
+      }
     }
     .summary {
       padding: 0 30px;
