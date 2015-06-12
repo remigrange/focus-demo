@@ -56,6 +56,9 @@ module.exports = function startServer(port, path, callback) {
           return details.movId == req.param('movId');
       }));
   });
+  app.put('/movies/:movId', function(req, res) {
+      res.json(req.body);
+  });
 
   // People
 
