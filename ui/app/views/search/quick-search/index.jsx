@@ -38,7 +38,6 @@ let QuickSearchWrapper = React.createClass({
         let self = this;
         return [
             {
-                label: 'Preview',
                 action(data) {
                     if (self.state && _.isEqual(self.state.previewData, data)) {
                         self.refs['preview-popin'].toggleOpen();
