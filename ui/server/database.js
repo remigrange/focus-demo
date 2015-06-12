@@ -1,13 +1,18 @@
 module.exports = {
     scopes: [
         {
-            code: 'MOVIES',
+            code: 'MOVIE',
             label: 'Films',
             active: true
         },
         {
             code: 'PEOPLE',
             label: 'Personnes',
+            active: true
+        },
+        {
+            code: 'ALL',
+            label: 'Tous',
             active: true
         }
     ],
