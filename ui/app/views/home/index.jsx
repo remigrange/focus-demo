@@ -4,9 +4,7 @@ module.exports = React.createClass({
   mixins: [headerBehaviour],
   render: function renderPeopleView() {
     return (
-      <div className='welcome-title'>
-        Welcome page
-      </div>
+      <div className="homepage"></div>
     );
   }
 });
