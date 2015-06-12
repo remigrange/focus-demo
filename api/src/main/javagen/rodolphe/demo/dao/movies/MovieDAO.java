@@ -64,23 +64,23 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 	}
 	
 	/**
-	 * Indique que le subject associé à cette uri va être modifié.
+	 * Indique que le keyConcept associé à cette uri va être modifié.
 	 * Techniquement cela interdit les opérations d'ecriture en concurrence 
-	 * et envoie un évenement de modification du subject (à la fin de transaction eventuellement) 
-	 * @param uri URI du subject modifié
+	 * et envoie un évenement de modification du keyConcept (à la fin de transaction eventuellement) 
+	 * @param uri URI du keyConcept modifié
 	 */
-	 public void workOnSubject(final URI<Movie> uri) {
+	 public void workOnKeyConcept(final URI<Movie> uri) {
 		broker.workOn(uri);
 	}
 
 	/**
-	 * Indique que le subject associé à cet id va être modifié.
+	 * Indique que le keyConcept associé à cet id va être modifié.
 	 * Techniquement cela interdit les opérations d'ecriture en concurrence 
-	 * et envoie un évenement de modification du subject (à la fin de transaction eventuellement) 
-	 * @param id Clé du subject modifié
+	 * et envoie un évenement de modification du keyConcept (à la fin de transaction eventuellement) 
+	 * @param id Clé du keyConcept modifié
 	 */
-	 public void workOnSubject(final java.lang.Long id) {
-		workOnSubject(createDtObjectURI(id));
+	 public void workOnKeyConcept(final java.lang.Long id) {
+		workOnKeyConcept(createDtObjectURI(id));
 	}
 	
     
@@ -108,30 +108,6 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 		final ListFilter criteriaListFilter = listFilterBuilder.withBuildQuery(facetedQueryDefinition.getListFilterBuilderQuery()).withCriteria(criteria).build();
 		return new SearchQueryBuilder(criteriaListFilter).withFacetStrategy(facetedQueryDefinition, listFilters);
 	}
-    /**
-	 * Création d'une SearchQuery de type : PeopleWoFct.
-	 * @param criteria Critères de recherche
-	 * @param listFilters Liste des filtres à appliquer (notament les facettes sélectionnées)
-	 * @return SearchQueryBuilder pour ce type de recherche
-	 */
-	public SearchQueryBuilder createSearchQueryBuilderPeopleWoFct(final rodolphe.demo.domain.people.PeopleCriteria criteria, final List<ListFilter> listFilters) {
-		final FacetedQueryDefinition facetedQueryDefinition = Home.getDefinitionSpace().resolve("QRY_PEOPLE_WO_FCT", FacetedQueryDefinition.class);
-		final ListFilterBuilder<rodolphe.demo.domain.people.PeopleCriteria> listFilterBuilder = Injector.newInstance(facetedQueryDefinition.getListFilterBuilderClass(), Home.getComponentSpace());
-		final ListFilter criteriaListFilter = listFilterBuilder.withBuildQuery(facetedQueryDefinition.getListFilterBuilderQuery()).withCriteria(criteria).build();
-		return new SearchQueryBuilder(criteriaListFilter).withFacetStrategy(facetedQueryDefinition, listFilters);
-	}
-    /**
-	 * Création d'une SearchQuery de type : PeopleWithFct.
-	 * @param criteria Critères de recherche
-	 * @param listFilters Liste des filtres à appliquer (notament les facettes sélectionnées)
-	 * @return SearchQueryBuilder pour ce type de recherche
-	 */
-	public SearchQueryBuilder createSearchQueryBuilderPeopleWithFct(final rodolphe.demo.domain.people.PeopleCriteria criteria, final List<ListFilter> listFilters) {
-		final FacetedQueryDefinition facetedQueryDefinition = Home.getDefinitionSpace().resolve("QRY_PEOPLE_WITH_FCT", FacetedQueryDefinition.class);
-		final ListFilterBuilder<rodolphe.demo.domain.people.PeopleCriteria> listFilterBuilder = Injector.newInstance(facetedQueryDefinition.getListFilterBuilderClass(), Home.getComponentSpace());
-		final ListFilter criteriaListFilter = listFilterBuilder.withBuildQuery(facetedQueryDefinition.getListFilterBuilderQuery()).withCriteria(criteria).build();
-		return new SearchQueryBuilder(criteriaListFilter).withFacetStrategy(facetedQueryDefinition, listFilters);
-	}
     
 	/**
 	 * Récupération du résultat issu d'une requête.
@@ -140,7 +116,7 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 	 * @return Résultat correspondant à la requête (de type MovieIndex) 
 	 */
 	public FacetedQueryResult<MovieIndex, SearchQuery> loadList(final SearchQuery searchQuery, final DtListState listState) {
-		final SearchIndexDefinition indexDefinition = searchManager.findIndexDefinitionBySubject(Movie.class);
+		final SearchIndexDefinition indexDefinition = searchManager.findIndexDefinitionByKeyConcept(Movie.class);
 		return searchManager.loadList(indexDefinition, searchQuery, listState);
 	}
 	

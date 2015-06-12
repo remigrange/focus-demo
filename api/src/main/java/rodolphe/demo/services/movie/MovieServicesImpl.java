@@ -11,7 +11,6 @@ import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.search.model.SearchQuery;
 import io.vertigo.dynamo.search.model.SearchQueryBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
-import io.vertigo.util.StringUtil;
 import io.vertigo.vega.rest.model.UiListState;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class MovieServicesImpl implements MovieServices {
 	@Inject
 	private RolePeopleDAO rolePeopleDAO;
 	@Inject
-	private MoviesPAO moviePao;
+	private MoviesPAO moviePAO;
 
 	/** {@inheritDoc} */
 	@Override
@@ -143,7 +142,7 @@ public class MovieServicesImpl implements MovieServices {
 	@Override
 	@Transactional
 	public MovieView getMovieDetails(final Long movId) {
-		final MovieView movieView = moviePao.getMovieViewForMovieDetailsByMovId(movId);
+		final MovieView movieView = moviePAO.getMovieViewForMovieDetailsByMovId(movId);
 		movieView.setActors(getActors(movId));
 		movieView.setProducers(getProducers(movId));
 		movieView.setDirectors(getDirectors(movId));
@@ -154,26 +153,6 @@ public class MovieServicesImpl implements MovieServices {
 	@Override
 	@Transactional
 	public DtList<MovieCasting> getMovieCastings(final long movId) {
-		return moviePao.getCastingByMovId(movId);
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	@Transactional
-	public int cleanMovieTitle(final int minRank, final int maxRows) {
-		Long maxRank = -1L;
-		final DtList<MovieView> movieViews = moviePao.getMovieView(minRank, maxRows);
-		final DtList<Movie> movies = new DtList<>(Movie.class);
-		for (final MovieView movieView : movieViews) {
-			// Pour ne pas remttre à jour les donnes deja mise à jour.
-			if (StringUtil.isEmpty(movieView.getMetadasJson())) {
-				movies.add(CleanMovieData.parseMovieTitle(movieView));
-			}
-			if (maxRank < movieView.getRank()) {
-				maxRank = movieView.getRank();
-			}
-		}
-		moviePao.updateMoviesTitles(movies);
-		return maxRank.intValue();
+		return moviePAO.getCastingByMovId(movId);
 	}
 }

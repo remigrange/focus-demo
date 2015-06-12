@@ -13,6 +13,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	 * Enumération des DtDefinitions.
 	 */
 	public enum Definitions {
+			/** Objet de données Dummy. */
+			Dummy(rodolphe.demo.domain.common.Dummy.class),
 			/** Objet de données SearchCriteria. */
 			SearchCriteria(rodolphe.demo.domain.common.SearchCriteria.class),
 			/** Objet de données SearchRet. */
@@ -78,6 +80,14 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			return clazz;
 		}
     }
+
+	/**
+	 * Enumération des champs de Dummy.
+	 */
+	public enum DummyFields implements DtFieldName {
+		/** Propriété 'dummy long'. */
+		DUMMY_LONG,
+	}
 
 	/**
 	 * Enumération des champs de SearchCriteria.

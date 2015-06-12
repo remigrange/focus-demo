@@ -7,25 +7,6 @@ alter DtDefinition DT_MOVIE {
 }
 
 
-create DtDefinition DT_MOVIE_VIEW {
-	persistent:"false"
-	key MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
-	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
-	field TITLE_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Title" notNull:"false"}
-	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}
-	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
-	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
-	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
-	field METADAS_JSON {domain: DO_COMMENTAIRE label: "Meta Data JSON" notNull:"false"}
-	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
-	field GENRE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Genres" notNull:"false"}
-	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Contries" notNull:"false"}
-	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Languages" notNull:"false"}
-	field RANK {domain: DO_ID label: "rank" notNull:"true" }
-	field ACTORS {domain: DO_DT_PEOPLE_DTC label: "Actors" notNull: "false"}
-	field PRODUCERS {domain: DO_DT_PEOPLE_DTC label: "Producers" notNull: "false"}
-	field DIRECTORS {domain: DO_DT_PEOPLE_DTC label: "Directors" notNull: "false"}
-}
 
 create DtDefinition DT_MOVIE_CASTING {
 	persistent:"false"
@@ -46,6 +27,27 @@ create DtDefinition DT_MOVIE_CRITERIA {
 	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
 	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
 	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
+}
+
+
+create DtDefinition DT_MOVIE_VIEW {
+	persistent:"false"
+	key MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
+	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
+	field TITLE_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Title" notNull:"false"}
+	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}
+	field YEAR {domain: DO_ENTIER label: "Year" notNull:"false"}
+	field RUNTIME {domain: DO_ENTIER label: "Runtime" notNull:"false"}
+	field DESCRIPTION {domain: DO_TEXTE label: "Description" notNull:"false"}
+	field METADAS_JSON {domain: DO_COMMENTAIRE label: "Meta Data JSON" notNull:"false"}
+	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field GENRE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Genres" notNull:"false"}
+	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Contries" notNull:"false"}
+	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Languages" notNull:"false"}
+	field RANK {domain: DO_ID label: "rank" notNull:"true" }
+	field ACTORS {domain: DO_DT_PEOPLE_DTC label: "Actors" notNull: "false"}
+	field PRODUCERS {domain: DO_DT_PEOPLE_DTC label: "Producers" notNull: "false"}
+	field DIRECTORS {domain: DO_DT_PEOPLE_DTC label: "Directors" notNull: "false"}
 }
 
 create DtDefinition DT_MOVIE_INDEX {

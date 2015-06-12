@@ -2,14 +2,14 @@ package rodolphe.demo.domain.movies;
 
 import io.vertigo.dynamo.domain.stereotype.DtDefinition;
 import io.vertigo.dynamo.domain.stereotype.Field;
-import io.vertigo.dynamo.domain.model.DtSubject;
+import io.vertigo.dynamo.domain.model.KeyConcept;
 import io.vertigo.dynamo.domain.util.DtObjectUtil;
 /**
  * Attention cette classe est générée automatiquement !
  * Objet de données Movie
  */
 @DtDefinition
-public final class Movie implements DtSubject {
+public final class Movie implements KeyConcept {
 
 	/** SerialVersionUID. */
 	private static final long serialVersionUID = 1L;

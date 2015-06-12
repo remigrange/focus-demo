@@ -3,6 +3,12 @@
  * @type {Object}
  */
 module.exports = {
+	"dummy": {
+			"dummyLong": {
+				"domain": "DO_ID",
+				"required": false
+			}		
+	},
 	"searchCriteria": {
 			"scope": {
 				"domain": "DO_LIBELLE_50",

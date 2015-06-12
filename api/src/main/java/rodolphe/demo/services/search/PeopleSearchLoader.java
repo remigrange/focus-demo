@@ -1,6 +1,6 @@
 package rodolphe.demo.services.search;
 
-import io.vertigo.dynamo.domain.model.DtSubject;
+import io.vertigo.dynamo.domain.model.KeyConcept;
 import io.vertigo.dynamo.domain.model.URI;
 import io.vertigo.dynamo.search.SearchManager;
 import io.vertigo.dynamo.search.metamodel.SearchChunk;
@@ -29,7 +29,7 @@ public final class PeopleSearchLoader implements SearchLoader<People, PeopleInde
 
 	@Inject
 	public PeopleSearchLoader(final SearchManager searchManager) {
-		indexDefinition = searchManager.findIndexDefinitionBySubject(People.class);
+		indexDefinition = searchManager.findIndexDefinitionByKeyConcept(People.class);
 	}
 
 	/** {@inheritDoc} */
@@ -41,7 +41,7 @@ public final class PeopleSearchLoader implements SearchLoader<People, PeopleInde
 
 	/** {@inheritDoc} */
 	@Override
-	public Iterable<SearchChunk<People>> chunk(final Class<People> subjectClass) {
+	public Iterable<SearchChunk<People>> chunk(final Class<People> keyConceptClass) {
 		return new Iterable<SearchChunk<People>>() {
 
 			private final Iterator<SearchChunk<People>> iterator = new Iterator<SearchChunk<People>>() {
@@ -50,12 +50,12 @@ public final class PeopleSearchLoader implements SearchLoader<People, PeopleInde
 
 				@Override
 				public boolean hasNext() {
-					return hasNextChunk(subjectClass, current);
+					return hasNextChunk(keyConceptClass, current);
 				}
 
 				@Override
 				public SearchChunk<People> next() {
-					final SearchChunk<People> next = nextChunk(subjectClass, current);
+					final SearchChunk<People> next = nextChunk(keyConceptClass, current);
 					current = next;
 					return current;
 				}
@@ -73,15 +73,15 @@ public final class PeopleSearchLoader implements SearchLoader<People, PeopleInde
 		};
 	}
 
-	private SearchChunk<People> nextChunk(final Class<People> subjectClass, final SearchChunk<People> previousChunck) {
+	private SearchChunk<People> nextChunk(final Class<People> keyConceptClass, final SearchChunk<People> previousChunck) {
 		Long lastId = -1L;
 		if (previousChunck != null) {
 			final List<URI<People>> previousUris = previousChunck.getAllURIs();
 			Assertion
-					.checkState(
-							!previousUris.isEmpty(),
-							"No more SearchChunk for DtSubject {0}, ensure you use Iterable pattern or call hasNext before next",
-							subjectClass.getSimpleName());
+			.checkState(
+					!previousUris.isEmpty(),
+					"No more SearchChunk for KeyConcept {0}, ensure you use Iterable pattern or call hasNext before next",
+					keyConceptClass.getSimpleName());
 			lastId = (Long) previousUris.get(previousUris.size() - 1).getId();
 		}
 		final List<URI<People>> uris = new ArrayList<>(SEARCH_CHUNK_SIZE);
@@ -90,12 +90,12 @@ public final class PeopleSearchLoader implements SearchLoader<People, PeopleInde
 		return new SearchChunkImpl<>(uris);
 	}
 
-	private boolean hasNextChunk(final Class<People> subjectClass, final SearchChunk<People> previousChunck) {
+	private boolean hasNextChunk(final Class<People> keyConceptClass, final SearchChunk<People> previousChunck) {
 		// il y a une suite, si on a pas commencé, ou s'il y avait des résultats la dernière fois.
 		return previousChunck == null || !previousChunck.getAllURIs().isEmpty();
 	}
 
-	public static class SearchChunkImpl<S extends DtSubject> implements SearchChunk<S> {
+	public static class SearchChunkImpl<S extends KeyConcept> implements SearchChunk<S> {
 
 		private final List<URI<S>> uris;
 

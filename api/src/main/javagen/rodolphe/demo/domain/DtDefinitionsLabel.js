@@ -4,6 +4,9 @@
  */
 
 module.exports = {
+    "dummy": {
+        "dummyLong" : "dummy long"
+    },
     "searchCriteria": {
         "scope" : "The Scope",
         "searchText" : "Search Text",
