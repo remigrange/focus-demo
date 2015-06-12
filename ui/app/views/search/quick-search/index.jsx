@@ -20,9 +20,17 @@ let QuickSearch = Focus.components.page.search.quickSearch.component;
 let searchAction = require('action/search');
 let scopeAction = require('action/scope');
 
+// Mixins
+
+let i18nMixin = Focus.components.common.i18n.mixin;
+
 // Stores
 
 let searchStore = require('stores/search');
+
+// Formatters
+
+let numberFormatter = require('../../../config/formatter/number');
 
 let QuickSearchWrapper = React.createClass({
     mixins: [Focus.components.common.i18n.mixin],
@@ -64,6 +72,7 @@ let QuickSearchWrapper = React.createClass({
         let popinCloser = this.props.closePopin;
         let self = this;
         return React.createClass({
+            mixins: [i18nMixin],
             _advancedSearchClickHandler(scope) {
                 return () => {
                     let route = `#search/advanced/scope/${scope}${self._query ?  '/query/' + self._query : ''}`;
@@ -72,12 +81,18 @@ let QuickSearchWrapper = React.createClass({
                 }
             },
             render() {
+                let camelCase = _.camelCase;
+                let capitalize = _.capitalize;
+                let lowerKey = camelCase(this.props.groupKey);
+                let store = require('../../../stores/' + lowerKey);
+                let count = store[`get${capitalize(lowerKey)}Records`]();
                 return (
                     <div data-focus='group-result-container'>
                         <div className="title-navigation">
                             <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)} label='button.advancedSearch'
                                     shape="ghost"></Button>
-                            <Title title={this.props.groupKey}/>
+                            <h3>{`${this.props.groupKey} (${numberFormatter.format(count, '(0,0)')})`}</h3>
+                            <p>{this.i18n('search.mostRelevant')}</p>
                         </div>
                         {this.props.children}
                     </div>

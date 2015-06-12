@@ -7,7 +7,8 @@ let movieStore = new Focus.store.CoreStore({
         'movie': 'movie',
         'castings': 'movieCasting',
         'producers': 'people',
-        'directors': 'people'
+        'directors': 'people',
+        'movieRecords': 'movieRecords'
     }
   });
 
