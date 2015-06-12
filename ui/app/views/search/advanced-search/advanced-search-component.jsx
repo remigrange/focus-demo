@@ -18,7 +18,8 @@ let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
 let MovieLineComponent = require('../lines/movieLineComponent');
 let PeopleLineComponent = require('../lines/peopleLineComponent');
-let CartridgeSearch = require('../../common/cartridge-search')
+let CartridgeSearch = require('../../common/cartridge-search');
+let SummarySearch = require('../../common/summary-search');
 
 let Group = React.createClass({
     render() {
@@ -38,7 +39,7 @@ let Group = React.createClass({
 
 let cartridgeConfiguration = function () {
     return {
-        summary: {component: Focus.components.common.empty.component},
+        summary: {component: SummarySearch},
         cartridge: {component: CartridgeSearch},
         actions: {
             primary: [
