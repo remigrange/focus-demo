@@ -17,7 +17,7 @@
     "test": "brunch test",
     "watch": "./node_modules/brunch/bin/brunch w",
     "serve": "./node_modules/brunch/bin/brunch w -s",
-    "postinstall": "node scripts/install.js"  
+    "postinstall": "node scripts/install.js"
   },
   "dependencies": {
     "backbone": "^1.2.0",
@@ -31,6 +31,7 @@
     "jquery": "^2.1.4",
     "lodash": "^3.8.0",
     "moment": "^2.10.3",
+    "numeral": "^1.5.3",
     "react": "^0.13.1",
     "showdown": "^1.0.2"
   },

@@ -16,6 +16,8 @@ var files = [
   'bootstrap-material/dist/js/ripples.js',*/
   //moment
   'moment/min/moment.min.js',
+  'numeral/min/languages.min.js',
+  'numeral/min/numeral.min.js',
   //daterangepicker
   'daterangepicker/daterangepicker.js',
   'daterangepicker/daterangepicker-bs3.css',
