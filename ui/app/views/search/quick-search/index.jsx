@@ -86,7 +86,7 @@ let QuickSearchWrapper = React.createClass({
                         <div className="title-navigation">
                             <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)} label='button.advancedSearch'
                                     shape="ghost"></Button>
-                            <h3>{this.props.groupKey + ' (' + numberFormatter.format(count, '(0,0)') + ')'}</h3>
+                            <h3>{`${this.props.groupKey} (${numberFormatter.format(count, '(0,0)')})`}</h3>
                             <p>Les 3 plus pertinents</p>
                         </div>
                         {this.props.children}
