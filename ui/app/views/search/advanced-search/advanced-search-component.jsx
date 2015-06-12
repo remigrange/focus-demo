@@ -30,7 +30,7 @@ let Group = React.createClass({
                 <div className="resultContainer">
                     {this.props.children}
                 </div>
-                <Button handleClickAction={this.props.showAll(this.props.groupKey)} label="Show all"/>
+                <Button handleOnClick={this.props.showAll(this.props.groupKey)} label="Show all"/>
             </div>
         );
     }
