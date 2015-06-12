@@ -65,7 +65,7 @@ let QuickSearchWrapper = React.createClass({
         return React.createClass({
             _advancedSearchClickHandler(scope) {
                 return () => {
-                    let route = `#search/advanced/scope/${scope}/query/${this.props.query}`;
+                    let route = `#search/advanced/scope/${scope}/query${this.props.query ?  '/' + this.props.query : ''}`;
                     popinCloser();
                     Backbone.history.navigate(route);
                 }
@@ -101,15 +101,18 @@ let QuickSearchWrapper = React.createClass({
     },
     componentDidMount() {
         scopeAction.getAll((scopes) => {
-            this.setState({scopes});
+            let scope = 'ALL';
+            this.setState({scopes, scope});
         });
     },
     render() {
         let scopes = this.state && this.state.scopes || [];
+        let scope = this.state && this.state.scope || undefined;
         return (
             <div>
                 <h1>{this.i18n('quickSearch.title')}</h1>
                 <QuickSearch
+                    scope={scope}
                     scopeList={scopes}
                     lineOperationList={this._getOperationList()}
                     onLineClick={this._onLineClick}
