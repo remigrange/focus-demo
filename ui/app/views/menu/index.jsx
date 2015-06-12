@@ -36,8 +36,8 @@ let Wrapper = React.createClass({
                 icon: 'search',
                 name: 'Search',
                 onClick: this._toggleQuickSearchPopin
-            },
-            /*{
+            },/*
+            {
                 icon: 'video-camera',
                 route: '',
                 onClick: this._closeQuickSearchPopin
@@ -61,26 +61,29 @@ let Wrapper = React.createClass({
     },
     _toggleQuickSearchPopin() {
         this.refs['quick-search-popin'].toggleOpen();
+        this._quickSearchPopinOpened = !this._quickSearchPopinOpened;
     },
     _closeQuickSearchPopin() { // for now the popin is controlled this way, maybe a future improvement would be to use the "opened" prop of the popin
         if (this._quickSearchPopinOpened) {
-            this._quickSearchPopinOpened = false;
             this._toggleQuickSearchPopin();
         }
     },
     render() {
         return (
-            <Menu
-                open={true}
-                position='left'
-                direction='vertical'
-                title=''
-                items={this._getItems()}
-                ref='menu'>
-                <Popin ref='quick-search-popin' type='from-menu'>
-                    <QuickSearch/>
+            <div>
+                <Menu
+                    open={true}
+                    position='left'
+                    direction='vertical'
+                    title=''
+                    items={this._getItems()}
+                    ref='menu'
+                    >
+                </Menu>
+                <Popin data-focus='quick-search-popin' ref='quick-search-popin' type='from-menu'>
+                    <QuickSearch closePopin={this._closeQuickSearchPopin}/>
                 </Popin>
-            </Menu>
+            </div>
         );
     }
 });

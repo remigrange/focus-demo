@@ -1,9 +1,8 @@
-/* global focus*/
 /**
  * Store dealing with the movie subject.
  * @type {focus}
  */
-var movieStore = new Focus.store.CoreStore({
+let movieStore = new Focus.store.CoreStore({
     definition : {
         'movie': 'movie',
         'castings': 'movieCasting',
@@ -11,4 +10,5 @@ var movieStore = new Focus.store.CoreStore({
         'directors': 'people'
     }
   });
+
 module.exports = movieStore;

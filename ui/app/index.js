@@ -1,6 +1,6 @@
 /*global Backbone*/
 
-console.log('Application demo rodoplphe');
+console.log('Application Focus-démo');
 
 //Write focusComponents into Focus.components
 Focus.components = FocusComponents;

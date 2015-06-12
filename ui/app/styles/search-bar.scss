@@ -1,0 +1,30 @@
+
+[data-focus='search-bar'] {
+    [data-focus="scope"] {
+    .sb-scope {
+      &:before {
+        font-family: FontAwesome;
+        display: inline-block;
+        padding-right: 10px;
+        vertical-align: middle;
+        font-size: 20px;
+      }
+      &.sb-scope-MOVIE:before {
+        content: "\f008";
+      }
+
+      &.sb-scope-PEOPLE:before {
+        content: "\f007";
+      }
+
+      &.sb-scope-ALL:before {
+        content: "\f0c9";
+      }
+    }
+  }
+
+  div.sb-help {
+    background: url('../img/help-arrow.png') no-repeat top 3px left 10px;
+  }
+
+}

@@ -1,59 +1,82 @@
-@import "./variables";
-
-/*
-.user-infos i {
-  font-size: 24px;
-}
-.user-infos .header-menu-item {
-  text-align: center;
-  height: 60px;
-  width: 80px;
-  padding-top: 18px;
-  display: inline-block;
-  cursor: pointer;
+@mixin header-search-bg {
+  background: url('../img/header-bg.png') no-repeat bottom center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
-.badge-alerte {
-  background-color: $color-rouge2;
-  margin-left: -10px;
-  margin-top: -5px;
-  padding: 3px 4px;
-  position: absolute;
-}
-.badge-warning {
-  background-color: $color-jaune;
-  padding: 3px 4px;
-  margin-left: -5px;
-  margin-top: -2px;
-  position: absolute;
-}
-
-.header-title {
-  font-size: 28px;
-  text-transform: none;
-  font-weight: bold;
-  margin-left: 12px;
-}
-.actions-left {
-  margin-top: 10px;
-}
-*/
-
-//Le résumé de la fich n'est pas affiché en mode medium.
-/*header[data-focus="header"]{
-  //When the size is medium, the summary-bar is not visible.
-  &[data-size="medium"]{
-    div[data-focus="bar"]{
-      div:nth-child(2){
-        display:none;
+[data-focus="header"] {
+  &[data-route="search"] {
+    [data-focus="bar"] {
+      background-color: transparent;
+    }
+    &.header-small {
+      [data-focus="bar"] {
+        @include header-search-bg();
+      }
+    }
+    [data-focus="content-bar"] {
+      @include header-search-bg();
     }
   }
-  //When the size is small, the cartridge is not visible.
-  &[data-size="small"]{
-    div[data-focus="cartridge"]{
+}
+
+[data-focus="search-bar"] {
+  [data-focus="scope"] {
+      background-color: rgba(255, 255, 255, 0.3);
+      color: #000;
+  }
+  .sb-input-search {
+    input {
+      background-color: rgba(255, 255, 255, 0.3);
+      color: #000;
+    }
+  }
+}
+
+[data-focus="cartridge"] {
+  [data-focus="search-bar"] {
+    margin-left: 270px;
+    width: 800px;
+    .sb-help {
       display: none;
     }
   }
 }
-}*/
-//Le cartouche de la fiche est invisible dans le cas d'une taille small.
+
+[data-focus="cartridge"] {
+  [data-focus='search-bar'] {
+    [data-focus="scope"] {
+      div.sb-scope-deploy {
+        &:after{
+          right:5px;
+        }
+      }
+      div.sb-scope-deploy-down {
+        &:after{
+          right:5px;
+        }
+      }
+    }
+    .sb-input-search {
+      input {
+        padding: 0 5px;
+      }
+      input::-webkit-input-placeholder {
+        color: #000;
+      }
+      input::-moz-placeholder {
+        color: #000;
+      }
+      input::-ms-input-placeholder {
+        color: #000;
+      }
+      input::-moz-placeholder {
+        color: #000;
+      }
+    }
+  }
+}
+
+

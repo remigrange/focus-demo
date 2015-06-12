@@ -1,12 +1,11 @@
 var services = require('../../services');
+var keys = _.keys;
+
 
 module.exports = {
     search: function (criteria) {
-        var page = criteria.pageInfos.page;
-        if (page === undefined || page === null) {
-            page = 0;
-        }
-        criteria.pageInfos.skip = page;
+        criteria.pageInfos.page = criteria.pageInfos.page || 0;
+        criteria.pageInfos.skip = criteria.pageInfos.skip || 0;
         criteria.group = criteria.pageInfos.group;
         if (criteria.group === undefined || criteria.group === null) {
             criteria.group = '';
@@ -26,10 +25,23 @@ module.exports = {
         }
         services.search.searchByScope(criteria).then(
             function success(data) {
-
+                if (data.facets) {
+                    data.facets = keys(data.facets).reduce((liveFilterFacets, serverFacetKey) => {
+                        let serverFacetData = data.facets[serverFacetKey];
+                        liveFilterFacets[serverFacetKey] = keys(serverFacetData).reduce((facetData, serverFacetItemKey) => {
+                            let serverFacetItemValue = serverFacetData[serverFacetItemKey];
+                            facetData[serverFacetItemKey] = {
+                                label: serverFacetItemKey,
+                                count: serverFacetItemValue
+                            };
+                            return facetData;
+                        }, {});
+                        return liveFilterFacets;
+                    }, {});
+                }
                 var dataRet = {
-                    facet: data.facet,
-                    list: data.list,
+                    facet: data.facets,
+                    map: data.map,
                     pageInfos: {
                         currentPage: criteria.pageInfos.page,
                         perPage: 50,

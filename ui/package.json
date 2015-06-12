@@ -17,16 +17,22 @@
     "test": "brunch test",
     "watch": "./node_modules/brunch/bin/brunch w",
     "serve": "./node_modules/brunch/bin/brunch w -s",
-    "api": "node ./example/api/server.js",
-    "doc": "docco app/lib/* app/models/* app/views/* README.md"
+    "postinstall": "node scripts/install.js"  
   },
   "dependencies": {
-    "brunch": "^1.8.3",
+    "backbone": "^1.2.0",
+    "bootstrap": "^3.3.4",
+    "bootstrap-material": "^0.1.5",
+    "daterangepicker": "0.0.3",
     "focusjs": "^0.6.0",
     "focusjs-components": "^0.1.4",
+    "font-awesome": "^4.3.0",
     "immutable": "^3.7.2",
+    "jquery": "^2.1.4",
     "lodash": "^3.8.0",
-    "react": "^0.13.1"
+    "moment": "^2.10.3",
+    "react": "^0.13.1",
+    "showdown": "^1.0.2"
   },
   "main": "index.js",
   "directories": {
@@ -35,7 +41,7 @@
   "license": "MIT",
   "devDependencies": {
     "appcache": "0.0.4",
-    "brunch": "^1.8.2",
+    "brunch": "^1.8.3",
     "babel-brunch": "^5.1.2",
     "clean-css-brunch": "^1.7.1",
     "css-brunch": "^1.7.0",

@@ -1,2 +1,7 @@
-@import "./variables";
 
+//logo focus
+[data-focus="menu"] [data-focus="menu-brand"] {
+  background: #424950 url('../img/brand.png') no-repeat;
+  background-position: 50%;
+  background-repeat: no-repeat;;
+}
