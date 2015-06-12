@@ -62,12 +62,13 @@ let QuickSearchWrapper = React.createClass({
     },
     _getGroupComponent() {
         let popinCloser = this.props.closePopin;
+        let self = this;
         return React.createClass({
             _advancedSearchClickHandler(scope) {
                 return () => {
-                    let route = `#search/advanced/scope/${scope}/query${this.props.query ?  '/' + this.props.query : ''}`;
+                    let route = `#search/advanced/scope/${scope}${self._query ?  '/query/' + self._query : ''}`;
                     popinCloser();
-                    Backbone.history.navigate(route);
+                    Backbone.history.navigate(route, true);
                 }
             },
             render() {
@@ -94,10 +95,14 @@ let QuickSearchWrapper = React.createClass({
     _onLineClick(data) {
         let route = data.movId ? `#movie/${data.movId}` : `#people/${data.peoId}`;
         this.props.closePopin();
-        Backbone.history.navigate(route);
+        Backbone.history.navigate(route, true);
     },
     _getPreviewType(data) {
         return data.movId ? MoviePreview : PeoplePreview;
+    },
+    _searchAction(criteria) {
+        this._query = criteria.criteria.query;
+        searchAction.search(criteria);
     },
     componentDidMount() {
         scopeAction.getAll((scopes) => {
@@ -117,7 +122,7 @@ let QuickSearchWrapper = React.createClass({
                     lineOperationList={this._getOperationList()}
                     onLineClick={this._onLineClick}
                     closePopin={this.props.closePopin}
-                    searchAction={searchAction.search}
+                    searchAction={this._searchAction}
                     groupComponent={this._getGroupComponent()}
                     lineComponentMapper={this._lineComponentMapper}
                     />
