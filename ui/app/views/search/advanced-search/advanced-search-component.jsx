@@ -9,7 +9,7 @@ let omit = _.omit;
 let searchAction = require('action/search').search;
 
 // Mixins
-
+let i18nMixin = Focus.components.common.i18n.mixin;
 let AdvancedSearch = Focus.components.page.search.advancedSearch.component;
 
 // Components
@@ -37,19 +37,24 @@ let Group = React.createClass({
     }
 });
 
+
+// Composants du cartouche
+let PageTitle = React.createClass({
+    mixins: [i18nMixin],
+    render() {
+        return (
+            <span className="page-title">{this.i18n('search.advanced.page.title')}</span>
+        );
+    }
+});
+
 let cartridgeConfiguration = function () {
     return {
         summary: {component: SummarySearch},
+        barLeft:{component: PageTitle},
         cartridge: {component: CartridgeSearch},
         actions: {
-            primary: [
-                {
-                    label: 'search',
-                    action: () => {
-                        console.log('call the search action');
-                    },
-                    icon: 'search'
-                }],
+            primary: [],
             secondary: []
         }
     };

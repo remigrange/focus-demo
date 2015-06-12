@@ -13,7 +13,6 @@ let CartridgeMovie = require('./movie-cartridge');
 
 
 // Composants du cartouche
-
 let SummaryMovie = React.createClass({
     render() {
         return (
