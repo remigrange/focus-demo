@@ -81,7 +81,8 @@ let WrappedAdvancedSearch = React.createClass({
     _searchHandler(criteria) {
         let facets = criteria.facets;
         let newState = {
-            query: criteria.criteria.query
+            query: criteria.criteria.query,
+            scope: criteria.criteria.scope
         };
         if (isArray(facets) && facets.length === 1 && facets[0].key === 'Scope') {
             let scopeFacet = facets[0];
@@ -92,12 +93,18 @@ let WrappedAdvancedSearch = React.createClass({
         this.setState(newState);
         searchAction(criteria);
     },
+    _unselectScopeAction() {
+        let criteria = this.refs['advanced-search'].getSearchCriteria();
+        criteria.criteria.scope = 'ALL';
+        this._searchHandler(criteria);
+    },
     render() {
         let props = omit(this.props, ['scope', 'query']);
         props.scope = this.state.scope;
         props.query = this.state.query;
         return (
             <AdvancedSearch
+                ref='advanced-search'
                 data-focus='advanced-search'
                 searchAction={this._searchHandler}
                 groupComponent={Group}
@@ -105,6 +112,7 @@ let WrappedAdvancedSearch = React.createClass({
                 lineComponentMapper={this._lineComponentMapper}
                 groupMaxRows={3}
                 cartridgeConfiguration={cartridgeConfiguration}
+                unselectScopeAction={this._unselectScopeAction}
                 {...props}
                 />
         );
