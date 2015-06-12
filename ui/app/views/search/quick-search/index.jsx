@@ -24,6 +24,10 @@ let scopeAction = require('action/scope');
 
 let searchStore = require('stores/search');
 
+// Formatters
+
+let numberFormatter = require('../../../config/formatter/number');
+
 let QuickSearchWrapper = React.createClass({
     mixins: [Focus.components.common.i18n.mixin],
     _getOperationList() {
@@ -72,12 +76,18 @@ let QuickSearchWrapper = React.createClass({
                 }
             },
             render() {
+                let camelCase = _.camelCase;
+                let capitalize = _.capitalize;
+                let lowerKey = camelCase(this.props.groupKey);
+                let store = require('../../../stores/' + lowerKey);
+                let count = store[`get${capitalize(lowerKey)}Records`]();
                 return (
                     <div data-focus='group-result-container'>
                         <div className="title-navigation">
                             <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)} label='button.advancedSearch'
                                     shape="ghost"></Button>
-                            <Title title={this.props.groupKey}/>
+                            <h3>{this.props.groupKey + ' (' + numberFormatter.format(count, '(0,0)') + ')'}</h3>
+                            <p>Les 3 plus pertinents</p>
                         </div>
                         {this.props.children}
                     </div>
