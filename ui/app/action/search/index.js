@@ -51,6 +51,17 @@ module.exports = {
                 if (criteria.group) {
                     dataRet.pageInfos = {};
                 }
+                if (data.records) {
+                    Focus.dispatcher.handleServerAction(
+                        {
+                            data: {
+                                movieRecords: data.records.MOVIE,
+                                peopleRecords: data.records.PEOPLE
+                            },
+                            type: 'update'
+                        }
+                    );
+                }
                 Focus.dispatcher.handleServerAction({data: dataRet, type: 'update'});
             },
             function error(errors) {
