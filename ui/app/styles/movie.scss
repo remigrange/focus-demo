@@ -5,9 +5,9 @@ $movie-poster-witdh:300px;
     //display: flex;
     //flex-direction: row; //(flex ne fonctionne pas sous safari pour le moment)
     min-height: $movie-poster-witdh;
+    margin-left: 180px;
 
     .poster {
-      border: 1px solid red;
       width: 250px;
       height: $movie-poster-witdh;
       float:left;
