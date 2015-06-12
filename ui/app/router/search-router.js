@@ -15,9 +15,7 @@ let SearchRouter = Router.extend({
         query = query || '';
         let AdvancedSearchView = require('../views/search/advanced-search');
         this._pageContent(AdvancedSearchView, {
-            props: {
-                criteria: {scope, query}
-            }
+            props: {scope, query}
         });
     }
 });
