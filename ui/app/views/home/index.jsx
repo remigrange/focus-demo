@@ -1,5 +1,4 @@
-let headerBehaviour = Focus.components.page.mixin;
-let CartridgeBehaviour = Focus.components.page.mixin.cartridgeBehaviour;
+let cartridgeBehaviour = Focus.components.page.mixin.cartridgeBehaviour;
 let CartridgeSearch = require('../common/cartridge-search');
 let SummarySearch = require('../common/summary-search');
 
@@ -11,13 +10,10 @@ let ApplicationTitle = React.createClass({
         );
     }
 });
-
-
-/* global React, Focus.components */
-module.exports = React.createClass({
-  mixins: [headerBehaviour, CartridgeBehaviour],
-
- cartridgeConfiguration: function cartridgeConfiguration() {
+//Creates a View for hehe home page which is
+let HomeView = React.createClass({
+  mixins: [cartridgeBehaviour],
+ cartridgeConfiguration() {
     var cartridgeConfiguration = {
       barLeft:{component: ApplicationTitle},
       summary: {component: SummarySearch},
@@ -29,10 +25,10 @@ module.exports = React.createClass({
     };
     return cartridgeConfiguration;
   },
-
-  render: function renderPeopleView() {
+  render() {
     return (
       <div className="homepage"></div>
     );
   }
 });
+module.exports = HomeView;
