@@ -10,7 +10,6 @@
 		</component>
 		<component api="VSecurityManager" class="io.vertigo.persona.impl.security.VSecurityManagerImpl">
 			<param name="userSessionClassName" value="rodolphe.demo.user.RodolpheUserSession" />
-			<plugin class="io.vertigo.persona.plugins.security.loaders.SecurityResourceLoaderPlugin" />
 		</component>
 	</module>
 	<module name="config">
@@ -20,6 +19,4 @@
 			</plugin>
 		</component>
 	</module>
-
-
 </config>

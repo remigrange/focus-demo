@@ -37,7 +37,7 @@ import rodolphe.demo.services.search.FacetSelection;
  * @author JDALMEIDA
  */
 @Transactional
-public final class CommonServicesImpl implements CommonServices {
+public class CommonServicesImpl implements CommonServices {
 
     @Inject
     private MovieServices movieServices;

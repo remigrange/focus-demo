@@ -20,17 +20,15 @@
 		<component api="CacheManager" class="io.vertigo.commons.impl.cache.CacheManagerImpl">
 			<plugin class="io.vertigo.commons.plugins.cache.memory.MemoryCachePlugin" />
 		</component>
+		<component api="EventsManager" class="io.vertigo.dynamo.impl.events.EventsManagerImpl" />
 		<component api="PersistenceManager" class="io.vertigo.dynamo.impl.persistence.PersistenceManagerImpl" initClass="rodolphe.demo.boot.initializer.PersistenceManagerInitializer" >
 			<plugin class="io.vertigo.dynamo.plugins.persistence.datastore.postgresql.PostgreSqlDataStorePlugin">
 				<param name="sequencePrefix" value="SEQ_" />
 			</plugin>
 		</component>
-   	   <component api="JobManager" class="io.vertigo.tempo.impl.job.JobManagerImpl" initClass="rodolphe.demo.boot.initializer.JobManagerInitializer">
-	        <plugin class="io.vertigo.tempo.plugins.job.basic.BasicSchedulerPlugin" />
-	    </component>
 	</module>
 
-	<module name="VEGA" api="false" inheritance="java.lang.Object">
+	<module name="vertigo-vega" api="false" inheritance="java.lang.Object">
 		<component api="RestManager" class="io.vertigo.vega.impl.rest.RestManagerImpl">
     	    <plugin class="io.vertigo.vega.plugins.rest.instrospector.annotations.AnnotationsEndPointIntrospectorPlugin" />
     	    <plugin class="io.vertigo.vega.plugins.rest.routesregister.sparkjava.SparkJavaRoutesRegisterPlugin" />
