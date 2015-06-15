@@ -24,29 +24,35 @@ import rodolphe.demo.services.common.CommonServices;
  */
 public class CommonWebServices implements RestfulService {
 
-    @Inject
-    private CommonServices commonServices;
+	@Inject
+	private CommonServices commonServices;
 
-    /**
-     * Search by scope.
-     *
-     * @param searchCriteria Criteria
-     * @param selection selected facet
-     * @param uiListState list state
-     * @param clusteringFacetName clusteringFacetName
-     * @return results
-     */
-    @POST("/searchByScope")
-    @AnonymousAccessAllowed
-    public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria,
-            @InnerBodyParam("facets") final DtList<SelectedFacet> selection,
-            @QueryParam("") final UiListState uiListState, @InnerBodyParam("group") final String clusteringFacetName) {
-        return commonServices.search(searchCriteria, selection, uiListState, clusteringFacetName);
-    }
+	/**
+	 * Search by scope.
+	 *
+	 * @param searchCriteria Criteria
+	 * @param selection selected facet
+	 * @param uiListState list state
+	 * @param clusteringFacetName clusteringFacetName
+	 * @return results
+	 */
+	@POST("/searchByScope")
+	@AnonymousAccessAllowed
+	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria,
+			@InnerBodyParam("facets") final DtList<SelectedFacet> selection,
+			@QueryParam("") final UiListState uiListState, @InnerBodyParam("group") final String clusteringFacetName) {
+		return commonServices.search(searchCriteria, selection, uiListState, clusteringFacetName);
+	}
 
-    @POST("/reindexAll")
-    @AnonymousAccessAllowed
-    public void reindexAll() {
-        commonServices.reindexAll();
-    }
+	@POST("/reindexAll")
+	@AnonymousAccessAllowed
+	public void reindexAll() {
+		commonServices.reindexAll();
+	}
+
+	@POST("/removeAllIndex")
+	@AnonymousAccessAllowed
+	public void removeAllIndex() {
+		commonServices.removeAllIndex();
+	}
 }

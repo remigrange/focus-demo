@@ -17,28 +17,33 @@ import rodolphe.demo.services.search.FacetSelection;
  */
 public interface CommonServices extends Component {
 
-    /**
-     * Search by scope.
-     *
-     * @param searchCriteria criteria
-     * @param selection facets.
-     * @param uiListState uiListState
-     * @param clusteringFacetName clusteringFacetName
-     * @return Object
-     */
-    Object search(SearchCriteria searchCriteria, final DtList<SelectedFacet> selection, final UiListState uiListState,
-            String clusteringFacetName);
+	/**
+	 * Search by scope.
+	 *
+	 * @param searchCriteria criteria
+	 * @param selection facets.
+	 * @param uiListState uiListState
+	 * @param clusteringFacetName clusteringFacetName
+	 * @return Object
+	 */
+	Object search(SearchCriteria searchCriteria, final DtList<SelectedFacet> selection, final UiListState uiListState,
+			String clusteringFacetName);
 
-    /**
-     * Get facet selection from selected facet.
-     *
-     * @param selection SelectedFacet list
-     * @return facet selection list
-     */
-    FacetSelection[] getFacetSelectionList(final DtList<SelectedFacet> selection);
+	/**
+	 * Get facet selection from selected facet.
+	 *
+	 * @param selection SelectedFacet list
+	 * @return facet selection list
+	 */
+	FacetSelection[] getFacetSelectionList(final DtList<SelectedFacet> selection);
 
-    /**
-     * Lance la réindexation complète.
-     */
-    void reindexAll();
+	/**
+	 * Lance la réindexation complète.
+	 */
+	void reindexAll();
+
+	/**
+	 * Remove all indexes.
+	 */
+	void removeAllIndex();
 }
