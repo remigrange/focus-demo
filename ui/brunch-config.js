@@ -17,6 +17,7 @@ exports.config = {
             },
             order: {
                 before: [
+                    'vendor/npo.js',
                     'vendor/react.js',
                     'vendor/jquery.js',
                     'vendor/lodash.js',
