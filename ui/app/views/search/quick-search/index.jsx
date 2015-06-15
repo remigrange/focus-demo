@@ -30,7 +30,7 @@ let searchStore = require('stores/search');
 
 // Formatters
 
-let numberFormatter = require('../../../config/formatter/number');
+let numberFormatter = Focus.definition.formatter.number;
 
 let QuickSearchWrapper = React.createClass({
     mixins: [Focus.components.common.i18n.mixin],
