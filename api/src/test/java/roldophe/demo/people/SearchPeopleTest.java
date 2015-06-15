@@ -14,9 +14,8 @@ import rodolphe.demo.domain.DtDefinitions.PeopleCriteriaFields;
 import rodolphe.demo.domain.DtDefinitions.PeopleFields;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
-import rodolphe.demo.domain.people.PeopleResult;
+import rodolphe.demo.domain.people.PeopleIndex;
 import rodolphe.demo.services.people.PeopleServices;
-import rodolphe.demo.services.search.PeopleSearchHandler;
 import rodolphe.demo.util.MemorizeTnrData;
 import roldophe.demo.tools.AbstractEsSearchTestCase;
 
@@ -25,74 +24,74 @@ import roldophe.demo.tools.AbstractEsSearchTestCase;
  *
  * @author JDALMEIDA
  */
-public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, PeopleResult> {
+public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, PeopleIndex> {
 
-    @Inject
-    private PeopleServices peopleServices;
+	@Inject
+	private PeopleServices peopleServices;
 
-    /** {@inheritDoc} */
-    @Override
-    protected PeopleCriteria getCritereForEsSearchWithUniqueResultAsSU() {
-        final People peo = createNewPeople();
-        final PeopleCriteria crit = new PeopleCriteria();
-        crit.setPeoId(peo.getPeoId());
-        return crit;
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected PeopleCriteria getCritereForEsSearchWithUniqueResultAsSU() {
+		final People peo = createNewPeople();
+		final PeopleCriteria crit = new PeopleCriteria();
+		crit.setPeoId(peo.getPeoId());
+		return crit;
+	}
 
-    /**
-     * Get new person.
-     *
-     * @return people
-     */
-    public static People getNewPeople() {
-        final People peo = new People();
-        peo.setPeoName("TNR_NOM TNR_PRENOM");
-        peo.setImdbid("id");
-        peo.setFirstName("TNR_PRENOM");
-        peo.setLastName("TNR_NOM");
-        peo.setTitCd("M");
-        return peo;
-    }
+	/**
+	 * Get new person.
+	 *
+	 * @return people
+	 */
+	public static People getNewPeople() {
+		final People peo = new People();
+		peo.setPeoName("TNR_NOM TNR_PRENOM");
+		peo.setImdbid("id");
+		peo.setFirstName("TNR_PRENOM");
+		peo.setLastName("TNR_NOM");
+		peo.setTitCd("M");
+		return peo;
+	}
 
-    private People createNewPeople() {
-        final People peo = getNewPeople();
-        peopleServices.savePeople(peo);
-        return peo;
-    }
+	private People createNewPeople() {
+		final People peo = getNewPeople();
+		peopleServices.savePeople(peo);
+		return peo;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    protected Class<? extends MemorizeTnrData> getDataSenderClass() {
-        return PeopleSearchHandler.class;
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected Class<? extends MemorizeTnrData> getDataSenderClass() {
+		return PeopleSearchHandler.class;
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    protected DtList<PeopleResult> getListByCritere(final PeopleCriteria critere) {
-        final UiListState uiListState = new UiListState(50, 0, null, false, null);
-        return peopleServices.getPeopleByCriteria(critere, uiListState, "").getDtList();
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected DtList<PeopleIndex> getListByCritere(final PeopleCriteria critere) {
+		final UiListState uiListState = new UiListState(50, 0, null, false, null);
+		return peopleServices.getPeopleByCriteria(critere, uiListState, "").getDtList();
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    protected Long getId(final PeopleResult dto) {
-        return dto.getPeoId();
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected Long getId(final PeopleIndex dto) {
+		return dto.getPeoId();
+	}
 
-    /** {@inheritDoc} */
-    @Override
-    protected Long getIdForCritere(final PeopleCriteria critere) {
-        return critere.getPeoId();
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected Long getIdForCritere(final PeopleCriteria critere) {
+		return critere.getPeoId();
+	}
 
-    /**
-     * Search people by the name.
-     */
-    @Test
-    public void searchByPeoName() {
-        final PeopleCriteria crit = getCritereForSearchWithUniqueResultAsSU();
-        final People peo = peopleServices.getPeople(getIdForCritere(crit));
-        verifierRechercheTokenBeginWoAccent(crit, PeopleCriteriaFields.PEO_NAME, peo, PeopleFields.PEO_NAME,
-                peopleServices, "savePeople");
-    }
+	/**
+	 * Search people by the name.
+	 */
+	@Test
+	public void searchByPeoName() {
+		final PeopleCriteria crit = getCritereForSearchWithUniqueResultAsSU();
+		final People peo = peopleServices.getPeople(getIdForCritere(crit));
+		verifierRechercheTokenBeginWoAccent(crit, PeopleCriteriaFields.PEO_NAME, peo, PeopleFields.PEO_NAME,
+				peopleServices, "savePeople");
+	}
 }
