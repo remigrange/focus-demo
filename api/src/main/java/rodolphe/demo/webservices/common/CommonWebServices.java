@@ -43,4 +43,10 @@ public class CommonWebServices implements RestfulService {
             @QueryParam("") final UiListState uiListState, @InnerBodyParam("group") final String clusteringFacetName) {
         return commonServices.search(searchCriteria, selection, uiListState, clusteringFacetName);
     }
+
+    @POST("/reindexAll")
+    @AnonymousAccessAllowed
+    public void reindexAll() {
+        commonServices.reindexAll();
+    }
 }

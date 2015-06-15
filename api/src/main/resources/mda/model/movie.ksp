@@ -52,7 +52,7 @@ create DtDefinition DT_MOVIE_VIEW {
 
 create DtDefinition DT_MOVIE_INDEX {
 	persistent:"false"
-	field MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
+	key MOV_ID {domain: DO_ID label: "primary key" notNull:"true" }
 	field TITLE {domain: DO_COMMENTAIRE label: "Title" notNull:"false"}
 	field TITLE_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Title" notNull:"false" persistent:"false"} /* index only */
 	field RELEASED {domain: DO_DATE label: "Released" notNull:"false"}

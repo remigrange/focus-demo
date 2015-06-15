@@ -36,4 +36,9 @@ public interface CommonServices extends Component {
      * @return facet selection list
      */
     FacetSelection[] getFacetSelectionList(final DtList<SelectedFacet> selection);
+
+    /**
+     * Lance la réindexation complète.
+     */
+    void reindexAll();
 }

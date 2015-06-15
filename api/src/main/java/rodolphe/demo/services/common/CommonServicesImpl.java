@@ -8,6 +8,7 @@ import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.dynamo.search.SearchManager;
 import io.vertigo.dynamo.search.model.SearchQuery;
 import io.vertigo.dynamo.transaction.Transactional;
 import io.vertigo.util.MapBuilder;
@@ -22,8 +23,10 @@ import javax.inject.Inject;
 import rodolphe.demo.domain.common.SearchCriteria;
 import rodolphe.demo.domain.common.SelectedFacet;
 import rodolphe.demo.domain.masterdata.CodeScope;
+import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieIndex;
+import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleIndex;
 import rodolphe.demo.domain.search.FacetConst;
@@ -43,6 +46,8 @@ public class CommonServicesImpl implements CommonServices {
     private MovieServices movieServices;
     @Inject
     private PeopleServices peopleServices;
+    @Inject
+    private SearchManager searchManager;
 
     /** {@inheritDoc} */
     @Override
@@ -129,5 +134,12 @@ public class CommonServicesImpl implements CommonServices {
             facetsMapBuilder.put(facet.getDefinition().getName(), facetValuesBuilder.build());
         }
         return facetsMapBuilder.build();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void reindexAll() {
+        searchManager.reindexAll(searchManager.findIndexDefinitionByKeyConcept(Movie.class));
+        searchManager.reindexAll(searchManager.findIndexDefinitionByKeyConcept(People.class));
     }
 }

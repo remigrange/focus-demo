@@ -31,7 +31,7 @@ create Task TK_GET_MOVIE_INDEX {
     				left join  
     					( select string_agg(lan_cd, '|') as language_ids, mov_id from mov_lan  group by mov_id) movLan on mov.mov_id = movLan.mov_id     			
     			Where
-    				mov.mov_id in #DTC_MOVIE_IDS.ROWNUM.MOV_ID#
+    				mov.mov_id in (#DTC_MOVIE_IDS.ROWNUM.DUMMY_LONG#)
     			Order by
     				mov.mov_id
     "

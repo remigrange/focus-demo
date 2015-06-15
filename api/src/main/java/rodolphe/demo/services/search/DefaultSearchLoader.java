@@ -31,18 +31,20 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public abstract class DefaultSearchLoader<P extends Serializable, S extends KeyConcept, I extends DtObject> implements SearchLoader<S, I> {
+public abstract class DefaultSearchLoader<P extends Serializable, S extends KeyConcept, I extends DtObject> implements
+		SearchLoader<S, I> {
+
 	private static final String DOMAIN_PREFIX = DefinitionUtil.getPrefix(Domain.class);
 	private static final char SEPARATOR = Definition.SEPARATOR;
-	private static final int SEARCH_CHUNK_SIZE = 5;
+	private static final int SEARCH_CHUNK_SIZE = 500;
 	private final TaskManager taskManager;
 
 	@Inject
 	public DefaultSearchLoader(final TaskManager taskManager) {
 		Assertion.checkNotNull(taskManager);
-		//-----
+		Assertion.checkNotNull(taskManager);
+		// -----
 		this.taskManager = taskManager;
-
 	}
 
 	/** {@inheritDoc} */
@@ -54,11 +56,13 @@ public abstract class DefaultSearchLoader<P extends Serializable, S extends KeyC
 
 				private SearchChunk<S> current = null;
 
+				/** {@inheritDoc} */
 				@Override
 				public boolean hasNext() {
 					return hasNextChunk(keyConceptClass, current);
 				}
 
+				/** {@inheritDoc} */
 				@Override
 				public SearchChunk<S> next() {
 					final SearchChunk<S> next = nextChunk(keyConceptClass, current);
@@ -66,12 +70,14 @@ public abstract class DefaultSearchLoader<P extends Serializable, S extends KeyC
 					return current;
 				}
 
+				/** {@inheritDoc} */
 				@Override
 				public void remove() {
 					throw new UnsupportedOperationException("This list is unmodifiable");
 				}
 			};
 
+			/** {@inheritDoc} */
 			@Override
 			public Iterator<SearchChunk<S>> iterator() {
 				return iterator;
@@ -85,10 +91,10 @@ public abstract class DefaultSearchLoader<P extends Serializable, S extends KeyC
 		if (previousChunck != null) {
 			final List<URI<S>> previousUris = previousChunck.getAllURIs();
 			Assertion
-			.checkState(
-					!previousUris.isEmpty(),
-					"No more SearchChunk for KeyConcept {0}, ensure you use Iterable pattern or call hasNext before next",
-					keyConceptClass.getSimpleName());
+					.checkState(
+							!previousUris.isEmpty(),
+							"No more SearchChunk for KeyConcept {0}, ensure you use Iterable pattern or call hasNext before next",
+							keyConceptClass.getSimpleName());
 			lastId = (P) previousUris.get(previousUris.size() - 1).getId();
 		}
 		// call loader service
@@ -102,23 +108,23 @@ public abstract class DefaultSearchLoader<P extends Serializable, S extends KeyC
 		final DtField pk = dtDefinition.getIdField().get();
 		final String pkFieldName = pk.getName();
 		final StringBuilder request = new StringBuilder()
-		.append(" select " + pkFieldName + " from ")
-		.append(tableName)
-		.append(" where ").append(pkFieldName).append(" > #").append(pkFieldName).append('#')
-		.append(" order by " + pkFieldName + " ASC")
-		.append(" limit " + SEARCH_CHUNK_SIZE); //Attention : non compatible avec toutes les bases
+				.append(" select " + pkFieldName + " from ")
+				.append(tableName)
+				.append(" where ").append(pkFieldName).append(" > #").append(pkFieldName).append('#')
+				.append(" order by " + pkFieldName + " ASC")
+				.append(" limit " + SEARCH_CHUNK_SIZE); //Attention : non compatible avec toutes les bases
 
 		final TaskDefinition taskDefinition = new TaskDefinitionBuilder(taskName)
-		.withEngine(TaskEngineSelect.class)
-		.withRequest(request.toString())
-		.withInAttribute(pkFieldName, pk.getDomain(), true)
-		//IN, obligatoire
-		.withOutAttribute("dtc", Home.getDefinitionSpace().resolve(DOMAIN_PREFIX + SEPARATOR + dtDefinition.getName() + "_DTC", Domain.class), true)//obligatoire
-		.build();
+				.withEngine(TaskEngineSelect.class)
+				.withRequest(request.toString())
+				.withInAttribute(pkFieldName, pk.getDomain(), true)
+				//IN, obligatoire
+				.withOutAttribute("dtc", Home.getDefinitionSpace().resolve(DOMAIN_PREFIX + SEPARATOR + dtDefinition.getName() + "_DTC", Domain.class), true)//obligatoire
+				.build();
 
 		final Task task = new TaskBuilder(taskDefinition)
-		.withValue(pkFieldName, lastId)
-		.build();
+				.withValue(pkFieldName, lastId)
+				.build();
 		final TaskResult taskResult = process(task);
 		final DtList<S> resultDtc = getDtList(taskResult);
 		final List<URI<S>> uris = new ArrayList<>(SEARCH_CHUNK_SIZE);
@@ -130,6 +136,7 @@ public abstract class DefaultSearchLoader<P extends Serializable, S extends KeyC
 
 	/**
 	 * Exécution d'une tache de façon synchrone.
+	 *
 	 * @param task Tache à executer.
 	 * @return TaskResult de la tache
 	 */
@@ -163,8 +170,8 @@ public abstract class DefaultSearchLoader<P extends Serializable, S extends KeyC
 			case DtList:
 			case DtObject:
 			default:
-				throw new IllegalArgumentException("Type's PK " + pkDataType.name() + " of " + dtDefinition.getClassSimpleName() + " is not supported, prefer int, long or String PK.");
-
+				throw new IllegalArgumentException("Type's PK " + pkDataType.name() + " of "
+						+ dtDefinition.getClassSimpleName() + " is not supported, prefer int, long or String PK.");
 		}
 		return pkValue;
 	}

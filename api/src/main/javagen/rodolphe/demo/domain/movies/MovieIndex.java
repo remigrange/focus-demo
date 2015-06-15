@@ -29,17 +29,17 @@ public final class MovieIndex implements DtObject {
 	private Long rank;
 
 	/**
-	 * Champ : DATA.
+	 * Champ : PRIMARY_KEY.
 	 * Récupère la valeur de la propriété 'primary key'. 
 	 * @return Long movId <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_ID", notNull = true, persistent = false, label = "primary key")
+	@Field(domain = "DO_ID", type = "PRIMARY_KEY", notNull = true, persistent = false, label = "primary key")
 	public Long getMovId() {
 		return movId;
 	}
 
 	/**
-	 * Champ : DATA.
+	 * Champ : PRIMARY_KEY.
 	 * Définit la valeur de la propriété 'primary key'.
 	 * @param movId Long <b>Obligatoire</b>
 	 */
