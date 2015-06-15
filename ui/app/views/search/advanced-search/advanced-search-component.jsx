@@ -21,23 +21,6 @@ let PeopleLineComponent = require('../lines/peopleLineComponent');
 let CartridgeSearch = require('../../common/cartridge-search');
 let SummarySearch = require('../../common/summary-search');
 
-let Group = React.createClass({
-    render() {
-        let Title = FocusComponents.common.title.component;
-        let Button = FocusComponents.common.button.action.component;
-        return (
-            <div className="listResultContainer panel" data-focus="group-result-container">
-                <Title title={this.props.groupKey}/>
-                <div className="resultContainer">
-                    {this.props.children}
-                </div>
-                <Button handleOnClick={this.props.showAll(this.props.groupKey)} label="Show all"/>
-            </div>
-        );
-    }
-});
-
-
 // Composants du cartouche
 let PageTitle = React.createClass({
     mixins: [i18nMixin],
@@ -71,6 +54,28 @@ let WrappedAdvancedSearch = React.createClass({
             scope: this.props.scope,
             query: this.props.query
         }
+    },
+    _getGroupComponent() {
+        let _this = this;
+        return React.createClass({
+            render() {
+                let Title = FocusComponents.common.title.component;
+                let Button = FocusComponents.common.button.action.component;
+                return (
+                    <div className="listResultContainer panel" data-focus="group-result-container">
+                        <Title title={this.props.groupKey}/>
+                        <div className="resultContainer">
+                            {this.props.children}
+                        </div>
+                        <Button handleOnClick={() => {
+                            let criteria = _this.refs['advanced-search'].getSearchCriteria();
+                            criteria.criteria.scope = this.props.groupKey;
+                            _this._searchHandler(criteria);
+                        }} label="Show all"/>
+                    </div>
+                );
+            }
+        });
     },
     _lineComponentMapper(list) {
         if (list.length < 1) {
@@ -112,7 +117,7 @@ let WrappedAdvancedSearch = React.createClass({
                 ref='advanced-search'
                 data-focus='advanced-search'
                 searchAction={this._searchHandler}
-                groupComponent={Group}
+                groupComponent={this._getGroupComponent()}
                 isSelection={true}
                 lineComponentMapper={this._lineComponentMapper}
                 groupMaxRows={3}
