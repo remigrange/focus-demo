@@ -38,7 +38,7 @@ module.exports = function startServer(port, path, callback) {
           return movie.title.search(new RegExp('.*' + criteria.query + '.*')) !== -1;
       });
       res.json({
-          list: movies,
+          map: {MOVIE: movies},
           facets: [],
           totalRecords: movies.length
       });

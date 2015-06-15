@@ -11,7 +11,6 @@ $movie-poster-witdh:300px;
       width: 250px;
       height: $movie-poster-witdh;
       float:left;
-      border: 1px solid #B2B2B2;
       background-color: #F8F8F8;
       text-align: center;
       color: #B2B2B2;
@@ -39,11 +38,9 @@ $movie-poster-witdh:300px;
   }
 }
 
+
 [data-focus="selection-list"] {
   li[data-focus="sl-line"] {
-    [data-focus="sl-icon"] {
-      line-height: 75px;
-    }
     .movie-line {
       min-height: 75px;
     }

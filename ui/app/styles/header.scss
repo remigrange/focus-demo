@@ -1,82 +1,83 @@
+$header-search-color: #000;
+
 @mixin header-search-bg {
-  background: url('../img/header-bg.png') no-repeat bottom center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
+  background: url('../img/header-bg.png');
   background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 0% 50%;
 }
 
 [data-focus="header"] {
+  .page-title {
+    color: #000;
+    font-size: 22pt;
+    text-transform: uppercase;
+    padding: 0 10px;
+  }
   &[data-route="search"] {
     [data-focus="bar"] {
       background-color: transparent;
     }
     &.header-small {
       [data-focus="bar"] {
-        @include header-search-bg();
+        background-color: #FFF;
       }
     }
-    [data-focus="content-bar"] {
-      @include header-search-bg();
+    &.header-medium {
+      .page-title {
+        color: #FFF;
+      }
+      [data-focus="bar"] {
+        [data-focus="bar-content-left"], [data-focus="bar-content-right"] {
+          color: #FFF;
+        }
+      }
+      [data-focus="content-bar"] {
+        h1 {
+          text-align: center;
+          color: #FFF;
+          font-size: 32pt;
+          font-weight: 100;
+          width: 800px;
+          margin-left: 270px;
+        }
+        @include header-search-bg();
+      }
     }
   }
 }
 
 [data-focus="search-bar"] {
   [data-focus="scope"] {
-      background-color: rgba(255, 255, 255, 0.3);
-      color: #000;
+    background-color: rgba(255, 255, 255, 0.3);
+    color: $header-search-color;
   }
   .sb-input-search {
     input {
       background-color: rgba(255, 255, 255, 0.3);
-      color: #000;
-    }
-  }
-}
-
-[data-focus="cartridge"] {
-  [data-focus="search-bar"] {
-    margin-left: 270px;
-    width: 800px;
-    .sb-help {
-      display: none;
+      color: $header-search-color;
     }
   }
 }
 
 [data-focus="cartridge"] {
   [data-focus='search-bar'] {
-    [data-focus="scope"] {
-      div.sb-scope-deploy {
-        &:after{
-          right:5px;
-        }
-      }
-      div.sb-scope-deploy-down {
-        &:after{
-          right:5px;
-        }
-      }
-    }
     .sb-input-search {
       input {
         padding: 0 5px;
       }
       input::-webkit-input-placeholder {
-        color: #000;
+        color: $header-search-color;
       }
       input::-moz-placeholder {
-        color: #000;
+        color: $header-search-color;
       }
       input::-ms-input-placeholder {
-        color: #000;
+        color: $header-search-color;
       }
       input::-moz-placeholder {
-        color: #000;
+        color: $header-search-color;
       }
     }
   }
 }
-
-
