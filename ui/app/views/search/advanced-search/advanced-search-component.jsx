@@ -66,23 +66,7 @@ let WrappedAdvancedSearch = React.createClass({
             searchAction: searchAction, 
             query: this.props.query,
             scope: this.props.scope,
-            scopeList: [
-                  {
-                    "code": "MOVIE",
-                    "label": "MOVIE",
-                    "active": true
-                  },
-                  {
-                    "code": "PEOPLE",
-                    "label": "PEOPLE",
-                    "active": true
-                  },
-                  {
-                    "code": "ALL",
-                    "label": "ALL",
-                    "active": true
-                  }
-                ]
+            referenceNames: ['scopes']
         };
         return {
             summary: {
