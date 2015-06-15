@@ -23,7 +23,7 @@ module.exports = {
             criteria.pageInfos.sortFieldName = undefined;
             criteria.pageInfos.sortDesc = undefined;
         }
-        services.search.searchByScope(criteria).then(
+        return services.search.searchByScope(criteria).then(
             function success(data) {
                 if (data.facets) {
                     data.facets = keys(data.facets).reduce((liveFilterFacets, serverFacetKey) => {

@@ -3,7 +3,6 @@
 let keys = _.keys;
 let isArray = _.isArray;
 let omit = _.omit;
-
 // Actions
 
 let searchAction = require('action/search').search;
@@ -31,17 +30,6 @@ let PageTitle = React.createClass({
     }
 });
 
-let cartridgeConfiguration = function () {
-    return {
-        summary: {component: SummarySearch},
-        barLeft:{component: PageTitle},
-        cartridge: {component: CartridgeSearch},
-        actions: {
-            primary: [],
-            secondary: []
-        }
-    };
-};
 
 
 /**
@@ -54,6 +42,29 @@ let WrappedAdvancedSearch = React.createClass({
             scope: this.props.scope,
             query: this.props.query
         }
+    },
+    cartridgeConfiguration () {
+        let buildProps = {
+            searchAction: searchAction, 
+            query: this.props.query,
+            scope: this.props.scope,
+            referenceNames: ['scopes']
+        };
+        return {
+            summary: {
+                component: Focus.components.page.search.searchHeader.summary, 
+                props: buildProps
+            },
+            barLeft:{component: PageTitle},
+            cartridge: {
+                component: Focus.components.page.search.searchHeader.cartridge,
+                props: buildProps
+            },
+            actions: {
+                primary: [],
+                secondary: []
+            }
+        };
     },
     _getGroupComponent() {
         let _this = this;
@@ -123,7 +134,7 @@ let WrappedAdvancedSearch = React.createClass({
                 isSelection={true}
                 lineComponentMapper={this._lineComponentMapper}
                 groupMaxRows={3}
-                cartridgeConfiguration={cartridgeConfiguration}
+                cartridgeConfiguration={this.cartridgeConfiguration}
                 unselectScopeAction={this._unselectScopeAction}
                 {...props}
                 />
