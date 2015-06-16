@@ -46,3 +46,32 @@ $movie-poster-witdh:300px;
     }
   }
 }
+
+[data-focus='movie-preview'] {
+  [data-focus='head'] {
+    width: 100%;
+    height: 200px;
+
+    [data-focus='poster'] {
+      float: left;
+      width: 150px;
+      height: 200px;
+      border: solid #827d7c 1px;
+      padding: 5px;
+
+      [data-focus='empty'] {
+        background-color: #f3f3f3;
+        text-align: center;
+        padding-top: 60px;
+        color: #e8e8e8;
+        font-size: 4em;
+        height: 100%;
+      }
+    }
+
+    [data-focus='summary'] {
+      margin-left: 170px;
+    }
+  }
+
+}

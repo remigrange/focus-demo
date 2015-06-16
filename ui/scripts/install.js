@@ -4,6 +4,7 @@ var files = [
   'react/dist/react.js',
   'jquery/dist/jquery.js',
   'backbone/backbone.js',
+  'native-promise-only/npo.js',
   //'lodash/',
   //bootstrap
   'bootstrap/dist/css/bootstrap.css',

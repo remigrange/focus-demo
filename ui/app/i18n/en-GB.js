@@ -4,7 +4,8 @@ module.exports = {
         cancel: "Cancel",
         save: "Save",
         advancedSearch: "Advanced search",
-        back: "Back"
+        back: "Back",
+        backTop: "Top"
     },
     show: {
         all: "Show all"

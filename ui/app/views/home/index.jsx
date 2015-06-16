@@ -10,20 +10,41 @@ let ApplicationTitle = React.createClass({
         );
     }
 });
+
+
+let searchAction = require('action/search').search;
+let navigateAdvancedSearch = function(criteria){
+  let route = `#search/advanced/scope/${criteria.scope}${criteria.query ?  '/query/' + criteria.query : ''}`;
+  return Backbone.history.navigate(route,true)
+}
 //Creates a View for hehe home page which is
 let HomeView = React.createClass({
   mixins: [cartridgeBehaviour],
  cartridgeConfiguration() {
-    var cartridgeConfiguration = {
+    let buildProps = {
+            searchAction(){
+              searchAction.apply(this,arguments);
+              navigateAdvancedSearch.apply(this,arguments)
+            }, 
+            query: this.props.query,
+            scope: this.props.scope, //Scope all by default?
+            referenceNames: ['scopes']
+        };
+    return {
       barLeft:{component: ApplicationTitle},
-      summary: {component: SummarySearch},
-      cartridge: {component: CartridgeSearch},
+      summary: {
+        component: Focus.components.page.search.searchHeader.summary, 
+        props: buildProps
+      },
+      cartridge:  {
+          component: Focus.components.page.search.searchHeader.cartridge,
+          props: buildProps
+      },
       actions: {
-          primary: [],
-          secondary: []
+        primary: [],
+        secondary: []
       }
     };
-    return cartridgeConfiguration;
   },
   render() {
     return (
