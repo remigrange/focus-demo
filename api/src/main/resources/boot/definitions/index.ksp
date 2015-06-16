@@ -12,6 +12,10 @@ create IndexDefinition IDX_PEOPLE {
     loaderId : "PeopleSearchLoader"
 }
 
+create FacetDefinition FCT_SCOPE { /** Fake Facet for group by SCOPE when scope ALL */
+	dtDefinition : DT_MOVIE_INDEX,	fieldName : "RUNTIME",	label : "Scope"
+}
+
 create FacetDefinition FCT_MOVIE_RUNTIME {
 	dtDefinition : DT_MOVIE_INDEX,	fieldName : "RUNTIME",	label : "Par Runtime"
 }
