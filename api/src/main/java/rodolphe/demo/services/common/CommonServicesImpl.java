@@ -63,12 +63,12 @@ public class CommonServicesImpl implements CommonServices {
 			return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel);
 		} else {
 			final FacetedQueryResult<MovieIndex, SearchQuery> movies = movieServices.getMoviesByCriteria(movieCriteria,
-					uiListState, clusteringFacetName, facetSel);
+					uiListState, "", facetSel);
 			final FacetedQueryResult<PeopleIndex, SearchQuery> people = peopleServices.getPeopleByCriteria(
-					peopleCriteria, uiListState, clusteringFacetName, facetSel);
+					peopleCriteria, uiListState, "", facetSel);
 			final FacetedQueryResult<DtObject, SearchQuery> allData = new FacetedQueryResultMerger<>(movies, "SCOPE:" + CodeScope.MOVIE.name(), "Movies", null)
 					.with(people, "SCOPE:" + CodeScope.PEOPLE.name(), "People", null)
-					.withFacet("FCT_SCOPE")
+					.withFacet(clusteringFacetName)
 					.build();
 			return allData;
 		}
@@ -100,8 +100,13 @@ public class CommonServicesImpl implements CommonServices {
 
 	/** {@inheritDoc} */
 	@Override
-	public void reindexAll() {
+	public void reindexAllMovies() {
 		searchManager.reindexAll(searchManager.findIndexDefinitionByKeyConcept(Movie.class));
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void reindexAllPeople() {
 		searchManager.reindexAll(searchManager.findIndexDefinitionByKeyConcept(People.class));
 	}
 

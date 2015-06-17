@@ -41,9 +41,14 @@ public interface CommonServices extends Component {
 	FacetSelection[] getFacetSelectionList(final DtList<SelectedFacet> selection);
 
 	/**
-	 * Lance la réindexation complète.
+	 * Lance la réindexation complète des intervenants.
 	 */
-	void reindexAll();
+	void reindexAllPeople();
+
+	/**
+	 * Lance la réindexation complète des films.
+	 */
+	void reindexAllMovies();
 
 	/**
 	 * Remove all indexes.
