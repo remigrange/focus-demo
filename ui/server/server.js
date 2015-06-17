@@ -34,14 +34,54 @@ module.exports = function startServer(port, path, callback) {
       var facets = req.body.facets;
       var clusteringFacetName = req.body.group;
 
-      var movies = _.filter(database.movies, function(movie) {
-          return movie.title.search(new RegExp('.*' + criteria.query + '.*')) !== -1;
-      });
-      res.json({
-          map: {MOVIE: movies},
-          facets: [],
-          totalRecords: movies.length
-      });
+      var response = {};
+      response.totalRecords = 412;
+
+      switch (criteria.scope) {
+          case 'ALL':
+              if (clusteringFacetName === '') {
+                  var groups = {
+                      MOVIE: _.filter(database.movies, function(movie) {
+                          return movie.title.search(new RegExp('.*' + criteria.query + '.*')) !== -1;
+                      }),
+                      PEOPLE: _.filter(database.people, function(person) {
+                          return person.name.search(new RegExp('.*' + criteria.query + '.*')) !== -1;
+                      })
+                  };
+                  response.groups = groups;
+                  response.facets = {};
+              } else {
+
+              }
+
+              break;
+          case 'MOVIE':
+              if (clusteringFacetName === '') {
+                  response.list = _.filter(database.movies, function(movie) {
+                      return movie.title.search(new RegExp('.*' + criteria.query + '.*')) !== -1;
+                  });
+                  response.facets = database.facets.MOVIE;
+              } else {
+
+              }
+
+
+              break;
+          case 'PEOPLE':
+              if (clusteringFacetName === '') {
+                  response.list = _.filter(database.people, function(person) {
+                      return person.name.search(new RegExp('.*' + criteria.query + '.*')) !== -1;
+                  });
+                  response.facets = database.facets.PEOPLE;
+              } else {
+
+              }
+
+
+              break;
+      }
+
+      res.json(response);
   });
 
   // Masterdata
@@ -56,17 +96,16 @@ module.exports = function startServer(port, path, callback) {
           return details.movId == req.param('movId');
       }));
   });
+
   app.put('/movies/:movId', function(req, res) {
       res.json(req.body);
   });
 
   // People
 
-
   var server = app.listen(port, function() {
       var port = server.address().port;
       console.log('Mocked API listening at http://localhost:%s', port);
       callback();
   });
-
-}
+};
