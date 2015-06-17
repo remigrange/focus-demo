@@ -1,16 +1,16 @@
 package rodolphe.demo.dao.masterdatas;
 
 import javax.inject.Inject;
-
 import io.vertigo.dynamo.impl.persistence.util.DAOBroker;
 import io.vertigo.dynamo.persistence.PersistenceManager;
 import io.vertigo.dynamo.task.TaskManager;
+import rodolphe.demo.domain.masterdatas.RoleMovie;
 
 /**
  * DAO : Accès à un object (DTO, DTC). 
  * RoleMovieDAO
  */
-public final class RoleMovieDAO extends DAOBroker<rodolphe.demo.domain.masterdatas.RoleMovie, java.lang.String> {
+public final class RoleMovieDAO extends DAOBroker<RoleMovie, java.lang.String> {
 	 
 	/**
 	 * Contructeur.
@@ -19,6 +19,8 @@ public final class RoleMovieDAO extends DAOBroker<rodolphe.demo.domain.masterdat
 	 */
 	@Inject
 	public RoleMovieDAO(final PersistenceManager persistenceManager, final TaskManager taskManager) {
-		super(rodolphe.demo.domain.masterdatas.RoleMovie.class, persistenceManager, taskManager);
+		super(RoleMovie.class, persistenceManager, taskManager);
 	}
+	
+
 }

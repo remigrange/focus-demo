@@ -13,6 +13,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	 * Enumération des DtDefinitions.
 	 */
 	public enum Definitions {
+			/** Objet de données Dummy. */
+			Dummy(rodolphe.demo.domain.common.Dummy.class),
 			/** Objet de données SearchCriteria. */
 			SearchCriteria(rodolphe.demo.domain.common.SearchCriteria.class),
 			/** Objet de données SearchRet. */
@@ -41,8 +43,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			MovieCriteria(rodolphe.demo.domain.movies.MovieCriteria.class),
 			/** Objet de données MovieIndex. */
 			MovieIndex(rodolphe.demo.domain.movies.MovieIndex.class),
-			/** Objet de données MovieResult. */
-			MovieResult(rodolphe.demo.domain.movies.MovieResult.class),
 			/** Objet de données MovieView. */
 			MovieView(rodolphe.demo.domain.movies.MovieView.class),
 			/** Objet de données Casting. */
@@ -53,8 +53,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			PeopleCriteria(rodolphe.demo.domain.people.PeopleCriteria.class),
 			/** Objet de données PeopleIndex. */
 			PeopleIndex(rodolphe.demo.domain.people.PeopleIndex.class),
-			/** Objet de données PeopleResult. */
-			PeopleResult(rodolphe.demo.domain.people.PeopleResult.class),
 			/** Objet de données PeopleView. */
 			PeopleView(rodolphe.demo.domain.people.PeopleView.class),
 			/** Objet de données RolePeople. */
@@ -82,6 +80,14 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			return clazz;
 		}
     }
+
+	/**
+	 * Enumération des champs de Dummy.
+	 */
+	public enum DummyFields implements DtFieldName {
+		/** Propriété 'dummy long'. */
+		DUMMY_LONG,
+	}
 
 	/**
 	 * Enumération des champs de SearchCriteria.
@@ -225,7 +231,7 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Genres'. */
 		GENRE_IDS,
-		/** Propriété 'Contries'. */
+		/** Propriété 'Countries'. */
 		COUNTRY_IDS,
 		/** Propriété 'Languages'. */
 		LANGUAGE_IDS,
@@ -287,44 +293,18 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		RUNTIME,
 		/** Propriété 'Description'. */
 		DESCRIPTION,
-		/** Propriété 'Id imdb'. */
-		IMDBID,
-		/** Propriété 'Genres'. */
-		GENRE_IDS,
-		/** Propriété 'Contries'. */
-		COUNTRY_IDS,
-		/** Propriété 'Languages'. */
-		LANGUAGE_IDS,
-		/** Propriété 'rank'. */
-		RANK,
-	}
-
-	/**
-	 * Enumération des champs de MovieResult.
-	 */
-	public enum MovieResultFields implements DtFieldName {
-		/** Propriété 'primary key'. */
-		MOV_ID,
-		/** Propriété 'Title'. */
-		TITLE,
-		/** Propriété 'Released'. */
-		RELEASED,
-		/** Propriété 'Year'. */
-		YEAR,
-		/** Propriété 'Runtime'. */
-		RUNTIME,
-		/** Propriété 'Description'. */
-		DESCRIPTION,
 		/** Propriété 'Meta Data JSON'. */
 		METADAS_JSON,
 		/** Propriété 'Id imdb'. */
 		IMDBID,
 		/** Propriété 'Genres'. */
 		GENRE_IDS,
-		/** Propriété 'Contries'. */
+		/** Propriété 'Countries'. */
 		COUNTRY_IDS,
 		/** Propriété 'Languages'. */
 		LANGUAGE_IDS,
+		/** Propriété 'rank'. */
+		RANK,
 	}
 
 	/**
@@ -441,28 +421,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Name'. */
 		PEO_NAME_SORT_ONLY,
-		/** Propriété 'Professions'. */
-		PROFESSIONS,
-		/** Propriété 'rank'. */
-		RANK,
-	}
-
-	/**
-	 * Enumération des champs de PeopleResult.
-	 */
-	public enum PeopleResultFields implements DtFieldName {
-		/** Propriété 'primary key'. */
-		PEO_ID,
-		/** Propriété 'Last name'. */
-		LAST_NAME,
-		/** Propriété 'First Name'. */
-		FIRST_NAME,
-		/** Propriété 'Title'. */
-		TIT_CD,
-		/** Propriété 'Name'. */
-		PEO_NAME,
-		/** Propriété 'Id imdb'. */
-		IMDBID,
 		/** Propriété 'Professions'. */
 		PROFESSIONS,
 		/** Propriété 'rank'. */

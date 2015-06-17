@@ -17,22 +17,19 @@ import io.vertigo.dynamo.task.model.TaskResult;
 public final class PeoplePAO {
 	/** Liste des taches. */
 	private static enum Tasks {
-		/** Tache TK_GET_PEOPLE_VIEW */
-		TK_GET_PEOPLE_VIEW,
+		/** Tache TK_GET_PEOPLE_INDEX */
+		TK_GET_PEOPLE_INDEX,
 		/** Tache TK_GET_PEOPLE_VIEW_BY_PEO_ID */
 		TK_GET_PEOPLE_VIEW_BY_PEO_ID,
 		/** Tache TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID */
 		TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID,
 	}
 
-	/** Constante de paramètre de la tache MIN_RANK. */
-	private static final String ATTR_IN_TK_GET_PEOPLE_VIEW_MIN_RANK = "MIN_RANK";
-
-	/** Constante de paramètre de la tache MAX_ROWS. */
-	private static final String ATTR_IN_TK_GET_PEOPLE_VIEW_MAX_ROWS = "MAX_ROWS";
+	/** Constante de paramètre de la tache DTC_PEOPLE_IDS. */
+	private static final String ATTR_IN_TK_GET_PEOPLE_INDEX_DTC_PEOPLE_IDS = "DTC_PEOPLE_IDS";
 
 	/** Constante de paramètre de la tache DTC_PEOPLE. */
-	private static final String ATTR_OUT_TK_GET_PEOPLE_VIEW_DTC_PEOPLE = "DTC_PEOPLE";
+	private static final String ATTR_OUT_TK_GET_PEOPLE_INDEX_DTC_PEOPLE = "DTC_PEOPLE";
 
 	/** Constante de paramètre de la tache PEOP_ID. */
 	private static final String ATTR_IN_TK_GET_PEOPLE_VIEW_BY_PEO_ID_PEOP_ID = "PEOP_ID";
@@ -70,18 +67,16 @@ public final class PeoplePAO {
 	}
 
 	/**
-	 * Execute la tache TK_GET_PEOPLE_VIEW.
-	 * @param minRank Integer 
-	 * @param maxRows Integer 
-	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.PeopleView> dtcPeople
+	 * Execute la tache TK_GET_PEOPLE_INDEX.
+	 * @param dtcPeopleIds io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.common.Dummy> 
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.PeopleIndex> dtcPeople
 	*/
-	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.PeopleView> getPeopleView(final Integer minRank, final Integer maxRows) {
-		final Task task = createTaskBuilder(Tasks.TK_GET_PEOPLE_VIEW)
-				.withValue(ATTR_IN_TK_GET_PEOPLE_VIEW_MIN_RANK, minRank)
-				.withValue(ATTR_IN_TK_GET_PEOPLE_VIEW_MAX_ROWS, maxRows)
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.PeopleIndex> getPeopleIndex(final io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.common.Dummy> dtcPeopleIds) {
+		final Task task = createTaskBuilder(Tasks.TK_GET_PEOPLE_INDEX)
+				.withValue(ATTR_IN_TK_GET_PEOPLE_INDEX_DTC_PEOPLE_IDS, dtcPeopleIds)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
-		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_VIEW_DTC_PEOPLE);
+		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_INDEX_DTC_PEOPLE);
 	}
 
 	/**

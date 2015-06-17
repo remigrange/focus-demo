@@ -1,16 +1,16 @@
 package rodolphe.demo.dao.masterdatas;
 
 import javax.inject.Inject;
-
 import io.vertigo.dynamo.impl.persistence.util.DAOBroker;
 import io.vertigo.dynamo.persistence.PersistenceManager;
 import io.vertigo.dynamo.task.TaskManager;
+import rodolphe.demo.domain.masterdatas.Country;
 
 /**
  * DAO : Accès à un object (DTO, DTC). 
  * CountryDAO
  */
-public final class CountryDAO extends DAOBroker<rodolphe.demo.domain.masterdatas.Country, java.lang.String> {
+public final class CountryDAO extends DAOBroker<Country, java.lang.String> {
 	 
 	/**
 	 * Contructeur.
@@ -19,6 +19,8 @@ public final class CountryDAO extends DAOBroker<rodolphe.demo.domain.masterdatas
 	 */
 	@Inject
 	public CountryDAO(final PersistenceManager persistenceManager, final TaskManager taskManager) {
-		super(rodolphe.demo.domain.masterdatas.Country.class, persistenceManager, taskManager);
+		super(Country.class, persistenceManager, taskManager);
 	}
+	
+
 }

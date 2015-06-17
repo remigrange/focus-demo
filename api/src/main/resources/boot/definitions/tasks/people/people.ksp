@@ -14,31 +14,24 @@ create Task TK_GET_PEOPLE_BY_CRITERIA {
     attribute DTC_PEOPLE	 			{domain : DO_DT_PEOPLE_DTC 			notNull:"true" 	inOut :"out"}
 }
 
-create Task TK_GET_PEOPLE_VIEW {
+create Task TK_GET_PEOPLE_INDEX {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
-    request : " Select 
-    				v.*
-    			From
-    				(
-    				Select 
+    request : " Select
     					peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name, peo.peo_name as peo_name_sort_only, 
-    					rolep.PROFESSIONS, peo.peo_id as rank
-    				From
-    					people peo
-    				inner join ( select peo_id from people Where peo_id >= #MIN_RANK# order by peo_id limit <%= maxRows %>) sel on sel.peo_id = peo.peo_id
-	    			left join
-    					( select string_agg(label, '|') as PROFESSIONS, peo_id from role_people rolep inner join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd group by peo_id) rolep on rolep.peo_id = peo.peo_id 
-    				) v
+    					--for better perfs
+    					(select string_agg(distinct label, '|') from role_people rolep inner join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd 
+    					 where peo_id = peo.peo_id group by peo_id) as PROFESSIONS
+	    			From
+	    				people peo
     			Where
-    				v.rank >= #MIN_RANK#
+    				peo.peo_id in (#DTC_PEOPLE_IDS.ROWNUM.DUMMY_LONG#)
     			Order by
-    				v.rank
-    			limit <%= maxRows %>
-     "
-    attribute MIN_RANK {domain : DO_ENTIER notNull:"true" inOut :"in"}
-    attribute MAX_ROWS {domain : DO_ENTIER notNull:"true" inOut :"in"}
-    attribute DTC_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTC notNull:"true" inOut :"out"}
+    				peo.peo_id
+    "
+    attribute DTC_PEOPLE_IDS {domain : DO_DT_DUMMY_DTC notNull:"true" inOut :"in"}
+    attribute DTC_PEOPLE {domain : DO_DT_PEOPLE_INDEX_DTC notNull:"true" inOut :"out"}
 }
+
 
 create Task TK_GET_PEOPLE_VIEW_BY_PEO_ID {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"

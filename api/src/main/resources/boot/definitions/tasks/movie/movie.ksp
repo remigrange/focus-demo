@@ -15,37 +15,23 @@ create Task TK_GET_MOVIES_BY_CRITERIA {
 }
 
 
-create Task TK_GET_MOVIE_VIEW {
+create Task TK_GET_MOVIE_INDEX {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
-    request : " Select 
-    				v.*
-    			From
-    				(
-    				Select
+    request : " Select
     					mov.mov_id, mov.title, mov.title as title_sort_only, mov.released, mov.year, mov.runtime, mov.description, mov.metadas_json, mov.imdbid, 
-    					movGen.genre_ids, 
-    					movCou.country_ids, 
-    					movLan.language_ids,  
-    					mov.mov_id as rank 
+    					--for better perfs
+    					(select string_agg(gen_cd, '|') from mov_gen where mov_id = mov.mov_id group by mov_id) as genre_ids,
+	   					(select string_agg(cou_cd, '|') from mov_cou where mov_id = mov.mov_id group by mov_id) as country_ids,
+	   					(select string_agg(lan_cd, '|') from mov_lan where mov_id = mov.mov_id group by mov_id) as language_ids
 	    			From
-	    				movie mov
-    				inner join ( select mov_id from movie Where mov_id >= #MIN_RANK# order by mov_id limit <%= maxRows %>) sel on sel.mov_id = mov.mov_id
-	    			left join
-	   					( select string_agg(gen_cd, '|') as genre_ids, mov_id from mov_gen  group by mov_id) movGen on mov.mov_id = movGen.mov_id 
-    				left join  
-    					( select string_agg(cou_cd, '|') as country_ids, mov_id from mov_cou  group by mov_id) movCou on mov.mov_id = movCou.mov_id 
-    				left join  
-    					( select string_agg(lan_cd, '|') as language_ids, mov_id from mov_lan  group by mov_id) movLan on mov.mov_id = movLan.mov_id 
-    				) v
+	    				movie mov 			
     			Where
-    				v.rank >= #MIN_RANK#
+    				mov.mov_id in (#DTC_MOVIE_IDS.ROWNUM.DUMMY_LONG#)
     			Order by
-    				v.rank
-    			limit <%= maxRows %>
-     "
-    attribute MIN_RANK {domain : DO_ENTIER notNull:"true" inOut :"in"}
-    attribute MAX_ROWS {domain : DO_ENTIER notNull:"true" inOut :"in"}
-    attribute DTC_MOVIES {domain : DO_DT_MOVIE_VIEW_DTC notNull:"true" inOut :"out"}
+    				mov.mov_id
+    "
+    attribute DTC_MOVIE_IDS {domain : DO_DT_DUMMY_DTC notNull:"true" inOut :"in"}
+    attribute DTC_MOVIES {domain : DO_DT_MOVIE_INDEX_DTC notNull:"true" inOut :"out"}
 }
 
 create Task TK_GET_MOVIE_VIEW_BY_MOV_ID {

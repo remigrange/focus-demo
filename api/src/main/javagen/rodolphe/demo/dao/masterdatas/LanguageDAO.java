@@ -1,16 +1,16 @@
 package rodolphe.demo.dao.masterdatas;
 
 import javax.inject.Inject;
-
 import io.vertigo.dynamo.impl.persistence.util.DAOBroker;
 import io.vertigo.dynamo.persistence.PersistenceManager;
 import io.vertigo.dynamo.task.TaskManager;
+import rodolphe.demo.domain.masterdatas.Language;
 
 /**
  * DAO : Accès à un object (DTO, DTC). 
  * LanguageDAO
  */
-public final class LanguageDAO extends DAOBroker<rodolphe.demo.domain.masterdatas.Language, java.lang.String> {
+public final class LanguageDAO extends DAOBroker<Language, java.lang.String> {
 	 
 	/**
 	 * Contructeur.
@@ -19,6 +19,8 @@ public final class LanguageDAO extends DAOBroker<rodolphe.demo.domain.masterdata
 	 */
 	@Inject
 	public LanguageDAO(final PersistenceManager persistenceManager, final TaskManager taskManager) {
-		super(rodolphe.demo.domain.masterdatas.Language.class, persistenceManager, taskManager);
+		super(Language.class, persistenceManager, taskManager);
 	}
+	
+
 }

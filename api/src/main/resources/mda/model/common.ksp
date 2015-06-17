@@ -22,3 +22,8 @@ create DtDefinition DT_SELECTED_FACET {
 	field FACET_QUERY  {domain: DO_LIBELLE_250 label: "Facet query" notNull:"false"}
 	field VALUE  {domain: DO_LIBELLE_250 label: "Facet key value" notNull:"false"}
 }
+
+create DtDefinition DT_DUMMY {
+	persistent:"false"
+	field DUMMY_LONG {domain: DO_ID label: "dummy long" notNull:"false" }
+}

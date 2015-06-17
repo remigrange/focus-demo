@@ -18,9 +18,9 @@
 		<component class="rodolphe.demo.user.SecurityHelper"/>
 	</module>
 
-	<module name="RODOLPHE-SEARCH-HANDLER" api="false" inheritance="rodolphe.demo.services.search.AbstractElasticSearchHandler">
-		<component class="rodolphe.demo.services.search.MovieSearchHandler"/>
-		<component class="rodolphe.demo.services.search.PeopleSearchHandler"/>
+	<module name="RODOLPHE-SEARCH-HANDLER" api="false" inheritance="io.vertigo.dynamo.search.metamodel.SearchLoader">
+		<component class="rodolphe.demo.services.search.MovieSearchLoader"/>
+		<component class="rodolphe.demo.services.search.PeopleSearchLoader"/>
 	</module>
 
 	<module name="RODOLPHE-ASPECT" inheritance="java.lang.Object" >
@@ -30,7 +30,6 @@
 	<module name="RODOLPHE-SERVICES">
 		<component api="PeopleServices" class="rodolphe.demo.services.people.PeopleServicesImpl" />
 		<component api="MovieServices" class="rodolphe.demo.services.movie.MovieServicesImpl" />
-		<component api="SearchServices" class="rodolphe.demo.services.search.SearchServicesImpl" />
 		<component api="CommonServices" class="rodolphe.demo.services.common.CommonServicesImpl" />
 		<component api="MasterdataServices" class="rodolphe.demo.services.masterdata.MasterdataServicesImpl" />
 	</module>

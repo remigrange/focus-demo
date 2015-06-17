@@ -24,25 +24,13 @@ create DtDefinition DT_PEOPLE_CRITERIA {
 
 create DtDefinition DT_PEOPLE_INDEX {
 	persistent:"false"
-	field PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
+	key PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
 	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
 	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
 	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
 	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
 	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
-	field PEO_NAME_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Name" notNull:"false"}
-	field PROFESSIONS {domain: DO_MULTI_VALUES_FIELD label: "Professions" notNull:"false"}
-	field RANK {domain: DO_ID label: "rank" notNull:"true" }
-}
-
-create DtDefinition DT_PEOPLE_RESULT {
-	persistent:"false"
-	field PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
-	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
-	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
-	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
-	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
-	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field PEO_NAME_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Name" notNull:"false" persistent:"false"} /*index only*/
 	field PROFESSIONS {domain: DO_MULTI_VALUES_FIELD label: "Professions" notNull:"false"}
 	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
