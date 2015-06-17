@@ -18,7 +18,6 @@ let QuickSearch = Focus.components.page.search.quickSearch.component;
 // Actions
 
 let searchAction = require('action/search');
-let scopeAction = require('action/scope');
 
 // Mixins
 
@@ -50,8 +49,9 @@ let QuickSearchWrapper = React.createClass({
                         }
                         setTimeout(() => {
                             let Preview = self._getPreviewType(data);
+                            let id = data.movId ? data.movId : data.peoId;
                             self.setState({
-                                previewComponent: <Preview data={data}/>,
+                                previewComponent: <Preview hasForm={false} id={id}/>,
                                 previewData: data
                             });
                             self.refs['preview-popin'].toggleOpen();
@@ -63,9 +63,6 @@ let QuickSearchWrapper = React.createClass({
                 priority: 1
             }
         ];
-    },
-    _getScopeList() {
-        return [];
     },
     _getGroupComponent() {
         let popinCloser = this.props.closePopin;
@@ -118,23 +115,14 @@ let QuickSearchWrapper = React.createClass({
         this._query = criteria.criteria.query;
         searchAction.search(criteria);
     },
-    componentDidMount() {
-        scopeAction.getAll((scopes) => {
-            let scope = 'ALL';
-            this.setState({scopes, scope});
-        });
-    },
     render() {
-        let scopes = this.state && this.state.scopes || [];
-        let scope = this.state && this.state.scope || undefined;
         return (
             <div>
                 <h1>{this.i18n('quickSearch.title')}</h1>
                 <QuickSearch
-                    scope={scope}
-                    scopeList={scopes}
                     lineOperationList={this._getOperationList()}
                     onLineClick={this._onLineClick}
+                    scope='ALL'
                     closePopin={this.props.closePopin}
                     searchAction={this._searchAction}
                     groupComponent={this._getGroupComponent()}
