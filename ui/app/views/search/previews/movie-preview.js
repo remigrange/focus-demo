@@ -1,21 +1,22 @@
 let movieStore = require('stores/movie');
 let movieAction = require('action/movie');
 
-let storeBehaviour = Focus.components.common.mixin.storeBehaviour;
-let i18n = Focus.components.common.i18n.mixin;
-
+let formBehaviour = Focus.components.common.form.mixin;
+let i18nBehaviour = Focus.components.common.i18n.mixin;
 let map = _.map;
 
 let MoviePreview = React.createClass({
-    mixins: [storeBehaviour, i18n],
+    mixins: [i18nBehaviour, formBehaviour],
+    definitionPath: 'movie',
     stores: [{
         store: movieStore,
         properties: ['movie']
     }],
-    componentWillMount() {
-        movieAction.movie.load(this.props.data.movId);
+    componentWillMount(){
+        console.log('moviePreview', this.props);
     },
-    render() {
+    action: movieAction.movie,
+    renderContent() {
         if (this.state && this.state.movId) {
             return (
                 <div data-focus='movie-preview'>
@@ -31,22 +32,14 @@ let MoviePreview = React.createClass({
                             }
                         </div>
                         <div data-focus='summary'>
-                            <h3>{this.state.title}</h3>
-                            <p>{this.state.released}</p>
+                            <h3>{this.textFor('title')}</h3>
+                            <p>{this.textFor('released')}</p>
                         </div>
                     </div>
                     <div data-focus='details'>
                         <h4>{this.i18n('movie.preview.details')}</h4>
-                        <ul>
-                            {map({
-                                'movie.preview.language': this.state.languageIds,
-                                'move.preview.genres': this.state.genreIds
-                            }, (value, key) => {
-                                return (
-                                    <li><b>{`${this.i18n(key)} : `}</b>{value}</li>
-                                );
-                            })}
-                        </ul>
+                        {this.displayFor('languageIds')}
+                        {this.displayFor('genreIds')}
                     </div>
                 </div>
             );

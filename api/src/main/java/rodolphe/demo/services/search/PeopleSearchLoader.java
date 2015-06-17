@@ -1,117 +1,54 @@
 package rodolphe.demo.services.search;
 
-import io.vertigo.dynamo.domain.model.KeyConcept;
+import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.domain.model.URI;
 import io.vertigo.dynamo.search.SearchManager;
-import io.vertigo.dynamo.search.metamodel.SearchChunk;
 import io.vertigo.dynamo.search.metamodel.SearchIndexDefinition;
-import io.vertigo.dynamo.search.metamodel.SearchLoader;
 import io.vertigo.dynamo.search.model.SearchIndex;
-import io.vertigo.lang.Assertion;
+import io.vertigo.dynamo.task.TaskManager;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import rodolphe.demo.dao.people.PeopleDAO;
+import rodolphe.demo.dao.people.PeoplePAO;
+import rodolphe.demo.domain.common.Dummy;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleIndex;
 
-public final class PeopleSearchLoader implements SearchLoader<People, PeopleIndex> {
+public final class PeopleSearchLoader extends DefaultSearchLoader<Long, People, PeopleIndex> {
 
-	private static final int SEARCH_CHUNK_SIZE = 5;
+	@Inject
+	private PeoplePAO peoplePAO;
 	private final SearchIndexDefinition indexDefinition;
-	@Inject
-	private PeopleDAO movieDAO;
 
+	/**
+	 * Construct an instance of PeopleSearchLoader.
+	 *
+	 * @param taskManager TaskManager
+	 */
 	@Inject
-	public PeopleSearchLoader(final SearchManager searchManager) {
+	public PeopleSearchLoader(final SearchManager searchManager, final TaskManager taskManager) {
+		super(taskManager);
 		indexDefinition = searchManager.findIndexDefinitionByKeyConcept(People.class);
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public List<SearchIndex<People, PeopleIndex>> loadData(final List<URI<People>> uris) {
-
-		return Collections.emptyList(); //TODO
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public Iterable<SearchChunk<People>> chunk(final Class<People> keyConceptClass) {
-		return new Iterable<SearchChunk<People>>() {
-
-			private final Iterator<SearchChunk<People>> iterator = new Iterator<SearchChunk<People>>() {
-
-				private SearchChunk<People> current = null;
-
-				@Override
-				public boolean hasNext() {
-					return hasNextChunk(keyConceptClass, current);
-				}
-
-				@Override
-				public SearchChunk<People> next() {
-					final SearchChunk<People> next = nextChunk(keyConceptClass, current);
-					current = next;
-					return current;
-				}
-
-				@Override
-				public void remove() {
-					throw new UnsupportedOperationException("This list is unmodifiable");
-				}
-			};
-
-			@Override
-			public Iterator<SearchChunk<People>> iterator() {
-				return iterator;
-			}
-		};
-	}
-
-	private SearchChunk<People> nextChunk(final Class<People> keyConceptClass, final SearchChunk<People> previousChunck) {
-		Long lastId = -1L;
-		if (previousChunck != null) {
-			final List<URI<People>> previousUris = previousChunck.getAllURIs();
-			Assertion
-			.checkState(
-					!previousUris.isEmpty(),
-					"No more SearchChunk for KeyConcept {0}, ensure you use Iterable pattern or call hasNext before next",
-					keyConceptClass.getSimpleName());
-			lastId = (Long) previousUris.get(previousUris.size() - 1).getId();
+		final DtList<Dummy> peopleIds = new DtList<>(Dummy.class);
+		for (final URI<People> uri : uris) {
+			final Dummy dummy = new Dummy();
+			dummy.setDummyLong((Long) uri.getId());
+			peopleIds.add(dummy);
 		}
-		final List<URI<People>> uris = new ArrayList<>(SEARCH_CHUNK_SIZE);
-		// call loader service
-		//TODO
-		return new SearchChunkImpl<>(uris);
-	}
-
-	private boolean hasNextChunk(final Class<People> keyConceptClass, final SearchChunk<People> previousChunck) {
-		// il y a une suite, si on a pas commencé, ou s'il y avait des résultats la dernière fois.
-		return previousChunck == null || !previousChunck.getAllURIs().isEmpty();
-	}
-
-	public static class SearchChunkImpl<S extends KeyConcept> implements SearchChunk<S> {
-
-		private final List<URI<S>> uris;
-
-		/**
-		 * @param uris Liste des uris du chunk
-		 */
-		public SearchChunkImpl(final List<URI<S>> uris) {
-			Assertion.checkNotNull(uris);
-			// ----
-			this.uris = Collections.unmodifiableList(uris); // pas de clone pour l'instant
+		final DtList<PeopleIndex> peopleIndexes = peoplePAO.getPeopleIndex(peopleIds);
+		final List<SearchIndex<People, PeopleIndex>> peopleSearchIndexes = new ArrayList<>(uris.size());
+		for (final PeopleIndex peopleIndex : peopleIndexes) {
+			peopleSearchIndexes.add(SearchIndex.createIndex(indexDefinition,
+					new URI(indexDefinition.getIndexDtDefinition(), peopleIndex.getPeoId()), peopleIndex));
 		}
-
-		/** {@inheritDoc} */
-		@Override
-		public List<URI<S>> getAllURIs() {
-			return uris;
-		}
+		return peopleSearchIndexes;
 	}
 }

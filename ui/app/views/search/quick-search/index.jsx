@@ -49,8 +49,9 @@ let QuickSearchWrapper = React.createClass({
                         }
                         setTimeout(() => {
                             let Preview = self._getPreviewType(data);
+                            let id = data.movId ? data.movId : data.peoId;
                             self.setState({
-                                previewComponent: <Preview data={data}/>,
+                                previewComponent: <Preview hasForm={false} id={id}/>,
                                 previewData: data
                             });
                             self.refs['preview-popin'].toggleOpen();

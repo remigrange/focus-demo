@@ -45,10 +45,16 @@ public class CommonWebServices implements RestfulService {
 		return commonServices.search(searchCriteria, selection, uiListState, clusteringFacetName);
 	}
 
-	@POST("/reindexAll")
+	@POST("/reindexAllMovies")
 	@AnonymousAccessAllowed
-	public void reindexAll() {
-		commonServices.reindexAll();
+	public void reindexAllMovies() {
+		commonServices.reindexAllMovies();
+	}
+
+	@POST("/reindexAlPeople")
+	@AnonymousAccessAllowed
+	public void reindexAllPeople() {
+		commonServices.reindexAllPeople();
 	}
 
 	@POST("/removeAllIndex")
