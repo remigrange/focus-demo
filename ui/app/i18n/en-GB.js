@@ -64,6 +64,8 @@ module.exports = {
         }
     },
     people: {
+        professions: 'Profession',
+        rank: 'Rank',
         detail: {
             identity: {
                 title: 'Identity'

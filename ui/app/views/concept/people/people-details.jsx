@@ -23,9 +23,9 @@ module.exports = React.createClass({
     renderContent() {
         return (
             <Block title='people.detail.identity.title' actions={this._renderActions}>
-                {this.fieldFor('lastname')}
-                {this.fieldFor('firstName')}
-                {this.fieldFor('imdbid')}
+                {this.fieldFor('peoName')}
+                {this.fieldFor('professions')}
+                {this.fieldFor('rank')}
             </Block>
         );
     }
