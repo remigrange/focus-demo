@@ -14,8 +14,10 @@ let ApplicationTitle = React.createClass({
 
 let searchAction = require('action/search').search;
 
-let navigateAdvancedSearch = function (criteria) {
-    let route = `#search/advanced/scope/${criteria.scope}${criteria.query ? '/query/' + criteria.query : ''}`;
+let navigateAdvancedSearch = function () {
+    let query = Focus.search.builtInStore.queryStore.getQuery();
+    let scope = Focus.search.builtInStore.queryStore.getScope();
+    let route = `#search/advanced/scope/${scope}${query ? '/query/' + query : ''}`;
     return Backbone.history.navigate(route, true)
 };
 
