@@ -10,7 +10,7 @@ let PeopleSummary = React.createClass({
     render() {
         return (
             <div>
-                PEOPLE SUMMARY
+                PEOPLE SUMMARY {this.props.id}
             </div>
         );
     }
@@ -38,8 +38,7 @@ module.exports = createDetail({
         return (
             <Detail>
                 <PeopleDetails id={this.props.id}/>
-                <PeoplePictures id={this.props.id}/>
-                <PeopleFilmography id={this.props.id}/>
+
             </Detail>
         );
     }
