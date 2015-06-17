@@ -5,12 +5,11 @@
     display: inline-block;
     width: 100%;
     h1, h2, h3, h4 {
-
+      margin-bottom: 0;
     }
     .btn {
       float: right;
+      top:10px;
     }
   }
 }
-
-
