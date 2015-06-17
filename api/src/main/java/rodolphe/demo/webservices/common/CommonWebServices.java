@@ -3,6 +3,7 @@
  */
 package rodolphe.demo.webservices.common;
 
+import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.vega.rest.RestfulService;
 import io.vertigo.vega.rest.model.UiListState;
@@ -38,7 +39,7 @@ public class CommonWebServices implements RestfulService {
 	 */
 	@POST("/searchByScope")
 	@AnonymousAccessAllowed
-	public Object search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria,
+	public FacetedQueryResult search(@InnerBodyParam("criteria") final SearchCriteria searchCriteria,
 			@InnerBodyParam("facets") final DtList<SelectedFacet> selection,
 			@QueryParam("") final UiListState uiListState, @InnerBodyParam("group") final String clusteringFacetName) {
 		return commonServices.search(searchCriteria, selection, uiListState, clusteringFacetName);
