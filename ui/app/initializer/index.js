@@ -20,10 +20,11 @@ $(document).on("click", "a:not([data-bypass])", function(evt) {
 });
 
 
-//Initialisation des congfigurations
+//Initialisation des configurations
 require('./domain-initializer');
 require('./definition-initializer');
 require('./reference-list-initializer').initialize();
+require('./query-store-initializer').initialize();
 require('./i18n-initializer');
 
 //Initialisation du layout
