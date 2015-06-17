@@ -11,6 +11,7 @@ var services = require('../../services');
 var keys = _.keys;
 var assign = _.extend;
 var isEqual = _.isEqual;
+var clone = _.clone;
 
 let _buildPagination = (pageInfos) => {
     return {
@@ -93,6 +94,8 @@ let _parsePageInfos = (data, context) => {
 
 module.exports = {
     search(param) {
+        param = clone(param);
+
         let criteria = param.criteria;
 
         // Ordering and pagination
@@ -101,7 +104,12 @@ module.exports = {
         // Fake scope facet check
         if (keys(param.facets).length === 1 && isEqual(keys(param.facets), ['FCT_SCOPE'])) {
             criteria.scope = scopeConfig[param.facets['FCT_SCOPE'].key];
+            Focus.search.changeScope(criteria.scope);
             param.facets = {};
+        }
+
+        if (param.facets && param.facets['FCT_SCOPE']) {
+            delete param.facets['FCT_SCOPE'];
         }
 
         let postData = {criteria};
