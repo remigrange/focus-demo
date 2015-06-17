@@ -101,6 +101,7 @@ let WrappedAdvancedSearch = React.createClass({
         list = list || this.store.getList() || [{movId: 0}];
         return {type: list[0].movId ? 'Movie' : 'People'};
     },
+    // TODO chek if usefull
     _searchHandler(criteria) {
         let facets = criteria.facets;
         let newState = {
@@ -129,7 +130,7 @@ let WrappedAdvancedSearch = React.createClass({
             <AdvancedSearch
                 ref='advanced-search'
                 data-focus='advanced-search'
-                searchAction={this._searchHandler}
+                searchAction={searchAction}
                 groupComponent={this._getGroupComponent()}
                 isSelection={true}
                 lineComponentMapper={this._lineComponentMapper}
