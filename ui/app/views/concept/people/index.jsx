@@ -37,8 +37,8 @@ module.exports = createDetail({
     render() {
         return (
             <Detail>
-                <PeopleDetails id={this.props.id}/>
-
+                <PeopleDetails id={this.props.id} />
+                <PeopleFilmography id={this.props.id} />
             </Detail>
         );
     }
