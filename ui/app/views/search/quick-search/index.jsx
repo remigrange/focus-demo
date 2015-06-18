@@ -76,12 +76,27 @@ let QuickSearchWrapper = React.createClass({
                     Backbone.history.navigate(route, true);
                 }
             },
+            /*
+            * Build the count from the groupKey props value and the searcha nd query stores values.
+            */
+            _buildCount(){
+              let count;
+              let scp = Focus.search.builtInStore.queryStore.getScope();
+              if(scp === 'ALL'){
+                let fcts = Focus.search.builtInStore.searchStore.getFacet();
+                // Check existance ?
+                count = fcts['FCT_SCOPE'][this.props.groupKey].count;
+              }else {
+                count = Focus.search.builtInStore.searchStore.getPageInfos().totalRecords;
+              }
+              return count;
+            },
             render() {
                 let camelCase = _.camelCase;
                 let capitalize = _.capitalize;
                 let lowerKey = camelCase(this.props.groupKey);
-                let store = require('../../../stores/' + lowerKey);
-                let count = store[`get${capitalize(lowerKey)}Records`]();
+                //Read the count from the facet store.
+                let count = this._buildCount();
                 return (
                     <div data-focus='group-result-container'>
                         <div className="title-navigation">
