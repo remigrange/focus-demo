@@ -5,7 +5,6 @@ $movie-poster-witdh:300px;
     //display: flex;
     //flex-direction: row; //(flex ne fonctionne pas sous safari pour le moment)
     min-height: $movie-poster-witdh;
-    margin-left: 180px;
 
     .poster {
       width: 250px;
@@ -21,19 +20,7 @@ $movie-poster-witdh:300px;
       }
     }
     .summary {
-      padding: 0 30px;
-      margin-left: 270px;
-
-      h1 {
-        margin: 0 0 10px 0;
-        color: rgb(54, 183, 185);
-      }
-      h2 {
-        margin: 0 0 10px 0;
-      }
-      h3 {
-        margin: 0 0 10px 0;
-      }
+      margin-left: $movie-poster-witdh+20px;
     }
   }
 }

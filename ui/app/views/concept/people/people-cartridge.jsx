@@ -20,10 +20,9 @@ module.exports = React.createClass({
     renderContent() {
         return (
             <div className='cartridge-people'>
-                <i className='fa fa-user fa-5x'></i>
+                <div className="photo fa fa-user fa-5x"></div>
                 <div className='summary'>
                     <h1 className='title'>{this.state.peoName}</h1>
-
                     <h2 className='professions'>{this.state.professions}</h2>
                 </div>
             </div>

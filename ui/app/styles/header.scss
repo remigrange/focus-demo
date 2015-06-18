@@ -7,13 +7,31 @@ $header-search-color: #000;
   background-position: 0% 50%;
 }
 
-[data-focus="header"] {
+header[data-focus="header"] {
   .page-title {
     color: #000;
     font-size: 22pt;
     text-transform: uppercase;
     padding: 0 10px;
   }
+  div[data-focus="content-bar"] {
+    div[data-focus="cartridge"] {
+      padding: 70px 50px 35px 285px;
+      .summary {
+        h1 {
+          margin: 0 0 10px 0;
+          color: rgb(54, 183, 185);
+        }
+        h2 {
+          margin: 0 0 10px 0;
+        }
+        h3 {
+          margin: 0 0 10px 0;
+        }
+      }
+    }
+  }
+
   &[data-route="search"] {
     [data-focus="bar"] {
       background-color: transparent;

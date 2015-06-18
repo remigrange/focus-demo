@@ -1,8 +1,32 @@
+$people-picture-size: 150px;
 
 [data-focus="selection-list"] {
   li[data-focus="sl-line"] {
     .people-line {
       min-height: 60px;
+    }
+  }
+}
+
+[data-focus='header'] {
+  .cartridge-people {
+    width: 100%;
+    display: inline-block;
+    .photo {
+      width: $people-picture-size;
+      height: $people-picture-size;
+      background-color: #e7e7e7;
+      border-radius: 50%;
+      overflow: hidden;
+      text-align: center;
+      float: left;
+      &:before {
+        font-size: 90px;
+        line-height: $people-picture-size;
+      }
+    }
+    .summary {
+      margin-left: $people-picture-size+20px;
     }
   }
 }
