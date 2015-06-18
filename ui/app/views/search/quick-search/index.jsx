@@ -85,7 +85,8 @@ let QuickSearchWrapper = React.createClass({
               if(scp === 'ALL'){
                 let fcts = Focus.search.builtInStore.searchStore.getFacet();
                 // Check existance ?
-                count = fcts['FCT_SCOPE'][this.props.groupKey].count;
+
+                count = fcts['FCT_SCOPE'] && fcts['FCT_SCOPE'][this.props.groupKey] ? fcts['FCT_SCOPE'][this.props.groupKey].count : 0;
               }else {
                 count = Focus.search.builtInStore.searchStore.getPageInfos().totalRecords;
               }
