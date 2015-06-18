@@ -22,7 +22,7 @@ let Line = React.createClass({
     mixins: [Focus.components.list.selection.line.mixin],
     renderLineContent(data) {
         return (
-            <MovieCard picture='' name={data.title} middleName={data.genreIds} subName={data.year}/>
+            <MovieCard picture='' name={data.title} middleName={data.genreIds} />
         );
     }
 });

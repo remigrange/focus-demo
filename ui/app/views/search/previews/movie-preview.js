@@ -12,9 +12,6 @@ let MoviePreview = React.createClass({
         store: movieStore,
         properties: ['movie']
     }],
-    componentWillMount(){
-        console.log('moviePreview', this.props);
-    },
     action: movieAction.movie,
     renderContent() {
         if (this.state && this.state.movId) {
