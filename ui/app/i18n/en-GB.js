@@ -18,7 +18,8 @@ module.exports = {
                 FCT_MOVIE_LANGUAGE: 'Language',
                 FCT_MOVIE_GENRE: 'Genre',
                 FCT_PEOPLE_TITLE: 'Title',
-                FCT_PEOPLE_PROFESSION: 'Profession'
+                FCT_PEOPLE_PROFESSION: 'Profession',
+                FCT_SCOPE: 'Scope'
             }
         }
     },
