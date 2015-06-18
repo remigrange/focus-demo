@@ -90,7 +90,7 @@ public final class PeopleWebServices implements RestfulService {
 	 * @return people.
 	 */
 	// todo: rename in /people/{id}/detail
-	@GET("/{id}/peopleView")
+	@GET("/{id}/detail")
 	@AnonymousAccessAllowed
 	public PeopleView getPeopleDetails(@PathParam("id") final long peoId) {
 		return peopleServices.getPeopleDetails(peoId);
