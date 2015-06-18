@@ -31,7 +31,6 @@ import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieIndex;
 import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.search.FacetSelection;
-import rodolphe.demo.util.MemorizeTnrData;
 import roldophe.demo.tools.AbstractEsSearchTestCase;
 
 /**
@@ -77,12 +76,6 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		final Movie mov = getNewMovie();
 		movieServices.saveMovie(mov);
 		return mov;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	protected Class<? extends MemorizeTnrData> getDataSenderClass() {
-		return MovieSearchHandler.class;
 	}
 
 	/** {@inheritDoc} */

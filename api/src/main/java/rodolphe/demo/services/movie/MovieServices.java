@@ -1,5 +1,10 @@
 package rodolphe.demo.services.movie;
 
+import io.vertigo.dynamo.collections.model.FacetedQueryResult;
+import io.vertigo.dynamo.domain.model.DtList;
+import io.vertigo.dynamo.search.model.SearchQuery;
+import io.vertigo.lang.Component;
+import io.vertigo.vega.rest.model.UiListState;
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCasting;
 import rodolphe.demo.domain.movies.MovieCriteria;

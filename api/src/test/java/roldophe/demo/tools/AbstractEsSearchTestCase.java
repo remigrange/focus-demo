@@ -14,28 +14,27 @@ import io.vertigo.dynamo.domain.model.DtObject;
  * @version $Id: AbstractSearchTestCase.java 1326 2012-04-24 15:33:30Z npiedeloup $
  */
 public abstract class AbstractEsSearchTestCase<C extends DtObject, R extends DtObject> extends
-        AbstractSearchTestCase<C, R> {
+		AbstractSearchTestCase<C, R> {
 
-    /** {@inheritDoc} */
-    @Override
-    protected final C getCritereForSearchWithUniqueResultAsSU() {
-        final C crit = getCritereForEsSearchWithUniqueResultAsSU();
-        sendMemorizedData();
-        return crit;
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected final C getCritereForSearchWithUniqueResultAsSU() {
+		final C crit = getCritereForEsSearchWithUniqueResultAsSU();
+		return crit;
+	}
 
-    /**
-     * Crée les données nécessaires et récupère un critère donnant un unique résultat dans un cadre Elastic Search.
-     * Est appelé par la méthode getCritereForSearchWithUniqueResultAsSU() qui envoie également les données à elastic
-     * search.
-     *
-     * @return critère
-     */
-    protected abstract C getCritereForEsSearchWithUniqueResultAsSU();
+	/**
+	 * Crée les données nécessaires et récupère un critère donnant un unique résultat dans un cadre Elastic Search.
+	 * Est appelé par la méthode getCritereForSearchWithUniqueResultAsSU() qui envoie également les données à elastic
+	 * search.
+	 *
+	 * @return critère
+	 */
+	protected abstract C getCritereForEsSearchWithUniqueResultAsSU();
 
-    /** {@inheritDoc} */
-    @Override
-    protected final boolean useESHandler() {
-        return true;
-    }
+	/** {@inheritDoc} */
+	@Override
+	protected final boolean useESHandler() {
+		return true;
+	}
 }
