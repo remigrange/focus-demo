@@ -48,7 +48,8 @@ let WrappedAdvancedSearch = React.createClass({
             searchAction: searchAction, 
             query: this.props.query,
             scope: this.props.scope,
-            referenceNames: ['scopes']
+            referenceNames: ['scopes'],
+            hasScopes: false
         };
         return {
             summary: {
@@ -117,11 +118,6 @@ let WrappedAdvancedSearch = React.createClass({
         this.setState(newState);
         searchAction(criteria);
     },
-    _unselectScopeAction() {
-        let criteria = this.refs['advanced-search'].getSearchCriteria();
-        criteria.criteria.scope = 'ALL';
-        this._searchHandler(criteria);
-    },
     render() {
         let props = omit(this.props, ['scope', 'query']);
         props.scope = this.state.scope;
@@ -136,7 +132,6 @@ let WrappedAdvancedSearch = React.createClass({
                 lineComponentMapper={this._lineComponentMapper}
                 groupMaxRows={3}
                 cartridgeConfiguration={this.cartridgeConfiguration}
-                unselectScopeAction={this._unselectScopeAction}
                 {...props}
                 />
         );
