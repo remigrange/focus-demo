@@ -10,7 +10,6 @@
 		</component>
 		<component api="VSecurityManager" class="io.vertigo.persona.impl.security.VSecurityManagerImpl">
 			<param name="userSessionClassName" value="roldophe.demo.tools.TnrUserSession" />
-			<plugin class="io.vertigo.persona.plugins.security.loaders.SecurityResourceLoaderPlugin" />
 		</component>
 	</module>
 	<module name="config">

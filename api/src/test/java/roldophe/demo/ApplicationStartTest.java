@@ -16,13 +16,13 @@ import roldophe.demo.tools.AbstractRodolpheTestCase;
  */
 public class ApplicationStartTest extends AbstractRodolpheTestCase {
 
-    /**
-     * Test the start of the application.
-     * The idea is to check that all vertigo components are correctly registred and the WS REST routes are correctly
-     * initialized.
-     */
-    @Test
-    public void testApplicationStart() {
-        new VegaSparkApplication().init();
-    }
+	/**
+	 * Test the start of the application.
+	 * The idea is to check that all vertigo components are correctly registred and the WS REST routes are correctly
+	 * initialized.
+	 */
+	@Test
+	public void testApplicationStart() {
+		new VegaSparkApplication().init();
+	}
 }
