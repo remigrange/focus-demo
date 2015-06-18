@@ -1,14 +1,15 @@
-$movie-poster-witdh:300px;
+$movie-poster-height:300px;
+$movie-poster-width:250px;
 
 [data-focus='header'] {
   .cartridge-movie {
     //display: flex;
     //flex-direction: row; //(flex ne fonctionne pas sous safari pour le moment)
-    min-height: $movie-poster-witdh;
+    min-height: $movie-poster-height;
 
     .poster {
-      width: 250px;
-      height: $movie-poster-witdh;
+      width: $movie-poster-width;
+      height: $movie-poster-height;
       float:left;
       background-color: #F8F8F8;
       text-align: center;
@@ -20,7 +21,7 @@ $movie-poster-witdh:300px;
       }
     }
     .summary {
-      margin-left: $movie-poster-witdh+20px;
+      margin-left: $movie-poster-width+20px;
     }
   }
 }
