@@ -47,7 +47,7 @@ create FacetedQueryDefinition QRY_MOVIE_WO_FCT {
 	keyConcept : DT_MOVIE
 	domainCriteria : DO_DT_MOVIE_CRITERIA_DTO
     listFilterBuilderClass : "io.vertigo.dynamox.search.DefaultListFilterBuilder"  
-    listFilterBuilderQuery : "MOV_ID:#movId# RELEASED:#released# TITLE:#title*#"
+    listFilterBuilderQuery : "MOV_ID:#movId# RELEASED:#released# TITLE:#+title*#"
 }
 
 create FacetedQueryDefinition QRY_MOVIE_WITH_FCT {
@@ -55,14 +55,14 @@ create FacetedQueryDefinition QRY_MOVIE_WITH_FCT {
 	facets : [ FCT_MOVIE_COUNTRY, FCT_MOVIE_GENRE, FCT_MOVIE_LANGUAGE]
 	domainCriteria : DO_DT_MOVIE_CRITERIA_DTO
     listFilterBuilderClass : "io.vertigo.dynamox.search.DefaultListFilterBuilder"  
-    listFilterBuilderQuery : "MOV_ID:#movId# RELEASED:#released# TITLE:#title*#"
+    listFilterBuilderQuery : "MOV_ID:#movId# RELEASED:#released# TITLE:#+title*#"
 }
 
 create FacetedQueryDefinition QRY_PEOPLE_WO_FCT {
 	keyConcept : DT_PEOPLE
 	domainCriteria : DO_DT_PEOPLE_CRITERIA_DTO
     listFilterBuilderClass : "io.vertigo.dynamox.search.DefaultListFilterBuilder"  
-    listFilterBuilderQuery : "PEO_ID:#peoId# PEO_NAME:#peoName*# TIT_CD:#titCd*#"    
+    listFilterBuilderQuery : "PEO_ID:#peoId# PEO_NAME:#+peoName*# TIT_CD:#titCd*#"    
 }
 
 create FacetedQueryDefinition QRY_PEOPLE_WITH_FCT {
@@ -70,5 +70,5 @@ create FacetedQueryDefinition QRY_PEOPLE_WITH_FCT {
 	facets : [ FCT_PEOPLE_TITLE, FCT_PEOPLE_PROFESSION]
 	domainCriteria : DO_DT_PEOPLE_CRITERIA_DTO
     listFilterBuilderClass : "io.vertigo.dynamox.search.DefaultListFilterBuilder"  
-    listFilterBuilderQuery : "PEO_ID:#peoId# PEO_NAME:#peoName*# TIT_CD:#titCd*#"
+    listFilterBuilderQuery : "PEO_ID:#peoId# PEO_NAME:#+peoName*# TIT_CD:#titCd*#"
 }
