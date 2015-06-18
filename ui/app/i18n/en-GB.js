@@ -77,6 +77,11 @@ module.exports = {
         }
     },
     'quick-search': {
-        title: 'Quick search'
+        title: 'Quick search',
+        preview: {
+            details: {
+                title: 'Details'
+            }
+        }
     }
 };

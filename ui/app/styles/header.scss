@@ -15,6 +15,15 @@ header[data-focus="header"] {
     padding: 0 10px;
   }
   div[data-focus="content-bar"] {
+    div[data-focus="bar"] {
+      div[data-focus="bar-content-middle"] {
+        h1 {
+          margin: 0;
+          color: #36b6b8;
+          font-size: 30px;
+        }
+      }
+    }
     div[data-focus="cartridge"] {
       padding: 70px 50px 35px 285px;
       .summary {

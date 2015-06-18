@@ -20,6 +20,6 @@ module.exports = React.createClass({
     stores: [{store: movieStore, properties: ['movie']}],
     action: movieActions,
     renderContent() {
-        return this.textFor('title');
+        return <h1>{this.textFor('title')}</h1>;
     }
 });

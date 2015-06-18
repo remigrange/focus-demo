@@ -28,12 +28,12 @@ let PeoplePreview = React.createClass({
                             }
                         </div>
                         <div data-focus='summary'>
-                            <h3>{this.textFor('peoName')}</h3>
+                            <h1>{this.textFor('peoName')}</h1>
                             <p>{this.textFor('imdbid')}</p>
                         </div>
                     </div>
                     <div data-focus='details'>
-                        <h4>{this.i18n('people.preview.details')}</h4>
+                        <h2>{this.i18n('quick-search.preview.details.title')}</h2>
                         {this.displayFor('firstName')}
                         {this.displayFor('lastName')}
                         {this.displayFor('comment')}

@@ -29,12 +29,12 @@ let MoviePreview = React.createClass({
                             }
                         </div>
                         <div data-focus='summary'>
-                            <h3>{this.textFor('title')}</h3>
+                            <h1>{this.textFor('title')}</h1>
                             <p>{this.textFor('released')}</p>
                         </div>
                     </div>
                     <div data-focus='details'>
-                        <h4>{this.i18n('movie.preview.details')}</h4>
+                        <h2>{this.i18n('quick-search.preview.details.title')}</h2>
                         {this.displayFor('languageIds')}
                         {this.displayFor('genreIds')}
                     </div>

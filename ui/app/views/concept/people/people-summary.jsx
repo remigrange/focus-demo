@@ -18,6 +18,6 @@ module.exports = React.createClass({
     stores: [{store: peopleStore, properties: ['people']}],
     action: peopleActions,
     renderContent() {
-        return this.textFor('peoName');
+        return <h1>{this.textFor('peoName')}</h1>;
     }
 });
