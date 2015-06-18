@@ -70,6 +70,9 @@ module.exports = {
         detail: {
             identity: {
                 title: 'Identity'
+            },
+            filmography: {
+                title: 'Filmography'
             }
         }
     },
