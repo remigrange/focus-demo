@@ -14,6 +14,7 @@ import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.Casting;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.RolePeople;
+import rodolphe.demo.services.movie.ExploitationServices;
 import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.people.PeopleServices;
 import roldophe.demo.people.SearchPeopleTest;
@@ -34,6 +35,8 @@ public class MovieTest extends AbstractRodolpheTestCase {
     private RolePeopleDAO rolePeopleDAO;
     @Inject
     private CastingDAO castingDAO;
+    @Inject
+    private ExploitationServices exploitationServices;
 
     /**
      * Get a specific movie.
@@ -111,13 +114,5 @@ public class MovieTest extends AbstractRodolpheTestCase {
         final People peo = SearchPeopleTest.getNewPeople();
         peopleServices.savePeople(peo);
         return peo;
-    }
-
-    /**
-     * Get a specific movie.
-     */
-    @Test
-    public void testUpdateMovieTable() {
-        // movieServices.updateMovieTableData();
     }
 }

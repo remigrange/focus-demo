@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  12 juin 2015  15:34:44                     
+--   Date de création :  15 juin 2015  13:04:09                     
 -- ============================================================
 
 
@@ -382,6 +382,9 @@ create table TEMP_MOVIE_DATA
     IMDBID      	 VARCHAR(100)	,
     RATED       	 VARCHAR(100)	,
     MOV_ID      	 NUMERIC     	,
+    IS_UPDATED  	 bool        	not null,
+    POSTER      	 TEXT        	,
+    TYPE        	 VARCHAR(100)	,
     constraint PK_TEMP_MOVIE_DATA primary key (CLEAN_ID)
 );
 
@@ -407,7 +410,16 @@ comment on column TEMP_MOVIE_DATA.RATED is
 'Rated';
 
 comment on column TEMP_MOVIE_DATA.MOV_ID is
-'primary key';
+'Movie ID';
+
+comment on column TEMP_MOVIE_DATA.IS_UPDATED is
+'Updated';
+
+comment on column TEMP_MOVIE_DATA.POSTER is
+'Poster';
+
+comment on column TEMP_MOVIE_DATA.TYPE is
+'Type';
 
 -- ============================================================
 --   Table : TITLE                                        

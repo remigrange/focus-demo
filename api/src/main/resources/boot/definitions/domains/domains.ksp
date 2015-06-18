@@ -155,6 +155,12 @@ create Domain DO_NOM {
     indexType : "text_fr"
 }
 
+create Domain DO_OUI_NON {
+	dataType : Boolean
+	formatter : FMT_DEFAULT
+	indexType : "boolean"
+	storeType : "bool"
+}
 
 create Domain DO_PRENOM {
 	dataType : String

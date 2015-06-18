@@ -85,6 +85,18 @@ module.exports = {
 			"movId": {
 				"domain": "DO_ID",
 				"required": false
+			},		
+			"isUpdated": {
+				"domain": "DO_OUI_NON",
+				"required": true
+			},		
+			"poster": {
+				"domain": "DO_TEXTE",
+				"required": false
+			},		
+			"type": {
+				"domain": "DO_LIBELLE_100",
+				"required": false
 			}		
 	},
 	"fileInfo": {

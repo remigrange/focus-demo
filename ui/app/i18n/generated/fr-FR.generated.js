@@ -29,7 +29,10 @@ module.exports = {
         "plot" : "Description",
         "imdbid" : "Id imdb",
         "rated" : "Rated",
-        "movId" : "primary key"
+        "movId" : "Movie ID",
+        "isUpdated" : "Updated",
+        "poster" : "Poster",
+        "type" : "Type"
     },
     "fileInfo": {
         "filId" : "FIL_ID",

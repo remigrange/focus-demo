@@ -143,8 +143,14 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Rated'. */
 		RATED,
-		/** Propriété 'primary key'. */
+		/** Propriété 'Movie ID'. */
 		MOV_ID,
+		/** Propriété 'Updated'. */
+		IS_UPDATED,
+		/** Propriété 'Poster'. */
+		POSTER,
+		/** Propriété 'Type'. */
+		TYPE,
 	}
 
 	/**
