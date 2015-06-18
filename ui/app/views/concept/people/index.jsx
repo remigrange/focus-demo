@@ -5,16 +5,7 @@ let PeopleDetails = require('./people-details');
 let PeopleFilmography = require('./people-filmography');
 let PeoplePictures = require('./people-pictures');
 let PeopleCartrige = require('./people-cartridge');
-
-let PeopleSummary = React.createClass({
-    render() {
-        return (
-            <div>
-                PEOPLE SUMMARY {this.props.id}
-            </div>
-        );
-    }
-});
+let PeopleSummary = require('./people-summary')
 
 module.exports = createDetail({
     displayName: 'PeopleView',

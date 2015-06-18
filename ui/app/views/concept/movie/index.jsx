@@ -13,15 +13,7 @@ let CartridgeMovie = require('./movie-cartridge');
 
 
 // Composants du cartouche
-let SummaryMovie = React.createClass({
-    render() {
-        return (
-            <div>
-                SUMMARY {this.props.id || 'no Id'} ..............
-            </div>
-        );
-    }
-});
+let SummaryMovie = require('./movie-summary');
 
 /**
  * Page représentant le détail de la fiche d'un film.
