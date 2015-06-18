@@ -17,8 +17,8 @@ import io.vertigo.dynamo.task.model.TaskResult;
 public final class MoviesPAO {
 	/** Liste des taches. */
 	private static enum Tasks {
-		/** Tache TK_GET_MOVIE_VIEW */
-		TK_GET_MOVIE_VIEW,
+		/** Tache TK_GET_MOVIE_INDEX */
+		TK_GET_MOVIE_INDEX,
 		/** Tache TK_GET_MOVIE_VIEW_BY_MOV_ID */
 		TK_GET_MOVIE_VIEW_BY_MOV_ID,
 		/** Tache TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID */
@@ -27,14 +27,11 @@ public final class MoviesPAO {
 		TK_GET_CASTING_BY_MOV_ID,
 	}
 
-	/** Constante de paramètre de la tache MIN_RANK. */
-	private static final String ATTR_IN_TK_GET_MOVIE_VIEW_MIN_RANK = "MIN_RANK";
-
-	/** Constante de paramètre de la tache MAX_ROWS. */
-	private static final String ATTR_IN_TK_GET_MOVIE_VIEW_MAX_ROWS = "MAX_ROWS";
+	/** Constante de paramètre de la tache DTC_MOVIE_IDS. */
+	private static final String ATTR_IN_TK_GET_MOVIE_INDEX_DTC_MOVIE_IDS = "DTC_MOVIE_IDS";
 
 	/** Constante de paramètre de la tache DTC_MOVIES. */
-	private static final String ATTR_OUT_TK_GET_MOVIE_VIEW_DTC_MOVIES = "DTC_MOVIES";
+	private static final String ATTR_OUT_TK_GET_MOVIE_INDEX_DTC_MOVIES = "DTC_MOVIES";
 
 	/** Constante de paramètre de la tache MOV_ID. */
 	private static final String ATTR_IN_TK_GET_MOVIE_VIEW_BY_MOV_ID_MOV_ID = "MOV_ID";
@@ -78,18 +75,16 @@ public final class MoviesPAO {
 	}
 
 	/**
-	 * Execute la tache TK_GET_MOVIE_VIEW.
-	 * @param minRank Integer 
-	 * @param maxRows Integer 
-	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.MovieView> dtcMovies
+	 * Execute la tache TK_GET_MOVIE_INDEX.
+	 * @param dtcMovieIds io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.common.Dummy> 
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.MovieIndex> dtcMovies
 	*/
-	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.MovieView> getMovieView(final Integer minRank, final Integer maxRows) {
-		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIE_VIEW)
-				.withValue(ATTR_IN_TK_GET_MOVIE_VIEW_MIN_RANK, minRank)
-				.withValue(ATTR_IN_TK_GET_MOVIE_VIEW_MAX_ROWS, maxRows)
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.MovieIndex> getMovieIndex(final io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.common.Dummy> dtcMovieIds) {
+		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIE_INDEX)
+				.withValue(ATTR_IN_TK_GET_MOVIE_INDEX_DTC_MOVIE_IDS, dtcMovieIds)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
-		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_VIEW_DTC_MOVIES);
+		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_INDEX_DTC_MOVIES);
 	}
 
 	/**

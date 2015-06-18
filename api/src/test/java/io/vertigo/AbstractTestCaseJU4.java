@@ -21,6 +21,7 @@ package io.vertigo;
 import io.vertigo.boot.xml.XMLAppConfigBuilder;
 import io.vertigo.core.Home;
 import io.vertigo.core.Home.App;
+import io.vertigo.core.boot.BootConfigBuilder;
 import io.vertigo.core.config.AppConfig;
 import io.vertigo.core.di.injector.Injector;
 import io.vertigo.core.spaces.component.ComponentInfo;
@@ -48,210 +49,213 @@ import org.junit.Before;
  */
 public abstract class AbstractTestCaseJU4 {
 
-    private static Properties properties = new Properties();
-    private static App app;
+	private static Properties properties = new Properties();
+	private static App app;
 
-    private synchronized void startHome() {
-        setProperties(loadProperties());
-        app = new App(buildAppConfig());
-    }
+	private synchronized void startHome() {
+		setProperties(loadProperties());
+		app = new App(buildAppConfig());
+	}
 
-    private synchronized void stopHome() {
-        app.close();
-        setProperties(new Properties());
-        app = null;
-    }
+	private synchronized void stopHome() {
+		app.close();
+		setProperties(new Properties());
+		app = null;
+	}
 
-    /**
-     * Récupère la valeur de homeStarted.
-     *
-     * @return valeur de homeStarted
-     */
-    private static synchronized boolean isHomeStarted() {
-        return app != null;
-    }
+	/**
+	 * Récupère la valeur de homeStarted.
+	 *
+	 * @return valeur de homeStarted
+	 */
+	private static synchronized boolean isHomeStarted() {
+		return app != null;
+	}
 
-    /**
-     * Donne la valeur de properties.
-     *
-     * @return la valeur de properties.
-     */
-    protected final Properties getProperties() {
-        return properties;
-    }
+	/**
+	 * Donne la valeur de properties.
+	 *
+	 * @return la valeur de properties.
+	 */
+	protected final Properties getProperties() {
+		return properties;
+	}
 
-    private static synchronized void setProperties(final Properties properties) {
-        AbstractTestCaseJU4.properties = properties;
-    }
+	private static synchronized void setProperties(final Properties properties) {
+		AbstractTestCaseJU4.properties = properties;
+	}
 
-    /**
-     * Doit-on s'assurer que le Home est réinitialisé avant le début de chaque test?
-     * Par défaut, return true.
-     *
-     * @return booléen
-     */
-    protected boolean cleanHomeForTest() {
-        return true;
-    }
+	/**
+	 * Doit-on s'assurer que le Home est réinitialisé avant le début de chaque test?
+	 * Par défaut, return true.
+	 *
+	 * @return booléen
+	 */
+	protected boolean cleanHomeForTest() {
+		return true;
+	}
 
-    /**
-     * Méthode ne faisant rien.
-     *
-     * @param o object
-     */
-    protected static final void nop(final Object o) {
-        // rien
-    }
+	/**
+	 * Méthode ne faisant rien.
+	 *
+	 * @param o object
+	 */
+	protected static final void nop(final Object o) {
+		// rien
+	}
 
-    /**
-     * Set up de l'environnement de test.
-     *
-     * @throws Exception exception
-     */
-    @Before
-    public final void setUp() throws Exception {
-        // Création de l'état de l'application
-        // Initialisation de l'état de l'application
-        if (cleanHomeForTest() && isHomeStarted()) {
-            stopHome();
-        }
-        if (!isHomeStarted()) {
-            startHome();
-        }
-        // On injecte les managers sur la classe de test.
-        Injector.injectMembers(this, getContainer());
-        doSetUp();
-    }
+	/**
+	 * Set up de l'environnement de test.
+	 *
+	 * @throws Exception exception
+	 */
+	@Before
+	public final void setUp() throws Exception {
+		// Création de l'état de l'application
+		// Initialisation de l'état de l'application
+		if (cleanHomeForTest() && isHomeStarted()) {
+			stopHome();
+		}
+		if (!isHomeStarted()) {
+			startHome();
+		}
+		// On injecte les managers sur la classe de test.
+		Injector.injectMembers(this, getContainer());
+		doSetUp();
+	}
 
-    /**
-     * Tear down de l'environnement de test.
-     *
-     * @throws Exception Exception
-     */
-    @After
-    public final void tearDown() throws Exception {
-        try {
-            doTearDown();
-        } finally {
-            if (cleanHomeForTest()) {
-                stopHome();
-            }
-        }
-        doAfterTearDown();
-    }
+	/**
+	 * Tear down de l'environnement de test.
+	 *
+	 * @throws Exception Exception
+	 */
+	@After
+	public final void tearDown() throws Exception {
+		try {
+			doTearDown();
+		} finally {
+			if (cleanHomeForTest()) {
+				stopHome();
+			}
+		}
+		doAfterTearDown();
+	}
 
-    /**
-     * Initialisation du test pour implé spécifique.
-     *
-     * @throws Exception Erreur
-     */
-    protected void doSetUp() throws Exception {
-        // pour implé spécifique
-    }
+	/**
+	 * Initialisation du test pour implé spécifique.
+	 *
+	 * @throws Exception Erreur
+	 */
+	protected void doSetUp() throws Exception {
+		// pour implé spécifique
+	}
 
-    /**
-     * Finalisation du test pour implé spécifique.
-     *
-     * @throws Exception Erreur
-     */
-    protected void doTearDown() throws Exception {
-        // pour implé spécifique
-    }
+	/**
+	 * Finalisation du test pour implé spécifique.
+	 *
+	 * @throws Exception Erreur
+	 */
+	protected void doTearDown() throws Exception {
+		// pour implé spécifique
+	}
 
-    /**
-     * Finalisation du test pour implé spécifique après le tear down.
-     *
-     * @throws Exception Erreur
-     */
-    protected void doAfterTearDown() throws Exception {
-        // pour implé spécifique
-    }
+	/**
+	 * Finalisation du test pour implé spécifique après le tear down.
+	 *
+	 * @throws Exception Erreur
+	 */
+	protected void doAfterTearDown() throws Exception {
+		// pour implé spécifique
+	}
 
-    /**
-     * Fournit le container utilisé pour l'injection.
-     *
-     * @return Container de l'injection
-     */
-    private static Container getContainer() {
-        return Home.getComponentSpace();
-    }
+	/**
+	 * Fournit le container utilisé pour l'injection.
+	 *
+	 * @return Container de l'injection
+	 */
+	private static Container getContainer() {
+		return Home.getComponentSpace();
+	}
 
-    /**
-     * Tableau des fichiers managers.xml a prendre en compte.
-     *
-     * @return fichier managers.xml (par defaut managers-test.xml)
-     */
-    protected String[] getManagersXmlFileName() {
-        return new String[] { "./managers-test.xml", };
-    }
+	/**
+	 * Tableau des fichiers managers.xml a prendre en compte.
+	 *
+	 * @return fichier managers.xml (par defaut managers-test.xml)
+	 */
+	protected String[] getManagersXmlFileName() {
+		return new String[] { "./managers-test.xml", };
+	}
 
-    /**
-     * Fichier de propriétés de paramêtrage des managers.
-     *
-     * @return fichier properties de paramétrage des managers (par defaut Option.none())
-     */
-    protected Option<String> getPropertiesFileName() {
-        return Option.none(); // par déƒaut pas de properties
-    }
+	/**
+	 * Fichier de propriétés de paramêtrage des managers.
+	 *
+	 * @return fichier properties de paramétrage des managers (par defaut Option.none())
+	 */
+	protected Option<String> getPropertiesFileName() {
+		return Option.none(); // par déƒaut pas de properties
+	}
 
-    /**
-     * Utilitaire.
-     *
-     * @param manager Manager
-     */
-    protected static final void testDescription(final Component manager) {
-        if (manager instanceof Describable) {
-            final List<ComponentInfo> componentInfos = Describable.class.cast(manager).getInfos();
-            for (final ComponentInfo componentInfo : componentInfos) {
-                Assert.assertNotNull(componentInfo);
-            }
-        }
-    }
+	/**
+	 * Utilitaire.
+	 *
+	 * @param manager Manager
+	 */
+	protected static final void testDescription(final Component manager) {
+		if (manager instanceof Describable) {
+			final List<ComponentInfo> componentInfos = Describable.class.cast(manager).getInfos();
+			for (final ComponentInfo componentInfo : componentInfos) {
+				Assert.assertNotNull(componentInfo);
+			}
+		}
+	}
 
-    /**
-     * Retourne l'URL correspondant au nom du fichier dans le classPath.
-     *
-     * @param fileName Nom du fichier
-     * @return URN non null
-     */
-    protected final URL createURL(final String fileName) {
-        Assertion.checkArgNotEmpty(fileName);
-        // ---------------------------------------------------------------------
-        try {
-            return new URL(fileName);
-        } catch (final MalformedURLException e) {
-            // Si fileName non trouvé, on recherche dans le classPath
-            final URL url = getClass().getResource(fileName);
-            Assertion.checkNotNull(url, "Impossible de récupérer le fichier [" + fileName + "]");
-            return url;
-        }
-    }
+	/**
+	 * Retourne l'URL correspondant au nom du fichier dans le classPath.
+	 *
+	 * @param fileName Nom du fichier
+	 * @return URN non null
+	 */
+	protected final URL createURL(final String fileName) {
+		Assertion.checkArgNotEmpty(fileName);
+		// ---------------------------------------------------------------------
+		try {
+			return new URL(fileName);
+		} catch (final MalformedURLException e) {
+			// Si fileName non trouvé, on recherche dans le classPath
+			final URL url = getClass().getResource(fileName);
+			Assertion.checkNotNull(url, "Impossible de récupérer le fichier [" + fileName + "]");
+			return url;
+		}
+	}
 
-    private Properties loadProperties() {
-        try {
-            final Option<String> propertiesName = getPropertiesFileName();
-            final Properties prop = new Properties();
-            if (propertiesName.isDefined()) {
-                try (final InputStream in = createURL(propertiesName.get()).openStream()) {
-                    prop.load(in);
-                }
-            }
-            return prop;
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	private Properties loadProperties() {
+		try {
+			final Option<String> propertiesName = getPropertiesFileName();
+			final Properties prop = new Properties();
+			if (propertiesName.isDefined()) {
+				try (final InputStream in = createURL(propertiesName.get()).openStream()) {
+					prop.load(in);
+				}
+			}
+			return prop;
+		} catch (final IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    protected AppConfig buildAppConfig() {
-        final Properties prop = new Properties();
-        prop.putAll(properties);
-        final String[] managersXml;
-        if (prop.containsKey("boot.applicationConfiguration")) {
-            managersXml = prop.getProperty("boot.applicationConfiguration").split(";");
-            prop.remove("boot.applicationConfiguration");
-        } else {
-            managersXml = getManagersXmlFileName();
-        }
-        return new XMLAppConfigBuilder().withSilence(true).withModules(getClass(), prop, managersXml).build();
-    }
+	protected AppConfig buildAppConfig() {
+		final Properties prop = new Properties();
+		prop.putAll(properties);
+		final String[] managersXml;
+		if (prop.containsKey("boot.applicationConfiguration")) {
+			managersXml = prop.getProperty("boot.applicationConfiguration").split(";");
+			prop.remove("boot.applicationConfiguration");
+		} else {
+			managersXml = getManagersXmlFileName();
+		}
+		return new XMLAppConfigBuilder()
+				.withBootConfig(new BootConfigBuilder().withSilence(true).build())
+				.withModules(getClass(), prop, getManagersXmlFileName())
+				.build();
+	}
 }

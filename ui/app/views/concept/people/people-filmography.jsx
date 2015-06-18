@@ -14,9 +14,8 @@ let peopleActions = require('action/people').filmography;
 
 // Components
 
-let Title = Focus.components.common.title.component;
 let MovieCard = require('../movie/movie-card');
-let FormList = Focus.components.common.list;
+let Block = Focus.components.common.block.component;
 
 let Line = React.createClass({
     definitionPath: 'movie',
@@ -31,24 +30,13 @@ module.exports = React.createClass({
     definitionPath: 'movie',
     displayName: 'peopleFilmography',
     mixins: [formMixin],
-    getInitialState() {
-        this.state = {
-            filmography: []
-        };
-        return this.state;
-    },
     stores: [{store: peopleStore, properties: ['filmography']}],
-    action: {
-        load(id) {
-            peopleActions.loadFilmography(id);
-        }
-    },
+    action: peopleActions,
     renderContent() {
         return (
-            <div className='slidingBloc'>
-                <Title id='filmography' title='FILMOGRAPHY'/>
-                <FormList data={this.state.filmography} line={Line} perPage={5}/>
-            </div>
-        );
+            <Block title='people.detail.filmography.title'>
+              {this.listFor('filmography', {lineComponent: Line})}
+            </Block>
+          );
     }
 });

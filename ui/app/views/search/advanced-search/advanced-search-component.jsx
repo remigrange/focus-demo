@@ -3,13 +3,12 @@
 let keys = _.keys;
 let isArray = _.isArray;
 let omit = _.omit;
-
 // Actions
 
 let searchAction = require('action/search').search;
 
 // Mixins
-
+let i18nMixin = Focus.components.common.i18n.mixin;
 let AdvancedSearch = Focus.components.page.search.advancedSearch.component;
 
 // Components
@@ -18,41 +17,19 @@ let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
 let MovieLineComponent = require('../lines/movieLineComponent');
 let PeopleLineComponent = require('../lines/peopleLineComponent');
-let CartridgeSearch = require('../../common/cartridge-search')
+let CartridgeSearch = require('../../common/cartridge-search');
+let SummarySearch = require('../../common/summary-search');
 
-let Group = React.createClass({
+// Composants du cartouche
+let PageTitle = React.createClass({
+    mixins: [i18nMixin],
     render() {
-        let Title = FocusComponents.common.title.component;
-        let Button = FocusComponents.common.button.action.component;
         return (
-            <div className="listResultContainer panel" data-focus="group-result-container">
-                <Title title={this.props.groupKey}/>
-                <div className="resultContainer">
-                    {this.props.children}
-                </div>
-                <Button handleClickAction={this.props.showAll(this.props.groupKey)} label="Show all"/>
-            </div>
+            <span className="page-title">{this.i18n('search.advanced.page.title')}</span>
         );
     }
 });
 
-let cartridgeConfiguration = function () {
-    return {
-        summary: {component: Focus.components.common.empty.component},
-        cartridge: {component: CartridgeSearch},
-        actions: {
-            primary: [
-                {
-                    label: 'search',
-                    action: () => {
-                        console.log('call the search action');
-                    },
-                    icon: 'search'
-                }],
-            secondary: []
-        }
-    };
-};
 
 
 /**
@@ -66,6 +43,54 @@ let WrappedAdvancedSearch = React.createClass({
             query: this.props.query
         }
     },
+    cartridgeConfiguration () {
+        let buildProps = {
+            searchAction: searchAction, 
+            query: this.props.query,
+            scope: this.props.scope,
+            referenceNames: ['scopes'],
+            hasScopes: false
+        };
+        return {
+            summary: {
+                component: Focus.components.page.search.searchHeader.summary, 
+                props: buildProps
+            },
+            barLeft:{component: PageTitle},
+            cartridge: {
+                component: Focus.components.page.search.searchHeader.cartridge,
+                props: buildProps
+            },
+            actions: {
+                primary: [],
+                secondary: []
+            }
+        };
+    },
+    _getGroupComponent() {
+        let _this = this;
+        return React.createClass({
+            render() {
+                let Title = FocusComponents.common.title.component;
+                let Button = FocusComponents.common.button.action.component;
+                return (
+                    <div className="listResultContainer panel" data-focus="group-result-container">
+                        <Title title={this.props.groupKey}/>
+                        <div className="resultContainer">
+                            {this.props.children}
+                        </div>
+                        <div data-focus='group-actions'>
+                            <Button handleOnClick={() => {
+                            let criteria = _this.refs['advanced-search'].getSearchCriteria();
+                            criteria.criteria.scope = this.props.groupKey;
+                            _this._searchHandler(criteria);
+                        }} label="Show all"/>
+                        </div>
+                    </div>
+                );
+            }
+        });
+    },
     _lineComponentMapper(list) {
         if (list.length < 1) {
             return MovieLineComponent;
@@ -77,10 +102,12 @@ let WrappedAdvancedSearch = React.createClass({
         list = list || this.store.getList() || [{movId: 0}];
         return {type: list[0].movId ? 'Movie' : 'People'};
     },
+    // TODO chek if usefull
     _searchHandler(criteria) {
         let facets = criteria.facets;
         let newState = {
-            query: criteria.criteria.query
+            query: criteria.criteria.query,
+            scope: criteria.criteria.scope
         };
         if (isArray(facets) && facets.length === 1 && facets[0].key === 'Scope') {
             let scopeFacet = facets[0];
@@ -97,13 +124,14 @@ let WrappedAdvancedSearch = React.createClass({
         props.query = this.state.query;
         return (
             <AdvancedSearch
+                ref='advanced-search'
                 data-focus='advanced-search'
-                searchAction={this._searchHandler}
-                groupComponent={Group}
+                searchAction={searchAction}
+                groupComponent={this._getGroupComponent()}
                 isSelection={true}
                 lineComponentMapper={this._lineComponentMapper}
                 groupMaxRows={3}
-                cartridgeConfiguration={cartridgeConfiguration}
+                cartridgeConfiguration={this.cartridgeConfiguration}
                 {...props}
                 />
         );

@@ -7,7 +7,7 @@ exports.config = {
     "public": '../api/src/main/webapp/static/'
   },
   server:{
-  //  path: './server/server.js'
+    path: './server/server.js'
   },
   files: {
         javascripts: {
@@ -17,6 +17,7 @@ exports.config = {
             },
             order: {
                 before: [
+                    'vendor/npo.js',
                     'vendor/react.js',
                     'vendor/jquery.js',
                     'vendor/lodash.js',

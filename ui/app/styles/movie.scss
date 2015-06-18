@@ -1,20 +1,28 @@
+$movie-poster-witdh:300px;
 
 [data-focus='header'] {
   .cartridge-movie {
-    display: flex;
-    flex-direction: row;
+    //display: flex;
+    //flex-direction: row; //(flex ne fonctionne pas sous safari pour le moment)
+    min-height: $movie-poster-witdh;
+    margin-left: 180px;
 
     .poster {
-      border: 1px solid red;
       width: 250px;
-      height: 300px;
-      border: 1px solid #B2B2B2;
+      height: $movie-poster-witdh;
+      float:left;
       background-color: #F8F8F8;
       text-align: center;
       color: #B2B2B2;
+
+      img {
+        width: 250px;
+        height: 300px;
+      }
     }
     .summary {
       padding: 0 30px;
+      margin-left: 270px;
 
       h1 {
         margin: 0 0 10px 0;
@@ -30,13 +38,40 @@
   }
 }
 
+
 [data-focus="selection-list"] {
   li[data-focus="sl-line"] {
-    [data-focus="sl-icon"] {
-      line-height: 75px;
-    }
     .movie-line {
       min-height: 75px;
     }
   }
+}
+
+[data-focus='movie-preview'] {
+  [data-focus='head'] {
+    width: 100%;
+    height: 200px;
+
+    [data-focus='poster'] {
+      float: left;
+      width: 150px;
+      height: 200px;
+      border: solid #827d7c 1px;
+      padding: 5px;
+
+      [data-focus='empty'] {
+        background-color: #f3f3f3;
+        text-align: center;
+        padding-top: 60px;
+        color: #e8e8e8;
+        font-size: 4em;
+        height: 100%;
+      }
+    }
+
+    [data-focus='summary'] {
+      margin-left: 170px;
+    }
+  }
+
 }

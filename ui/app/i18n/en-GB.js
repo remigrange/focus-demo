@@ -3,7 +3,9 @@ module.exports = {
         edit: "Edit",
         cancel: "Cancel",
         save: "Save",
-        advancedSearch: "Advanced search"
+        advancedSearch: "Advanced search",
+        back: "Back",
+        backTop: "Top"
     },
     show: {
         all: "Show all"
@@ -16,7 +18,8 @@ module.exports = {
                 FCT_MOVIE_LANGUAGE: 'Language',
                 FCT_MOVIE_GENRE: 'Genre',
                 FCT_PEOPLE_TITLE: 'Title',
-                FCT_PEOPLE_PROFESSION: 'Profession'
+                FCT_PEOPLE_PROFESSION: 'Profession',
+                FCT_SCOPE: 'Scope'
             }
         }
     },
@@ -25,9 +28,18 @@ module.exports = {
         export: 'Export'
     },
     search: {
+        advanced: {
+            page: {
+                title: "Search"
+            }
+        },
         bar: {
             help: "Choose a scope here."
-        }
+        },
+        cartridge: {
+            title: "What are you looking for ?"
+        },
+        mostRelevant: "The 3 most relevant"
     },
     quickSearch: {
         title: 'Quick search'
@@ -53,6 +65,8 @@ module.exports = {
         }
     },
     people: {
+        professions: 'Profession',
+        rank: 'Rank',
         detail: {
             identity: {
                 title: 'Identity'

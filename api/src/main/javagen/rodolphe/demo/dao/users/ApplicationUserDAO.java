@@ -1,16 +1,16 @@
 package rodolphe.demo.dao.users;
 
 import javax.inject.Inject;
-
 import io.vertigo.dynamo.impl.persistence.util.DAOBroker;
 import io.vertigo.dynamo.persistence.PersistenceManager;
 import io.vertigo.dynamo.task.TaskManager;
+import rodolphe.demo.domain.users.ApplicationUser;
 
 /**
  * DAO : Accès à un object (DTO, DTC). 
  * ApplicationUserDAO
  */
-public final class ApplicationUserDAO extends DAOBroker<rodolphe.demo.domain.users.ApplicationUser, java.lang.Long> {
+public final class ApplicationUserDAO extends DAOBroker<ApplicationUser, java.lang.Long> {
 	 
 	/**
 	 * Contructeur.
@@ -19,6 +19,8 @@ public final class ApplicationUserDAO extends DAOBroker<rodolphe.demo.domain.use
 	 */
 	@Inject
 	public ApplicationUserDAO(final PersistenceManager persistenceManager, final TaskManager taskManager) {
-		super(rodolphe.demo.domain.users.ApplicationUser.class, persistenceManager, taskManager);
+		super(ApplicationUser.class, persistenceManager, taskManager);
 	}
+	
+
 }

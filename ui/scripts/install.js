@@ -4,17 +4,21 @@ var files = [
   'react/dist/react.js',
   'jquery/dist/jquery.js',
   'backbone/backbone.js',
+  'native-promise-only/npo.js',
   //'lodash/',
   //bootstrap
   'bootstrap/dist/css/bootstrap.css',
   'bootstrap/dist/js/bootstrap.js',
   //bootstrap-material
-  'bootstrap-material/dist/css/material.css',
+  /*'bootstrap-material/dist/css/material.css',
   'bootstrap-material/dist/js/material.js',
   'bootstrap-material/dist/css/ripples.css',
-  'bootstrap-material/dist/js/ripples.js',
+  'bootstrap-material/dist/css/roboto.css',
+  'bootstrap-material/dist/js/ripples.js',*/
   //moment
   'moment/min/moment.min.js',
+  'numeral/min/languages.min.js',
+  'numeral/min/numeral.min.js',
   //daterangepicker
   'daterangepicker/daterangepicker.js',
   'daterangepicker/daterangepicker-bs3.css',
@@ -33,10 +37,10 @@ var files = [
 var fonts = [
   //Fonts
   'bootstrap/dist/fonts/glyphicons-halflings-regular.eot',
-  'bootstrap-material/dist/fonts/Material-Design-Icons.eot',
+  /*'bootstrap-material/dist/fonts/Material-Design-Icons.eot',
   'bootstrap-material/dist/fonts/Material-Design-Icons.svg',
   'bootstrap-material/dist/fonts/Material-Design-Icons.woff',
-  'bootstrap-material/dist/fonts/Material-Design-Icons.ttf',
+  'bootstrap-material/dist/fonts/Material-Design-Icons.ttf',*/
   'font-awesome/fonts/fontawesome-webfont.eot',
   'font-awesome/fonts/fontawesome-webfont.svg',
   'font-awesome/fonts/fontawesome-webfont.ttf',

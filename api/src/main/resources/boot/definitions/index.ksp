@@ -1,13 +1,74 @@
 package roldolphe.demo.domain.search
 
 create IndexDefinition IDX_MOVIE {
-	dtResult : DT_MOVIE_RESULT
+	keyConcept : DT_MOVIE
     dtIndex : DT_MOVIE_INDEX
+    loaderId : "MovieSearchLoader"
 }
 
 create IndexDefinition IDX_PEOPLE {
-	dtResult : DT_PEOPLE_RESULT
+	keyConcept : DT_PEOPLE
     dtIndex : DT_PEOPLE_INDEX
+    loaderId : "PeopleSearchLoader"
 }
 
+create FacetDefinition FCT_SCOPE { /** Fake Facet for group by SCOPE when scope ALL */
+	dtDefinition : DT_MOVIE_INDEX,	fieldName : "RUNTIME",	label : "Scope"
+}
 
+create FacetDefinition FCT_MOVIE_RUNTIME {
+	dtDefinition : DT_MOVIE_INDEX,	fieldName : "RUNTIME",	label : "Par Runtime"
+}
+create FacetDefinition FCT_MOVIE_GENRE {
+	dtDefinition : DT_MOVIE_INDEX, fieldName : "GENRE_IDS", label : "Genre"
+}
+create FacetDefinition FCT_MOVIE_LANGUAGE {
+	dtDefinition : DT_MOVIE_INDEX, fieldName : "LANGUAGE_IDS", label : "Language"
+}
+create FacetDefinition FCT_MOVIE_COUNTRY {
+	dtDefinition : DT_MOVIE_INDEX, fieldName : "COUNTRY_IDS", label : "Country"
+}
+create FacetDefinition FCT_PEOPLE_TITLE {
+	dtDefinition : DT_PEOPLE_INDEX, fieldName : "TIT_CD", label : "Title"
+}
+create FacetDefinition FCT_PEOPLE_PROFESSION {
+	dtDefinition : DT_PEOPLE_INDEX, fieldName : "PROFESSIONS", label : "Profession"
+}
+
+/* example of RangeFacet: */
+/*create FacetDefinition FCT_YEAR_CAR {
+	dtDefinition : DT_CAR, fieldName : "YEAR", label : "Par date"
+	range R1 { filter : "YEAR:[* TO 2000]", label : "avant 2000"},
+	range R2 { filter : "YEAR:[2000 TO 2005]", label : "2000-2005"},
+	range R3 { filter : "YEAR:[2005 TO *]", label : "apres 2005"}
+}*/
+
+create FacetedQueryDefinition QRY_MOVIE_WO_FCT {
+	keyConcept : DT_MOVIE
+	domainCriteria : DO_DT_MOVIE_CRITERIA_DTO
+    listFilterBuilderClass : "io.vertigo.dynamox.search.DefaultListFilterBuilder"  
+    listFilterBuilderQuery : "MOV_ID:#movId# RELEASED:#released# TITLE:#title*#"
+}
+
+create FacetedQueryDefinition QRY_MOVIE_WITH_FCT {
+	keyConcept : DT_MOVIE
+	facets : [ FCT_MOVIE_COUNTRY, FCT_MOVIE_GENRE, FCT_MOVIE_LANGUAGE]
+	domainCriteria : DO_DT_MOVIE_CRITERIA_DTO
+    listFilterBuilderClass : "io.vertigo.dynamox.search.DefaultListFilterBuilder"  
+    listFilterBuilderQuery : "MOV_ID:#movId# RELEASED:#released# TITLE:#title*#"
+}
+
+create FacetedQueryDefinition QRY_PEOPLE_WO_FCT {
+	keyConcept : DT_PEOPLE
+	domainCriteria : DO_DT_PEOPLE_CRITERIA_DTO
+    listFilterBuilderClass : "io.vertigo.dynamox.search.DefaultListFilterBuilder"  
+    listFilterBuilderQuery : "PEO_ID:#peoId# PEO_NAME:#peoName*# TIT_CD:#titCd*#"    
+}
+
+create FacetedQueryDefinition QRY_PEOPLE_WITH_FCT {
+	keyConcept : DT_PEOPLE
+	facets : [ FCT_PEOPLE_TITLE, FCT_PEOPLE_PROFESSION]
+	domainCriteria : DO_DT_PEOPLE_CRITERIA_DTO
+    listFilterBuilderClass : "io.vertigo.dynamox.search.DefaultListFilterBuilder"  
+    listFilterBuilderQuery : "PEO_ID:#peoId# PEO_NAME:#peoName*# TIT_CD:#titCd*#"
+}

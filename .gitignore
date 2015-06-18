@@ -45,3 +45,4 @@ api/.classpath
 api/.project
 api/.settings
 *.iml
+api/src/main/webapp/WEB-INF/classes/*

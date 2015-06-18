@@ -3,15 +3,22 @@
 let Router = Focus.router;
 let HomeRouter = Router.extend({
     log: true,
+    beforeRoute(){
+      Focus.application.changeRoute('search');
+    },
     routes: {
       '': 'home',
-      'home': 'home'
+      'home(/scope/:scope)': 'home'
     },
-    home() {
-        Focus.application.changeRoute('home');
+    home(scope, query) {
+        //Focus.application.changeRoute('home');
         console.log('ROUTE: HOME');
         let HomeView = require('../views/home');
-        this._pageContent(HomeView, {props: {position: 'left', open: true, style: {className: 'home-popin'}}});
+        this._pageContent(HomeView, {props: {
+          scope: scope || 'ALL', //Scope all by default here?
+          position: 'left', 
+          open: true, 
+          style: {className: 'home-popin'}}});
     }
 });
 

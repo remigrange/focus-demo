@@ -8,13 +8,15 @@ let SearchRouter = Router.extend({
       Focus.application.changeRoute('search');
     },
     routes: {
-        'search/advanced/scope/:scope/query/:query': 'advancedSearch'
+        'search/advanced/scope/:scope(/query/:query)': 'advancedSearch'
     },
     advancedSearch(scope, query) {
         scope = scope || 'MOVIE';
         query = query || '';
         let AdvancedSearchView = require('../views/search/advanced-search');
-        this._pageContent(AdvancedSearchView, {props: {scope: scope, query: query}});
+        this._pageContent(AdvancedSearchView, {
+            props: {scope, query}
+        });
     }
 });
 

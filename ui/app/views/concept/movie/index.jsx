@@ -13,7 +13,6 @@ let CartridgeMovie = require('./movie-cartridge');
 
 
 // Composants du cartouche
-
 let SummaryMovie = React.createClass({
     render() {
         return (
@@ -33,6 +32,7 @@ module.exports = createDetail({
         let props = {id: this.props.id, hasForm: false};
         return {
             summary: {component: SummaryMovie, props: props},
+            barLeft:{component: Focus.components.common.button.back.component},
             cartridge: {component: CartridgeMovie, props: props},
             actions: {
                 primary: [

@@ -5,7 +5,8 @@
 let peopleStore = new Focus.store.CoreStore({
     definition : {
         'people': 'people',
-        'filmography': 'filmography'
+        'filmography': 'filmography',
+        'peopleRecords': 'peopleRecords'
     }
   });
 
