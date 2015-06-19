@@ -67,7 +67,7 @@ let WrappedAdvancedSearch = React.createClass({
         };
     },
     _getGroupComponent() {
-        let _this = this;
+        let self = this;
         return React.createClass({
             render() {
                 let Title = FocusComponents.common.title.component;
@@ -79,11 +79,7 @@ let WrappedAdvancedSearch = React.createClass({
                             {this.props.children}
                         </div>
                         <div data-focus='group-actions'>
-                            <Button handleOnClick={() => {
-                            let criteria = _this.refs['advanced-search'].getSearchCriteria();
-                            criteria.criteria.scope = this.props.groupKey;
-                            _this._searchHandler(criteria);
-                        }} label="Show all"/>
+                            <Button handleOnClick={self.refs['advanced-search'].showAllGroupListHandler(this.props.groupKey)} label="Show all"/>
                         </div>
                     </div>
                 );
