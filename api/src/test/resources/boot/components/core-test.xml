@@ -9,8 +9,8 @@
 			<plugin class="io.vertigo.commons.plugins.resource.java.ClassPathResourceResolverPlugin" />
 		</component>
 		<component api="VSecurityManager" class="io.vertigo.persona.impl.security.VSecurityManagerImpl">
-			<param name="userSessionClassName" value="roldophe.demo.tools.TnrUserSession" />
-			<plugin class="io.vertigo.persona.plugins.security.loaders.SecurityResourceLoaderPlugin" />
+			<!--param name="userSessionClassName" value="roldophe.demo.tools.TnrUserSession" /-->
+			<param name="userSessionClassName" value="rodolphe.demo.user.RodolpheUserSession" />
 		</component>
 	</module>
 	<module name="config">

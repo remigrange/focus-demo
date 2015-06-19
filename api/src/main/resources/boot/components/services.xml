@@ -7,17 +7,15 @@
 		<component class="rodolphe.demo.dao.people.RolePeopleDAO"/>
 		<component class="rodolphe.demo.dao.masterdatas.GenreDAO"/>
 		<component class="rodolphe.demo.dao.people.CastingDAO"/>
+		<component class="rodolphe.demo.dao.exploitation.TempMovieDataDAO"/>
 	</module>
 
 	<module name="RODOLPHE-PAO" api="false" inheritance="java.lang.Object">
 		<component class="rodolphe.demo.dao.movies.MoviesPAO"/>
 		<component class="rodolphe.demo.dao.people.PeoplePAO"/>
+		<component class="rodolphe.demo.dao.exploitation.ExploitationPAO"/>
 	</module>
 	
-	<module name="RODOLPHE-HELPER" api="false" inheritance="java.lang.Object">
-		<component class="rodolphe.demo.user.SecurityHelper"/>
-	</module>
-
 	<module name="RODOLPHE-SEARCH-HANDLER" api="false" inheritance="io.vertigo.dynamo.search.metamodel.SearchLoader">
 		<component class="rodolphe.demo.services.search.MovieSearchLoader"/>
 		<component class="rodolphe.demo.services.search.PeopleSearchLoader"/>
@@ -32,6 +30,7 @@
 		<component api="MovieServices" class="rodolphe.demo.services.movie.MovieServicesImpl" />
 		<component api="CommonServices" class="rodolphe.demo.services.common.CommonServicesImpl" />
 		<component api="MasterdataServices" class="rodolphe.demo.services.masterdata.MasterdataServicesImpl" />
+		<component api="ExploitationServices" class="rodolphe.demo.services.movie.ExploitationServicesImpl" />
 	</module>
 	
 	

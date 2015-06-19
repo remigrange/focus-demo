@@ -8,7 +8,6 @@ import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.search.model.SearchQuery;
-import io.vertigo.vega.rest.engine.UiContext;
 import io.vertigo.vega.rest.model.UiListState;
 
 import java.util.Map.Entry;
@@ -45,7 +44,7 @@ public class CommonTest extends AbstractRodolpheTestCase {
 		// Test for movie
 		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.MOVIE.name());
-		criteria.setSearchText("Fantastic");
+		criteria.setQuery("Fantastic");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
 		FacetedQueryResult<MovieIndex, SearchQuery> movies = (FacetedQueryResult<MovieIndex, SearchQuery>) commonServices
@@ -76,7 +75,7 @@ public class CommonTest extends AbstractRodolpheTestCase {
 		// Test for people
 		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.PEOPLE.name());
-		criteria.setSearchText("Jen");
+		criteria.setQuery("Jen");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
 		final FacetedQueryResult<PeopleIndex, SearchQuery> people = (FacetedQueryResult<PeopleIndex, SearchQuery>) commonServices
@@ -92,10 +91,9 @@ public class CommonTest extends AbstractRodolpheTestCase {
 		// Test for all
 		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.ALL.name());
-		criteria.setSearchText("Jen");
+		criteria.setQuery("Jen");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
-		final UiContext context = (UiContext) commonServices.search(criteria, selection, uiListState, "");
-		Logger.getLogger(getClass()).info("result : " + context.size());
+		commonServices.search(criteria, selection, uiListState, "");
 	}
 }

@@ -101,15 +101,3 @@ create Task TK_GET_CASTING_BY_MOV_ID {
     attribute MOV_ID {domain : DO_ID notNull:"true" inOut :"in"}
     attribute DTO_MOVIE_CASTING {domain : DO_DT_MOVIE_CASTING_DTC notNull:"true" inOut :"out"}
 }
-
-create Task TK_UPDATE_MOVIES_TITLES {
-    className : "io.vertigo.dynamox.task.TaskEngineProcBatch"
-        request : "
-        	UPDATE movie
-   			SET title = #DTC_MOVIES.0.TITLE#, released= #DTC_MOVIES.0.RELEASED#, runtime= #DTC_MOVIES.0.RUNTIME#, 
-   			description= #DTC_MOVIES.0.DESCRIPTION#, metadas_json=#DTC_MOVIES.0.METADAS_JSON#, imdbid= #DTC_MOVIES.0.IMDBID#,
-   			year= #DTC_MOVIES.0.YEAR#
-       		WHERE mov_id = #DTC_MOVIES.0.MOV_ID#
-			"
-	attribute DTC_MOVIES	 	{domain : DO_DT_MOVIE_DTC 		notNull:"true" 	inOut :"in"}
-}

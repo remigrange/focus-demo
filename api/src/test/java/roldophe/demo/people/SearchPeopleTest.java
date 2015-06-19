@@ -16,7 +16,6 @@ import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleIndex;
 import rodolphe.demo.services.people.PeopleServices;
-import rodolphe.demo.util.MemorizeTnrData;
 import roldophe.demo.tools.AbstractEsSearchTestCase;
 
 /**
@@ -57,12 +56,6 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
 		final People peo = getNewPeople();
 		peopleServices.savePeople(peo);
 		return peo;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	protected Class<? extends MemorizeTnrData> getDataSenderClass() {
-		return PeopleSearchHandler.class;
 	}
 
 	/** {@inheritDoc} */

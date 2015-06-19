@@ -3,6 +3,7 @@ package rodolphe.demo.dao.movies;
 import javax.inject.Inject;
 import java.util.List;
 import io.vertigo.core.Home;
+import io.vertigo.lang.Option;
 import io.vertigo.core.di.injector.Injector;
 import io.vertigo.dynamo.search.SearchManager;
 import io.vertigo.dynamo.search.metamodel.SearchIndexDefinition;
@@ -36,6 +37,8 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 		TK_GET_MOVIES_BY_CRITERIA,
 		/** Tache TK_GET_FILMOGRAPHY_BY_PEO_ID */
 		TK_GET_FILMOGRAPHY_BY_PEO_ID,
+		/** Tache TK_GET_MOVIE_TO_CLEAN */
+		TK_GET_MOVIE_TO_CLEAN,
 	}
 
 	/** Constante de paramètre de la tache SEARCH_TEXT. */
@@ -49,6 +52,18 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 
 	/** Constante de paramètre de la tache DTC_MOVIE. */
 	private static final String ATTR_OUT_TK_GET_FILMOGRAPHY_BY_PEO_ID_DTC_MOVIE = "DTC_MOVIE";
+
+	/** Constante de paramètre de la tache TITLE. */
+	private static final String ATTR_IN_TK_GET_MOVIE_TO_CLEAN_TITLE = "TITLE";
+
+	/** Constante de paramètre de la tache RELEASED. */
+	private static final String ATTR_IN_TK_GET_MOVIE_TO_CLEAN_RELEASED = "RELEASED";
+
+	/** Constante de paramètre de la tache YEAR. */
+	private static final String ATTR_IN_TK_GET_MOVIE_TO_CLEAN_YEAR = "YEAR";
+
+	/** Constante de paramètre de la tache DTC_MOVIE. */
+	private static final String ATTR_OUT_TK_GET_MOVIE_TO_CLEAN_DTC_MOVIE = "DTC_MOVIE";
 
 	 
 	/**
@@ -155,6 +170,23 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_FILMOGRAPHY_BY_PEO_ID_DTC_MOVIE);
+	}
+
+	/**
+	 * Execute la tache TK_GET_MOVIE_TO_CLEAN.
+	 * @param title Long 
+	 * @param released java.util.Date (peut être null)
+	 * @param year Integer (peut être null)
+	 * @return io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> dtcMovie
+	*/
+	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> getMovieToClean(final Long title, final Option<java.util.Date> released, final Option<Integer> year) {
+		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIE_TO_CLEAN)
+				.withValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_TITLE, title)
+				.withValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_RELEASED, released.getOrElse(null))
+				.withValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_YEAR, year.getOrElse(null))
+				.build();
+		final TaskResult taskResult = getTaskManager().execute(task);
+		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_TO_CLEAN_DTC_MOVIE);
 	}
 
 
