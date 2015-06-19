@@ -49,13 +49,13 @@ public class CommonServicesImpl implements CommonServices {
 	public FacetedQueryResult<? extends DtObject, SearchQuery> search(final SearchCriteria searchCriteria, final DtList<SelectedFacet> selection,
 			final UiListState uiListState, final String clusteringFacetName) {
 		final MovieCriteria movieCriteria = new MovieCriteria();
-		final String searchText = searchCriteria.getQuery();
+		final String query = searchCriteria.getQuery();
 		final String scope = searchCriteria.getScope();
-		movieCriteria.setTitle(searchText);
+		movieCriteria.setTitle(query);
 		final PeopleCriteria peopleCriteria = new PeopleCriteria();
-		peopleCriteria.setPeoName(searchText);
-		peopleCriteria.setFirstName(searchText);
-		peopleCriteria.setLastName(searchText);
+		peopleCriteria.setPeoName(query);
+		peopleCriteria.setFirstName(query);
+		peopleCriteria.setLastName(query);
 		final FacetSelection[] facetSel = getFacetSelectionList(selection);
 		if (CodeScope.MOVIE.name().equals(scope)) {
 			return movieServices.getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel);

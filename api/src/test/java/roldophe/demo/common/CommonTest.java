@@ -44,7 +44,7 @@ public class CommonTest extends AbstractRodolpheTestCase {
 		// Test for movie
 		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.MOVIE.name());
-		criteria.setSearchText("Fantastic");
+		criteria.setQuery("Fantastic");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
 		FacetedQueryResult<MovieIndex, SearchQuery> movies = (FacetedQueryResult<MovieIndex, SearchQuery>) commonServices
@@ -75,7 +75,7 @@ public class CommonTest extends AbstractRodolpheTestCase {
 		// Test for people
 		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.PEOPLE.name());
-		criteria.setSearchText("Jen");
+		criteria.setQuery("Jen");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
 		final FacetedQueryResult<PeopleIndex, SearchQuery> people = (FacetedQueryResult<PeopleIndex, SearchQuery>) commonServices
@@ -91,7 +91,7 @@ public class CommonTest extends AbstractRodolpheTestCase {
 		// Test for all
 		final SearchCriteria criteria = new SearchCriteria();
 		criteria.setScope(CodeScope.ALL.name());
-		criteria.setSearchText("Jen");
+		criteria.setQuery("Jen");
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
 		final DtList<SelectedFacet> selection = new DtList<>(SelectedFacet.class);
 		commonServices.search(criteria, selection, uiListState, "");

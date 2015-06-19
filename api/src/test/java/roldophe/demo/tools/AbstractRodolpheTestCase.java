@@ -21,8 +21,11 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 
+import rodolphe.demo.user.RodolpheUserSession;
+
 /**
  * Parent class for all tests.
+ * Do not commit !!
  *
  * @author jmforhan
  */
@@ -37,14 +40,7 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	private VTransactionWritable transaction;
 	private boolean memDataStarted;
 	// Session courante pour éviter de la perdre dans des WeakRef
-	private TnrUserSession session;
-
-	/**
-	 * Constructor.
-	 */
-	public AbstractRodolpheTestCase() {
-		super();
-	}
+	private RodolpheUserSession session;
 
 	/**
 	 * return Logger de la classe de test.
@@ -84,16 +80,14 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	 */
 	@Override
 	protected void doSetUp() throws Exception {
+		Assert.assertFalse("the previous test hasn't correctly close its transaction.", transactionManager.hasCurrentTransaction());
 		// manage transactions
-		if (!transactionManager.hasCurrentTransaction()) {
-			transaction = transactionManager.createCurrentTransaction();
-		} else {
-			Assert.fail("the previous test hasn't correctly close its transaction.");
-		}
+		transaction = transactionManager.createCurrentTransaction();
+
 		// If there is a current session, it must be stopped, in order to create a new one.
 		if (securityManager.getCurrentUserSession().isDefined()) {
 			securityManager.stopCurrentUserSession();
-			session = (TnrUserSession) securityManager.createUserSession();
+			session = (RodolpheUserSession) securityManager.createUserSession();
 		}
 	}
 
@@ -102,12 +96,9 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	 */
 	@Override
 	protected void doTearDown() throws Exception {
+		Assert.assertTrue("All tests must rollback a transaction.", transactionManager.hasCurrentTransaction());
 		// close transaction
-		if (transactionManager.hasCurrentTransaction()) {
-			transaction.rollback();
-		} else {
-			Assert.fail("All tests must rollback");
-		}
+		transaction.rollback();
 		// Stop user session
 		if (securityManager.getCurrentUserSession().isDefined()) {
 			securityManager.stopCurrentUserSession();
@@ -140,7 +131,7 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	 * @param params paramètres de la méthode
 	 * @return Méthode. Si on n'a pas trouvé avec certitude une unique méthode, on renvoie null
 	 */
-	protected final Method getPublicMethodForName(final Object obj, final String methodName, final Object... params) {
+	protected final Method getPublicMethodForName2(final Object obj, final String methodName, final Object... params) {
 		final List<Method> mLst = new ArrayList<>();
 		final List<Method> mpLst = new ArrayList<>();
 		for (final Method met : obj.getClass().getMethods()) {
@@ -170,7 +161,7 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	 * @param params paramètres de la méthode
 	 * @return objet résultat de l'invocation
 	 */
-	protected final Object invokeMethod(final Method met, final Object obj, final Object... params) {
+	protected final Object invokeMethod2(final Method met, final Object obj, final Object... params) {
 		try {
 			return met.invoke(obj, params);
 		} catch (final InvocationTargetException e) {
@@ -367,12 +358,12 @@ public abstract class AbstractRodolpheTestCase extends AbstractTestCaseJU4 {
 	 * @param params paramètres.
 	 * @return le retour de la méthode.
 	 */
-	protected final Object checkExpectedErrorMethod(final Object obj, final String methodName, final MessageKey key,
+	protected final Object checkExpectedErrorMethod2(final Object obj, final String methodName, final MessageKey key,
 			final Object... params) {
-		final Method met = getPublicMethodForName(obj, methodName, params);
+		final Method met = getPublicMethodForName2(obj, methodName, params);
 		Object ret = null;
 		try {
-			ret = invokeMethod(met, obj, params);
+			ret = invokeMethod2(met, obj, params);
 			failIfExpectedError(key);
 		} catch (final VUserException e) {
 			assertEqualsMessage(key, e);

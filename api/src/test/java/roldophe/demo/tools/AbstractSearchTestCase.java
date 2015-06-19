@@ -19,8 +19,6 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
-import rodolphe.demo.util.MemorizeTnrData;
-
 /**
  * Classe abstraite de test d'une recherche.
  *
@@ -245,8 +243,8 @@ public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObj
 		// On sette la valeur sur l'objet et on sauvegarde
 		final DtDefinition dtDefData = DtObjectUtil.findDtDefinition(data);
 		dtDefData.getField(dataFldName).getDataAccessor().setValue(data, libelleAccent);
-		final Method met = getPublicMethodForName(facade, saveMethode, saveData);
-		invokeMethod(met, facade, saveData);
+		final Method met = getPublicMethodForName2(facade, saveMethode, saveData);
+		invokeMethod2(met, facade, saveData);
 
 		// On sette le critère et on fait la recherche
 		final DtField critFld = DtObjectUtil.findDtDefinition(critere).getField(critFldName);
@@ -345,14 +343,5 @@ public abstract class AbstractSearchTestCase<C extends DtObject, R extends DtObj
 	 */
 	protected boolean useESHandler() {
 		return false;
-	}
-
-	/**
-	 * Classe responsable de l'indexation des données.
-	 *
-	 * @return classe.
-	 */
-	protected Class<? extends MemorizeTnrData> getDataSenderClass() {
-		return null;
 	}
 }

@@ -16,10 +16,6 @@
 		<component class="rodolphe.demo.dao.exploitation.ExploitationPAO"/>
 	</module>
 	
-	<module name="RODOLPHE-HELPER" api="false" inheritance="java.lang.Object">
-		<component class="rodolphe.demo.user.SecurityHelper"/>
-	</module>
-
 	<module name="RODOLPHE-SEARCH-HANDLER" api="false" inheritance="io.vertigo.dynamo.search.metamodel.SearchLoader">
 		<component class="rodolphe.demo.services.search.MovieSearchLoader"/>
 		<component class="rodolphe.demo.services.search.PeopleSearchLoader"/>

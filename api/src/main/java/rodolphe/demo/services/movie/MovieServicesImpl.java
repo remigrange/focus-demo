@@ -16,7 +16,7 @@ import io.vertigo.vega.rest.model.UiListState;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.elasticsearch.common.inject.Inject;
+import javax.inject.Inject;
 
 import rodolphe.demo.dao.movies.MovieDAO;
 import rodolphe.demo.dao.movies.MoviesPAO;
