@@ -101,22 +101,6 @@ let WrappedAdvancedSearch = React.createClass({
         list = list || this.store.getList() || [{movId: 0}];
         return {type: list[0].movId ? 'Movie' : 'People'};
     },
-    // TODO chek if usefull
-    _searchHandler(criteria) {
-        let facets = criteria.facets;
-        let newState = {
-            query: criteria.criteria.query,
-            scope: criteria.criteria.scope
-        };
-        if (isArray(facets) && facets.length === 1 && facets[0].key === 'Scope') {
-            let scopeFacet = facets[0];
-            criteria.pageInfos.group = scopeFacet.value;
-            criteria.facets = [];
-            newState.scope = scopeFacet.value;
-        }
-        this.setState(newState);
-        searchAction(criteria);
-    },
     render() {
         let props = omit(this.props, ['scope', 'query']);
         props.scope = this.state.scope;
