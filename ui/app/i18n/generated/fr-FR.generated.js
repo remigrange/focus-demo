@@ -72,13 +72,15 @@ module.exports = {
     },
     "movie": {
         "movId" : "MOV_ID",
-        "title" : "TITLE",
-        "released" : "Released",
+        "title" : "Title",
+        "released" : "Release date",
         "year" : "Year",
         "runtime" : "Runtime",
         "description" : "Description",
         "metadasJson" : "metadas Json",
-        "imdbid" : "imdbID",
+        "imdbid" : "ImdbID",
+        "poster" : "Poster",
+        "rated" : "Rated",
         "genreIds" : "Genres",
         "countryIds" : "Countries",
         "languageIds" : "Languages"

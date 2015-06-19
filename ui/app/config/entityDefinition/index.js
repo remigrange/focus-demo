@@ -228,6 +228,14 @@ module.exports = {
 				"domain": "DO_LIBELLE_100",
 				"required": false
 			},		
+			"poster": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
+			"rated": {
+				"domain": "DO_LIBELLE_250",
+				"required": false
+			},		
 			"genreIds": {
 				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
