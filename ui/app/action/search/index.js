@@ -56,7 +56,7 @@ let _parseUnscopedResponse = (data, context) => {
 
 let _parseScopedResponse = (data, context) => {
     return ({
-        map: {[context.scope]: data.list},
+        map: data.groups || {[context.scope]: data.list},
         facet: _parseFacets(data.facets),
         pageInfos: _parsePageInfos(data, context)
     });
