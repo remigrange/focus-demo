@@ -22,7 +22,6 @@ public final class PeopleIndex implements DtObject {
 	private String imdbid;
 	private String peoNameSortOnly;
 	private String professions;
-	private Long rank;
 
 	/**
 	 * Champ : PRIMARY_KEY.
@@ -48,7 +47,7 @@ public final class PeopleIndex implements DtObject {
 	 * Récupère la valeur de la propriété 'Last name'. 
 	 * @return String lastName 
 	 */
-	@Field(domain = "DO_LIBELLE_50", persistent = false, label = "Last name")
+	@Field(domain = "DO_LABEL_SHORT", persistent = false, label = "Last name")
 	public String getLastName() {
 		return lastName;
 	}
@@ -67,7 +66,7 @@ public final class PeopleIndex implements DtObject {
 	 * Récupère la valeur de la propriété 'First Name'. 
 	 * @return String firstName 
 	 */
-	@Field(domain = "DO_LIBELLE_50", persistent = false, label = "First Name")
+	@Field(domain = "DO_LABEL_SHORT", persistent = false, label = "First Name")
 	public String getFirstName() {
 		return firstName;
 	}
@@ -86,7 +85,7 @@ public final class PeopleIndex implements DtObject {
 	 * Récupère la valeur de la propriété 'Title'. 
 	 * @return String titCd 
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", persistent = false, label = "Title")
+	@Field(domain = "DO_CODE", persistent = false, label = "Title")
 	public String getTitCd() {
 		return titCd;
 	}
@@ -105,7 +104,7 @@ public final class PeopleIndex implements DtObject {
 	 * Récupère la valeur de la propriété 'Name'. 
 	 * @return String peoName 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Name")
+	@Field(domain = "DO_LABEL_LONG", persistent = false, label = "Name")
 	public String getPeoName() {
 		return peoName;
 	}
@@ -124,7 +123,7 @@ public final class PeopleIndex implements DtObject {
 	 * Récupère la valeur de la propriété 'Id imdb'. 
 	 * @return String imdbid 
 	 */
-	@Field(domain = "DO_LIBELLE_100", persistent = false, label = "Id imdb")
+	@Field(domain = "DO_LABEL", persistent = false, label = "Id imdb")
 	public String getImdbid() {
 		return imdbid;
 	}
@@ -143,7 +142,7 @@ public final class PeopleIndex implements DtObject {
 	 * Récupère la valeur de la propriété 'Name'. 
 	 * @return String peoNameSortOnly 
 	 */
-	@Field(domain = "DO_COMMENTAIRE_NOT_ANALYZED", persistent = false, label = "Name")
+	@Field(domain = "DO_TEXT_NOT_ANALYZED", persistent = false, label = "Name")
 	public String getPeoNameSortOnly() {
 		return peoNameSortOnly;
 	}
@@ -174,25 +173,6 @@ public final class PeopleIndex implements DtObject {
 	 */
 	public void setProfessions(final String professions) {
 		this.professions = professions;
-	}
-
-	/**
-	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'rank'. 
-	 * @return Long rank <b>Obligatoire</b>
-	 */
-	@Field(domain = "DO_ID", notNull = true, persistent = false, label = "rank")
-	public Long getRank() {
-		return rank;
-	}
-
-	/**
-	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'rank'.
-	 * @param rank Long <b>Obligatoire</b>
-	 */
-	public void setRank(final Long rank) {
-		this.rank = rank;
 	}
 
 	//Aucune Association déclarée

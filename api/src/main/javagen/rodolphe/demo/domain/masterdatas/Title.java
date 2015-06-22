@@ -22,7 +22,7 @@ public final class Title implements DtObject {
 	 * Récupère la valeur de la propriété 'TIT_CD'. 
 	 * @return String titCd <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", type = "PRIMARY_KEY", notNull = true, label = "TIT_CD")
+	@Field(domain = "DO_CODE", type = "PRIMARY_KEY", notNull = true, label = "TIT_CD")
 	public String getTitCd() {
 		return titCd;
 	}
@@ -41,7 +41,7 @@ public final class Title implements DtObject {
 	 * Récupère la valeur de la propriété 'Label'. 
 	 * @return String label 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "Label")
+	@Field(domain = "DO_LABEL", label = "Label")
 	public String getLabel() {
 		return label;
 	}

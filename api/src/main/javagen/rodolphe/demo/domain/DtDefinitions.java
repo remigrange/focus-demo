@@ -17,8 +17,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 			Dummy(rodolphe.demo.domain.common.Dummy.class),
 			/** Objet de données SearchCriteria. */
 			SearchCriteria(rodolphe.demo.domain.common.SearchCriteria.class),
-			/** Objet de données SearchRet. */
-			SearchRet(rodolphe.demo.domain.common.SearchRet.class),
 			/** Objet de données SelectedFacet. */
 			SelectedFacet(rodolphe.demo.domain.common.SelectedFacet.class),
 			/** Objet de données TempMovieData. */
@@ -97,26 +95,8 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 	public enum SearchCriteriaFields implements DtFieldName {
 		/** Propriété 'The Scope'. */
 		SCOPE,
-		/** Propriété 'Search Text'. */
-		SEARCH_TEXT,
 		/** Propriété 'query'. */
 		QUERY,
-	}
-
-	/**
-	 * Enumération des champs de SearchRet.
-	 */
-	public enum SearchRetFields implements DtFieldName {
-		/** Propriété 'Type of the object'. */
-		TYPE,
-		/** Propriété 'Field 1'. */
-		FIELD_1,
-		/** Propriété 'Field 2'. */
-		FIELD_2,
-		/** Propriété 'Field 3'. */
-		FIELD_3,
-		/** Propriété 'Field 4'. */
-		FIELD_4,
 	}
 
 	/**
@@ -333,8 +313,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		COUNTRY_IDS,
 		/** Propriété 'Languages'. */
 		LANGUAGE_IDS,
-		/** Propriété 'rank'. */
-		RANK,
 	}
 
 	/**
@@ -453,8 +431,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		PEO_NAME_SORT_ONLY,
 		/** Propriété 'Professions'. */
 		PROFESSIONS,
-		/** Propriété 'rank'. */
-		RANK,
 	}
 
 	/**
@@ -477,8 +453,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		IMDBID,
 		/** Propriété 'Professions'. */
 		PROFESSIONS,
-		/** Propriété 'rank'. */
-		RANK,
 	}
 
 	/**

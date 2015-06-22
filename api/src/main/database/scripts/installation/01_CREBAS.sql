@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  18 juin 2015  11:30:25                     
+--   Date de création :  22 juin 2015  13:22:54                     
 -- ============================================================
 
 
@@ -63,8 +63,8 @@ create sequence SEQ_USER_AUTHENTIFICATION
 create table ALIAS
 (
     ALS_ID      	 NUMERIC     	not null,
-    TITLE       	 VARCHAR(3000)	,
-    ADDITION    	 TEXT        	,
+    TITLE       	 VARCHAR(250)	,
+    ADDITION    	 VARCHAR(3000)	,
     constraint PK_ALIAS primary key (ALS_ID)
 );
 
@@ -112,7 +112,7 @@ create index APPLICATION_USER_PRO_ID_FK on APPLICATION_USER (PRO_ID asc);
 create table CASTING
 (
     CAST_ID     	 NUMERIC     	not null,
-    CHARACTER_NAME	 TEXT        	,
+    CHARACTER_NAME	 VARCHAR(250)	,
     PEO_ID      	 NUMERIC     	not null,
     MOV_ID      	 NUMERIC     	not null,
     RLM_CD      	 VARCHAR(100)	not null,
@@ -223,11 +223,11 @@ comment on column LANGUAGE.LABEL is
 create table MOVIE
 (
     MOV_ID      	 NUMERIC     	not null,
-    TITLE       	 VARCHAR(3000)	,
+    TITLE       	 VARCHAR(250)	,
     RELEASED    	 DATE        	,
     YEAR        	 NUMERIC     	,
     RUNTIME     	 NUMERIC     	,
-    DESCRIPTION 	 TEXT        	,
+    DESCRIPTION 	 VARCHAR(3000)	,
     METADAS_JSON	 VARCHAR(3000)	,
     IMDBID      	 VARCHAR(100)	,
     constraint PK_MOVIE primary key (MOV_ID)
@@ -328,7 +328,7 @@ comment on column ROLE_MOVIE.LABEL is
 create table ROLE_PEOPLE
 (
     RLP_ID      	 NUMERIC     	not null,
-    COMMENT     	 TEXT        	,
+    COMMENT     	 VARCHAR(3000)	,
     PEO_ID      	 NUMERIC     	not null,
     MOV_ID      	 NUMERIC     	,
     RLM_CD      	 VARCHAR(100)	not null,
@@ -359,7 +359,7 @@ create index ROLE_PEOPLE_RLM_CD_FK on ROLE_PEOPLE (RLM_CD asc);
 create table SECURITY_ROLE
 (
     SRO_CD      	 VARCHAR(100)	not null,
-    LABEL       	 VARCHAR(250)	,
+    LABEL       	 VARCHAR(100)	,
     constraint PK_SECURITY_ROLE primary key (SRO_CD)
 );
 
@@ -378,12 +378,12 @@ create table TEMP_MOVIE_DATA
     TITLE       	 VARCHAR(3000)	,
     RELEASED    	 DATE        	,
     YEAR        	 NUMERIC     	,
-    PLOT        	 TEXT        	,
+    PLOT        	 VARCHAR(3000)	,
     IMDBID      	 VARCHAR(100)	,
     RATED       	 VARCHAR(100)	,
     MOV_ID      	 NUMERIC     	,
     IS_UPDATED  	 bool        	not null,
-    POSTER      	 TEXT        	,
+    POSTER      	 VARCHAR(3000)	,
     TYPE        	 VARCHAR(100)	,
     constraint PK_TEMP_MOVIE_DATA primary key (CLEAN_ID)
 );

@@ -55,7 +55,7 @@ public final class Movie implements KeyConcept {
 	 * Récupère la valeur de la propriété 'TITLE'. 
 	 * @return String title 
 	 */
-	@Field(domain = "DO_COMMENTAIRE", label = "TITLE")
+	@Field(domain = "DO_LABEL_LONG", label = "TITLE")
 	public String getTitle() {
 		return title;
 	}
@@ -93,7 +93,7 @@ public final class Movie implements KeyConcept {
 	 * Récupère la valeur de la propriété 'Year'. 
 	 * @return Integer year 
 	 */
-	@Field(domain = "DO_ENTIER", label = "Year")
+	@Field(domain = "DO_YEAR", label = "Year")
 	public Integer getYear() {
 		return year;
 	}
@@ -112,7 +112,7 @@ public final class Movie implements KeyConcept {
 	 * Récupère la valeur de la propriété 'Runtime'. 
 	 * @return Integer runtime 
 	 */
-	@Field(domain = "DO_ENTIER", label = "Runtime")
+	@Field(domain = "DO_DURATION", label = "Runtime")
 	public Integer getRuntime() {
 		return runtime;
 	}
@@ -131,7 +131,7 @@ public final class Movie implements KeyConcept {
 	 * Récupère la valeur de la propriété 'Description'. 
 	 * @return String description 
 	 */
-	@Field(domain = "DO_TEXTE", label = "Description")
+	@Field(domain = "DO_COMMENT", label = "Description")
 	public String getDescription() {
 		return description;
 	}
@@ -150,7 +150,7 @@ public final class Movie implements KeyConcept {
 	 * Récupère la valeur de la propriété 'metadas Json'. 
 	 * @return String metadasJson 
 	 */
-	@Field(domain = "DO_COMMENTAIRE", label = "metadas Json")
+	@Field(domain = "DO_COMMENT", label = "metadas Json")
 	public String getMetadasJson() {
 		return metadasJson;
 	}
@@ -169,7 +169,7 @@ public final class Movie implements KeyConcept {
 	 * Récupère la valeur de la propriété 'imdbID'. 
 	 * @return String imdbid 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "imdbID")
+	@Field(domain = "DO_LABEL", label = "imdbID")
 	public String getImdbid() {
 		return imdbid;
 	}

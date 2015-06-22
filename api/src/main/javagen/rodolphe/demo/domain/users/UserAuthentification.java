@@ -44,7 +44,7 @@ public final class UserAuthentification implements DtObject {
 	 * Récupère la valeur de la propriété 'Login'. 
 	 * @return String login 
 	 */
-	@Field(domain = "DO_LIBELLE_50", label = "Login")
+	@Field(domain = "DO_LABEL_SHORT", label = "Login")
 	public String getLogin() {
 		return login;
 	}

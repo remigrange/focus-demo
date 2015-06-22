@@ -44,7 +44,7 @@ public final class PeopleCriteria implements DtObject {
 	 * Récupère la valeur de la propriété 'Last name'. 
 	 * @return String lastName 
 	 */
-	@Field(domain = "DO_LIBELLE_50", persistent = false, label = "Last name")
+	@Field(domain = "DO_LABEL_SHORT", persistent = false, label = "Last name")
 	public String getLastName() {
 		return lastName;
 	}
@@ -63,7 +63,7 @@ public final class PeopleCriteria implements DtObject {
 	 * Récupère la valeur de la propriété 'First Name'. 
 	 * @return String firstName 
 	 */
-	@Field(domain = "DO_LIBELLE_50", persistent = false, label = "First Name")
+	@Field(domain = "DO_LABEL_SHORT", persistent = false, label = "First Name")
 	public String getFirstName() {
 		return firstName;
 	}
@@ -82,7 +82,7 @@ public final class PeopleCriteria implements DtObject {
 	 * Récupère la valeur de la propriété 'Title'. 
 	 * @return String titCd 
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", persistent = false, label = "Title")
+	@Field(domain = "DO_CODE", persistent = false, label = "Title")
 	public String getTitCd() {
 		return titCd;
 	}
@@ -101,7 +101,7 @@ public final class PeopleCriteria implements DtObject {
 	 * Récupère la valeur de la propriété 'Name'. 
 	 * @return String peoName 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Name")
+	@Field(domain = "DO_LABEL_LONG", persistent = false, label = "Name")
 	public String getPeoName() {
 		return peoName;
 	}

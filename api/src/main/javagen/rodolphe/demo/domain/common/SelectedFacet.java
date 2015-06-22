@@ -23,7 +23,7 @@ public final class SelectedFacet implements DtObject {
 	 * Récupère la valeur de la propriété 'Facet Name'. 
 	 * @return String key 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Facet Name")
+	@Field(domain = "DO_LABEL_LONG", persistent = false, label = "Facet Name")
 	public String getKey() {
 		return key;
 	}
@@ -42,7 +42,7 @@ public final class SelectedFacet implements DtObject {
 	 * Récupère la valeur de la propriété 'Facet query'. 
 	 * @return String facetQuery 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Facet query")
+	@Field(domain = "DO_LABEL_LONG", persistent = false, label = "Facet query")
 	public String getFacetQuery() {
 		return facetQuery;
 	}
@@ -61,7 +61,7 @@ public final class SelectedFacet implements DtObject {
 	 * Récupère la valeur de la propriété 'Facet key value'. 
 	 * @return String value 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Facet key value")
+	@Field(domain = "DO_LABEL_LONG", persistent = false, label = "Facet key value")
 	public String getValue() {
 		return value;
 	}

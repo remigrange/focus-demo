@@ -1,26 +1,17 @@
 package rodolphe.demo.domain.common
 
-create DtDefinition DT_SEARCH_RET {
-	persistent:"false"
-	field TYPE {domain: DO_LIBELLE_50 label: "Type of the object" notNull:"false" }
-	field FIELD_1 {domain: DO_COMMENTAIRE label: "Field 1" notNull:"false"}
-	field FIELD_2 {domain: DO_COMMENTAIRE label: "Field 2" notNull:"false"}
-	field FIELD_3 {domain: DO_COMMENTAIRE label: "Field 3" notNull:"false"}
-	field FIELD_4 {domain: DO_COMMENTAIRE label: "Field 4" notNull:"false"}
-}
 
 create DtDefinition DT_SEARCH_CRITERIA {
 	persistent:"false"
-	field SCOPE {domain: DO_LIBELLE_50 label: "The Scope" notNull:"false" }
-	field SEARCH_TEXT {domain: DO_COMMENTAIRE label: "Search Text" notNull:"false"}
-	field QUERY {domain: DO_COMMENTAIRE label: "query" notNull:"false"}
+	field SCOPE {domain: DO_LABEL_SHORT label: "The Scope" notNull:"false" }
+	field QUERY {domain: DO_COMMENT label: "query" notNull:"false"}
 }
 
 create DtDefinition DT_SELECTED_FACET {
 	persistent:"false"
-	field KEY {domain: DO_LIBELLE_250 label: "Facet Name" notNull:"false" }
-	field FACET_QUERY  {domain: DO_LIBELLE_250 label: "Facet query" notNull:"false"}
-	field VALUE  {domain: DO_LIBELLE_250 label: "Facet key value" notNull:"false"}
+	field KEY {domain: DO_LABEL_LONG label: "Facet Name" notNull:"false" }
+	field FACET_QUERY  {domain: DO_LABEL_LONG label: "Facet query" notNull:"false"}
+	field VALUE  {domain: DO_LABEL_LONG label: "Facet key value" notNull:"false"}
 }
 
 create DtDefinition DT_DUMMY {

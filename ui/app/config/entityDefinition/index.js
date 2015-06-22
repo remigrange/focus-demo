@@ -11,51 +11,25 @@ module.exports = {
 	},
 	"searchCriteria": {
 			"scope": {
-				"domain": "DO_LIBELLE_50",
-				"required": false
-			},		
-			"searchText": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_LABEL_SHORT",
 				"required": false
 			},		
 			"query": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			}		
-	},
-	"searchRet": {
-			"type": {
-				"domain": "DO_LIBELLE_50",
-				"required": false
-			},		
-			"field1": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field2": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field3": {
-				"domain": "DO_COMMENTAIRE",
-				"required": false
-			},		
-			"field4": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_COMMENT",
 				"required": false
 			}		
 	},
 	"selectedFacet": {
 			"key": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"facetQuery": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"value": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			}		
 	},
@@ -65,7 +39,7 @@ module.exports = {
 				"required": true
 			},		
 			"title": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"released": {
@@ -73,19 +47,19 @@ module.exports = {
 				"required": false
 			},		
 			"year": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_YEAR",
 				"required": false
 			},		
 			"plot": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"imdbid": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"rated": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"movId": {
@@ -93,15 +67,15 @@ module.exports = {
 				"required": false
 			},		
 			"isUpdated": {
-				"domain": "DO_OUI_NON",
+				"domain": "DO_YES_NO",
 				"required": true
 			},		
 			"poster": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"type": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			}		
 	},
@@ -111,15 +85,15 @@ module.exports = {
 				"required": true
 			},		
 			"fileName": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_FILE_NAME",
 				"required": false
 			},		
 			"mimeType": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_FILE_NAME",
 				"required": false
 			},		
 			"length": {
-				"domain": "DO_TAILLE_FICHIER",
+				"domain": "DO_FILE_LENGTH",
 				"required": true
 			},		
 			"lastModified": {
@@ -127,57 +101,57 @@ module.exports = {
 				"required": true
 			},		
 			"filePath": {
-				"domain": "DO_CHEMIN_ACCES",
+				"domain": "DO_FILE_PATH",
 				"required": false
 			}		
 	},
 	"country": {
 			"couCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": true
 			},		
 			"label": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			}		
 	},
 	"genre": {
 			"genCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": true
 			},		
 			"label": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			}		
 	},
 	"language": {
 			"lanCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": true
 			},		
 			"label": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			}		
 	},
 	"roleMovie": {
 			"rlmCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": true
 			},		
 			"label": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			}		
 	},
 	"title": {
 			"titCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": true
 			},		
 			"label": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			}		
 	},
@@ -187,11 +161,11 @@ module.exports = {
 				"required": true
 			},		
 			"title": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"addition": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			}		
 	},
@@ -201,7 +175,7 @@ module.exports = {
 				"required": true
 			},		
 			"title": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"released": {
@@ -209,31 +183,23 @@ module.exports = {
 				"required": false
 			},		
 			"year": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_YEAR",
 				"required": false
 			},		
 			"runtime": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_DURATION",
 				"required": false
 			},		
 			"description": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"metadasJson": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"imdbid": {
-				"domain": "DO_LIBELLE_100",
-				"required": false
-			},		
-			"poster": {
-				"domain": "DO_LIBELLE_250",
-				"required": false
-			},		
-			"rated": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"genreIds": {
@@ -255,27 +221,27 @@ module.exports = {
 				"required": true
 			},		
 			"peoName": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"role": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"characterName": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"fileName": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_FILE_NAME",
 				"required": false
 			},		
 			"mimeType": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_FILE_NAME",
 				"required": false
 			},		
 			"filePath": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_FILE_PATH",
 				"required": false
 			}		
 	},
@@ -285,7 +251,7 @@ module.exports = {
 				"required": true
 			},		
 			"title": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"released": {
@@ -293,15 +259,15 @@ module.exports = {
 				"required": false
 			},		
 			"year": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_YEAR",
 				"required": false
 			},		
 			"runtime": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_DURATION",
 				"required": false
 			},		
 			"description": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			}		
 	},
@@ -311,11 +277,11 @@ module.exports = {
 				"required": true
 			},		
 			"title": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"titleSortOnly": {
-				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"domain": "DO_TEXT_NOT_ANALYZED",
 				"required": false
 			},		
 			"released": {
@@ -323,23 +289,23 @@ module.exports = {
 				"required": false
 			},		
 			"year": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_YEAR",
 				"required": false
 			},		
 			"runtime": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_DURATION",
 				"required": false
 			},		
 			"description": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"metadasJson": {
-				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"domain": "DO_TEXT_NOT_ANALYZED",
 				"required": false
 			},		
 			"imdbid": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"genreIds": {
@@ -353,10 +319,6 @@ module.exports = {
 			"languageIds": {
 				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
-			},		
-			"rank": {
-				"domain": "DO_ID",
-				"required": true
 			}		
 	},
 	"movieView": {
@@ -365,11 +327,11 @@ module.exports = {
 				"required": true
 			},		
 			"title": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"titleSortOnly": {
-				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"domain": "DO_TEXT_NOT_ANALYZED",
 				"required": false
 			},		
 			"released": {
@@ -377,23 +339,23 @@ module.exports = {
 				"required": false
 			},		
 			"year": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_YEAR",
 				"required": false
 			},		
 			"runtime": {
-				"domain": "DO_ENTIER",
+				"domain": "DO_DURATION",
 				"required": false
 			},		
 			"description": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"metadasJson": {
-				"domain": "DO_COMMENTAIRE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"imdbid": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"genreIds": {
@@ -431,7 +393,7 @@ module.exports = {
 				"required": true
 			},		
 			"characterName": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"peoId": {
@@ -443,7 +405,7 @@ module.exports = {
 				"required": true
 			},		
 			"rlmCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": true
 			}		
 	},
@@ -453,39 +415,39 @@ module.exports = {
 				"required": true
 			},		
 			"lastName": {
-				"domain": "DO_NOM",
+				"domain": "DO_NAME",
 				"required": false
 			},		
 			"firstName": {
-				"domain": "DO_PRENOM",
+				"domain": "DO_FIRSTNAME",
 				"required": false
 			},		
 			"peoName": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"imdbid": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"comment": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"fileName": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_FILE_NAME",
 				"required": false
 			},		
 			"mimeType": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_FILE_NAME",
 				"required": false
 			},		
 			"filePath": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_FILE_PATH",
 				"required": false
 			},		
 			"titCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": false
 			}		
 	},
@@ -495,19 +457,19 @@ module.exports = {
 				"required": true
 			},		
 			"lastName": {
-				"domain": "DO_LIBELLE_50",
+				"domain": "DO_LABEL_SHORT",
 				"required": false
 			},		
 			"firstName": {
-				"domain": "DO_LIBELLE_50",
+				"domain": "DO_LABEL_SHORT",
 				"required": false
 			},		
 			"titCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": false
 			},		
 			"peoName": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			}		
 	},
@@ -517,36 +479,32 @@ module.exports = {
 				"required": true
 			},		
 			"lastName": {
-				"domain": "DO_LIBELLE_50",
+				"domain": "DO_LABEL_SHORT",
 				"required": false
 			},		
 			"firstName": {
-				"domain": "DO_LIBELLE_50",
+				"domain": "DO_LABEL_SHORT",
 				"required": false
 			},		
 			"titCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": false
 			},		
 			"peoName": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"imdbid": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"peoNameSortOnly": {
-				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"domain": "DO_TEXT_NOT_ANALYZED",
 				"required": false
 			},		
 			"professions": {
 				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
-			},		
-			"rank": {
-				"domain": "DO_ID",
-				"required": true
 			}		
 	},
 	"peopleView": {
@@ -555,36 +513,32 @@ module.exports = {
 				"required": true
 			},		
 			"lastName": {
-				"domain": "DO_LIBELLE_50",
+				"domain": "DO_LABEL_SHORT",
 				"required": false
 			},		
 			"firstName": {
-				"domain": "DO_LIBELLE_50",
+				"domain": "DO_LABEL_SHORT",
 				"required": false
 			},		
 			"titCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": false
 			},		
 			"peoName": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL_LONG",
 				"required": false
 			},		
 			"peoNameSortOnly": {
-				"domain": "DO_COMMENTAIRE_NOT_ANALYZED",
+				"domain": "DO_TEXT_NOT_ANALYZED",
 				"required": false
 			},		
 			"imdbid": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			},		
 			"professions": {
 				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
-			},		
-			"rank": {
-				"domain": "DO_ID",
-				"required": true
 			}		
 	},
 	"rolePeople": {
@@ -593,7 +547,7 @@ module.exports = {
 				"required": true
 			},		
 			"comment": {
-				"domain": "DO_TEXTE",
+				"domain": "DO_COMMENT",
 				"required": false
 			},		
 			"peoId": {
@@ -605,7 +559,7 @@ module.exports = {
 				"required": false
 			},		
 			"rlmCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": true
 			}		
 	},
@@ -615,11 +569,11 @@ module.exports = {
 				"required": true
 			},		
 			"lastName": {
-				"domain": "DO_NOM",
+				"domain": "DO_NAME",
 				"required": false
 			},		
 			"firstName": {
-				"domain": "DO_PRENOM",
+				"domain": "DO_FIRSTNAME",
 				"required": false
 			},		
 			"email": {
@@ -637,17 +591,17 @@ module.exports = {
 				"required": true
 			},		
 			"label": {
-				"domain": "DO_LIBELLE_100",
+				"domain": "DO_LABEL",
 				"required": false
 			}		
 	},
 	"securityRole": {
 			"sroCd": {
-				"domain": "DO_IDENTIFIANT_CODE",
+				"domain": "DO_CODE",
 				"required": true
 			},		
 			"label": {
-				"domain": "DO_LIBELLE_250",
+				"domain": "DO_LABEL",
 				"required": false
 			}		
 	},
@@ -657,7 +611,7 @@ module.exports = {
 				"required": true
 			},		
 			"login": {
-				"domain": "DO_LIBELLE_50",
+				"domain": "DO_LABEL_SHORT",
 				"required": false
 			},		
 			"password": {

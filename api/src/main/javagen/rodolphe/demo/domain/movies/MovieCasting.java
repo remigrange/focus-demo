@@ -46,7 +46,7 @@ public final class MovieCasting implements DtObject {
 	 * Récupère la valeur de la propriété 'Name'. 
 	 * @return String peoName 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Name")
+	@Field(domain = "DO_LABEL_LONG", persistent = false, label = "Name")
 	public String getPeoName() {
 		return peoName;
 	}
@@ -65,7 +65,7 @@ public final class MovieCasting implements DtObject {
 	 * Récupère la valeur de la propriété 'Role'. 
 	 * @return String role 
 	 */
-	@Field(domain = "DO_LIBELLE_100", persistent = false, label = "Role")
+	@Field(domain = "DO_LABEL", persistent = false, label = "Role")
 	public String getRole() {
 		return role;
 	}
@@ -84,7 +84,7 @@ public final class MovieCasting implements DtObject {
 	 * Récupère la valeur de la propriété 'Character name'. 
 	 * @return String characterName 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "Character name")
+	@Field(domain = "DO_LABEL_LONG", persistent = false, label = "Character name")
 	public String getCharacterName() {
 		return characterName;
 	}
@@ -103,7 +103,7 @@ public final class MovieCasting implements DtObject {
 	 * Récupère la valeur de la propriété 'File name'. 
 	 * @return String fileName 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "File name")
+	@Field(domain = "DO_FILE_NAME", persistent = false, label = "File name")
 	public String getFileName() {
 		return fileName;
 	}
@@ -122,7 +122,7 @@ public final class MovieCasting implements DtObject {
 	 * Récupère la valeur de la propriété 'MIME type'. 
 	 * @return String mimeType 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "MIME type")
+	@Field(domain = "DO_FILE_NAME", persistent = false, label = "MIME type")
 	public String getMimeType() {
 		return mimeType;
 	}
@@ -141,7 +141,7 @@ public final class MovieCasting implements DtObject {
 	 * Récupère la valeur de la propriété 'File path'. 
 	 * @return String filePath 
 	 */
-	@Field(domain = "DO_LIBELLE_250", persistent = false, label = "File path")
+	@Field(domain = "DO_FILE_PATH", persistent = false, label = "File path")
 	public String getFilePath() {
 		return filePath;
 	}

@@ -47,7 +47,7 @@ public final class Casting implements DtObject {
 	 * Récupère la valeur de la propriété 'Character name'. 
 	 * @return String characterName 
 	 */
-	@Field(domain = "DO_TEXTE", label = "Character name")
+	@Field(domain = "DO_LABEL_LONG", label = "Character name")
 	public String getCharacterName() {
 		return characterName;
 	}
@@ -104,7 +104,7 @@ public final class Casting implements DtObject {
 	 * Récupère la valeur de la propriété 'Role movie'. 
 	 * @return String rlmCd <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", type = "FOREIGN_KEY", notNull = true, label = "Role movie")
+	@Field(domain = "DO_CODE", type = "FOREIGN_KEY", notNull = true, label = "Role movie")
 	public String getRlmCd() {
 		return rlmCd;
 	}

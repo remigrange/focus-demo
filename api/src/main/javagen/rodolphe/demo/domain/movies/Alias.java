@@ -42,7 +42,7 @@ public final class Alias implements DtObject {
 	 * Récupère la valeur de la propriété 'Title'. 
 	 * @return String title 
 	 */
-	@Field(domain = "DO_COMMENTAIRE", label = "Title")
+	@Field(domain = "DO_LABEL_LONG", label = "Title")
 	public String getTitle() {
 		return title;
 	}
@@ -61,7 +61,7 @@ public final class Alias implements DtObject {
 	 * Récupère la valeur de la propriété 'addition'. 
 	 * @return String addition 
 	 */
-	@Field(domain = "DO_TEXTE", label = "addition")
+	@Field(domain = "DO_COMMENT", label = "addition")
 	public String getAddition() {
 		return addition;
 	}

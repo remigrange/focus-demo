@@ -45,7 +45,7 @@ public final class MovieCriteria implements DtObject {
 	 * Récupère la valeur de la propriété 'Title'. 
 	 * @return String title 
 	 */
-	@Field(domain = "DO_COMMENTAIRE", persistent = false, label = "Title")
+	@Field(domain = "DO_LABEL_LONG", persistent = false, label = "Title")
 	public String getTitle() {
 		return title;
 	}
@@ -83,7 +83,7 @@ public final class MovieCriteria implements DtObject {
 	 * Récupère la valeur de la propriété 'Year'. 
 	 * @return Integer year 
 	 */
-	@Field(domain = "DO_ENTIER", persistent = false, label = "Year")
+	@Field(domain = "DO_YEAR", persistent = false, label = "Year")
 	public Integer getYear() {
 		return year;
 	}
@@ -102,7 +102,7 @@ public final class MovieCriteria implements DtObject {
 	 * Récupère la valeur de la propriété 'Runtime'. 
 	 * @return Integer runtime 
 	 */
-	@Field(domain = "DO_ENTIER", persistent = false, label = "Runtime")
+	@Field(domain = "DO_DURATION", persistent = false, label = "Runtime")
 	public Integer getRuntime() {
 		return runtime;
 	}
@@ -121,7 +121,7 @@ public final class MovieCriteria implements DtObject {
 	 * Récupère la valeur de la propriété 'Description'. 
 	 * @return String description 
 	 */
-	@Field(domain = "DO_TEXTE", persistent = false, label = "Description")
+	@Field(domain = "DO_COMMENT", persistent = false, label = "Description")
 	public String getDescription() {
 		return description;
 	}

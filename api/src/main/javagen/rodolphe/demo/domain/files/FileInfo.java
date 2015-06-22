@@ -45,7 +45,7 @@ public final class FileInfo implements DtObject {
 	 * Récupère la valeur de la propriété 'FILE_NAME'. 
 	 * @return String fileName 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "FILE_NAME")
+	@Field(domain = "DO_FILE_NAME", label = "FILE_NAME")
 	public String getFileName() {
 		return fileName;
 	}
@@ -64,7 +64,7 @@ public final class FileInfo implements DtObject {
 	 * Récupère la valeur de la propriété 'MIME_TYPE'. 
 	 * @return String mimeType 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "MIME_TYPE")
+	@Field(domain = "DO_FILE_NAME", label = "MIME_TYPE")
 	public String getMimeType() {
 		return mimeType;
 	}
@@ -83,7 +83,7 @@ public final class FileInfo implements DtObject {
 	 * Récupère la valeur de la propriété 'LENGTH'. 
 	 * @return Long length <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_TAILLE_FICHIER", notNull = true, label = "LENGTH")
+	@Field(domain = "DO_FILE_LENGTH", notNull = true, label = "LENGTH")
 	public Long getLength() {
 		return length;
 	}
@@ -121,7 +121,7 @@ public final class FileInfo implements DtObject {
 	 * Récupère la valeur de la propriété 'FILE_PATH'. 
 	 * @return String filePath 
 	 */
-	@Field(domain = "DO_CHEMIN_ACCES", label = "FILE_PATH")
+	@Field(domain = "DO_FILE_PATH", label = "FILE_PATH")
 	public String getFilePath() {
 		return filePath;
 	}

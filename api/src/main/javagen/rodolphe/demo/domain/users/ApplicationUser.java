@@ -45,7 +45,7 @@ public final class ApplicationUser implements DtObject {
 	 * Récupère la valeur de la propriété 'Last Name'. 
 	 * @return String lastName 
 	 */
-	@Field(domain = "DO_NOM", label = "Last Name")
+	@Field(domain = "DO_NAME", label = "Last Name")
 	public String getLastName() {
 		return lastName;
 	}
@@ -64,7 +64,7 @@ public final class ApplicationUser implements DtObject {
 	 * Récupère la valeur de la propriété 'First Name'. 
 	 * @return String firstName 
 	 */
-	@Field(domain = "DO_PRENOM", label = "First Name")
+	@Field(domain = "DO_FIRSTNAME", label = "First Name")
 	public String getFirstName() {
 		return firstName;
 	}

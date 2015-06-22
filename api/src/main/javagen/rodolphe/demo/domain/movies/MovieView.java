@@ -55,7 +55,7 @@ public final class MovieView implements DtObject {
 	 * Récupère la valeur de la propriété 'Title'. 
 	 * @return String title 
 	 */
-	@Field(domain = "DO_COMMENTAIRE", persistent = false, label = "Title")
+	@Field(domain = "DO_COMMENT", persistent = false, label = "Title")
 	public String getTitle() {
 		return title;
 	}
@@ -74,7 +74,7 @@ public final class MovieView implements DtObject {
 	 * Récupère la valeur de la propriété 'Title'. 
 	 * @return String titleSortOnly 
 	 */
-	@Field(domain = "DO_COMMENTAIRE_NOT_ANALYZED", persistent = false, label = "Title")
+	@Field(domain = "DO_TEXT_NOT_ANALYZED", persistent = false, label = "Title")
 	public String getTitleSortOnly() {
 		return titleSortOnly;
 	}
@@ -112,7 +112,7 @@ public final class MovieView implements DtObject {
 	 * Récupère la valeur de la propriété 'Year'. 
 	 * @return Integer year 
 	 */
-	@Field(domain = "DO_ENTIER", persistent = false, label = "Year")
+	@Field(domain = "DO_YEAR", persistent = false, label = "Year")
 	public Integer getYear() {
 		return year;
 	}
@@ -131,7 +131,7 @@ public final class MovieView implements DtObject {
 	 * Récupère la valeur de la propriété 'Runtime'. 
 	 * @return Integer runtime 
 	 */
-	@Field(domain = "DO_ENTIER", persistent = false, label = "Runtime")
+	@Field(domain = "DO_DURATION", persistent = false, label = "Runtime")
 	public Integer getRuntime() {
 		return runtime;
 	}
@@ -150,7 +150,7 @@ public final class MovieView implements DtObject {
 	 * Récupère la valeur de la propriété 'Description'. 
 	 * @return String description 
 	 */
-	@Field(domain = "DO_TEXTE", persistent = false, label = "Description")
+	@Field(domain = "DO_COMMENT", persistent = false, label = "Description")
 	public String getDescription() {
 		return description;
 	}
@@ -169,7 +169,7 @@ public final class MovieView implements DtObject {
 	 * Récupère la valeur de la propriété 'Meta Data JSON'. 
 	 * @return String metadasJson 
 	 */
-	@Field(domain = "DO_COMMENTAIRE", persistent = false, label = "Meta Data JSON")
+	@Field(domain = "DO_COMMENT", persistent = false, label = "Meta Data JSON")
 	public String getMetadasJson() {
 		return metadasJson;
 	}
@@ -188,7 +188,7 @@ public final class MovieView implements DtObject {
 	 * Récupère la valeur de la propriété 'Id imdb'. 
 	 * @return String imdbid 
 	 */
-	@Field(domain = "DO_LIBELLE_100", persistent = false, label = "Id imdb")
+	@Field(domain = "DO_LABEL", persistent = false, label = "Id imdb")
 	public String getImdbid() {
 		return imdbid;
 	}

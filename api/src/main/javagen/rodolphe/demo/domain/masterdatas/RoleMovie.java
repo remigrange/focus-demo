@@ -22,7 +22,7 @@ public final class RoleMovie implements DtObject {
 	 * Récupère la valeur de la propriété 'RLM_CD'. 
 	 * @return String rlmCd <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", type = "PRIMARY_KEY", notNull = true, label = "RLM_CD")
+	@Field(domain = "DO_CODE", type = "PRIMARY_KEY", notNull = true, label = "RLM_CD")
 	public String getRlmCd() {
 		return rlmCd;
 	}
@@ -41,7 +41,7 @@ public final class RoleMovie implements DtObject {
 	 * Récupère la valeur de la propriété 'Label'. 
 	 * @return String label 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "Label")
+	@Field(domain = "DO_LABEL", label = "Label")
 	public String getLabel() {
 		return label;
 	}

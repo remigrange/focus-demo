@@ -22,7 +22,7 @@ public final class Language implements DtObject {
 	 * Récupère la valeur de la propriété 'LAN_CD'. 
 	 * @return String lanCd <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", type = "PRIMARY_KEY", notNull = true, label = "LAN_CD")
+	@Field(domain = "DO_CODE", type = "PRIMARY_KEY", notNull = true, label = "LAN_CD")
 	public String getLanCd() {
 		return lanCd;
 	}
@@ -41,7 +41,7 @@ public final class Language implements DtObject {
 	 * Récupère la valeur de la propriété 'Label'. 
 	 * @return String label 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "Label")
+	@Field(domain = "DO_LABEL", label = "Label")
 	public String getLabel() {
 		return label;
 	}

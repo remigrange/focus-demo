@@ -22,7 +22,7 @@ public final class Genre implements DtObject {
 	 * Récupère la valeur de la propriété 'GEN_CD'. 
 	 * @return String genCd <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", type = "PRIMARY_KEY", notNull = true, label = "GEN_CD")
+	@Field(domain = "DO_CODE", type = "PRIMARY_KEY", notNull = true, label = "GEN_CD")
 	public String getGenCd() {
 		return genCd;
 	}
@@ -41,7 +41,7 @@ public final class Genre implements DtObject {
 	 * Récupère la valeur de la propriété 'Label'. 
 	 * @return String label 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "Label")
+	@Field(domain = "DO_LABEL", label = "Label")
 	public String getLabel() {
 		return label;
 	}

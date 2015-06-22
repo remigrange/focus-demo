@@ -3,7 +3,10 @@
  */
 package rodolphe.demo.services.common;
 
+import io.vertigo.core.Home;
 import io.vertigo.dynamo.collections.ListFilter;
+import io.vertigo.dynamo.collections.metamodel.FacetDefinition;
+import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.collections.model.FacetedQueryResultMerger;
 import io.vertigo.dynamo.domain.model.DtList;
@@ -24,7 +27,6 @@ import rodolphe.demo.domain.movies.MovieIndex;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleIndex;
-import rodolphe.demo.domain.search.FacetConst;
 import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.people.PeopleServices;
 import rodolphe.demo.services.search.FacetSelection;
@@ -81,19 +83,19 @@ public class CommonServicesImpl implements CommonServices {
 		// facet selection list.
 		for (int i = 0; i < selectedFacets.size(); i++) {
 			final SelectedFacet selectedFacet = selectedFacets.get(i);
-			FacetConst selectedFacetConst = null;
-			final FacetConst[] facets = FacetConst.values();
-			for (final FacetConst facetConst : facets) {
-				if (facetConst.toString().equalsIgnoreCase(selectedFacet.getKey())) {
-					selectedFacetConst = facetConst;
-					break;
+			final FacetDefinition facetDefinition = Home.getDefinitionSpace().resolve(selectedFacet.getKey(), FacetDefinition.class);
+			if (facetDefinition.isRangeFacet()) {
+				for (final FacetValue facet : facetDefinition.getFacetRanges()) {
+					if (facet.getLabel().getDisplay().equals(selectedFacet.getValue())) {
+						facetSelections[i] = new FacetSelection(facetDefinition, selectedFacet.getValue(), facet.getListFilter());
+						break;
+					}
 				}
-			}
-			if (selectedFacetConst != null) {
-				final ListFilter filter = new ListFilter(selectedFacetConst.getField().name() + ":\""
-						+ selectedFacet.getValue() + "\"");
-				facetSelections[i] = new FacetSelection(selectedFacetConst.name(), selectedFacet.getValue(), filter);
-			}
+			} else {
+					final ListFilter filter = new ListFilter(facetDefinition.getDtField().getName() + ":\""
+							+ selectedFacet.getValue() + "\"");
+					facetSelections[i] = new FacetSelection(facetDefinition, selectedFacet.getValue(), filter);
+				}
 		}
 		return facetSelections;
 	}

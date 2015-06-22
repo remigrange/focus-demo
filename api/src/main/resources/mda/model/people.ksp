@@ -3,41 +3,39 @@ package rodolphe.demo.domain.people
 create DtDefinition DT_PEOPLE_VIEW {
 	persistent:"false"
 	key PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
-	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
-	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
-	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
-	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
-	field PEO_NAME_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Name" notNull:"false"}
-	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
+	field LAST_NAME {domain: DO_LABEL_SHORT label: "Last name" notNull:"false"}
+	field FIRST_NAME {domain: DO_LABEL_SHORT label: "First Name" notNull:"false"}
+	field TIT_CD {domain: DO_CODE label: "Title" notNull:"false"}
+	field PEO_NAME {domain: DO_LABEL_LONG label: "Name" notNull:"false"}
+	field PEO_NAME_SORT_ONLY {domain: DO_TEXT_NOT_ANALYZED label: "Name" notNull:"false"}
+	field IMDBID {domain: DO_LABEL label: "Id imdb" notNull:"false"}
 	field PROFESSIONS {domain: DO_MULTI_VALUES_FIELD label: "Professions" notNull:"false"}
-	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
 
 create DtDefinition DT_PEOPLE_CRITERIA {
 	persistent:"false"
 	field PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
-	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
-	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
-	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
-	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
+	field LAST_NAME {domain: DO_LABEL_SHORT label: "Last name" notNull:"false"}
+	field FIRST_NAME {domain: DO_LABEL_SHORT label: "First Name" notNull:"false"}
+	field TIT_CD {domain: DO_CODE label: "Title" notNull:"false"}
+	field PEO_NAME {domain: DO_LABEL_LONG label: "Name" notNull:"false"}
 }
 
 create DtDefinition DT_PEOPLE_INDEX {
 	persistent:"false"
 	key PEO_ID {domain: DO_ID label: "primary key" notNull:"true" }
-	field LAST_NAME {domain: DO_LIBELLE_50 label: "Last name" notNull:"false"}
-	field FIRST_NAME {domain: DO_LIBELLE_50 label: "First Name" notNull:"false"}
-	field TIT_CD {domain: DO_IDENTIFIANT_CODE label: "Title" notNull:"false"}
-	field PEO_NAME {domain: DO_LIBELLE_250 label: "Name" notNull:"false"}
-	field IMDBID {domain: DO_LIBELLE_100 label: "Id imdb" notNull:"false"}
-	field PEO_NAME_SORT_ONLY {domain: DO_COMMENTAIRE_NOT_ANALYZED label: "Name" notNull:"false" persistent:"false"} /*index only*/
+	field LAST_NAME {domain: DO_LABEL_SHORT label: "Last name" notNull:"false"}
+	field FIRST_NAME {domain: DO_LABEL_SHORT label: "First Name" notNull:"false"}
+	field TIT_CD {domain: DO_CODE label: "Title" notNull:"false"}
+	field PEO_NAME {domain: DO_LABEL_LONG label: "Name" notNull:"false"}
+	field IMDBID {domain: DO_LABEL label: "Id imdb" notNull:"false"}
+	field PEO_NAME_SORT_ONLY {domain: DO_TEXT_NOT_ANALYZED label: "Name" notNull:"false" persistent:"false"} /*index only*/
 	field PROFESSIONS {domain: DO_MULTI_VALUES_FIELD label: "Professions" notNull:"false"}
-	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 }
 
 alter DtDefinition DT_PEOPLE {
-	field COMMENT {domain: DO_TEXTE label: "Commentaire" notNull:"false" persistent : "false"}
-	field FILE_NAME {domain: DO_LIBELLE_250 label: "File name" notNull:"false" persistent : "false"}
-	field MIME_TYPE {domain: DO_LIBELLE_250 label: "MIME type" notNull:"false" persistent : "false"}
-	field FILE_PATH {domain: DO_LIBELLE_250 label: "File path" notNull:"false" persistent : "false"}
+	field COMMENT {domain: DO_COMMENT label: "Commentaire" notNull:"false" persistent : "false"}
+	field FILE_NAME {domain: DO_FILE_NAME label: "File name" notNull:"false" persistent : "false"}
+	field MIME_TYPE {domain: DO_FILE_NAME label: "MIME type" notNull:"false" persistent : "false"}
+	field FILE_PATH {domain: DO_FILE_PATH label: "File path" notNull:"false" persistent : "false"}
 }

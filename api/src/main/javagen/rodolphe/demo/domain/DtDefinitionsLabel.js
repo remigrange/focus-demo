@@ -9,15 +9,7 @@ module.exports = {
     },
     "searchCriteria": {
         "scope" : "The Scope",
-        "searchText" : "Search Text",
         "query" : "query"
-    },
-    "searchRet": {
-        "type" : "Type of the object",
-        "field1" : "Field 1",
-        "field2" : "Field 2",
-        "field3" : "Field 3",
-        "field4" : "Field 4"
     },
     "selectedFacet": {
         "key" : "Facet Name",
@@ -112,8 +104,7 @@ module.exports = {
         "imdbid" : "Id imdb",
         "genreIds" : "Genres",
         "countryIds" : "Countries",
-        "languageIds" : "Languages",
-        "rank" : "rank"
+        "languageIds" : "Languages"
     },
     "movieView": {
         "movId" : "primary key",
@@ -167,8 +158,7 @@ module.exports = {
         "peoName" : "Name",
         "imdbid" : "Id imdb",
         "peoNameSortOnly" : "Name",
-        "professions" : "Professions",
-        "rank" : "rank"
+        "professions" : "Professions"
     },
     "peopleView": {
         "peoId" : "primary key",
@@ -178,8 +168,7 @@ module.exports = {
         "peoName" : "Name",
         "peoNameSortOnly" : "Name",
         "imdbid" : "Id imdb",
-        "professions" : "Professions",
-        "rank" : "rank"
+        "professions" : "Professions"
     },
     "rolePeople": {
         "rlpId" : "RLP_ID",

@@ -10,7 +10,7 @@ create Task TK_GET_PEOPLE_BY_CRITERIA {
 				order by peo_name
 				limit 20
 			"
-	attribute SEARCH_TEXT				{domain : DO_COMMENTAIRE				notNull:"true" 	inOut :"in"}
+	attribute SEARCH_TEXT				{domain : DO_COMMENT				notNull:"true" 	inOut :"in"}
     attribute DTC_PEOPLE	 			{domain : DO_DT_PEOPLE_DTC 			notNull:"true" 	inOut :"out"}
 }
 

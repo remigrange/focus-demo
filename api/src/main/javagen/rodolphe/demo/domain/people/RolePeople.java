@@ -47,7 +47,7 @@ public final class RolePeople implements DtObject {
 	 * Récupère la valeur de la propriété 'Comment'. 
 	 * @return String comment 
 	 */
-	@Field(domain = "DO_TEXTE", label = "Comment")
+	@Field(domain = "DO_COMMENT", label = "Comment")
 	public String getComment() {
 		return comment;
 	}
@@ -104,7 +104,7 @@ public final class RolePeople implements DtObject {
 	 * Récupère la valeur de la propriété 'Role movie'. 
 	 * @return String rlmCd <b>Obligatoire</b>
 	 */
-	@Field(domain = "DO_IDENTIFIANT_CODE", type = "FOREIGN_KEY", notNull = true, label = "Role movie")
+	@Field(domain = "DO_CODE", type = "FOREIGN_KEY", notNull = true, label = "Role movie")
 	public String getRlmCd() {
 		return rlmCd;
 	}

@@ -42,7 +42,7 @@ public final class Profil implements DtObject {
 	 * Récupère la valeur de la propriété 'Label'. 
 	 * @return String label 
 	 */
-	@Field(domain = "DO_LIBELLE_100", label = "Label")
+	@Field(domain = "DO_LABEL", label = "Label")
 	public String getLabel() {
 		return label;
 	}
