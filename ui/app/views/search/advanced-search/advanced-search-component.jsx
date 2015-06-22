@@ -1,10 +1,9 @@
 // Dependencies
-
 let keys = _.keys;
 let isArray = _.isArray;
 let omit = _.omit;
-// Actions
 
+// Actions
 let searchAction = require('action/search').search;
 
 // Mixins
@@ -12,7 +11,6 @@ let i18nMixin = Focus.components.common.i18n.mixin;
 let AdvancedSearch = Focus.components.page.search.advancedSearch.component;
 
 // Components
-
 let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
 let MovieLineComponent = require('../lines/movieLineComponent');
@@ -79,7 +77,7 @@ let WrappedAdvancedSearch = React.createClass({
                             {this.props.children}
                         </div>
                         <div data-focus='group-actions'>
-                            <Button handleOnClick={self.refs['advanced-search'].showAllGroupListHandler(this.props.groupKey)} label="Show all"/>
+                            <Button handleOnClick={this.props.showAll(this.props.groupKey)} label="Show all"/>
                         </div>
                     </div>
                 );
