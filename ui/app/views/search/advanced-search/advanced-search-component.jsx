@@ -1,10 +1,9 @@
 // Dependencies
-
 let keys = _.keys;
 let isArray = _.isArray;
 let omit = _.omit;
-// Actions
 
+// Actions
 let searchAction = require('action/search').search;
 
 // Mixins
@@ -12,7 +11,6 @@ let i18nMixin = Focus.components.common.i18n.mixin;
 let AdvancedSearch = Focus.components.page.search.advancedSearch.component;
 
 // Components
-
 let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
 let MovieLineComponent = require('../lines/movieLineComponent');
@@ -48,8 +46,7 @@ let WrappedAdvancedSearch = React.createClass({
             searchAction: searchAction, 
             query: this.props.query,
             scope: this.props.scope,
-            referenceNames: ['scopes'],
-            hasScopes: false
+            referenceNames: ['scopes']
         };
         return {
             summary: {
@@ -68,8 +65,9 @@ let WrappedAdvancedSearch = React.createClass({
         };
     },
     _getGroupComponent() {
-        let _this = this;
+        let self = this;
         return React.createClass({
+            mixins: [i18nMixin],
             render() {
                 let Title = FocusComponents.common.title.component;
                 let Button = FocusComponents.common.button.action.component;
@@ -80,11 +78,7 @@ let WrappedAdvancedSearch = React.createClass({
                             {this.props.children}
                         </div>
                         <div data-focus='group-actions'>
-                            <Button handleOnClick={() => {
-                            let criteria = _this.refs['advanced-search'].getSearchCriteria();
-                            criteria.criteria.scope = this.props.groupKey;
-                            _this._searchHandler(criteria);
-                        }} label="Show all"/>
+                            <Button handleOnClick={this.props.showAll(this.props.groupKey)} label={this.i18n('show.all')}/>
                         </div>
                     </div>
                 );
@@ -101,22 +95,6 @@ let WrappedAdvancedSearch = React.createClass({
     _getListType(list) {
         list = list || this.store.getList() || [{movId: 0}];
         return {type: list[0].movId ? 'Movie' : 'People'};
-    },
-    // TODO chek if usefull
-    _searchHandler(criteria) {
-        let facets = criteria.facets;
-        let newState = {
-            query: criteria.criteria.query,
-            scope: criteria.criteria.scope
-        };
-        if (isArray(facets) && facets.length === 1 && facets[0].key === 'Scope') {
-            let scopeFacet = facets[0];
-            criteria.pageInfos.group = scopeFacet.value;
-            criteria.facets = [];
-            newState.scope = scopeFacet.value;
-        }
-        this.setState(newState);
-        searchAction(criteria);
     },
     render() {
         let props = omit(this.props, ['scope', 'query']);
