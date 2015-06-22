@@ -31,6 +31,10 @@ let searchStore = require('stores/search');
 
 let numberFormatter = Focus.definition.formatter.number;
 
+// Config
+
+let scopeConfig = require('../../../config/scopes');
+
 let QuickSearchWrapper = React.createClass({
     mixins: [Focus.components.common.i18n.mixin],
     _getOperationList() {
@@ -71,7 +75,17 @@ let QuickSearchWrapper = React.createClass({
             mixins: [i18nMixin],
             _advancedSearchClickHandler(scope) {
                 return () => {
-                    let route = `#search/advanced/scope/${scope}${self._query ?  '/query/' + self._query : ''}`;
+                    let query = self._query;
+                    let route = `#search/advanced/scope/${scope}${query ?  '/query/' + query : ''}`;
+                    self._searchAction({
+                        criteria: {
+                            query: query,
+                            scope: scopeConfig[scope]
+                        },
+                        pageInfos: {
+                            page: 1
+                        }
+                    });
                     popinCloser();
                     Backbone.history.navigate(route, true);
                 }
