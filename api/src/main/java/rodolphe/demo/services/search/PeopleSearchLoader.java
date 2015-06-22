@@ -6,6 +6,7 @@ import io.vertigo.dynamo.search.SearchManager;
 import io.vertigo.dynamo.search.metamodel.SearchIndexDefinition;
 import io.vertigo.dynamo.search.model.SearchIndex;
 import io.vertigo.dynamo.task.TaskManager;
+import io.vertigo.dynamox.search.DefaultSearchLoader;
 
 import java.util.ArrayList;
 import java.util.List;
