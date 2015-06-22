@@ -61,10 +61,9 @@ let Wrapper = React.createClass({
     },
     _toggleQuickSearchPopin() {
         this.refs['quick-search-popin'].toggleOpen();
-        this._quickSearchPopinOpened = !this._quickSearchPopinOpened;
     },
     _closeQuickSearchPopin() { // for now the popin is controlled this way, maybe a future improvement would be to use the "opened" prop of the popin
-        if (this._quickSearchPopinOpened) {
+        if (this.refs['quick-search-popin'].state.opened) {
             this._toggleQuickSearchPopin();
         }
     },
