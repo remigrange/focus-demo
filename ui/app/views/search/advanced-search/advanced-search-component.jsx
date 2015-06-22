@@ -67,6 +67,7 @@ let WrappedAdvancedSearch = React.createClass({
     _getGroupComponent() {
         let self = this;
         return React.createClass({
+            mixins: [i18nMixin],
             render() {
                 let Title = FocusComponents.common.title.component;
                 let Button = FocusComponents.common.button.action.component;
@@ -77,7 +78,7 @@ let WrappedAdvancedSearch = React.createClass({
                             {this.props.children}
                         </div>
                         <div data-focus='group-actions'>
-                            <Button handleOnClick={this.props.showAll(this.props.groupKey)} label="Show all"/>
+                            <Button handleOnClick={this.props.showAll(this.props.groupKey)} label={this.i18n('show.all')}/>
                         </div>
                     </div>
                 );
