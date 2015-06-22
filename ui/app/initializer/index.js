@@ -18,8 +18,7 @@ $(document).on("click", "a:not([data-bypass])", function(evt) {
     Backbone.history.navigate(href.attr, true);
   }
 });
-
-
+require('./user-initializer');
 //Initialisation des configurations
 require('./domain-initializer');
 require('./definition-initializer');
