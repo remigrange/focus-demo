@@ -77,6 +77,7 @@ let QuickSearchWrapper = React.createClass({
                 return () => {
                     let query = self._query;
                     let route = `#search/advanced/scope/${scope}${query ?  '/query/' + query : ''}`;
+                    Focus.search.changeScope(scopeConfig[scope]);
                     self._searchAction({
                         criteria: {
                             query: query,
