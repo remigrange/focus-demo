@@ -59,6 +59,7 @@
 			<plugin class="io.vertigo.dynamo.plugins.environment.registries.domain.DomainDynamicRegistryPlugin" />
 			<plugin class="io.vertigo.dynamo.plugins.environment.registries.task.TaskDynamicRegistryPlugin" />
 			<plugin class="io.vertigo.dynamo.plugins.environment.registries.search.SearchDynamicRegistryPlugin" />
+			<!-- plugin class="io.vertigo.persona.plugins.security.loaders.SecurityResourceLoaderPlugin" / -->
 		</component>
 	</module>
 
