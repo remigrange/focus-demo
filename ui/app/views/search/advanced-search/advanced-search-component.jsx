@@ -28,32 +28,33 @@ let PageTitle = React.createClass({
     }
 });
 
-
-
 /**
  * Page de recherche avancée.
  * @type {Object}
  */
 let WrappedAdvancedSearch = React.createClass({
+    componentDidMount() {
+        this.refs['advanced-search'].search();
+    },
     getInitialState() {
         return {
             scope: this.props.scope,
             query: this.props.query
         }
     },
-    cartridgeConfiguration () {
+    cartridgeConfiguration() {
         let buildProps = {
-            searchAction: searchAction, 
+            searchAction: searchAction,
             query: this.props.query,
             scope: this.props.scope,
             referenceNames: ['scopes']
         };
         return {
             summary: {
-                component: Focus.components.page.search.searchHeader.summary, 
+                component: Focus.components.page.search.searchHeader.summary,
                 props: buildProps
             },
-            barLeft:{component: PageTitle},
+            barLeft: {component: PageTitle},
             cartridge: {
                 component: Focus.components.page.search.searchHeader.cartridge,
                 props: buildProps
@@ -78,7 +79,8 @@ let WrappedAdvancedSearch = React.createClass({
                             {this.props.children}
                         </div>
                         <div data-focus='group-actions'>
-                            <Button handleOnClick={this.props.showAll(this.props.groupKey)} label={this.i18n('show.all')}/>
+                            <Button handleOnClick={this.props.showAll(this.props.groupKey)}
+                                    label={this.i18n('show.all')}/>
                         </div>
                     </div>
                 );
