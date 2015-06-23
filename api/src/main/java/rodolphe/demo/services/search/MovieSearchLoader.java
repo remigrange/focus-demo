@@ -26,13 +26,20 @@ public final class MovieSearchLoader extends DefaultSearchLoader<Long, Movie, Mo
 
 	/**
 	 * Construct an instance of MovieSearchLoader.
-	 * 
+	 *
 	 * @param taskManager TaskManager
 	 */
 	@Inject
 	public MovieSearchLoader(final SearchManager searchManager, final TaskManager taskManager) {
 		super(taskManager);
 		indexDefinition = searchManager.findIndexDefinitionByKeyConcept(Movie.class);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	protected String getSqlQueryFilter() {
+		//only index movie with a imdbid
+		return "imdbid is not null";
 	}
 
 	/** {@inheritDoc} */
