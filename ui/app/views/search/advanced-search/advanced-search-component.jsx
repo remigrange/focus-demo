@@ -79,26 +79,12 @@ let WrappedAdvancedSearch = React.createClass({
 
         return React.createClass({
             mixins: [i18nMixin],
-            getInitialState() {
-                return ({
-                    count: 0
-                });
-            },
-            componentDidMount() {
-                let advancedSearch = self.refs['advanced-search'];
-                let facets = Focus.search.builtInStore.searchStore.getFacet();
-                let currentGroupingKey = advancedSearch.state.groupSelectedKey || 'FCT_SCOPE';
-                let currentGrouping = facets[currentGroupingKey];
-                this.setState({
-                    count: currentGrouping[this.props.groupKey].count
-                });
-            },
             render() {
                 let Title = FocusComponents.common.title.component;
                 let Button = FocusComponents.common.button.action.component;
                 return (
                     <div className="listResultContainer panel" data-focus="group-result-container">
-                        <Title title={`${this.props.groupKey} (${numberFormatter.format(this.state.count, '(0,0)')})`}/>
+                        <Title title={`${this.props.groupKey} (${numberFormatter.format(this.props.count, '(0,0)')})`}/>
                         <p>{this.i18n('search.mostRelevant')}</p>
                         <div className="resultContainer">
                             {this.props.children}
