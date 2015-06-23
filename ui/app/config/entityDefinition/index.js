@@ -370,10 +370,6 @@ module.exports = {
 				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
 			},		
-			"rank": {
-				"domain": "DO_ID",
-				"required": true
-			},		
 			"actors": {
 				"domain": "DO_DT_PEOPLE_DTC",
 				"required": false

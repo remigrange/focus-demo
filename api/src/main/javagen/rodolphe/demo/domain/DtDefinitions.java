@@ -343,8 +343,6 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		COUNTRY_IDS,
 		/** Propriété 'Languages'. */
 		LANGUAGE_IDS,
-		/** Propriété 'rank'. */
-		RANK,
 		/** Propriété 'Actors'. */
 		ACTORS,
 		/** Propriété 'Producers'. */

@@ -70,7 +70,7 @@ public class CommonServicesImpl implements CommonServices {
 					peopleCriteria, uiListState, "", facetSel);
 			final FacetedQueryResult<DtObject, SearchQuery> allData = new FacetedQueryResultMerger<>(movies, "SCOPE:" + CodeScope.MOVIE.name(), "Movies", null)
 					.with(people, "SCOPE:" + CodeScope.PEOPLE.name(), "People", null)
-					.withFacet(clusteringFacetName)
+					.withFacet("FCT_SCOPE")
 					.build();
 			return allData;
 		}
@@ -92,10 +92,10 @@ public class CommonServicesImpl implements CommonServices {
 					}
 				}
 			} else {
-					final ListFilter filter = new ListFilter(facetDefinition.getDtField().getName() + ":\""
-							+ selectedFacet.getValue() + "\"");
-					facetSelections[i] = new FacetSelection(facetDefinition, selectedFacet.getValue(), filter);
-				}
+				final ListFilter filter = new ListFilter(facetDefinition.getDtField().getName() + ":\""
+						+ selectedFacet.getValue() + "\"");
+				facetSelections[i] = new FacetSelection(facetDefinition, selectedFacet.getValue(), filter);
+			}
 		}
 		return facetSelections;
 	}

@@ -119,7 +119,6 @@ module.exports = {
         "genreIds" : "Genres",
         "countryIds" : "Contries",
         "languageIds" : "Languages",
-        "rank" : "rank",
         "actors" : "Actors",
         "producers" : "Producers",
         "directors" : "Directors"

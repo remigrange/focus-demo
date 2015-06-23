@@ -26,7 +26,6 @@ public final class MovieView implements DtObject {
 	private String genreIds;
 	private String countryIds;
 	private String languageIds;
-	private Long rank;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> actors;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> producers;
 	private io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> directors;
@@ -257,25 +256,6 @@ public final class MovieView implements DtObject {
 	 */
 	public void setLanguageIds(final String languageIds) {
 		this.languageIds = languageIds;
-	}
-
-	/**
-	 * Champ : DATA.
-	 * Récupère la valeur de la propriété 'rank'. 
-	 * @return Long rank <b>Obligatoire</b>
-	 */
-	@Field(domain = "DO_ID", notNull = true, persistent = false, label = "rank")
-	public Long getRank() {
-		return rank;
-	}
-
-	/**
-	 * Champ : DATA.
-	 * Définit la valeur de la propriété 'rank'.
-	 * @param rank Long <b>Obligatoire</b>
-	 */
-	public void setRank(final Long rank) {
-		this.rank = rank;
 	}
 
 	/**

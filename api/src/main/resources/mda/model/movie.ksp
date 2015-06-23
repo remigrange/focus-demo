@@ -44,7 +44,6 @@ create DtDefinition DT_MOVIE_VIEW {
 	field GENRE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Genres" notNull:"false"}
 	field COUNTRY_IDS {domain: DO_MULTI_VALUES_FIELD label: "Contries" notNull:"false"}
 	field LANGUAGE_IDS {domain: DO_MULTI_VALUES_FIELD label: "Languages" notNull:"false"}
-	field RANK {domain: DO_ID label: "rank" notNull:"true" }
 	field ACTORS {domain: DO_DT_PEOPLE_DTC label: "Actors" notNull: "false"}
 	field PRODUCERS {domain: DO_DT_PEOPLE_DTC label: "Producers" notNull: "false"}
 	field DIRECTORS {domain: DO_DT_PEOPLE_DTC label: "Directors" notNull: "false"}

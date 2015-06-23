@@ -37,30 +37,29 @@ create Task TK_GET_PEOPLE_VIEW_BY_PEO_ID {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
     request : " Select 
     				peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name, peo.peo_name as peo_name_sort_only, 
-    				rolep.PROFESSIONS, peo.peo_id as rank
+    				--for better perfs
+    					(select string_agg(distinct label, '|') from role_people rolep inner join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd 
+    					 where peo_id = peo.peo_id group by peo_id) as PROFESSIONS
     			From
-    				people peo
-    				
-	    			left join
-    					( select string_agg(label, '|') as PROFESSIONS, peo_id from role_people rolep inner join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd group by peo_id) rolep on rolep.peo_id = peo.peo_id 
+    				people peo 
     			Where
-    				peo.peo_id = #PEOP_ID#
+    				peo.peo_id = #PEO_ID#
      "
-    attribute PEOP_ID {domain : DO_ID notNull:"true" inOut :"in"}
+    attribute PEO_ID {domain : DO_ID notNull:"true" inOut :"in"}
     attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}
 }
 
 create Task TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID {
 	className : "io.vertigo.dynamox.task.TaskEngineSelect"
     request : " Select 
-    				peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name, peo.peo_id as rank, string_agg(rolem.label, ', ') as PROFESSIONS
+    				peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name, 
+    					--for better perfs
+    					(select string_agg(distinct label, '|') from role_people rolep inner join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd 
+    					 where peo_id = peo.peo_id group by peo_id) as PROFESSIONS
     			From
-    				people peo
-    				left join role_people rolep on rolep.peo_id = peo.peo_id
-    				left join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd
+    				people peod
     			Where
     				peo.peo_id = #PEO_ID#
-    			group by peo.peo_id, peo.last_name, peo.first_name, peo.imdbid, peo.tit_cd, peo.peo_name
      "
     attribute PEO_ID {domain : DO_ID notNull:"true" inOut :"in"}
     attribute DTO_PEOPLE {domain : DO_DT_PEOPLE_VIEW_DTO notNull:"true" inOut :"out"}

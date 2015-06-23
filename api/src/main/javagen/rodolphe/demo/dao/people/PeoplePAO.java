@@ -31,8 +31,8 @@ public final class PeoplePAO {
 	/** Constante de paramètre de la tache DTC_PEOPLE. */
 	private static final String ATTR_OUT_TK_GET_PEOPLE_INDEX_DTC_PEOPLE = "DTC_PEOPLE";
 
-	/** Constante de paramètre de la tache PEOP_ID. */
-	private static final String ATTR_IN_TK_GET_PEOPLE_VIEW_BY_PEO_ID_PEOP_ID = "PEOP_ID";
+	/** Constante de paramètre de la tache PEO_ID. */
+	private static final String ATTR_IN_TK_GET_PEOPLE_VIEW_BY_PEO_ID_PEO_ID = "PEO_ID";
 
 	/** Constante de paramètre de la tache DTO_PEOPLE. */
 	private static final String ATTR_OUT_TK_GET_PEOPLE_VIEW_BY_PEO_ID_DTO_PEOPLE = "DTO_PEOPLE";
@@ -81,12 +81,12 @@ public final class PeoplePAO {
 
 	/**
 	 * Execute la tache TK_GET_PEOPLE_VIEW_BY_PEO_ID.
-	 * @param peopId Long 
+	 * @param peoId Long 
 	 * @return rodolphe.demo.domain.people.PeopleView dtoPeople
 	*/
-	public rodolphe.demo.domain.people.PeopleView getPeopleViewByPeoId(final Long peopId) {
+	public rodolphe.demo.domain.people.PeopleView getPeopleViewByPeoId(final Long peoId) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_PEOPLE_VIEW_BY_PEO_ID)
-				.withValue(ATTR_IN_TK_GET_PEOPLE_VIEW_BY_PEO_ID_PEOP_ID, peopId)
+				.withValue(ATTR_IN_TK_GET_PEOPLE_VIEW_BY_PEO_ID_PEO_ID, peoId)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_VIEW_BY_PEO_ID_DTO_PEOPLE);
