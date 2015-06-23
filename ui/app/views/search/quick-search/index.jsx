@@ -76,7 +76,7 @@ let QuickSearchWrapper = React.createClass({
             _advancedSearchClickHandler(scope) {
                 return () => {
                     let query = self._query;
-                    let route = `#search/advanced/scope/${scope}${query ?  '/query/' + query : ''}`;
+                    let route = `#search/advanced/scope/${scope}${query ? '/query/' + query : ''}`;
                     Focus.search.changeScope(scopeConfig[scope]);
                     self._searchAction({
                         criteria: {
@@ -92,20 +92,20 @@ let QuickSearchWrapper = React.createClass({
                 }
             },
             /*
-            * Build the count from the groupKey props value and the searcha nd query stores values.
-            */
-            _buildCount(){
-              let count;
-              let scp = Focus.search.builtInStore.queryStore.getScope();
-              if(scp === 'ALL'){
-                let fcts = Focus.search.builtInStore.searchStore.getFacet();
-                // Check existance ?
+             * Build the count from the groupKey props value and the searcha nd query stores values.
+             */
+            _buildCount() {
+                let count;
+                let scp = Focus.search.builtInStore.queryStore.getScope();
+                if (scp === 'ALL') {
+                    let fcts = Focus.search.builtInStore.searchStore.getFacet();
+                    // Check existance ?
 
-                count = fcts['FCT_SCOPE'] && fcts['FCT_SCOPE'][this.props.groupKey] ? fcts['FCT_SCOPE'][this.props.groupKey].count : 0;
-              }else {
-                count = Focus.search.builtInStore.searchStore.getPageInfos().totalRecords;
-              }
-              return count;
+                    count = fcts['FCT_SCOPE'] && fcts['FCT_SCOPE'][this.props.groupKey] ? fcts['FCT_SCOPE'][this.props.groupKey].count : 0;
+                } else {
+                    count = Focus.search.builtInStore.searchStore.getPageInfos().totalRecords;
+                }
+                return count;
             },
             render() {
                 let camelCase = _.camelCase;
@@ -116,9 +116,12 @@ let QuickSearchWrapper = React.createClass({
                 return (
                     <div data-focus='group-result-container'>
                         <div className="title-navigation">
-                            <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)} label='button.advancedSearch'
+                            <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)}
+                                    label='button.advancedSearch'
                                     shape="ghost"></Button>
+
                             <h3>{`${this.props.groupKey} (${numberFormatter.format(count, '(0,0)')})`}</h3>
+
                             <p>{this.i18n('search.mostRelevant')}</p>
                         </div>
                         {this.props.children}
