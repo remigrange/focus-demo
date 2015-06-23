@@ -1,6 +1,6 @@
 domains/domains.ksp
-tasks/movie/movie.ksp
-tasks/people/people.ksp
-tasks/exploitation/exploitation.ksp
+tasks/movie.ksp
+tasks/people.ksp
+tasks/exploitation.ksp
 index.ksp
 mdl.ksp
