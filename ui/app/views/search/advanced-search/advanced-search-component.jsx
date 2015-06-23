@@ -46,6 +46,7 @@ let WrappedAdvancedSearch = React.createClass({
         this.refs['advanced-search'].search();
     },
     getInitialState() {
+        Focus.search.changeScope(this.props.scope);
         return {
             scope: this.props.scope,
             query: this.props.query
