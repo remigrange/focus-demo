@@ -8,19 +8,23 @@ module.exports = {
     getMovieViewById(id) {
         return fetch(URL.movie.movieView({urlData: {id: id}})).then((data) => {
             return new Promise((success) => {
-                let xmlhttp = new XMLHttpRequest();
-                let url = URL.movie.poster({urlData: {title: data.title}});
-                xmlhttp.onload  = () => {
-                    if (xmlhttp.status == 200) {
-                        let poster = JSON.parse(xmlhttp.response).Poster;
-                        if (poster != 'N/A') {
-                            data.poster = poster;
+                if (data.imdbid) {
+                    let xmlhttp = new XMLHttpRequest();
+                    let url = URL.movie.poster({urlData: {imdbId: data.imdbid}});
+                    xmlhttp.onload  = () => {
+                        if (xmlhttp.status == 200) {
+                            let poster = JSON.parse(xmlhttp.response).Poster;
+                            if (poster != 'N/A') {
+                                data.poster = poster;
+                            }
+                            success(data);
                         }
-                        success(data);
-                    }
-                };
-                xmlhttp.open(url.method, url.url, true);
-                xmlhttp.send();
+                    };
+                    xmlhttp.open(url.method, url.url, true);
+                    xmlhttp.send();
+                } else {
+                    success(data);
+                }
             });
         });
     },

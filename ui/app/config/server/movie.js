@@ -10,5 +10,5 @@ module.exports = {
     directors: url(root + "${id}/" + 'directors', 'GET'),
     movieView: url(root + "${id}/" + 'details', 'GET'),
     castings: url(root + "${id}/" + 'castings', 'GET'),
-    poster: url('http://www.imdbapi.com/?t=${title}', 'GET')
+    poster: url('http://www.omdbapi.com/?i=${imdbId}&plot=short&r=json', 'GET')
 };
