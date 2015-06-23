@@ -1,4 +1,8 @@
 module.exports = {
+    action: {
+        group: 'Group by',
+        ungroup: 'Ungroup'
+    },
     button: {
         edit: "Edit",
         cancel: "Cancel",
