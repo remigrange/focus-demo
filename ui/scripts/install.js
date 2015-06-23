@@ -8,6 +8,7 @@ var files = [
   //'lodash/',
   //bootstrap
   'bootstrap/dist/css/bootstrap.css',
+  'bootstrap/dist/css/bootstrap.css.map',
   'bootstrap/dist/js/bootstrap.js',
   //bootstrap-material
   /*'bootstrap-material/dist/css/material.css',
