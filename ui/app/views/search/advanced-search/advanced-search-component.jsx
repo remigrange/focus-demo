@@ -1,16 +1,24 @@
 // Dependencies
+
 let keys = _.keys;
 let isArray = _.isArray;
 let omit = _.omit;
 
 // Actions
+
 let searchAction = require('action/search').search;
 
+// Formatters
+
+let numberFormatter = Focus.definition.formatter.number;
+
 // Mixins
+
 let i18nMixin = Focus.components.common.i18n.mixin;
 let AdvancedSearch = Focus.components.page.search.advancedSearch.component;
 
 // Components
+
 let Title = FocusComponents.common.title.component;
 let Button = FocusComponents.common.button.action.component;
 let MovieLineComponent = require('../lines/movieLineComponent');
@@ -19,6 +27,7 @@ let CartridgeSearch = require('../../common/cartridge-search');
 let SummarySearch = require('../../common/summary-search');
 
 // Composants du cartouche
+
 let PageTitle = React.createClass({
     mixins: [i18nMixin],
     render() {
@@ -67,14 +76,30 @@ let WrappedAdvancedSearch = React.createClass({
     },
     _getGroupComponent() {
         let self = this;
+
         return React.createClass({
             mixins: [i18nMixin],
+            getInitialState() {
+                return ({
+                    count: 0
+                });
+            },
+            componentDidMount() {
+                let advancedSearch = self.refs['advanced-search'];
+                let facets = Focus.search.builtInStore.searchStore.getFacet();
+                let currentGroupingKey = advancedSearch.state.groupSelectedKey || 'FCT_SCOPE';
+                let currentGrouping = facets[currentGroupingKey];
+                this.setState({
+                    count: currentGrouping[this.props.groupKey].count
+                });
+            },
             render() {
                 let Title = FocusComponents.common.title.component;
                 let Button = FocusComponents.common.button.action.component;
                 return (
                     <div className="listResultContainer panel" data-focus="group-result-container">
-                        <Title title={this.props.groupKey}/>
+                        <Title title={`${this.props.groupKey} (${numberFormatter.format(this.state.count, '(0,0)')})`}/>
+                        <p>{this.i18n('search.mostRelevant')}</p>
                         <div className="resultContainer">
                             {this.props.children}
                         </div>
