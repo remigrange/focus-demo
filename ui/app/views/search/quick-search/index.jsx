@@ -43,23 +43,22 @@ let QuickSearchWrapper = React.createClass({
             {
                 action(data) {
                     if (self.state && _.isEqual(self.state.previewData, data)) {
-                        self.refs['preview-popin'].toggleOpen();
+                        self.props.togglePreviewPopin();
                         self._previewOpened = !self._previewOpened;
                     } else {
                         let timeout = 0;
                         if (self._previewOpened) {
-                            self.refs['preview-popin'].toggleOpen();
-                            timeout = 200;
+                            self.props.togglePreviewPopin();
+                            self._previewOpened = false;
+                            timeout = 100;
                         }
                         setTimeout(() => {
                             let Preview = self._getPreviewType(data);
                             let id = data.movId ? data.movId : data.peoId;
-                            self.setState({
-                                previewComponent: <Preview hasForm={false} id={id}/>,
-                                previewData: data
-                            });
-                            self.refs['preview-popin'].toggleOpen();
-                            self._previewOpened = true;
+                            let previewComponent = <Preview hasForm={false} id={id}/>
+                            self._previewOpened = !self._previewOpened;
+                            self.props.togglePreviewPopin(previewComponent);
+                            self.setState({previewData: data});
                         }, timeout);
                     }
                 },
@@ -145,14 +144,7 @@ let QuickSearchWrapper = React.createClass({
                     groupComponent={this._getGroupComponent()}
                     lineComponentMapper={this._lineComponentMapper}
                     />
-                <Popin
-                    overlay={false}
-                    type='from-right'
-                    open={this.state && this.state.previewComponent != undefined}
-                    ref='preview-popin'
-                    >
-                    {this.state && this.state.previewComponent}
-                </Popin>
+
             </div>
 
         );

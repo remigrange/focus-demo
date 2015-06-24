@@ -67,6 +67,17 @@ let Wrapper = React.createClass({
             this._toggleQuickSearchPopin();
         }
     },
+    _togglePreviewPopin(previewComponent) {
+        if (previewComponent) {
+            this.setState({previewComponent});
+        }
+        this.refs['preview-popin'].toggleOpen();
+    },
+    _onQuickSearchPopinClose() {
+        if (this.refs['preview-popin'].state.opened) {
+            this.refs['preview-popin'].toggleOpen();
+        }
+    },
     render() {
         return (
             <div>
@@ -79,8 +90,16 @@ let Wrapper = React.createClass({
                     ref='menu'
                     >
                 </Menu>
-                <Popin data-focus='quick-search-popin' ref='quick-search-popin' type='from-menu'>
-                    <QuickSearch closePopin={this._closeQuickSearchPopin}/>
+                <Popin data-focus='quick-search-popin' onPopinClose={this._onQuickSearchPopinClose} ref='quick-search-popin' type='from-menu'>
+                    <QuickSearch closePopin={this._closeQuickSearchPopin} togglePreviewPopin={this._togglePreviewPopin}/>
+                </Popin>
+                <Popin
+                    overlay={false}
+                    type='from-menu'
+                    level={1}
+                    ref='preview-popin'
+                    >
+                    {this.state && this.state.previewComponent}
                 </Popin>
             </div>
         );
