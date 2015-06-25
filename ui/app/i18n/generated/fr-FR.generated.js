@@ -71,6 +71,8 @@ module.exports = {
         "description" : "Description",
         "metadasJson" : "metadas Json",
         "imdbid" : "imdbID",
+        "poster" : "Poster",
+        "rated" : "rated",
         "genreIds" : "Genres",
         "countryIds" : "Countries",
         "languageIds" : "Languages"

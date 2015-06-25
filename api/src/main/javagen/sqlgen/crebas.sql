@@ -1,6 +1,6 @@
 -- ============================================================
 --   Nom de SGBD      :  PostgreSql                     
---   Date de création :  22 juin 2015  13:22:54                     
+--   Date de création :  25 juin 2015  17:31:30                     
 -- ============================================================
 
 
@@ -230,6 +230,8 @@ create table MOVIE
     DESCRIPTION 	 VARCHAR(3000)	,
     METADAS_JSON	 VARCHAR(3000)	,
     IMDBID      	 VARCHAR(100)	,
+    POSTER      	 VARCHAR(250)	,
+    RATED       	 VARCHAR(250)	,
     constraint PK_MOVIE primary key (MOV_ID)
 );
 
@@ -256,6 +258,12 @@ comment on column MOVIE.METADAS_JSON is
 
 comment on column MOVIE.IMDBID is
 'imdbID';
+
+comment on column MOVIE.POSTER is
+'Poster';
+
+comment on column MOVIE.RATED is
+'rated';
 
 -- ============================================================
 --   Table : PEOPLE                                        

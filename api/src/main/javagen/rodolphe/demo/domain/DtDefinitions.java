@@ -239,6 +239,10 @@ public final class DtDefinitions implements Iterable<Class<?>> {
 		METADAS_JSON,
 		/** Propriété 'imdbID'. */
 		IMDBID,
+		/** Propriété 'Poster'. */
+		POSTER,
+		/** Propriété 'rated'. */
+		RATED,
 		/** Propriété 'Genres'. */
 		GENRE_IDS,
 		/** Propriété 'Countries'. */

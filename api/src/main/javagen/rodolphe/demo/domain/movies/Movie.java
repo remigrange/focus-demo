@@ -22,6 +22,8 @@ public final class Movie implements KeyConcept {
 	private String description;
 	private String metadasJson;
 	private String imdbid;
+	private String poster;
+	private String rated;
 	private String genreIds;
 	private String countryIds;
 	private String languageIds;
@@ -181,6 +183,44 @@ public final class Movie implements KeyConcept {
 	 */
 	public void setImdbid(final String imdbid) {
 		this.imdbid = imdbid;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'Poster'. 
+	 * @return String poster 
+	 */
+	@Field(domain = "DO_LABEL_LONG", label = "Poster")
+	public String getPoster() {
+		return poster;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'Poster'.
+	 * @param poster String 
+	 */
+	public void setPoster(final String poster) {
+		this.poster = poster;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Récupère la valeur de la propriété 'rated'. 
+	 * @return String rated 
+	 */
+	@Field(domain = "DO_LABEL_LONG", label = "rated")
+	public String getRated() {
+		return rated;
+	}
+
+	/**
+	 * Champ : DATA.
+	 * Définit la valeur de la propriété 'rated'.
+	 * @param rated String 
+	 */
+	public void setRated(final String rated) {
+		this.rated = rated;
 	}
 
 	/**

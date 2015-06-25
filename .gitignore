@@ -36,6 +36,7 @@ ui/app/assets/fonts/*.svg
 ui/app/assets/fonts/*.eot
 ui/app/assets/fonts/*.ttf
 ui/app/assets/fonts/*.woff
+ui/app/assets/img
 .idea
 *.iml
 *.bak

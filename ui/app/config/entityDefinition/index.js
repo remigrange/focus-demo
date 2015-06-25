@@ -202,6 +202,14 @@ module.exports = {
 				"domain": "DO_LABEL",
 				"required": false
 			},		
+			"poster": {
+				"domain": "DO_LABEL_LONG",
+				"required": false
+			},		
+			"rated": {
+				"domain": "DO_LABEL_LONG",
+				"required": false
+			},		
 			"genreIds": {
 				"domain": "DO_MULTI_VALUES_FIELD",
 				"required": false
