@@ -44,7 +44,7 @@ let QuickSearchWrapper = React.createClass({
                         setTimeout(() => {
                             let Preview = self._getPreviewType(data);
                             let id = data.movId ? data.movId : data.peoId;
-                            let previewComponent = <Preview hasForm={false} id={id}/>;
+                            let previewComponent = <Preview closePopin={self.props.menuRef.refs['quick-search-popin'].toggleOpen} hasForm={false} id={id}/>;
                             self.props.togglePreviewPopin(previewComponent);
                             self.setState({previewData: data});
                         }, timeout);
@@ -88,7 +88,7 @@ let QuickSearchWrapper = React.createClass({
                         <div className="title-navigation">
                             <Button handleOnClick={this._advancedSearchClickHandler(this.props.groupKey)}
                                     label='button.advancedSearch'
-                                    shape="ghost"></Button>
+                                    shape="ghost"/>
 
                             <h3>{`${this.props.groupKey} (${numberFormatter.format(this.props.count, '(0,0)')})`}</h3>
 

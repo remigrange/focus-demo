@@ -38,6 +38,11 @@ let PeoplePreview = React.createClass({
                         {this.displayFor('lastName')}
                         {this.displayFor('comment')}
                     </div>
+                    <div data-focus='footer'>
+                        <Button handleOnClick={this._navigateToDetails}
+                                label='button.navigateToDetails'
+                                shape="ghost"/>
+                    </div>
                 </div>
             );
         } else {
@@ -47,6 +52,11 @@ let PeoplePreview = React.createClass({
                 </div>
             );
         }
+    },
+    _navigateToDetails() {
+        let route = `#people/${this.state.peoId}`;
+        Backbone.history.navigate(route, true);
+        this.props.closePopin();
     }
 });
 

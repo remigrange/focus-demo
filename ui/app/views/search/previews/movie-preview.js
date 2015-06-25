@@ -1,9 +1,19 @@
+// Stores
+
 let movieStore = require('stores/movie');
+
+// Actions
+
 let movieAction = require('action/movie');
+
+// Mixins
 
 let formBehaviour = Focus.components.common.form.mixin;
 let i18nBehaviour = Focus.components.common.i18n.mixin;
-let map = _.map;
+
+// Components
+
+let Button = Focus.components.common.button.action.component;
 
 let MoviePreview = React.createClass({
     mixins: [i18nBehaviour, formBehaviour],
@@ -38,6 +48,11 @@ let MoviePreview = React.createClass({
                         {this.displayFor('languageIds')}
                         {this.displayFor('genreIds')}
                     </div>
+                    <div data-focus='footer'>
+                        <Button handleOnClick={this._navigateToDetails}
+                                label='button.navigateToDetails'
+                                shape="ghost"/>
+                    </div>
                 </div>
             );
         } else {
@@ -47,6 +62,11 @@ let MoviePreview = React.createClass({
                 </div>
             );
         }
+    },
+    _navigateToDetails() {
+        let route = `#movie/${this.state.movId}`;
+        Backbone.history.navigate(route, true);
+        this.props.closePopin();
     }
 });
 
