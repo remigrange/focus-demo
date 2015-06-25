@@ -1,24 +1,27 @@
 [data-focus='popin-window'] {
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 
 [data-focus='movie-preview'] {
-  h1, h2, h3, h4 {
-    margin: 0;
-    color: #000;
-  }
-  h1 {
-    color: #36b6b8;
-  }
-  h2 {
-    font-size: 22px;
-    margin: 10px 0;
-  }
-  [data-focus="details"] {
-    padding: 20px 0;
-  }
-  [data-focus="summary"] {
-
-  }
+    h1, h2, h3, h4 {
+        margin: 0;
+        color: #000;
+    }
+    h1 {
+        color: #36b6b8;
+    }
+    h2 {
+        font-size: 22px;
+        margin: 10px 0;
+    }
+    [data-focus="details"] {
+        padding: 20px 0;
+    }
+    [data-focus="poster"] {
+        img {
+            width: 138px;
+            height: 188px;
+        }
+    }
 }
