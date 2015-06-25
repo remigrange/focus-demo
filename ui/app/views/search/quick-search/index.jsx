@@ -42,21 +42,19 @@ let QuickSearchWrapper = React.createClass({
         return [
             {
                 action(data) {
+                    let isPreviewOpened = self.props.menuRef.refs['preview-popin'].state.opened;
                     if (self.state && _.isEqual(self.state.previewData, data)) {
                         self.props.togglePreviewPopin();
-                        self._previewOpened = !self._previewOpened;
                     } else {
                         let timeout = 0;
-                        if (self._previewOpened) {
+                        if (isPreviewOpened) {
                             self.props.togglePreviewPopin();
-                            self._previewOpened = false;
                             timeout = 100;
                         }
                         setTimeout(() => {
                             let Preview = self._getPreviewType(data);
                             let id = data.movId ? data.movId : data.peoId;
                             let previewComponent = <Preview hasForm={false} id={id}/>
-                            self._previewOpened = !self._previewOpened;
                             self.props.togglePreviewPopin(previewComponent);
                             self.setState({previewData: data});
                         }, timeout);

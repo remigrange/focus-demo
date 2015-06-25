@@ -91,7 +91,7 @@ let Wrapper = React.createClass({
                     >
                 </Menu>
                 <Popin data-focus='quick-search-popin' onPopinClose={this._onQuickSearchPopinClose} ref='quick-search-popin' type='from-menu'>
-                    <QuickSearch closePopin={this._closeQuickSearchPopin} togglePreviewPopin={this._togglePreviewPopin}/>
+                    <QuickSearch closePopin={this._closeQuickSearchPopin} menuRef={this} togglePreviewPopin={this._togglePreviewPopin}/>
                 </Popin>
                 <Popin
                     overlay={false}
