@@ -3,6 +3,9 @@
     "ecmascript": 6,
     "jsx": true
   },
+  "plugins": [
+      "react"
+  ],
   "ecmaFeatures": {
         "blockBindings": true,
         "forOf": true,
@@ -26,6 +29,7 @@
     "Focus": true,
     "require": true,
     "Backbone": true,
+    "React": true,
     "Fmk": true,
     "_": true,
     "Promise": true,
@@ -48,7 +52,7 @@
     "strict": 1,
     "yoda": "always",
     "camelcase": 1,
-    "no-underscore-dangle": 1,
+    "no-underscore-dangle": 0,
     "new-cap": 1,
     "react/display-name": 1,
     "react/jsx-boolean-value": 1,
