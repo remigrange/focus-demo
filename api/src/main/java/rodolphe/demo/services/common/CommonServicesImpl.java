@@ -16,6 +16,9 @@ import io.vertigo.dynamo.search.model.SearchQuery;
 import io.vertigo.dynamo.transaction.Transactional;
 import io.vertigo.vega.rest.model.UiListState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import rodolphe.demo.domain.common.SearchCriteria;
@@ -29,7 +32,6 @@ import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleIndex;
 import rodolphe.demo.services.movie.MovieServices;
 import rodolphe.demo.services.people.PeopleServices;
-import rodolphe.demo.services.search.FacetSelection;
 
 /**
  * Implementation of common ws.
@@ -58,16 +60,15 @@ public class CommonServicesImpl implements CommonServices {
 		peopleCriteria.setPeoName(query);
 		peopleCriteria.setFirstName(query);
 		peopleCriteria.setLastName(query);
-		final FacetSelection[] facetSel = getFacetSelectionList(selection);
 		if (CodeScope.MOVIE.name().equals(scope)) {
-			return movieServices.getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, facetSel);
+			return movieServices.getMoviesByCriteria(movieCriteria, uiListState, clusteringFacetName, toListFilters(selection));
 		} else if (CodeScope.PEOPLE.name().equals(scope)) {
-			return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, facetSel);
+			return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, clusteringFacetName, toListFilters(selection));
 		} else {
 			final FacetedQueryResult<MovieIndex, SearchQuery> movies = movieServices.getMoviesByCriteria(movieCriteria,
-					uiListState, "", facetSel);
+					uiListState, "", toListFilters(selection));
 			final FacetedQueryResult<PeopleIndex, SearchQuery> people = peopleServices.getPeopleByCriteria(
-					peopleCriteria, uiListState, "", facetSel);
+					peopleCriteria, uiListState, "", toListFilters(selection));
 			final FacetedQueryResult<DtObject, SearchQuery> allData = new FacetedQueryResultMerger<>(movies, "SCOPE:" + CodeScope.MOVIE.name(), "Movies", null)
 					.with(people, "SCOPE:" + CodeScope.PEOPLE.name(), "People", null)
 					.withFacet("FCT_SCOPE")
@@ -76,10 +77,8 @@ public class CommonServicesImpl implements CommonServices {
 		}
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public FacetSelection[] getFacetSelectionList(final DtList<SelectedFacet> selectedFacets) {
-		final FacetSelection[] facetSelections = new FacetSelection[selectedFacets.size()];
+	private List<ListFilter> toListFilters(final DtList<SelectedFacet> selectedFacets) {
+		final List<ListFilter> listFilters = new ArrayList<>(selectedFacets.size());
 		// facet selection list.
 		for (int i = 0; i < selectedFacets.size(); i++) {
 			final SelectedFacet selectedFacet = selectedFacets.get(i);
@@ -87,17 +86,16 @@ public class CommonServicesImpl implements CommonServices {
 			if (facetDefinition.isRangeFacet()) {
 				for (final FacetValue facet : facetDefinition.getFacetRanges()) {
 					if (facet.getLabel().getDisplay().equals(selectedFacet.getValue())) {
-						facetSelections[i] = new FacetSelection(facetDefinition, selectedFacet.getValue(), facet.getListFilter());
+						listFilters.add(facet.getListFilter());
 						break;
 					}
 				}
 			} else {
-				final ListFilter filter = new ListFilter(facetDefinition.getDtField().getName() + ":\""
-						+ selectedFacet.getValue() + "\"");
-				facetSelections[i] = new FacetSelection(facetDefinition, selectedFacet.getValue(), filter);
+				final ListFilter filter = new ListFilter(facetDefinition.getDtField().getName() + ":\"" + selectedFacet.getValue() + "\"");
+				listFilters.add(filter);
 			}
 		}
-		return facetSelections;
+		return listFilters;
 	}
 
 	/** {@inheritDoc} */

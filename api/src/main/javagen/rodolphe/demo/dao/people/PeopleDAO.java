@@ -130,7 +130,7 @@ public final class PeopleDAO extends DAOBroker<People, java.lang.Long> {
 	*/
 	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.People> getPeopleByCriteria(final String searchText) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_PEOPLE_BY_CRITERIA)
-				.withValue(ATTR_IN_TK_GET_PEOPLE_BY_CRITERIA_SEARCH_TEXT, searchText)
+				.addValue(ATTR_IN_TK_GET_PEOPLE_BY_CRITERIA_SEARCH_TEXT, searchText)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_BY_CRITERIA_DTC_PEOPLE);

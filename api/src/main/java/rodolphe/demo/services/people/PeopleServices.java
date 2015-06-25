@@ -1,16 +1,19 @@
 package rodolphe.demo.services.people;
 
+import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.search.model.SearchQuery;
 import io.vertigo.lang.Component;
 import io.vertigo.vega.rest.model.UiListState;
+
+import java.util.List;
+
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.people.People;
 import rodolphe.demo.domain.people.PeopleCriteria;
 import rodolphe.demo.domain.people.PeopleIndex;
 import rodolphe.demo.domain.people.PeopleView;
-import rodolphe.demo.services.search.FacetSelection;
 
 /**
  * Services about People.
@@ -29,7 +32,7 @@ public interface PeopleServices extends Component {
 	 * @return result
 	 */
 	FacetedQueryResult<PeopleIndex, SearchQuery> getPeopleByCriteria(PeopleCriteria crit, UiListState uiListState,
-			String clusteringFacetName, FacetSelection... selection);
+			String clusteringFacetName, List<ListFilter> selection);
 
 	/**
 	 * Get People by id.

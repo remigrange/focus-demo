@@ -81,7 +81,7 @@ public final class MoviesPAO {
 	*/
 	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.MovieIndex> getMovieIndex(final io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.common.Dummy> dtcMovieIds) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIE_INDEX)
-				.withValue(ATTR_IN_TK_GET_MOVIE_INDEX_DTC_MOVIE_IDS, dtcMovieIds)
+				.addValue(ATTR_IN_TK_GET_MOVIE_INDEX_DTC_MOVIE_IDS, dtcMovieIds)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_INDEX_DTC_MOVIES);
@@ -94,7 +94,7 @@ public final class MoviesPAO {
 	*/
 	public rodolphe.demo.domain.movies.MovieView getMovieViewByMovId(final Long movId) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIE_VIEW_BY_MOV_ID)
-				.withValue(ATTR_IN_TK_GET_MOVIE_VIEW_BY_MOV_ID_MOV_ID, movId)
+				.addValue(ATTR_IN_TK_GET_MOVIE_VIEW_BY_MOV_ID_MOV_ID, movId)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_VIEW_BY_MOV_ID_DTO_MOVIE);
@@ -107,7 +107,7 @@ public final class MoviesPAO {
 	*/
 	public rodolphe.demo.domain.movies.MovieView getMovieViewForMovieDetailsByMovId(final Long movId) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID)
-				.withValue(ATTR_IN_TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID_MOV_ID, movId)
+				.addValue(ATTR_IN_TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID_MOV_ID, movId)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_VIEW_FOR_MOVIE_DETAILS_BY_MOV_ID_DTO_MOVIE);
@@ -120,7 +120,7 @@ public final class MoviesPAO {
 	*/
 	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.MovieCasting> getCastingByMovId(final Long movId) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_CASTING_BY_MOV_ID)
-				.withValue(ATTR_IN_TK_GET_CASTING_BY_MOV_ID_MOV_ID, movId)
+				.addValue(ATTR_IN_TK_GET_CASTING_BY_MOV_ID_MOV_ID, movId)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_CASTING_BY_MOV_ID_DTO_MOVIE_CASTING);

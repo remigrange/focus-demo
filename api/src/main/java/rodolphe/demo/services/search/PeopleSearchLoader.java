@@ -38,11 +38,13 @@ public final class PeopleSearchLoader extends DefaultSearchLoader<Long, People, 
 	/** {@inheritDoc} */
 	@Override
 	protected String getNextIdsSqlQuery(final String tableName, final String pkFieldName) {
-		return " select peo_id from role_people rpe, movie mov "
-				+ "where mov.imdbid is not null "
-				+ "and rpe.peo_id >  #PEO_ID# "
-				+ "and rpe.mov_id = mov.mov_id "
-				+ "order by rpe.PEO_ID ASC limit 500";
+		return " select distinct peo_id from ("
+				+ " select peo_id from role_people rpe, movie mov "
+				+ " where mov.imdbid is not null "
+				+ " and rpe.peo_id >  #PEO_ID# "
+				+ " and rpe.mov_id = mov.mov_id "
+				+ " order by rpe.PEO_ID ASC limit 500"
+				+ ") peo";
 	}
 
 	/** {@inheritDoc} */

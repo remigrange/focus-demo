@@ -254,8 +254,8 @@ public abstract class AbstractTestCaseJU4 {
 			managersXml = getManagersXmlFileName();
 		}
 		return new XMLAppConfigBuilder()
-		.withBootConfig(new BootConfigBuilder().withSilence(true).build())
-		.withModules(getClass(), prop, managersXml)
-		.build();
+				.withBootConfig(new BootConfigBuilder().silently().build())
+				.withModules(getClass(), prop, managersXml)
+				.build();
 	}
 }

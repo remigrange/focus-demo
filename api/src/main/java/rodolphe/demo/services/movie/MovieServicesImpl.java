@@ -57,10 +57,10 @@ public class MovieServicesImpl implements MovieServices {
 	/** {@inheritDoc} */
 	@Override
 	public FacetedQueryResult<MovieIndex, SearchQuery> getMoviesByCriteria(final MovieCriteria movieCriteria,
-			final UiListState uiListState, final String clusteringFacetName, final FacetSelection... facetSelections) {
+			final UiListState uiListState, final String clusteringFacetName, final List<ListFilter> facetSelections) {
 		final DtListState listState = DtListStateUtil.readUiListState(uiListState);
 		//----
-		final SearchQueryBuilder searchQueryBuilder = movieDAO.createSearchQueryBuilderMovieWithFct(movieCriteria, toListFilters(facetSelections));
+		final SearchQueryBuilder searchQueryBuilder = movieDAO.createSearchQueryBuilderMovieWithFct(movieCriteria, facetSelections);
 		if (!clusteringFacetName.isEmpty()) {
 			final FacetDefinition clusterFacetDefinition = Home.getDefinitionSpace().resolve(clusteringFacetName, FacetDefinition.class);
 			searchQueryBuilder.withFacetClustering(clusterFacetDefinition);
@@ -96,8 +96,8 @@ public class MovieServicesImpl implements MovieServices {
 	public DtList<People> getActors(final Long movId) {
 		final DtList<People> peopleList = new DtList<>(People.class);
 		final FilterCriteria<Casting> castingCriteria = new FilterCriteriaBuilder<Casting>()
-				.withFilter(CastingFields.MOV_ID.name(), movId)
-				.withFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.ACTOR.dbValue())
+				.addFilter(CastingFields.MOV_ID.name(), movId)
+				.addFilter(CastingFields.RLM_CD.name(), CodeRoleMovie.ACTOR.dbValue())
 				.build();
 		final DtList<Casting> castings = castingDAO.getList(castingCriteria, Integer.MAX_VALUE);
 		for (final Casting casting : castings) {
@@ -112,8 +112,8 @@ public class MovieServicesImpl implements MovieServices {
 	public DtList<People> getProducers(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
 		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
-				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
-				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.PRODUCER.dbValue()).build();
+				.addFilter(RolePeopleFields.MOV_ID.name(), movId)
+				.addFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.PRODUCER.dbValue()).build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
 		for (final RolePeople rolePeople : rolePeopleList) {
 			final People people = rolePeople.getPeople();
@@ -129,8 +129,8 @@ public class MovieServicesImpl implements MovieServices {
 	public DtList<People> getDirectors(final Long movId) {
 		final DtList<People> ret = new DtList<>(People.class);
 		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>()
-				.withFilter(RolePeopleFields.MOV_ID.name(), movId)
-				.withFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.DIRECTOR.dbValue()).build();
+				.addFilter(RolePeopleFields.MOV_ID.name(), movId)
+				.addFilter(RolePeopleFields.RLM_CD.name(), CodeRoleMovie.DIRECTOR.dbValue()).build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
 		for (final RolePeople rolePeople : rolePeopleList) {
 			ret.add(rolePeople.getPeople());

@@ -3,6 +3,7 @@
  */
 package roldophe.demo.movie;
 
+import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.model.Facet;
 import io.vertigo.dynamo.collections.model.FacetValue;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
@@ -14,6 +15,7 @@ import io.vertigo.util.DateBuilder;
 import io.vertigo.util.DateUtil;
 import io.vertigo.vega.rest.model.UiListState;
 
+import java.util.Collections;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
@@ -30,7 +32,6 @@ import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieIndex;
 import rodolphe.demo.services.movie.MovieServices;
-import rodolphe.demo.services.search.FacetSelection;
 import roldophe.demo.tools.AbstractEsSearchTestCase;
 
 /**
@@ -82,7 +83,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 	@Override
 	protected DtList<MovieIndex> getListByCritere(final MovieCriteria critere) {
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
-		return movieServices.getMoviesByCriteria(critere, uiListState, "").getDtList();
+		return movieServices.getMoviesByCriteria(critere, uiListState, "", Collections.<ListFilter> emptyList()).getDtList();
 	}
 
 	/** {@inheritDoc} */
@@ -144,7 +145,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		FacetValue selectedFacetValue = null;
 		long facetCount = 0L;
 		FacetedQueryResult<MovieIndex, SearchQuery> movies = movieServices.getMoviesByCriteria(
-				movieCriteria, uiListState, "");
+				movieCriteria, uiListState, "", Collections.<ListFilter> emptyList());
 		for (final Facet facet : movies.getFacets()) {
 			if (selectedFacet == null) {
 				selectedFacet = facet;
@@ -167,9 +168,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 					"facet filter : " + selectedFacet.getDefinition().getName() + "  "
 							+ selectedFacetValue.getLabel().getDisplay() + "  "
 							+ selectedFacetValue.getListFilter().getFilterValue());
-			final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition(), selectedFacetValue
-					.getLabel().getDisplay(), selectedFacetValue.getListFilter());
-			movies = movieServices.getMoviesByCriteria(movieCriteria, uiListState, "", sel);
+			movies = movieServices.getMoviesByCriteria(movieCriteria, uiListState, "", Collections.singletonList(selectedFacetValue.getListFilter()));
 
 			getLogger().info("results : " + movies.getCount());
 			Assert.assertEquals(facetCount, movies.getCount());
@@ -202,7 +201,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		FacetValue selectedFacetValue = null;
 		long facetCount = 0L;
 		FacetedQueryResult<MovieIndex, SearchQuery> movies = movieServices.getMoviesByCriteria(
-				crit, uiListState, "");
+				crit, uiListState, "", Collections.<ListFilter> emptyList());
 		for (final Facet facet : movies.getFacets()) {
 			if (selectedFacet == null) {
 				selectedFacet = facet;
@@ -222,9 +221,7 @@ public class SearchMovieTest extends AbstractEsSearchTestCase<MovieCriteria, Mov
 		// Search with selected facet.
 		if (selectedFacetValue != null) {
 			getLogger().info("facet filter : " + selectedFacetValue.getListFilter().getFilterValue());
-			final FacetSelection sel = new FacetSelection(selectedFacet.getDefinition(), selectedFacetValue
-					.getLabel().getDisplay(), selectedFacetValue.getListFilter());
-			movies = movieServices.getMoviesByCriteria(crit, uiListState, "", sel);
+			movies = movieServices.getMoviesByCriteria(crit, uiListState, "", Collections.singletonList(selectedFacetValue.getListFilter()));
 			getLogger().info("results : " + movies.getCount());
 			Assert.assertEquals(facetCount, movies.getCount());
 			for (final Facet facetResult : movies.getFacets()) {

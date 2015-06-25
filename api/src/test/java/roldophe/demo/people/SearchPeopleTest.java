@@ -3,8 +3,11 @@
  */
 package roldophe.demo.people;
 
+import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.vega.rest.model.UiListState;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -62,7 +65,7 @@ public class SearchPeopleTest extends AbstractEsSearchTestCase<PeopleCriteria, P
 	@Override
 	protected DtList<PeopleIndex> getListByCritere(final PeopleCriteria critere) {
 		final UiListState uiListState = new UiListState(50, 0, null, false, null);
-		return peopleServices.getPeopleByCriteria(critere, uiListState, "").getDtList();
+		return peopleServices.getPeopleByCriteria(critere, uiListState, "", Collections.<ListFilter> emptyList()).getDtList();
 	}
 
 	/** {@inheritDoc} */

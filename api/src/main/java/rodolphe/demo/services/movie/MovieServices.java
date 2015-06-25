@@ -1,17 +1,20 @@
 package rodolphe.demo.services.movie;
 
+import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.search.model.SearchQuery;
 import io.vertigo.lang.Component;
 import io.vertigo.vega.rest.model.UiListState;
+
+import java.util.List;
+
 import rodolphe.demo.domain.movies.Movie;
 import rodolphe.demo.domain.movies.MovieCasting;
 import rodolphe.demo.domain.movies.MovieCriteria;
 import rodolphe.demo.domain.movies.MovieIndex;
 import rodolphe.demo.domain.movies.MovieView;
 import rodolphe.demo.domain.people.People;
-import rodolphe.demo.services.search.FacetSelection;
 
 /**
  * Services about Movie.
@@ -30,7 +33,7 @@ public interface MovieServices extends Component {
 	 * @return result
 	 */
 	FacetedQueryResult<MovieIndex, SearchQuery> getMoviesByCriteria(MovieCriteria crit, UiListState uiListState,
-			String clusteringFacetName, FacetSelection... selection);
+			String clusteringFacetName, List<ListFilter> selection);
 
 	/**
 	 * Get a movie by its primary key.

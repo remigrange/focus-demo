@@ -153,7 +153,7 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 	*/
 	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> getMoviesByCriteria(final String searchText) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIES_BY_CRITERIA)
-				.withValue(ATTR_IN_TK_GET_MOVIES_BY_CRITERIA_SEARCH_TEXT, searchText)
+				.addValue(ATTR_IN_TK_GET_MOVIES_BY_CRITERIA_SEARCH_TEXT, searchText)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIES_BY_CRITERIA_DTC_MOVIE);
@@ -166,7 +166,7 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 	*/
 	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> getFilmographyByPeoId(final Long peoId) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_FILMOGRAPHY_BY_PEO_ID)
-				.withValue(ATTR_IN_TK_GET_FILMOGRAPHY_BY_PEO_ID_PEO_ID, peoId)
+				.addValue(ATTR_IN_TK_GET_FILMOGRAPHY_BY_PEO_ID_PEO_ID, peoId)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_FILMOGRAPHY_BY_PEO_ID_DTC_MOVIE);
@@ -181,9 +181,9 @@ public final class MovieDAO extends DAOBroker<Movie, java.lang.Long> {
 	*/
 	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.movies.Movie> getMovieToClean(final Long title, final Option<java.util.Date> released, final Option<Integer> year) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_MOVIE_TO_CLEAN)
-				.withValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_TITLE, title)
-				.withValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_RELEASED, released.getOrElse(null))
-				.withValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_YEAR, year.getOrElse(null))
+				.addValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_TITLE, title)
+				.addValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_RELEASED, released.getOrElse(null))
+				.addValue(ATTR_IN_TK_GET_MOVIE_TO_CLEAN_YEAR, year.getOrElse(null))
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_MOVIE_TO_CLEAN_DTC_MOVIE);

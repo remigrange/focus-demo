@@ -55,10 +55,10 @@ public class PeopleServicesImpl implements PeopleServices {
 	@Override
 	@Transactional
 	public FacetedQueryResult<PeopleIndex, SearchQuery> getPeopleByCriteria(final PeopleCriteria crit,
-			final UiListState uiListState, final String clusteringFacetName, final FacetSelection... facetSelections) {
+			final UiListState uiListState, final String clusteringFacetName, final List<ListFilter> facetSelections) {
 		final DtListState listState = DtListStateUtil.readUiListState(uiListState);
 		//----
-		final SearchQueryBuilder searchQueryBuilder = peopleDAO.createSearchQueryBuilderPeopleWithFct(crit, toListFilters(facetSelections));
+		final SearchQueryBuilder searchQueryBuilder = peopleDAO.createSearchQueryBuilderPeopleWithFct(crit, facetSelections);
 		if (clusteringFacetName != null && !clusteringFacetName.isEmpty()) {
 			final FacetDefinition clusterFacetDefinition = Home.getDefinitionSpace().resolve(clusteringFacetName, FacetDefinition.class);
 			searchQueryBuilder.withFacetClustering(clusterFacetDefinition);
@@ -94,7 +94,7 @@ public class PeopleServicesImpl implements PeopleServices {
 	@Transactional
 	public DtList<Movie> getMoviesByPeo(final Long peoId) {
 		final DtList<Movie> ret = new DtList<>(Movie.class);
-		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>().withFilter(
+		final FilterCriteria<RolePeople> rolePeopleCriteria = new FilterCriteriaBuilder<RolePeople>().addFilter(
 				RolePeopleFields.PEO_ID.name(), peoId).build();
 		final DtList<RolePeople> rolePeopleList = rolePeopleDAO.getList(rolePeopleCriteria, Integer.MAX_VALUE);
 		for (final RolePeople rolePeople : rolePeopleList) {

@@ -1,5 +1,6 @@
 package rodolphe.demo.webservices.people;
 
+import io.vertigo.dynamo.collections.ListFilter;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.search.model.SearchQuery;
@@ -11,6 +12,8 @@ import io.vertigo.vega.rest.stereotype.POST;
 import io.vertigo.vega.rest.stereotype.PathParam;
 import io.vertigo.vega.rest.stereotype.PathPrefix;
 import io.vertigo.vega.rest.stereotype.QueryParam;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -43,7 +46,7 @@ public final class PeopleWebServices implements RestfulService {
 	@AnonymousAccessAllowed
 	public FacetedQueryResult<PeopleIndex, SearchQuery> getPeopleByCriteria(
 			final PeopleCriteria peopleCriteria, @QueryParam("") final UiListState uiListState) {
-		return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, "");
+		return peopleServices.getPeopleByCriteria(peopleCriteria, uiListState, "", Collections.<ListFilter> emptyList());
 	}
 
 	/**

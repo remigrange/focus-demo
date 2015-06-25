@@ -73,7 +73,7 @@ public final class PeoplePAO {
 	*/
 	public io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.people.PeopleIndex> getPeopleIndex(final io.vertigo.dynamo.domain.model.DtList<rodolphe.demo.domain.common.Dummy> dtcPeopleIds) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_PEOPLE_INDEX)
-				.withValue(ATTR_IN_TK_GET_PEOPLE_INDEX_DTC_PEOPLE_IDS, dtcPeopleIds)
+				.addValue(ATTR_IN_TK_GET_PEOPLE_INDEX_DTC_PEOPLE_IDS, dtcPeopleIds)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_INDEX_DTC_PEOPLE);
@@ -86,7 +86,7 @@ public final class PeoplePAO {
 	*/
 	public rodolphe.demo.domain.people.PeopleView getPeopleViewByPeoId(final Long peoId) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_PEOPLE_VIEW_BY_PEO_ID)
-				.withValue(ATTR_IN_TK_GET_PEOPLE_VIEW_BY_PEO_ID_PEO_ID, peoId)
+				.addValue(ATTR_IN_TK_GET_PEOPLE_VIEW_BY_PEO_ID_PEO_ID, peoId)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_VIEW_BY_PEO_ID_DTO_PEOPLE);
@@ -99,7 +99,7 @@ public final class PeoplePAO {
 	*/
 	public rodolphe.demo.domain.people.PeopleView getPeopleViewForPeopleDetailsByPeoId(final Long peoId) {
 		final Task task = createTaskBuilder(Tasks.TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID)
-				.withValue(ATTR_IN_TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID_PEO_ID, peoId)
+				.addValue(ATTR_IN_TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID_PEO_ID, peoId)
 				.build();
 		final TaskResult taskResult = getTaskManager().execute(task);
 		return taskResult.getValue(ATTR_OUT_TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID_DTO_PEOPLE);
