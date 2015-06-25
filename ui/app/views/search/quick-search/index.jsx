@@ -1,7 +1,3 @@
-// Dependencies
-
-let isEmpty = _.isEmpty;
-
 // Components
 
 let MoviePreview = require('../previews/movie-preview');
@@ -10,9 +6,7 @@ let MovieLineComponent = require('../lines/movieLineComponent');
 let PeoplePreview = require('../previews/people-preview');
 let PeopleLineComponent = require('../lines/peopleLineComponent');
 
-let Title = FocusComponents.common.title.component;
-let Button = FocusComponents.common.button.action.component;
-let Popin = FocusComponents.application.popin.component;
+let Button = Focus.components.common.button.action.component;
 let QuickSearch = Focus.components.page.search.quickSearch.component;
 
 // Actions
@@ -22,10 +16,6 @@ let searchAction = require('action/search');
 // Mixins
 
 let i18nMixin = Focus.components.common.i18n.mixin;
-
-// Stores
-
-let searchStore = require('stores/search');
 
 // Formatters
 
@@ -54,7 +44,7 @@ let QuickSearchWrapper = React.createClass({
                         setTimeout(() => {
                             let Preview = self._getPreviewType(data);
                             let id = data.movId ? data.movId : data.peoId;
-                            let previewComponent = <Preview hasForm={false} id={id}/>
+                            let previewComponent = <Preview hasForm={false} id={id}/>;
                             self.props.togglePreviewPopin(previewComponent);
                             self.setState({previewData: data});
                         }, timeout);
