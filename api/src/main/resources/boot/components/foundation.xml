@@ -20,7 +20,7 @@
 		<component api="CacheManager" class="io.vertigo.commons.impl.cache.CacheManagerImpl">
 			<plugin class="io.vertigo.commons.plugins.cache.memory.MemoryCachePlugin" />
 		</component>
-		<component api="EventsManager" class="io.vertigo.commons.impl.event.EventManagerImpl" />
+		<component api="EventManager" class="io.vertigo.commons.impl.event.EventManagerImpl" />
 		<component api="PersistenceManager" class="io.vertigo.dynamo.impl.persistence.PersistenceManagerImpl" initClass="rodolphe.demo.boot.initializer.PersistenceManagerInitializer" >
 			<plugin class="io.vertigo.dynamo.plugins.persistence.datastore.postgresql.PostgreSqlDataStorePlugin">
 				<param name="sequencePrefix" value="SEQ_" />

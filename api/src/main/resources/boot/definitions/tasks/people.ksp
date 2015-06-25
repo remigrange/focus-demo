@@ -57,7 +57,7 @@ create Task TK_GET_PEOPLE_VIEW_FOR_PEOPLE_DETAILS_BY_PEO_ID {
     					(select string_agg(distinct label, '|') from role_people rolep inner join role_movie rolem on rolem.rlm_cd = rolep.rlm_cd 
     					 where peo_id = peo.peo_id group by peo_id) as PROFESSIONS
     			From
-    				people peod
+    				people peo
     			Where
     				peo.peo_id = #PEO_ID#
      "
