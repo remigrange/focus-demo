@@ -4,15 +4,16 @@ module.exports = {
         ungroup: 'Ungroup'
     },
     button: {
-        edit: "Edit",
-        cancel: "Cancel",
-        save: "Save",
-        advancedSearch: "Advanced search",
-        back: "Back",
-        backTop: "Top"
+        edit: 'Edit',
+        cancel: 'Cancel',
+        save: 'Save',
+        advancedSearch: 'Advanced search',
+        back: 'Back',
+        backTop: 'Top',
+        navigateToDetails: 'See details'
     },
     show: {
-        all: "Show all"
+        all: 'Show all'
     },
     live: {
         filter: {
@@ -34,16 +35,16 @@ module.exports = {
     search: {
         advanced: {
             page: {
-                title: "Search"
+                title: 'Search'
             }
         },
         bar: {
-            help: "Choose a scope here."
+            help: 'Choose a scope here.'
         },
         cartridge: {
-            title: "What are you looking for ?"
+            title: 'What are you looking for ?'
         },
-        mostRelevant: "The 3 most relevant"
+        mostRelevant: 'The 3 most relevant'
     },
     quickSearch: {
         title: 'Quick search'
