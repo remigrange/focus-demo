@@ -4,6 +4,10 @@ let peopleAction = require('action/people');
 let formBehaviour = Focus.components.common.form.mixin;
 let i18nBehaviour = Focus.components.common.i18n.mixin;
 
+// Components
+
+let Button = Focus.components.common.button.action.component;
+
 let PeoplePreview = React.createClass({
     mixins: [i18nBehaviour, formBehaviour],
     definitionPath: 'people',
