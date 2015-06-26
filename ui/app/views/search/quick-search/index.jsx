@@ -63,7 +63,7 @@ let QuickSearchWrapper = React.createClass({
             _advancedSearchClickHandler(scope) {
                 return () => {
                     let query = self._query;
-                    scope = scopeConfig[scope];
+                    scope = scopeConfig[scope] || scope;
                     let route = `#search/advanced/scope/${scope}${query ? '/query/' + query : ''}`;
                     Focus.search.changeScope(scope);
                     self._searchAction({
