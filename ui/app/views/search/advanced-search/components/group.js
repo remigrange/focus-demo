@@ -7,8 +7,24 @@ let Button = FocusComponents.common.button.action.component;
 
 let i18nMixin = Focus.components.common.i18n.mixin;
 
+// Formatters
+
+let numberFormatter = Focus.definition.formatter.number;
+
+// Config
+
+let scopeConfig = require('../../../../config/scopes');
+
 let Group = React.createClass({
     mixins: [i18nMixin],
+    _getShowAllHandler(key) {
+        if (scopeConfig[key]) {
+            key = scopeConfig[key];
+        }
+        return () => {
+            this.props.showAllHandler(key);
+        };
+    },
     render() {
         return (
             <div className="listResultContainer panel" data-focus="group-result-container">
@@ -18,8 +34,8 @@ let Group = React.createClass({
                     {this.props.children}
                 </div>
                 <div data-focus='group-actions'>
-                    <Button handleOnClick={this.props.showAll(this.props.groupKey)}
-                            label={this.i18n('show.all')}/>
+                    <Button handleOnClick={this.props.showMoreHandler} label={this.i18n('show.more')}/>
+                    <Button handleOnClick={this._getShowAllHandler(this.props.groupKey)} label={this.i18n('show.all')}/>
                 </div>
             </div>
         );
