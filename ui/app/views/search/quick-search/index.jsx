@@ -23,6 +23,10 @@ let numberFormatter = Focus.definition.formatter.number;
 
 // Config
 
+// Services
+
+let service = require('../../../services/search');
+
 let scopeConfig = require('../../../config/scopes');
 
 let QuickSearchWrapper = React.createClass({
@@ -124,15 +128,13 @@ let QuickSearchWrapper = React.createClass({
             <div>
                 <h1>{this.i18n('quickSearch.title')}</h1>
                 <QuickSearch
-                    lineOperationList={this._getOperationList()}
-                    onLineClick={this._onLineClick}
-                    scope='ALL'
                     closePopin={this.props.closePopin}
-                    searchAction={this._searchAction}
                     groupComponent={this._getGroupComponent()}
                     lineComponentMapper={this._lineComponentMapper}
-                    />
-
+                    lineOperationList={this._getOperationList()}
+                    onLineClick={this._onLineClick}
+                    service={service}
+                />
             </div>
 
         );
