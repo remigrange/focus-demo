@@ -8,5 +8,11 @@ module.exports = {
   },
   unformatter: function dateUnformatter(data){
       return moment(data).toDate();
+  },
+  options: {
+    dateRangePicker: {
+      minDate: '1900-01-01',
+      format: 'YYYY-MM-DD'
+    }
   }
 };

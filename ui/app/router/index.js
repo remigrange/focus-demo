@@ -1,5 +1,6 @@
 module.exports ={
   conceptRouter: require('./concept-router'),
   searchRouter: require('./search-router'),
-  homeRouter: require('./home-router')
+  homeRouter: require('./home-router'),
+  exampleRouter: require('./example-router')
 };
