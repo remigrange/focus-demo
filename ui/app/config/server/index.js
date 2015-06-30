@@ -1,6 +1,7 @@
-module.exports= {
+module.exports = {
     movie: require('./movie'),
     people: require('./people'),
     search: require('./search'),
-    reference: require('./reference')
+    reference: require('./reference'),
+    domain: require('./domain')
 };
