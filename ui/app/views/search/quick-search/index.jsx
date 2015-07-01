@@ -104,7 +104,7 @@ let QuickSearchWrapper = React.createClass({
             }
         });
     },
-    _lineComponentMapper(list) {
+    _lineComponentMapper(groupKey, list) {
         if (list.length > 0) {
             return list[0].movId ? MovieLineComponent : PeopleLineComponent;
         } else {
