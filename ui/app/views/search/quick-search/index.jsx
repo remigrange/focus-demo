@@ -96,7 +96,9 @@ let QuickSearchWrapper = React.createClass({
 
                             <h3>{`${this.props.groupKey} (${numberFormatter.format(this.props.count, '(0,0)')})`}</h3>
 
-                            <p>{this.i18n('search.mostRelevant')}</p>
+                            {!this.props.isUnique &&
+                                <p>{this.i18n('search.mostRelevant')}</p>
+                            }
                         </div>
                         {this.props.children}
                     </div>
