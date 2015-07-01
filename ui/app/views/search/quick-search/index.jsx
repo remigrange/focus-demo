@@ -66,18 +66,18 @@ let QuickSearchWrapper = React.createClass({
             mixins: [i18nMixin],
             _advancedSearchClickHandler(scope) {
                 return () => {
-                    let query = self._query;
+                    let route = '#search/advanced';
+                    let query = Focus.search.builtInStore.quickSearchStore.getQuery();
                     scope = scopeConfig[scope] || scope;
-                    let route = `#search/advanced/scope/${scope}${query ? '/query/' + query : ''}`;
-                    Focus.search.changeScope(scope);
-                    self._searchAction({
-                        criteria: {
-                            query: query,
-                            scope: scope
+                    Focus.dispatcher.handleViewAction({
+                        data: {
+                            query,
+                            scope,
+                            selectedFacets: undefined,
+                            gorupingKey: undefined
                         },
-                        pageInfos: {
-                            page: 1
-                        }
+                        type: 'update',
+                        identifier: 'ADVANCED_SEARCH'
                     });
                     popinCloser();
                     Backbone.history.navigate(route, true);
@@ -85,7 +85,6 @@ let QuickSearchWrapper = React.createClass({
             },
             render() {
                 let camelCase = _.camelCase;
-                let capitalize = _.capitalize;
                 let lowerKey = camelCase(this.props.groupKey);
                 return (
                     <div data-focus='group-result-container'>
@@ -117,13 +116,6 @@ let QuickSearchWrapper = React.createClass({
         let route = data.movId ? `#movie/${data.movId}` : `#people/${data.peoId}`;
         this.props.closePopin();
         Backbone.history.navigate(route, true);
-    },
-    _getPreviewType(data) {
-        return data.movId ? MoviePreview : PeoplePreview;
-    },
-    _searchAction(criteria) {
-        this._query = criteria.criteria.query;
-        searchAction.search(criteria);
     },
     render() {
         return (
