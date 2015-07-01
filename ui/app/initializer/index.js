@@ -23,7 +23,7 @@ require('./user-initializer');
 require('./domain-initializer');
 require('./definition-initializer');
 require('./reference-list-initializer').initialize();
-require('./query-store-initializer').initialize();
+require('./search-stores-initializer').initialize();
 require('./i18n-initializer');
 
 //Initialisation du layout

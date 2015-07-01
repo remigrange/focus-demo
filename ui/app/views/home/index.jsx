@@ -1,6 +1,10 @@
+// Mixins
+
 let cartridgeBehaviour = Focus.components.page.mixin.cartridgeBehaviour;
-let CartridgeSearch = require('../common/cartridge-search');
-let SummarySearch = require('../common/summary-search');
+
+// Service
+
+let service = require('../../services/search');
 
 // Composants du cartouche
 
@@ -12,13 +16,15 @@ let ApplicationTitle = React.createClass({
     }
 });
 
-let searchAction = require('action/search').search;
+let initializationCallsCount = 4;
 
 let navigateAdvancedSearch = function () {
-    let query = Focus.search.builtInStore.queryStore.getQuery();
-    let scope = Focus.search.builtInStore.queryStore.getScope();
-    let route = `#search/advanced/scope/${scope}${query ? '/query/' + query : ''}`;
-    return Backbone.history.navigate(route, true)
+    if (initializationCallsCount === 0) {
+        let route = '#search/advanced';
+        Backbone.history.navigate(route, true);
+    } else {
+        initializationCallsCount--;
+    }
 };
 
 //Creates a View for hehe home page which is
@@ -26,13 +32,8 @@ let HomeView = React.createClass({
     mixins: [cartridgeBehaviour],
     cartridgeConfiguration() {
         let buildProps = {
-            searchAction() {
-                searchAction.apply(this, arguments);
-                navigateAdvancedSearch.apply(this, arguments)
-            },
-            query: this.props.query,
-            scope: this.props.scope, //Scope all by default?
-            referenceNames: ['scopes']
+            service,
+            onSearchCriteriaChange: navigateAdvancedSearch
         };
         return {
             barLeft: {component: ApplicationTitle},
