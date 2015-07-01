@@ -16,9 +16,15 @@ let ApplicationTitle = React.createClass({
     }
 });
 
+let initializationCallsCount = 4;
+
 let navigateAdvancedSearch = function () {
-    let route = '#search/advanced';
-    return Backbone.history.navigate(route, true);
+    if (initializationCallsCount === 0) {
+        let route = '#search/advanced';
+        Backbone.history.navigate(route, true);
+    } else {
+        initializationCallsCount--;
+    }
 };
 
 //Creates a View for hehe home page which is
