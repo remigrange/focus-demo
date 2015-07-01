@@ -9,10 +9,6 @@ let PeopleLineComponent = require('../lines/peopleLineComponent');
 let Button = Focus.components.common.button.action.component;
 let QuickSearch = Focus.components.page.search.quickSearch.component;
 
-// Actions
-
-let searchAction = require('action/search');
-
 // Mixins
 
 let i18nMixin = Focus.components.common.i18n.mixin;
@@ -61,7 +57,6 @@ let QuickSearchWrapper = React.createClass({
     },
     _getGroupComponent() {
         let popinCloser = this.props.closePopin;
-        let self = this;
         return React.createClass({
             mixins: [i18nMixin],
             _advancedSearchClickHandler(scope) {
@@ -81,11 +76,9 @@ let QuickSearchWrapper = React.createClass({
                     });
                     popinCloser();
                     Backbone.history.navigate(route, true);
-                }
+                };
             },
             render() {
-                let camelCase = _.camelCase;
-                let lowerKey = camelCase(this.props.groupKey);
                 return (
                     <div data-focus='group-result-container'>
                         <div className="title-navigation">
@@ -116,6 +109,9 @@ let QuickSearchWrapper = React.createClass({
         let route = data.movId ? `#movie/${data.movId}` : `#people/${data.peoId}`;
         this.props.closePopin();
         Backbone.history.navigate(route, true);
+    },
+    _getPreviewType(data) {
+        return data.movId ? MoviePreview : PeoplePreview;
     },
     render() {
         return (
