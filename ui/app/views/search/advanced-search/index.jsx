@@ -19,7 +19,8 @@ let props = assign(
     {},
     require('./config/facet-config'),
     require('./config/column-config'),
-    require('./config/line-config')
+    require('./config/line-config'),
+    {scopesConfig: require('../../../config/scopes')}
 );
 
 let cartridgeConfiguration = () => {
