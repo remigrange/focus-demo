@@ -151,7 +151,7 @@ public final class Casting implements DtObject {
 			}
 		}		
 		if (people == null) {
-			people = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().get(fkURI);
+			people = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().get(fkURI);
 		}
 		return people;
 	}
@@ -210,7 +210,7 @@ public final class Casting implements DtObject {
 			}
 		}		
 		if (movie == null) {
-			movie = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().get(fkURI);
+			movie = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().get(fkURI);
 		}
 		return movie;
 	}
@@ -269,7 +269,7 @@ public final class Casting implements DtObject {
 			}
 		}		
 		if (roleMovie == null) {
-			roleMovie = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().get(fkURI);
+			roleMovie = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().get(fkURI);
 		}
 		return roleMovie;
 	}

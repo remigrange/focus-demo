@@ -7,12 +7,6 @@
 		</component>
 		<component api="AnalyticsManager" class="io.vertigo.commons.impl.analytics.AnalyticsManagerImpl"/> 
 
-		<component api="KVDataStoreManager" class="io.vertigo.dynamo.impl.kvdatastore.KVDataStoreManagerImpl">
-			<plugin class="io.vertigo.dynamo.plugins.kvdatastore.delayedmemory.DelayedMemoryKVDataStorePlugin">
-				<param name="dataStoreName" value="Knock-tokens" />
-				<param name="timeToLiveSeconds" value="120" />
-			</plugin>
-		</component>
 		<component api="CollectionsManager" class="io.vertigo.dynamo.impl.collections.CollectionsManagerImpl" />
 		<component api="VTransactionManager" class="io.vertigo.dynamo.impl.transaction.VTransactionManagerImpl" />
 		<component api="TaskManager" class="io.vertigo.dynamo.impl.task.TaskManagerImpl" />
@@ -21,9 +15,13 @@
 			<plugin class="io.vertigo.commons.plugins.cache.memory.MemoryCachePlugin" />
 		</component>
 		<component api="EventManager" class="io.vertigo.commons.impl.event.EventManagerImpl" />
-		<component api="PersistenceManager" class="io.vertigo.dynamo.impl.persistence.PersistenceManagerImpl" initClass="rodolphe.demo.boot.initializer.PersistenceManagerInitializer" >
-			<plugin class="io.vertigo.dynamo.plugins.persistence.datastore.postgresql.PostgreSqlDataStorePlugin">
+		<component api="StoreManager" class="io.vertigo.dynamo.impl.store.StoreManagerImpl" initClass="rodolphe.demo.boot.initializer.StoreManagerInitializer" >
+			<plugin class="io.vertigo.dynamo.plugins.store.datastore.postgresql.PostgreSqlDataStorePlugin">
 				<param name="sequencePrefix" value="SEQ_" />
+			</plugin>
+			<plugin class="io.vertigo.dynamo.plugins.kvdatastore.delayedmemory.DelayedMemoryKVDataStorePlugin">
+				<param name="dataStoreName" value="Knock-tokens" />
+				<param name="timeToLiveSeconds" value="120" />
 			</plugin>
 		</component>
 	</module>

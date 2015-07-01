@@ -6,10 +6,10 @@ import io.vertigo.dynamo.collections.metamodel.FacetDefinition;
 import io.vertigo.dynamo.collections.model.FacetedQueryResult;
 import io.vertigo.dynamo.domain.model.DtList;
 import io.vertigo.dynamo.domain.model.DtListState;
-import io.vertigo.dynamo.persistence.criteria.FilterCriteria;
-import io.vertigo.dynamo.persistence.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.search.model.SearchQuery;
 import io.vertigo.dynamo.search.model.SearchQueryBuilder;
+import io.vertigo.dynamo.store.criteria.FilterCriteria;
+import io.vertigo.dynamo.store.criteria.FilterCriteriaBuilder;
 import io.vertigo.dynamo.transaction.Transactional;
 import io.vertigo.vega.rest.model.UiListState;
 

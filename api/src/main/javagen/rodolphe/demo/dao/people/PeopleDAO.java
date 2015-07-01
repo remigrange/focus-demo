@@ -19,8 +19,8 @@ import io.vertigo.dynamo.task.model.Task;
 import io.vertigo.dynamo.task.model.TaskBuilder;
 import io.vertigo.dynamo.task.model.TaskResult;
 import io.vertigo.dynamo.domain.model.URI;
-import io.vertigo.dynamo.impl.persistence.util.DAOBroker;
-import io.vertigo.dynamo.persistence.PersistenceManager;
+import io.vertigo.dynamo.impl.store.util.DAOBroker;
+import io.vertigo.dynamo.store.StoreManager;
 import io.vertigo.dynamo.task.TaskManager;
 import rodolphe.demo.domain.people.People;
 
@@ -45,13 +45,13 @@ public final class PeopleDAO extends DAOBroker<People, java.lang.Long> {
 	 
 	/**
 	 * Contructeur.
-	 * @param persistenceManager Manager de persistance
+	 * @param storeManager Manager de persistance
 	 * @param taskManager Manager de Task
 	 * @param searchManager Manager de Search
 	 */
 	@Inject
-	public PeopleDAO(final PersistenceManager persistenceManager, final TaskManager taskManager, final SearchManager searchManager) {
-		super(People.class, persistenceManager, taskManager);
+	public PeopleDAO(final StoreManager storeManager, final TaskManager taskManager, final SearchManager searchManager) {
+		super(People.class, storeManager, taskManager);
 		this.searchManager = searchManager;
 	}
 	

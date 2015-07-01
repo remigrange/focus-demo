@@ -129,7 +129,7 @@ public final class UserAuthentification implements DtObject {
 			}
 		}		
 		if (applicationUser == null) {
-			applicationUser = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().get(fkURI);
+			applicationUser = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().get(fkURI);
 		}
 		return applicationUser;
 	}

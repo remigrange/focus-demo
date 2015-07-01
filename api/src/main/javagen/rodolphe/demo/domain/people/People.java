@@ -252,7 +252,7 @@ public final class People implements KeyConcept {
 			}
 		}		
 		if (title == null) {
-			title = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().get(fkURI);
+			title = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().get(fkURI);
 		}
 		return title;
 	}
@@ -307,7 +307,7 @@ public final class People implements KeyConcept {
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
 		if (fileInfo == null) {
-			fileInfo = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
+			fileInfo = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().getList(fkDtListURI);
 		}
 		return fileInfo;
 	}

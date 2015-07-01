@@ -151,7 +151,7 @@ public final class ApplicationUser implements DtObject {
 			}
 		}		
 		if (profil == null) {
-			profil = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().get(fkURI);
+			profil = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().get(fkURI);
 		}
 		return profil;
 	}

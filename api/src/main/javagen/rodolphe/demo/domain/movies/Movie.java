@@ -311,7 +311,7 @@ public final class Movie implements KeyConcept {
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
 		if (fileInfo == null) {
-			fileInfo = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
+			fileInfo = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().getList(fkDtListURI);
 		}
 		return fileInfo;
 	}
@@ -362,7 +362,7 @@ public final class Movie implements KeyConcept {
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
 		if (alias == null) {
-			alias = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
+			alias = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().getList(fkDtListURI);
 		}
 		return alias;
 	}
@@ -413,7 +413,7 @@ public final class Movie implements KeyConcept {
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
 		if (language == null) {
-			language = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
+			language = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().getList(fkDtListURI);
 		}
 		return language;
 	}
@@ -464,7 +464,7 @@ public final class Movie implements KeyConcept {
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
 		if (genre == null) {
-			genre = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
+			genre = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().getList(fkDtListURI);
 		}
 		return genre;
 	}
@@ -515,7 +515,7 @@ public final class Movie implements KeyConcept {
 		//---------------------------------------------------------------------
 		//On est toujours dans un mode lazy.
 		if (country == null) {
-			country = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.persistence.PersistenceManager.class).getBroker().getList(fkDtListURI);
+			country = io.vertigo.core.Home.getComponentSpace().resolve(io.vertigo.dynamo.store.StoreManager.class).getDataStore().getList(fkDtListURI);
 		}
 		return country;
 	}
