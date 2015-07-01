@@ -27,6 +27,7 @@
     "jQuery": false,
     "$": true,
     "Focus": true,
+    "FocusComponents": true,
     "require": true,
     "Backbone": true,
     "React": true,

@@ -44,7 +44,8 @@ module.exports = {
         cartridge: {
             title: 'What are you looking for ?'
         },
-        mostRelevant: 'The 3 most relevant'
+        mostRelevant: 'The 3 most relevant',
+        loadingMore: 'Loading more results ...'
     },
     quickSearch: {
         title: 'Quick search'

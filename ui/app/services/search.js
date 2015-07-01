@@ -2,10 +2,10 @@ let URL = require('../../config/server');
 let fetch = Focus.network.fetch;
 
 module.exports = {
-    unscopedSearch(ajaxConfig) {
+    unscoped(ajaxConfig) {
         return fetch(URL.search.searchByScope(ajaxConfig));
     },
-    scopedSearch(ajaxConfig) {
+    scoped(ajaxConfig) {
         return fetch(URL.search.searchByScope(ajaxConfig));
     }
 };
