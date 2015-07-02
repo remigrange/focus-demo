@@ -44,17 +44,17 @@ public class StoreManagerInitializer implements ComponentInitializer<StoreManage
 		registerAllMasterData(component);
 	}
 
-	private void registerAllMasterData(final StoreManager persistenceManager) {
-		registerMasterData(persistenceManager, Title.class, null, false);
-		registerMasterData(persistenceManager, RoleMovie.class, null, false);
+	private void registerAllMasterData(final StoreManager storeManager) {
+		registerMasterData(storeManager, Title.class, null, false);
+		registerMasterData(storeManager, RoleMovie.class, null, false);
 	}
 
-	private <O extends DtObject> void registerMasterData(final StoreManager persistenceManager,
+	private <O extends DtObject> void registerMasterData(final StoreManager storeManager,
 			final Class<O> dtObjectClass) {
-		registerMasterData(persistenceManager, dtObjectClass, null, true);
+		registerMasterData(storeManager, dtObjectClass, null, true);
 	}
 
-	private <O extends DtObject> void registerMasterData(final StoreManager persistenceManager,
+	private <O extends DtObject> void registerMasterData(final StoreManager storeManager,
 			final Class<O> dtObjectClass, final Integer duration, final boolean reloadItemByList) {
 		final DtDefinition dtDefinition = DtObjectUtil.findDtDefinition(dtObjectClass);
 		memorizeMdl(dtObjectClass, dtDefinition.getName());
@@ -71,21 +71,21 @@ public class StoreManagerInitializer implements ComponentInitializer<StoreManage
 		} else {
 			cacheDuration = duration;
 		}
-		persistenceManager.getBrokerConfig().registerCacheable(dtDefinition, cacheDuration, reloadItemByList);
+		storeManager.getBrokerConfig().registerCacheable(dtDefinition, cacheDuration, reloadItemByList);
 		// on enregistre le filtre actif
 		final DtListURIForMasterData uriActif = new DtListURIForMasterData(dtDefinition, MdlUtil.ACTIF_DATA_CODE);
 		try {
 			// On teste si le champ actif est présent ou pas. si ce n'est pas le cas, une nullpointerexception est levée
 			dtDefinition.getField(SI_ACTIF);
 			// on enregistre la définition avec filtre sur actif
-			persistenceManager.getMasterDataConfig().register(uriActif, SI_ACTIF, Boolean.TRUE);
+			storeManager.getMasterDataConfig().register(uriActif, SI_ACTIF, Boolean.TRUE);
 		} catch (final NullPointerException e) {
 			// On est dans le cas ou le champ n'est pas présent
-			persistenceManager.getMasterDataConfig().register(uriActif);
+			storeManager.getMasterDataConfig().register(uriActif);
 		}
 		// On enregistre la liste globale
 		final DtListURIForMasterData uri = new DtListURIForMasterData(dtDefinition, MdlUtil.ALL_DATA_CODE);
-		persistenceManager.getMasterDataConfig().register(uri);
+		storeManager.getMasterDataConfig().register(uri);
 	}
 
 	private static void memorizeMdl(final Class<? extends DtObject> dtObjectClass, final String cacheName) {
